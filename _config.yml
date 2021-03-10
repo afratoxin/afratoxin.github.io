@@ -21,7 +21,7 @@ title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
 name                     : "육준형"
 description              : "HAFS 16 육준형의 프로그래밍 월-드"
-url                      : "https://afratoxin.github.io/"
+url                      : "https://afratoxin.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "afratoxin/afratoxin.github.io"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
