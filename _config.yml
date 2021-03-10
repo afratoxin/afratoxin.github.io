@@ -23,7 +23,7 @@ name                     : "육준형"
 description              : "HAFS 16 육준형의 프로그래밍 월-드"
 url                      : "https://afratoxin.github.io/"
 baseurl                  : # the subpath of your site, e.g. "/blog"
-repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
+repository               : "afratoxin/afratoxin.github.io"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
@@ -94,11 +94,11 @@ analytics:
 
 # Site Author
 author:
-  name             : "Your Name"
+  name             : "육준형"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "I am an **amazing** person."
-  location         : "Somewhere"
-  email            :
+  bio              : "물처럼 살아가야지"
+  location         : "대한민국, 서울"
+  email            : "afratoxin06@gmail.com"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
