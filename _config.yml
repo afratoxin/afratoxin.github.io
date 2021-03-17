@@ -12,10 +12,10 @@
 
 # theme                  : "minimal-mistakes-jekyll"
 # remote_theme           : "mmistakes/minimal-mistakes"
-minimal_mistakes_skin    : "aqua" #"sunrise", "default", "contrast", "dark", "dirt", "neon", "mint", "plum", "air"
+minimal_mistakes_skin    : "aqua" # "sunrise", "default", "contrast", "dark", "dirt", "neon", "mint", "plum", "air"
 
 # Site Settings
-locale                   : "ko"
+locale                   : "ko-KR"
 title                    : "C 프로그래밍"
 title_separator          : "-"
 subtitle                 : # site tagline that appears below site title in masthead
