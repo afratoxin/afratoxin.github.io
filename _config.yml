@@ -97,7 +97,7 @@ author:
   name             : "육준형"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "물처럼 살아가야지"
-  location         : "대한민국, 서울"
+  location         : "대한민국, "
   email            : "afratoxin06@gmail.com"
   links:
     - label: "Email"
