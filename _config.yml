@@ -18,7 +18,7 @@ minimal_mistakes_skin    : "aqua" #"plum"  "sunrise", "default", "contrast", "da
 locale                   : "ko-KR"
 title                    : "The New World"
 title_separator          : "-"
-subtitle                 : # site tagline that appears below site title in masthead
+subtitle                 : and my garage
 name                     : "Yuk Jun-hyeong"
 description              : "많은 것을 보게 될 것."
 url                      : "https://afratoxin.github.io/"
