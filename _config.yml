@@ -24,7 +24,7 @@ description              : "많은 것을 보게 될 것."
 url                      : "https://afratoxin.github.io/"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "afratoxin/afratoxin.github.io"
-teaser                   : /assets/육준형.jpg # path of fallback teaser image, e.g. "/assets/images/500x300.png"
+teaser                   :  # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     :  # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
 # breadcrumbs            : false # true, false (default)
@@ -95,7 +95,7 @@ analytics:
 # Site Author
 author:
   name             : "Yuk Jun-hyeong"
-  avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  avatar           : /assets/육준형.jpg # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "물처럼 살아가야지"
   location         : "Yong-in, Korea"
   email            : "afratoxin06@gmail.com"
