@@ -95,7 +95,7 @@ analytics:
 # Site Author
 author:
   name             : "Yuk Jun-hyeong"
-  avatar           : /assets/육준형.jpg # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  avatar           : /assets/images/avatar.jpg # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "물처럼 살아가야지"
   location         : "Yong-in, Korea"
   email            : "afratoxin06@gmail.com"
