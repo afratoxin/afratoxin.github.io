@@ -1,6 +1,6 @@
 # main links
 main:
-  - title: ""
+  - title: "종류"
     url: /categories/
   - title: "연도"
     url: /posts/
