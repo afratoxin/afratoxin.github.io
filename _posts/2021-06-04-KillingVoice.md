@@ -4,7 +4,7 @@ title: "킬링보이스 모음"
 toc: true
 toc_sticky: true
 toc_label: "킬링보이스" 
-categories: "킬링보이스"
+categories: "음악"
 ---
 ### 1. 성시경
 {% include video id="6RQ-bBdASvk" provider="youtube" %}
