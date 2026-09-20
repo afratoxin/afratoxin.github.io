@@ -411,7 +411,7 @@
       <button class="ghost" id="closeReferenceBtn" type="button">문제로 돌아가기</button>
     </div>
     <div class="modal-body">
-      <p class="reference-note"><b>Family와 구조 분류는 강의록 Intro 2의 바이러스 분류표를 기준</b>으로 정리했습니다. 대표 바이러스는 기존 첨부 이미지에 있던 범위를 유지하며, 정식 family명과 Pox·Herpes·Picorna 같은 약식명을 모두 정답으로 인정합니다.</p>
+      <p class="reference-note"><b>강의록 본문 분류표와 사용자가 첨부한 최신 분류 이미지를 기준</b>으로 정리했습니다. Family는 강의록처럼 Pox·Herpes·Picorna 등의 짧은 표기를 사용하며, RSV는 별도 추가 연결인 Pneumo에 배치합니다.</p>
       <div id="referenceContent"></div>
     </div>
   </dialog>
@@ -424,7 +424,7 @@
     <div class="modal-body">
       <div class="practice-toolbar">
         <div class="mode-tabs" role="tablist" aria-label="분류표 채우기 모드">
-          <button class="mode-tab active" id="familyModeBtn" type="button">Family 약식명</button>
+          <button class="mode-tab active" id="familyModeBtn" type="button">Family 블록</button>
           <button class="mode-tab" id="exampleModeBtn" type="button">바이러스 예시 블록</button>
         </div>
         <div class="practice-actions">
@@ -466,55 +466,57 @@
 
   <script>
     const FAMILIES = [
-      { id:'pox', name:'Poxviridae', short:'Pox', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
-        ['Smallpox virus', 'smallpox virus', 'small pox', 'variola virus', 'variola'] ] },
-      { id:'herpes', name:'Herpesviridae', short:'Herpes', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
+      { id:'pox', name:'Pox', short:'Pox', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
+        ['Smallpox virus', 'smallpox virus', 'small pox'], ['Variola virus', 'variola virus', 'variola'] ] },
+      { id:'herpes', name:'Herpes', short:'Herpes', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
         ['Herpes simplex virus 1 (HSV-1)', 'herpes simplex virus 1', 'hsv1', 'hsv-1'],
         ['Herpes simplex virus 2 (HSV-2)', 'herpes simplex virus 2', 'hsv2', 'hsv-2'],
         ['Varicella-zoster virus (VZV)', 'varicella zoster virus', 'vzv'], ['Epstein-Barr virus (EBV)', 'epstein barr virus', 'ebv'],
         ['Cytomegalovirus (CMV)', 'cytomegalovirus', 'cmv'], ['Human herpesvirus 6 (HHV-6)', 'human herpesvirus 6', 'hhv6', 'hhv-6'],
         ['Human herpesvirus 7 (HHV-7)', 'human herpesvirus 7', 'hhv7', 'hhv-7'], ['Human herpesvirus 8 (HHV-8)', 'human herpesvirus 8', 'hhv8', 'hhv-8'] ] },
-      { id:'hepadna', name:'Hepadnaviridae', short:'Hepadna', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
+      { id:'hepadna', name:'Hepadna', short:'Hepadna', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
         ['Hepatitis B virus (HBV)', 'hepatitis b virus', 'hbv'] ] },
-      { id:'polyoma', name:'Polyomaviridae', short:'Polyoma', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
+      { id:'polyoma', name:'Polyoma', short:'Polyoma', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
         ['BK virus', 'bk virus', 'bkv'], ['JC virus', 'jc virus', 'jcv'] ] },
-      { id:'papilloma', name:'Papillomaviridae', short:'Papilloma', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
+      { id:'papilloma', name:'Papilloma', short:'Papilloma', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
         ['HPV-16', 'human papillomavirus 16', 'hpv16', 'hpv-16'] ] },
-      { id:'adeno', name:'Adenoviridae', short:'Adeno', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
+      { id:'adeno', name:'Adeno', short:'Adeno', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
         ['Human adenovirus 5', 'human adenovirus 5', 'adenovirus 5'] ] },
-      { id:'parvo', name:'Parvoviridae', short:'Parvo', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
+      { id:'parvo', name:'Parvo', short:'Parvo', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
         ['Parvovirus B19', 'parvovirus b19', 'b19 parvovirus'], ['Adeno-associated virus (AAV)', 'adeno associated virus', 'aav'] ] },
 
-      { id:'picorna', name:'Picornaviridae', short:'Picorna', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
+      { id:'picorna', name:'Picorna', short:'Picorna', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
         ['Poliovirus', 'poliovirus', 'polio virus'], ['Hepatitis A virus (HAV)', 'hepatitis a virus', 'hav'] ] },
-      { id:'calici', name:'Caliciviridae', short:'Calici', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
+      { id:'calici', name:'Calici', short:'Calici', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
         ['Norovirus', 'norovirus'] ] },
-      { id:'hepe', name:'Hepeviridae', short:'Hepe', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
+      { id:'hepe', name:'Hepe', short:'Hepe', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
         ['Hepatitis E virus (HEV)', 'hepatitis e virus', 'hev'] ] },
-      { id:'astro', name:'Astroviridae', short:'Astro', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
+      { id:'astro', name:'Astro', short:'Astro', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
         ['Human astrovirus', 'human astrovirus', 'astrovirus'] ] },
-      { id:'toga', name:'Togaviridae', short:'Toga', nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
+      { id:'toga', name:'Toga', short:'Toga', nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
         ['Chikungunya virus', 'chikungunya virus'] ] },
-      { id:'flavi', name:'Flaviviridae', short:'Flavi', nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
+      { id:'flavi', name:'Flavi', short:'Flavi', nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
         ['Dengue virus', 'dengue virus'], ['Hepatitis C virus (HCV)', 'hepatitis c virus', 'hcv'] ] },
-      { id:'corona', name:'Coronaviridae', short:'Corona', nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
+      { id:'corona', name:'Corona', short:'Corona', nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
         ['SARS-CoV-2', 'sars cov 2', 'sars-cov-2'] ] },
 
-      { id:'rhabdo', name:'Rhabdoviridae', short:'Rhabdo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+      { id:'rhabdo', name:'Rhabdo', short:'Rhabdo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
         ['Rabies virus', 'rabies virus'] ] },
-      { id:'filo', name:'Filoviridae', short:'Filo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+      { id:'filo', name:'Filo', short:'Filo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
         ['Ebola virus', 'ebola virus'] ] },
-      { id:'orthomyxo', name:'Orthomyxoviridae', short:'Orthomyxo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+      { id:'orthomyxo', name:'Orthomyxo', short:'Orthomyxo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
         ['Influenza A virus', 'influenza a virus'] ] },
-      { id:'paramyxo', name:'Paramyxoviridae', short:'Paramyxo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
-        ['Measles virus', 'measles virus'], ['Respiratory syncytial virus (RSV)', 'respiratory syncytial virus', 'rsv'] ] },
-      { id:'bunya', name:'Bunyaviridae', short:'Bunya', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+      { id:'paramyxo', name:'Paramyxo', short:'Paramyxo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Measles virus', 'measles virus'] ] },
+      { id:'pneumo', name:'Pneumo', short:'Pneumo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Respiratory syncytial virus (RSV)', 'respiratory syncytial virus', 'rsv'] ] },
+      { id:'bunya', name:'Bunya', short:'Bunya', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
         ['Hantaan virus', 'hantaan virus'] ] },
-      { id:'arena', name:'Arenaviridae', short:'Arena', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+      { id:'arena', name:'Arena', short:'Arena', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
         ['Lassa virus', 'lassa virus'] ] },
-      { id:'reo', name:'Reoviridae', short:'Reo', nucleic:'RNA', genome:'dsRNA', coat:'Double capsid', examples:[
+      { id:'reo', name:'(Sedo)reo', short:'(Sedo)reo', familyAliases:['Reo','Sedoreo'], nucleic:'RNA', genome:'dsRNA', coat:'Naked capsid', examples:[
         ['Rotavirus', 'rotavirus', 'rota virus'] ] },
-      { id:'retro', name:'Retroviridae', short:'Retro', nucleic:'RNA', genome:'+ssRNA via DNA', coat:'Enveloped', examples:[
+      { id:'retro', name:'Retro', short:'Retro', nucleic:'RNA', genome:'+ssRNA via DNA', coat:'Enveloped', examples:[
         ['HIV-1', 'human immunodeficiency virus 1', 'hiv1', 'hiv-1'] ] }
     ];
 
@@ -535,12 +537,13 @@
       {id:'rna-pos-naked', nucleic:'RNA', title:'+ssRNA', detail:'Naked capsid', tone:'naked', familyIds:['picorna','calici','hepe','astro']},
       {id:'rna-pos-env', nucleic:'RNA', title:'+ssRNA', detail:'Enveloped', tone:'env', familyIds:['toga','flavi','corona']},
       {id:'rna-neg-env', nucleic:'RNA', title:'-ssRNA', detail:'Enveloped', tone:'env', familyIds:['rhabdo','filo','orthomyxo','paramyxo','bunya','arena']},
-      {id:'rna-ds-naked', nucleic:'RNA', title:'+/- RNA (dsRNA)', detail:'Double capsid', tone:'naked', familyIds:['reo']},
-      {id:'rna-rt-env', nucleic:'RNA', title:'+RNA via DNA', detail:'Enveloped', tone:'env', familyIds:['retro']}
+      {id:'rna-ds-naked', nucleic:'RNA', title:'dsRNA', detail:'Naked capsid', tone:'naked', familyIds:['reo']},
+      {id:'rna-rt-env', nucleic:'RNA', title:'RNA via DNA', detail:'Enveloped', tone:'env', familyIds:['retro']},
+      {id:'rna-extra', nucleic:'RNA', title:'기타 family 연결', detail:'본문 표 밖 추가', tone:'env', familyIds:['pneumo'], extra:true}
     ];
 
     const DRAG_EXAMPLES = [
-      {id:'ex-smallpox',label:'Smallpox virus',target:'pox'},
+      {id:'ex-smallpox',label:'Smallpox virus',target:'pox'}, {id:'ex-variola',label:'Variola virus',target:'pox'},
       {id:'ex-hsv1',label:'Herpes simplex virus 1 (HSV-1)',target:'herpes'},
       {id:'ex-hbv',label:'Hepatitis B virus (HBV)',target:'hepadna'},
       {id:'ex-bk',label:'BK virus',target:'polyoma'}, {id:'ex-jc',label:'JC virus',target:'polyoma'},
@@ -552,7 +555,7 @@
       {id:'ex-dengue',label:'Dengue virus',target:'flavi'}, {id:'ex-hcv',label:'Hepatitis C virus',target:'flavi'},
       {id:'ex-sars',label:'SARS-CoV-2',target:'corona'}, {id:'ex-rabies',label:'Rabies virus',target:'rhabdo'},
       {id:'ex-ebola',label:'Ebola virus',target:'filo'}, {id:'ex-flua',label:'Influenza A virus',target:'orthomyxo'},
-      {id:'ex-measles',label:'Measles virus',target:'paramyxo'}, {id:'ex-rsv',label:'RSV',target:'paramyxo'}, {id:'ex-hantaan',label:'Hantaan virus',target:'bunya'},
+      {id:'ex-measles',label:'Measles virus',target:'paramyxo'}, {id:'ex-rsv',label:'RSV',target:'pneumo'}, {id:'ex-hantaan',label:'Hantaan virus',target:'bunya'},
       {id:'ex-lassa',label:'Lassa virus',target:'arena'}, {id:'ex-rota',label:'Rotavirus',target:'reo'},
       {id:'ex-hiv1',label:'HIV-1',target:'retro'}
     ];
@@ -564,7 +567,7 @@
     const CATEGORY_NAMES = { all:'전체', DNA:'DNA', RNA:'RNA', herpes:'Herpes 8종', hepatitis:'Hepatitis A·B·C·E' };
     const GENOME_LABEL = {
       'DNA':'DNA',
-      '+ssRNA':'+ssRNA', '-ssRNA':'-ssRNA', 'dsRNA':'dsRNA (+/- RNA)', '+ssRNA via DNA':'+RNA → DNA'
+      '+ssRNA':'+ssRNA', '-ssRNA':'-ssRNA', 'dsRNA':'dsRNA', '+ssRNA via DNA':'RNA → DNA'
     };
     const TYPE_NAMES = {
       familyVirus:'FAMILY ↔ VIRUS', oddFamily:'소속 / 비소속', nucleic:'DNA / RNA', envelope:'ENVELOPE',
@@ -707,7 +710,7 @@
       const singleStranded = VIRUSES.filter(v => ['+ssRNA','-ssRNA','+ssRNA via DNA'].includes(v.family.genome));
       const ds = sample(singleStranded, 4).map(v => v.display);
       return packMCQ({ type:'strand', tag:'ssRNA 여부', prompt:'다음 RNA virus 중 <em>ssRNA가 아닌 것</em>은?', correct:target.display, distractors:ds,
-        explanation:`${target.display}는 강의록의 Reoviridae에 속하는 dsRNA (+/- RNA) virus입니다. 나머지는 ssRNA genome을 가집니다.`, factKey:target.key });
+        explanation:`${target.display}는 (Sedo)reo에 속하는 dsRNA virus입니다. 나머지는 ssRNA genome을 가집니다.`, factKey:target.key });
     }
 
     function qFeature() {
@@ -945,7 +948,7 @@
         const tbody = section.querySelector('tbody');
         FAMILIES.filter(f=>f.nucleic===kind).forEach(f => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td><b>${f.name}</b><br><span style="color:var(--muted)">${f.short}</span></td><td><span class="tiny-tag ${kind==='DNA'?'tag-dna':'tag-rna'}">${GENOME_LABEL[f.genome]}</span></td><td>${f.coat}</td><td>${f.examples.map(e=>e[0]).join(' · ')}</td>`;
+          tr.innerHTML = `<td><b>${f.name}</b></td><td><span class="tiny-tag ${kind==='DNA'?'tag-dna':'tag-rna'}">${GENOME_LABEL[f.genome]}</span></td><td>${f.coat}</td><td>${f.examples.map(e=>e[0]).join(' · ')}</td>`;
           tbody.appendChild(tr);
         });
         root.appendChild(section);
@@ -960,7 +963,7 @@
 
     function currentSortItems() {
       if (sortPractice.mode === 'example') return DRAG_EXAMPLES.map(x => ({...x}));
-      return SORT_GROUPS.flatMap(g => g.familyIds.map(fid => {
+      return SORT_GROUPS.filter(g => !g.extra).flatMap(g => g.familyIds.map(fid => {
         const f = FAMILIES.find(x => x.id === fid);
         return {id:`fam-${fid}`, label:f.short, target:g.id};
       }));
@@ -968,7 +971,7 @@
 
     function familyBoardLabel(fid) {
       const f = FAMILIES.find(x => x.id === fid);
-      return `${f.short} / ${f.name}`;
+      return f.name;
     }
 
     function beginSortMode(mode) {
@@ -982,8 +985,8 @@
       $('#familyModeBtn').classList.toggle('active', mode === 'family');
       $('#exampleModeBtn').classList.toggle('active', mode === 'example');
       $('#sortHelp').innerHTML = mode === 'family'
-        ? '<b>Family 약식명 블록:</b> Pox·Herpes·Picorna 같은 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 넣으세요. 칸 안의 순서는 상관없습니다.'
-        : '<b>바이러스 예시 블록:</b> 각 family 아래에 대표 바이러스를 넣으세요. RSV는 강의록 기준으로 Paramyxoviridae에 배치합니다.';
+        ? '<b>Family 블록:</b> Pox·Herpes·Picorna 같은 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 넣으세요. 칸 안의 순서는 상관없습니다.'
+        : '<b>바이러스 예시 블록:</b> 각 family 아래에 대표 바이러스를 넣으세요. RSV는 별도 추가 연결인 Pneumo에 배치합니다.';
       renderSortPractice();
     }
 
