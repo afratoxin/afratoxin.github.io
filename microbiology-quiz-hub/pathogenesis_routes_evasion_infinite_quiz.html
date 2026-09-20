@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>병원체 경로·면역회피 무한회독</title>
+  <style>
+    :root{
+      --ink:#172135;--muted:#697387;--line:#dce4ec;--paper:#fff;--bg:#f3f7f7;
+      --teal:#087f78;--teal2:#dff5f1;--blue:#3157d5;--blue2:#e9edff;
+      --orange:#e67628;--orange2:#fff0e2;--red:#c53f56;--red2:#ffe8ed;
+      --green:#19845d;--green2:#def5e9;--shadow:0 18px 52px rgba(31,52,68,.10);
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;color:var(--ink);font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;background:radial-gradient(circle at 6% 2%,rgba(8,127,120,.10),transparent 27rem),radial-gradient(circle at 96% 8%,rgba(230,118,40,.08),transparent 24rem),var(--bg)}
+    button,input,select{font:inherit}button{color:inherit}
+    .app{width:min(1190px,calc(100% - 30px));margin:auto;padding:26px 0 54px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+    .brand{display:flex;align-items:center;gap:13px}.mark{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;color:#fff;font-weight:950;background:linear-gradient(145deg,var(--teal),#36aa9f);box-shadow:0 10px 26px rgba(8,127,120,.23)}
+    h1{margin:0;font-size:clamp(21px,3vw,29px);letter-spacing:-.045em}.subtitle{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .actions{display:flex;gap:9px}.btn{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#fff;cursor:pointer;font-weight:800;transition:.16s}.btn:hover{transform:translateY(-1px);border-color:#aab8c5}.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}.btn.primary:hover{background:#066c66}.btn.danger{color:var(--red)}.btn.review-active{color:var(--red);background:var(--red-bg);border-color:#e4a0ac}
+    .source-strip{display:flex;align-items:center;gap:9px;margin-bottom:18px;padding:11px 14px;border:1px solid #c9e4df;border-radius:13px;background:rgba(239,250,247,.85);font-size:12px;color:#365c58}.source-strip b{color:var(--teal)}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}.card{background:var(--paper);border:1px solid rgba(208,219,226,.95);border-radius:22px;box-shadow:var(--shadow)}
+    .quiz{overflow:hidden}.progress{height:6px;background:#edf2f2}.progress>div{height:100%;width:10%;background:linear-gradient(90deg,var(--teal),#67c5b9);transition:.25s}.quiz-inner{padding:clamp(23px,4vw,42px);min-height:620px;display:flex;flex-direction:column}
+    .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:22px}.round{font-size:12px;font-weight:900;letter-spacing:.08em;color:var(--muted)}.pill{font-size:11px;font-weight:900;border-radius:999px;padding:6px 10px}.pill.teal{color:#076a64;background:var(--teal2)}.pill.blue{color:#2949bb;background:var(--blue2)}.pill.orange{color:#9b4c12;background:var(--orange2)}
+    .question{margin:0 0 26px;min-height:82px;font-size:clamp(22px,3.1vw,31px);line-height:1.43;letter-spacing:-.035em;word-break:keep-all}.question em{font-style:normal;color:var(--teal)}
+    .options{display:grid;gap:10px}.option{width:100%;min-height:58px;display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:12px;padding:12px 15px;text-align:left;border:1.5px solid var(--line);border-radius:15px;background:#fff;cursor:pointer;transition:.14s}.option:hover:not(:disabled){border-color:#72aaa4;background:#f7fbfa;transform:translateY(-1px)}.option:disabled{cursor:default;opacity:1}.num{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#eff3f5;color:#596679;font-size:13px;font-weight:950}.choice{font-size:15px;line-height:1.4;font-weight:740}.option.correct{background:var(--green2);border-color:#69b99c}.option.correct .num{background:var(--green);color:#fff}.option.wrong{background:var(--red2);border-color:#e18b9a}.option.wrong .num{background:var(--red);color:#fff}.sign{font-weight:950}
+    .typing{display:none}.typing.active{display:block}.typing label{display:block;margin-bottom:8px;color:var(--muted);font-size:13px;font-weight:750}.typing-row{display:grid;grid-template-columns:1fr auto;gap:10px}.typing input{min-height:58px;width:100%;padding:0 16px;border:1.5px solid var(--line);border-radius:14px;background:#fbfcfd;outline:none;font-size:17px;font-weight:750}.typing input:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(8,127,120,.10);background:#fff}.typing input.good{border-color:var(--green);background:var(--green2)}.typing input.bad{border-color:var(--red);background:var(--red2)}
+    .feedback{display:none;margin-top:17px;padding:16px 18px;border:1px solid var(--line);border-radius:15px;line-height:1.55}.feedback.show{display:block;animation:rise .18s ease}.feedback.good{background:var(--green2);border-color:#a4d9c4}.feedback.bad{background:var(--red2);border-color:#ecb3bd}.feedback h3{margin:0 0 4px;font-size:15px}.feedback p{margin:0;font-size:13px;color:#354156}.source{margin-top:6px!important;color:#697387!important;font-size:11px!important}@keyframes rise{from{opacity:0;transform:translateY(5px)}}
+    .quiz-foot{margin-top:auto;padding-top:20px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}.keyhelp{font-size:12px;color:var(--muted);line-height:1.7}kbd{padding:2px 6px;border:1px solid #cbd5de;border-bottom-width:2px;border-radius:6px;background:#fff;font-size:11px}#nextBtn{display:none;min-width:140px}#nextBtn.show{display:block}
+    .side{display:grid;gap:15px;position:sticky;top:18px}.side-card{padding:19px;box-shadow:0 10px 32px rgba(31,52,68,.07)}.side-title{margin:0 0 13px;font-size:13px;letter-spacing:.03em}.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{padding:12px;border-radius:13px;background:#f5f8f8}.stat span{display:block;margin-bottom:2px;color:var(--muted);font-size:11px}.stat strong{font-size:22px}.acc-copy{display:flex;justify-content:space-between;margin:14px 0 6px;color:var(--muted);font-size:12px}.track{height:8px;overflow:hidden;border-radius:99px;background:#e7eeed}.track>div{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--blue));transition:.2s}
+    .label{display:block;margin:0 0 7px;color:var(--muted);font-size:11px;font-weight:850}.select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fff;font-weight:780}.toggle{display:flex;align-items:center;justify-content:space-between;margin-top:14px;font-size:13px;font-weight:750}.switch{position:relative;width:44px;height:26px}.switch input{opacity:0;width:0}.slider{position:absolute;inset:0;border-radius:999px;background:#cdd6dc;cursor:pointer;transition:.2s}.slider:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.17);transition:.2s}.switch input:checked+.slider{background:var(--teal)}.switch input:checked+.slider:before{transform:translateX(18px)}
+    .coverage{display:grid;gap:10px}.cov{display:grid;grid-template-columns:72px 1fr 34px;gap:8px;align-items:center;font-size:12px}.cov .track{height:7px}.cov b{font-size:11px;color:var(--muted);text-align:right}
+    .history{margin-top:20px;overflow:hidden}.history-head{display:flex;align-items:center;justify-content:space-between;padding:19px 21px;border-bottom:1px solid var(--line)}.history-head h2{margin:0;font-size:17px}.history-head span{font-size:12px;color:var(--muted)}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:12px 15px;border-bottom:1px solid #edf1f3;text-align:left;vertical-align:top;font-size:12px}th{background:#fafcfc;color:var(--muted);font-size:11px}.empty{padding:27px;text-align:center;color:var(--muted);font-size:13px}.result{display:inline-grid;width:24px;height:24px;place-items:center;border-radius:50%;font-weight:950}.result.o{color:var(--green);background:var(--green2)}.result.x{color:var(--red);background:var(--red2)}
+    dialog{width:min(1080px,calc(100% - 28px));max-height:88vh;padding:0;border:0;border-radius:22px;box-shadow:0 28px 90px rgba(20,33,45,.32)}dialog::backdrop{background:rgba(20,31,44,.55);backdrop-filter:blur(4px)}.modal-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:18px 21px;background:#fff;border-bottom:1px solid var(--line)}.modal-head h2{margin:0;font-size:19px}.modal-body{padding:18px 21px 30px;background:#fafcfc}.modal-note{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.6}.ref-section{margin:22px 0}.ref-section h3{margin:0 0 9px;font-size:16px}.ref-box{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:#fff}.ref-box table{min-width:760px}.ref-box td:nth-child(1){width:22%;font-weight:800}.ref-box td:nth-child(2){width:38%}.axis-tag{display:inline-block;padding:3px 7px;border-radius:99px;font-size:10px;font-weight:900}.axis-entry{color:#2760b5;background:#e7efff}.axis-transmission{color:#9c4e14;background:#fff0e2}.axis-evasion{color:#087067;background:#def5f1}
+    .toast{position:fixed;left:50%;bottom:24px;z-index:20;transform:translate(-50%,18px);opacity:0;pointer-events:none;padding:10px 14px;border-radius:11px;background:#202c3d;color:#fff;font-size:13px;font-weight:750;box-shadow:0 9px 28px rgba(0,0,0,.22);transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:870px){.layout{grid-template-columns:1fr}.side{position:static;grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.app{width:calc(100% - 18px);padding-top:14px}.topbar{align-items:flex-start}.subtitle{display:none}.actions .btn:first-child{display:none}.source-strip{align-items:flex-start;line-height:1.55}.quiz-inner{padding:22px 16px;min-height:620px}.question{font-size:22px}.side{grid-template-columns:1fr}.typing-row{grid-template-columns:1fr}.quiz-foot{align-items:flex-end}.keyhelp{max-width:160px}#historyTable th:nth-child(2),#historyTable td:nth-child(2){display:none}}
+  </style>
+</head>
+<body>
+<a href="index.html" aria-label="퀴즈 허브로 돌아가기" style="position:fixed;z-index:1000;left:14px;bottom:14px;padding:10px 13px;border:1px solid rgba(255,255,255,.72);border-radius:999px;color:#fff;background:rgba(24,48,61,.92);box-shadow:0 7px 22px rgba(0,0,0,.18);font:800 12px/1 Pretendard,'Apple SD Gothic Neo',sans-serif;text-decoration:none;backdrop-filter:blur(8px)">← 전체 퀴즈</a>
+<main class="app">
+  <header class="topbar">
+    <div class="brand"><div class="mark">P</div><div><h1>병원체 경로·면역회피 무한회독</h1><p class="subtitle">Entry · Transmission · Host-defense evasion</p></div></div>
+    <div class="actions"><button class="btn" id="historyBtn">기록 보기</button><button class="btn" id="reviewBtn">오답만 풀기 (0)</button><button class="btn" id="referenceBtn">학습표 열기</button></div>
+  </header>
+  <div class="source-strip"><b>자료 범위 고정</b><span>「미생물의 병인론 1: 전파 및 침입경로」와 「미생물의 병인론 2: 세균」에 직접 제시된 연결만 출제합니다.</span></div>
+
+  <section class="layout">
+    <article class="card quiz">
+      <div class="progress"><div id="progressBar"></div></div>
+      <div class="quiz-inner">
+        <div class="meta"><span class="round" id="roundLabel">ROUND 001</span><span class="pill teal" id="typeBadge">경로 → 병원체</span><span class="pill blue" id="axisBadge">전체</span></div>
+        <h2 class="question" id="question">문항을 준비하고 있습니다.</h2>
+        <div class="options" id="options"></div>
+        <div class="typing" id="typingWrap"><label for="typingInput">학명 또는 자료에 나온 이름을 입력하세요. 속명 약어도 인정합니다.</label><div class="typing-row"><input id="typingInput" autocomplete="off" spellcheck="false" placeholder="예: S. aureus"><button class="btn primary" id="submitBtn">채점</button></div></div>
+        <div class="feedback" id="feedback"><h3 id="feedbackTitle"></h3><p id="feedbackText"></p><p class="source" id="feedbackSource"></p></div>
+        <div class="quiz-foot"><div class="keyhelp"><kbd>1</kbd>–<kbd>5</kbd> 선택 · <kbd>Enter</kbd> 채점/다음</div><button class="btn primary" id="nextBtn">다음 문항 →</button></div>
+      </div>
+    </article>
+
+    <aside class="side">
+      <section class="card side-card"><h2 class="side-title">현재 세션</h2><div class="stats"><div class="stat"><span>정답</span><strong id="correctStat">0</strong></div><div class="stat"><span>연속 정답</span><strong id="streakStat">0</strong></div><div class="stat"><span>최고 연속</span><strong id="bestStat">0</strong></div><div class="stat"><span>풀이</span><strong id="totalStat">0</strong></div></div><div class="acc-copy"><span>정답률</span><b id="accText">0%</b></div><div class="track"><div id="accFill"></div></div></section>
+      <section class="card side-card"><h2 class="side-title">출제 설정</h2><label class="label" for="scope">범위</label><select class="select" id="scope"><option value="all">전체 섞기</option><option value="entry">1. Entry</option><option value="transmission">2. Transmission</option><option value="evasion">3. Host-defense evasion</option></select><div class="toggle"><span>오답 연결 우선</span><label class="switch"><input id="adaptive" type="checkbox" checked><span class="slider"></span></label></div><div class="toggle"><span>직접 입력 포함</span><label class="switch"><input id="typingToggle" type="checkbox" checked><span class="slider"></span></label></div></section>
+      <section class="card side-card"><h2 class="side-title">누적 숙련도</h2><div class="coverage" id="coverage"></div><button class="btn danger" id="resetBtn" style="width:100%;margin-top:16px">학습 기록 초기화</button></section>
+      <section class="card side-card"><h2 class="side-title">수록 범위</h2><div style="font-size:12px;color:var(--muted);line-height:1.75"><b id="factCount" style="color:var(--ink)"></b>개의 연결 묶음<br><b id="pathogenCount" style="color:var(--ink)"></b>개의 병원체·질환 예시<br>강의자료의 바이러스·진균·기생충 예시 포함</div></section>
+    </aside>
+  </section>
+
+  <section class="card history" id="historyCard"><div class="history-head"><h2>이번 세션의 정답·오답</h2><span>최근 30문항</span></div><div class="table-wrap"><div class="empty" id="historyEmpty">아직 푼 문항이 없습니다.</div><table id="historyTable" hidden><thead><tr><th>회차</th><th>범위</th><th>문항</th><th>내 답 → 정답</th><th>결과</th></tr></thead><tbody id="historyBody"></tbody></table></div></section>
+</main>
+
+<dialog id="referenceDialog"><div class="modal-head"><h2>완전 학습표</h2><button class="btn" id="closeReference">문제로 돌아가기</button></div><div class="modal-body"><p class="modal-note">두 강의자료에서 병원체와 직접 연결된 내용을 빠짐없이 정리했습니다. 표를 닫으면 보던 문제와 학습 기록이 그대로 유지됩니다.</p><div id="referenceContent"></div></div></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+  const AXIS = {entry:'Entry',transmission:'Transmission',evasion:'Host-defense evasion'};
+  const AXIS_KO = {entry:'침입 경로·전략',transmission:'전파 경로',evasion:'숙주 방어 회피'};
+  const fact = (id,axis,category,organisms,note,source) => ({id,axis,category,organisms,note,source});
+  const FACTS = [
+    // 1. ENTRY — 병인론 II의 Table 14.1 및 병인론 I의 세부 entry 슬라이드
+    fact('e_ingestion','entry','섭취 (ingestion)', ['Salmonella spp.','Shigella spp.','Yersinia enterocolitica','Enterotoxigenic Escherichia coli','Vibrio spp.','Campylobacter spp.','Clostridium botulinum','Bacillus cereus','Listeria spp.','Brucella spp.'], 'Bacterial Port of Entry 표의 섭취 경로 예시.', '병인론 II · Bacterial Entry into the Body'),
+    fact('e_inhalation','entry','흡입 (inhalation)', ['Mycobacterium spp.','Nocardia spp.','Mycoplasma pneumoniae','Legionella spp.','Bordetella spp.','Chlamydophila psittaci','Chlamydophila pneumoniae','Streptococcus spp.'], 'Bacterial Port of Entry 표의 흡입 경로 예시.', '병인론 II · Bacterial Entry into the Body'),
+    fact('e_trauma','entry','외상 (trauma)', ['Clostridium tetani','Staphylococcus aureus'], '외상을 통한 세균 침입.', '병인론 II · Bacterial Entry into the Body'),
+    fact('e_needlestick','entry','주사침 (needlestick)', ['Staphylococcus aureus','Pseudomonas spp.'], '주사침을 통한 침입 예시.', '병인론 II · Bacterial Entry into the Body'),
+    fact('e_arthropod','entry','절지동물 교상 (arthropod bite)', ['Rickettsia spp.','Ehrlichia spp.','Coxiella spp.','Francisella spp.','Borrelia spp.','Yersinia pestis'], '절지동물 교상을 통한 침입 예시.', '병인론 II · Bacterial Entry into the Body'),
+    fact('e_sexual','entry','성적 접촉 (sexual transmission)', ['Neisseria gonorrhoeae','Chlamydia trachomatis','Treponema pallidum'], '점막의 성적 접촉을 통한 entry.', '병인론 II · Bacterial Entry into the Body'),
+    fact('e_skin_damage','entry','상처·찰과상·화상을 통한 피부 침입', ['Streptococcus spp.','Leptospira spp.','Hepatitis B virus'], '손상된 피부는 흔한 감염 부위가 된다.', '병인론 I · Site of entry - Skin'),
+    fact('e_intact_skin','entry','손상되지 않은 피부 통과', ['Leptospira spp.'], '손상되지 않은 피부를 통과하는 소수의 예.', '병인론 I · Site of entry - Skin'),
+    fact('e_animal_bite','entry','피부 상처 또는 동물 교상', ['Clostridium spp.','Rabies virus','Pasteurella multocida'], 'Skin wounds or animal bites의 예시.', '병인론 I · Entry in four ways'),
+    fact('e_cilia','entry','호흡기 섬모 활동 방해', ['Bordetella pertussis','Haemophilus influenzae','Pseudomonas aeruginosa','Mycoplasma pneumoniae','Influenza virus','Measles virus'], '세균은 ciliostatic substance를 만들고, influenza와 measles는 섬모세포 기능장애·파괴를 유발한다.', '병인론 I · Interference with ciliary activity'),
+    fact('e_alveolar','entry','폐포 대식세포의 파괴 회피', ['Mycobacterium tuberculosis'], '호흡기 침입 과정에서 alveolar macrophage에 의한 파괴를 피한다.', '병인론 I · Site of entry - Respiratory tract'),
+    fact('e_colon','entry','장상피 수용체 결합 — colon', ['Shigella spp.'], '수용체 위치에 따라 감염 부위가 달라진다.', '병인론 I · Site of entry - Gastrointestinal tract'),
+    fact('e_small_intestine','entry','장상피 수용체 결합 — small intestine', ['Salmonella spp.','Rotavirus'], '수용체 위치에 따라 감염 부위가 달라진다.', '병인론 I · Site of entry - Gastrointestinal tract'),
+    fact('e_mcell','entry','M cell을 통한 장관 진입', ['Shigella spp.','Salmonella spp.'], '항원을 획득하는 M cell의 성질을 병원체가 이용한다.', '병인론 I · Site of entry - Gastrointestinal tract'),
+    fact('e_gi_attach','entry','장상피에 대한 특이적 부착', ['Poliovirus','Rotavirus','Vibrio cholerae'], '장 내용물과 함께 배출되는 것을 피하고 감염을 확립한다.', '병인론 I · Microbial properties aiding GI success'),
+    fact('e_gi_motility','entry','장관 점액을 통과하는 운동성', ['Vibrio cholerae','Certain Escherichia coli strains'], '점액을 통과해 감수성 세포에 도달하도록 돕는다.', '병인론 I · Microbial properties aiding GI success'),
+    fact('e_mucinase','entry','Mucinase 생성', ['Vibrio cholerae'], 'Neuraminidase가 점액 통과를 도울 수 있다.', '병인론 I · Microbial properties aiding GI success'),
+    fact('e_acid','entry','위산에 대한 저항 또는 보호 필요', ['Mycobacterium tuberculosis','Helicobacter pylori','Hepatitis A virus','Poliovirus','Coxsackievirus','Echovirus'], 'M. tuberculosis는 음식물 등에 의한 보호가 필요하고, H. pylori와 enterovirus는 산성 환경을 견딘다.', '병인론 I · Microbial properties aiding GI success'),
+    fact('e_bile','entry','담즙 저항성', ['Salmonella spp.','Shigella spp.','Enteroviruses','Enterococcus faecalis','Escherichia coli','Proteus spp.','Pseudomonas spp.'], '장 병원체 또는 장관 정착균의 bile resistance.', '병인론 I · Microbial properties aiding GI success'),
+    fact('e_protease','entry','단백질분해효소 저항성', ['Reoviruses in mice'], '단백질분해효소 저항성이 경구감염을 허용한다.', '병인론 I · Microbial properties aiding GI success'),
+    fact('e_anaerobe','entry','대장의 혐기성 환경에서 성장', ['Bacteroides fragilis'], '대장의 혐기성 환경에 적응한 대표 예.', '병인론 I · Microbial properties aiding GI success'),
+
+    // 2. TRANSMISSION
+    fact('t_highvir_lowspread','transmission','병원성은 높지만 사람 간 전파가 드물거나 비효율적', ['Ebola virus','Legionella pneumophila'], '높은 병원성만으로는 숙주 집단에 큰 영향을 주지 못할 수 있다.', '병인론 I · Exit of microorganisms'),
+    fact('t_low_dose','transmission','낮은 감염 최소량 (~10¹)', ['Shigella dysenteriae'], '전파 효율을 좌우하는 infective dose의 예.', '병인론 I · Transmission factors'),
+    fact('t_high_dose','transmission','높은 감염 최소량 (~10⁶)', ['Salmonella spp.'], '전파 효율을 좌우하는 infective dose의 예.', '병인론 I · Transmission factors'),
+    fact('t_resp','transmission','호흡기 전파', ['Influenza virus','Bordetella pertussis'], '상피 부착과 섬모 방해가 전파에도 중요하다.', '병인론 I · Types of infection and transmission'),
+    fact('t_gi_hygiene','transmission','불량한 위생 상태에서의 장관 전파', ['Vibrio cholerae','Salmonella Typhi'], 'Cholera와 typhoid가 대표 예로 제시되었다.', '병인론 I · Transmission from the gastrointestinal tract'),
+    fact('t_intestinal_adhesion','transmission','장관 — 상피 부착로 mucus·연동운동 회피', ['Rotavirus','Salmonella spp.'], '장관 전파에 필수적인 회피기전의 예.', '병인론 I · Types of infection and transmission'),
+    fact('t_intestinal_acid','transmission','장관 — 산·담즙 저항', ['Poliovirus'], '장관 감염과 전파에 필수적인 회피기전의 예.', '병인론 I · Types of infection and transmission'),
+    fact('t_sexual','transmission','생식기 점막 접촉·성적 전파', ['Neisseria gonorrhoeae','Chlamydia trachomatis'], '요도·질 상피 부착이 생식기 전파에 중요하다.', '병인론 I · Transmission from the urogenital tract'),
+    fact('t_urine_no','transmission','UTI를 일으키지만 소변 자체는 일반적 전파경로가 아님', ['Escherichia coli'], '요로 부착은 감염에는 중요하지만 전파에는 도움이 되지 않는다.', '병인론 I · Transmission from the urogenital tract'),
+    fact('t_urine_yes','transmission','소변이 전파에 관여할 수 있음', ['Schistosomiasis','Lassa fever'], '일반적 UTI와 달리 소변 전파가 가능한 특정 질환.', '병인론 I · Transmission from the urogenital tract'),
+    fact('t_urine_polyoma','transmission','세뇨관 상피에서 소변으로 도달해 전파', ['Polyomavirus'], '요로에서의 회피기전이 전파에 가치가 있는 예.', '병인론 I · Types of infection and transmission'),
+    fact('t_saliva_child','transmission','타액 — 주로 소아기 감염', ['Herpes simplex virus','Paramyxovirus'], '구강인두 감염은 흔히 타액으로 전파된다.', '병인론 I · Transmission from the oropharynx'),
+    fact('t_saliva_adult','transmission','타액 — 청소년·성인 감염이 흔함', ['Cytomegalovirus','Epstein-Barr virus'], '구강인두 감염은 흔히 타액으로 전파된다.', '병인론 I · Transmission from the oropharynx'),
+    fact('t_animal_saliva','transmission','동물 타액·교상·찰과상', ['Rabies virus','Pasteurella multocida','Streptobacillus moniliformis'], '개·고양이·쥐 등의 타액과 물림/할큄을 통한 전파.', '병인론 I · Transmission from the oropharynx'),
+    fact('t_skin_direct','transmission','피부 shedding 또는 직접 접촉', ['Dermatophytes','Herpes simplex virus','Varicella-zoster virus','Papillomaviruses'], '피부 백선, 구순포진, 수두·대상포진, 사마귀의 예.', '병인론 I · Transmission from the skin'),
+    fact('t_skin_below','transmission','피부·점막 아래에서 침범해 표면 병변으로 전파', ['Varicella virus','Measles virus'], '지속적으로 탈락하는 점막세포층을 우회한다.', '병인론 I · Types of infection and transmission'),
+    fact('t_basal','transmission','기저 표피층 감염', ['Papillomaviruses'], '각질층 아래의 basal epidermal layer를 감염한다.', '병인론 I · Types of infection and transmission'),
+    fact('t_abrasion','transmission','작은 찰과상을 통한 피부 감염·전파', ['Staphylococcus spp.','Streptococcus spp.'], 'Minor abrasion을 통해 감염한다.', '병인론 I · Types of infection and transmission'),
+    fact('t_intact_skin','transmission','온전한 피부 관통', ['Schistosomiasis','Ancylostomiasis','Leptospirosis'], 'Intact skin을 직접 통과하는 예.', '병인론 I · Types of infection and transmission'),
+    fact('t_vector_blood','transmission','흡혈성 vector를 통한 혈관계 전파', ['Malaria','Yellow fever'], 'Vector가 물어 혈액세포 또는 혈관내피세포에서 증식하는 예.', '병인론 I · Types of infection and transmission'),
+    fact('t_human_milk','transmission','사람 모유', ['Cytomegalovirus','Human immunodeficiency virus','Human T-cell leukemia virus 1'], '사람 모유로 병원체가 배출되는 드문 예외.', '병인론 I · Transmission in milk'),
+    fact('t_animal_milk','transmission','소·염소·양의 우유', ['Brucella spp.','Mycobacterium bovis','Campylobacter jejuni'], '동물의 우유는 중요한 감염원이 될 수 있어 pasteurization이 필요하다.', '병인론 I · Transmission in milk'),
+    fact('t_blood_needle','transmission','혈액·오염 주사기·정맥주사 약물', ['Hepatitis B virus','Hepatitis C virus','Human immunodeficiency virus'], '혈액과 바늘을 통한 전파의 대표 예.', '병인론 I · Transmission from blood'),
+    fact('t_prenatal','transmission','수직전파 — prenatal·태반', ['Rubella virus','Cytomegalovirus','Syphilis','Toxoplasmosis'], '임신 중 placenta를 통한 전파.', '병인론 I · Vertical transmission'),
+    fact('t_perinatal','transmission','수직전파 — perinatal·감염된 산도', ['Neisseria gonorrhoeae','Chlamydia trachomatis','Hepatitis B virus'], '출산 중 감염된 birth canal을 통한 전파.', '병인론 I · Vertical transmission'),
+    fact('t_postnatal','transmission','수직전파 — postnatal·모유/직접 접촉', ['Cytomegalovirus','Hepatitis B virus','Human immunodeficiency virus','Human T-cell leukemia virus 1'], '출산 후 모유 또는 직접 접촉을 통한 전파.', '병인론 I · Vertical transmission'),
+    fact('t_germline','transmission','수직전파 — germline', ['Ancient retroviruses'], '사람 유전체 안의 viral DNA sequence로 전파되는 예.', '병인론 I · Vertical transmission'),
+    fact('t_zoonosis_job','transmission','직업성 척추동물 인수공통전파', ['Q fever','Toxoplasmosis','Brucellosis','Dermatophyte fungi'], '도축업 종사자와 농장 노동자에서 제시된 예.', '병인론 I · Transmission from vertebrates'),
+
+    // 3. HOST-DEFENSE EVASION
+    fact('h_capsule','evasion','Capsule·slime layer로 면역·식세포작용 회피', ['Staphylococcus aureus','Streptococcus pneumoniae','Streptococcus pyogenes','Streptococcus agalactiae','Bacillus anthracis','Bacillus subtilis','Neisseria gonorrhoeae','Neisseria meningitidis','Haemophilus influenzae','Escherichia coli','Klebsiella pneumoniae','Salmonella spp.','Yersinia pestis','Campylobacter fetus','Pseudomonas aeruginosa','Bacteroides fragilis','Cryptococcus neoformans'], 'Capsule은 약한 항원성을 보이며 식세포·보체·항체의 접근을 막는다.', '병인론 II · Escaping Host Defense - The capsule'),
+    fact('h_biofilm','evasion','Biofilm로 항체·보체·식세포·항균제 접근 차단', ['Pseudomonas aeruginosa'], 'Quorum sensing으로 충분한 균 수를 감지하면 biofilm을 만든다.', '병인론 II · Biofilm / Quorum sensing'),
+    fact('h_hyaluronic','evasion','Hyaluronic acid capsule에 의한 antigenic mimicry', ['Streptococcus pyogenes'], '사람 결합조직을 모방하는 poor immunogen capsule.', '병인론 II · Escaping Host Defense - The capsule'),
+    fact('h_antigenic_variation','evasion','Pili·Opa 표면항원 변화 (antigenic variation)', ['Neisseria gonorrhoeae'], '기존 항체의 인식을 피하도록 표면항원을 바꾼다.', '병인론 II · Antigenic variation'),
+    fact('h_opsonization','evasion','Protein A가 IgG Fc에 결합해 opsonization 억제', ['Staphylococcus aureus'], 'IgG를 비정상 방향으로 고정해 항체 작용을 막는다.', '병인론 II · Antibody/complement interference'),
+    fact('h_iga','evasion','IgA protease로 secretory IgA 분해', ['Neisseria gonorrhoeae'], '점막의 분비형 IgA를 분해한다.', '병인론 II · Antibody/complement interference'),
+    fact('h_c5a','evasion','C5a peptidase로 chemotaxis 억제', ['Streptococcus pyogenes'], 'C5a를 분해해 식세포 유인을 방해한다.', '병인론 II · Phagocyte evasion'),
+    fact('h_capsule_phago','evasion','Capsule로 phagocytosis 억제', ['Streptococcus pneumoniae'], 'Capsule이 식세포의 포식을 막는다.', '병인론 II · Phagocyte evasion'),
+    fact('h_mprotein','evasion','M protein으로 phagocytic uptake 감소', ['Streptococcus pyogenes'], 'M protein이 식세포 섭취를 줄인다.', '병인론 II · Phagocyte evasion'),
+    fact('h_cytolysin','evasion','Cytolysin으로 phagocyte 손상·사멸', ['Streptococcus pyogenes','Clostridium perfringens','Staphylococcus aureus'], 'Streptolysin, α-toxin, leukocidin 등이 식세포를 손상한다.', '병인론 II · Phagocyte evasion'),
+    fact('h_intracellular_general','evasion','Intracellular pathogen으로 성장·은폐', ['Mycobacterium spp.','Brucella spp.','Francisella spp.','Rickettsia spp.','Chlamydia spp.','Listeria monocytogenes','Salmonella Typhi','Shigella dysenteriae','Yersinia pestis','Legionella pneumophila'], '세포 내부에서 면역반응을 피하고 만성감염·전신확산에 이용한다.', '병인론 II · Examples of Intracellular Pathogens'),
+    fact('h_fusion_block','evasion','Phagosome–lysosome fusion 억제', ['Mycobacterium spp.','Mycobacterium tuberculosis','Legionella spp.','Chlamydia spp.'], 'Phagolysosome 형성 자체를 차단한다. 앞 슬라이드의 구체적 예시는 M. tuberculosis이다.', '병인론 II · Intracellular survival strategies'),
+    fact('h_lysosome_resist','evasion','Fusion 뒤 lysosomal enzyme에 저항하며 생존', ['Coxiella spp.','Ehrlichia spp.','Mycobacterium leprae','Salmonella spp.','Staphylococcus aureus'], '융합된 compartment 내부의 항균작용을 견딘다.', '병인론 II · Intracellular survival strategies'),
+    fact('h_cytoplasm','evasion','Vacuole을 용해하고 cytoplasm에서 증식', ['Listeria spp.','Shigella spp.','Rickettsia spp.'], 'Vacuole에서 탈출해 세포질에서 생존·증식한다.', '병인론 II · Intracellular survival strategies'),
+    fact('h_ifng','evasion','Interferon-γ에 의한 macrophage activation 차단', ['Mycobacterium spp.'], 'IFN-γ에 의한 활성화를 차단한다.', '병인론 II · Intracellular growth'),
+    fact('h_sa_complement','evasion','Adhesin이 complement factor에 결합해 activation cascade 억제', ['Staphylococcus aureus'], '세포표면 adhesin의 면역회피 기능.', '병인론 II · S. aureus virulence factors'),
+    fact('h_sa_autolysin','evasion','Autolysin으로 nonprofessional phagocyte 침입 촉진', ['Staphylococcus aureus'], '면역원성이 강한 cell-wall transglycosylase가 침입을 돕는다.', '병인론 II · S. aureus virulence factors'),
+    fact('h_sa_superantigen','evasion','Superantigen으로 T cell 활성·cytokine 방출 유도', ['Staphylococcus aureus'], '면역반응을 교란하는 immunostimulatory exotoxin.', '병인론 II · S. aureus virulence factors'),
+    fact('h_sa_protease','evasion','Protease로 IgG 절단·effector function 불활성화', ['Staphylococcus aureus'], '표면 결합형 또는 분비형 protease가 숙주 면역인자를 표적한다.', '병인론 II · S. aureus virulence factors'),
+    fact('h_sa_leukocidin','evasion','Leukocidin으로 숙주 면역세포 선택적 사멸', ['Staphylococcus aureus'], '분비성 toxin·peptide가 면역세포를 표적한다.', '병인론 II · S. aureus virulence factors'),
+    fact('h_ng_sialylation','evasion','LPS sialylation으로 antigen mimicry', ['Neisseria gonorrhoeae'], 'LPS를 sialylation해 숙주 항원을 모방한다.', '병인론 II · N. gonorrhoeae immune evasion'),
+    fact('h_ng_surface','evasion','시간에 따른 surface antigen 변화', ['Neisseria gonorrhoeae'], '항체가 표면항원을 지속적으로 인식하지 못하게 한다.', '병인론 II · N. gonorrhoeae immune evasion'),
+    fact('h_ng_bleb','evasion','Decoy membrane bleb 생성', ['Neisseria gonorrhoeae'], '항체를 유인하는 막성 미끼를 방출한다.', '병인론 II · N. gonorrhoeae immune evasion'),
+    fact('h_ng_pilin','evasion','Pilin variant 생성', ['Neisseria gonorrhoeae'], 'Pilin 유전자 재조합으로 외부 V·G region을 계속 바꾼다.', '병인론 II · N. gonorrhoeae immune evasion')
+  ];
+
+  const EXPLICIT_ALIASES = {
+    'Staphylococcus aureus':['S. aureus'], 'Streptococcus pneumoniae':['S. pneumoniae'],
+    'Streptococcus pyogenes':['S. pyogenes'], 'Streptococcus agalactiae':['S. agalactiae'],
+    'Escherichia coli':['E. coli'], 'Enterotoxigenic Escherichia coli':['ETEC','Enterotoxigenic E. coli'],
+    'Mycobacterium tuberculosis':['M. tuberculosis','M. tb'], 'Mycobacterium leprae':['M. leprae'],
+    'Mycobacterium bovis':['M. bovis'], 'Mycoplasma pneumoniae':['M. pneumoniae'],
+    'Klebsiella pneumoniae':['K. pneumoniae'], 'Legionella pneumophila':['L. pneumophila'],
+    'Listeria monocytogenes':['L. monocytogenes'], 'Pasteurella multocida':['P. multocida'],
+    'Bacteroides fragilis':['B. fragilis'], 'Clostridium perfringens':['C. perfringens'],
+    'Clostridium tetani':['C. tetani'], 'Campylobacter jejuni':['C. jejuni'],
+    'Campylobacter fetus':['C. fetus'], 'Yersinia pestis':['Y. pestis'],
+    'Neisseria gonorrhoeae':['N. gonorrhoeae','Gonococcus'], 'Neisseria meningitidis':['N. meningitidis'],
+    'Chlamydia trachomatis':['C. trachomatis'], 'Treponema pallidum':['T. pallidum'],
+    'Vibrio cholerae':['V. cholerae'], 'Enterococcus faecalis':['E. faecalis'],
+    'Bacillus anthracis':['B. anthracis'], 'Bacillus subtilis':['B. subtilis'],
+    'Haemophilus influenzae':['H. influenzae'], 'Pseudomonas aeruginosa':['P. aeruginosa'],
+    'Bordetella pertussis':['B. pertussis','Pertussis'], 'Hepatitis B virus':['HBV'],
+    'Hepatitis C virus':['HCV'], 'Human immunodeficiency virus':['HIV'],
+    'Human T-cell leukemia virus 1':['HTLV-1'], 'Cytomegalovirus':['CMV'],
+    'Epstein-Barr virus':['EBV'], 'Varicella-zoster virus':['VZV'], 'Herpes simplex virus':['HSV']
+  };
+
+  const $ = s => document.querySelector(s);
+  const saved = JSON.parse(localStorage.getItem('pathogenesisQuizV1') || '{}');
+  const state = {round:1,answered:false,current:null,correct:0,total:0,streak:0,best:saved.best||0,weak:saved.weak||{},mastery:saved.mastery||{},mistakes:saved.mistakes||[],reviewOnly:false,history:[],scope:saved.scope||'all',recent:[]};
+  const TYPE_LABEL = {catOrg:'경로·기전 → 병원체',orgCat:'병원체 → 경로·기전',odd:'속하지 않는 것',pair:'연결 판단',typing:'직접 입력'};
+  function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+  function pick(a){return a[Math.floor(Math.random()*a.length)]}
+  function sample(a,n){return shuffle(a).slice(0,n)}
+  function norm(s){return String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9가-힣]/g,'')}
+  function activeFacts(){return state.scope==='all'?FACTS:FACTS.filter(f=>f.axis===state.scope)}
+  function pathogens(facts=activeFacts()){return [...new Set(facts.flatMap(f=>f.organisms))]}
+  function similarSample(candidates,target,n){return sample([...candidates].sort((a,b)=>Math.abs(a.length-target.length)-Math.abs(b.length-target.length)).slice(0,Math.max(n*3,n)),n)}
+  function weightedFact(facts){const weighted=[];for(const f of facts){const copies=1+($('#adaptive').checked?Math.min(5,state.weak[f.id]||0)*2:0);for(let i=0;i<copies;i++)weighted.push(f)}return pick(weighted)}
+  function categoriesFor(axis,organism){return FACTS.filter(f=>f.axis===axis&&f.organisms.includes(organism)).map(f=>f.category)}
+  function sourceFor(f){return `${f.source}`}
+  function packMCQ(type,tag,prompt,correct,distractors,f,explanation){const choices=shuffle([correct,...distractors.slice(0,4)]);return{mode:'mcq',type,tag,prompt,choices,answerIndex:choices.indexOf(correct),answerText:correct,fact:f,explanation,source:sourceFor(f)}}
+  function aliasesFor(name){
+    const out=[name,...(EXPLICIT_ALIASES[name]||[])];
+    const base=name.replace(/\([^)]*\)/g,'').trim();out.push(base);
+    const inner=[...name.matchAll(/\(([^)]*)\)/g)].flatMap(m=>m[1].split(/[,/]/));out.push(...inner);
+    const words=base.replace(/\bspp\.?/ig,'').trim().split(/\s+/);if(words.length>=2)out.push(`${words[0][0]}. ${words[1]}`);
+    return [...new Set(out.filter(Boolean))];
+  }
+  function typingMatch(input,names){const n=norm(input);return names.some(name=>aliasesFor(name).some(a=>norm(a)===n))}
+
+  function qCatOrg(){const f=weightedFact(activeFacts());const correct=pick(f.organisms);const outsiders=pathogens().filter(x=>!f.organisms.includes(x));return packMCQ('catOrg','분류 → 병원체',`다음 중 자료에서 <em>${f.category}</em>와 연결된 병원체는?`,correct,similarSample(outsiders,correct,4),f,`${correct} — ${f.category}. ${f.note}`)}
+  function qOrgCat(){
+    const f=weightedFact(activeFacts());const organism=pick(f.organisms);const valid=categoriesFor(f.axis,organism);const pool=FACTS.filter(x=>x.axis===f.axis&&!valid.includes(x.category)).map(x=>x.category);const ds=similarSample([...new Set(pool)],f.category,4);
+    return packMCQ('orgCat','병원체 → 분류',`자료에서 <em>${organism}</em>와 직접 연결된 경로·기전은?`,f.category,ds,f,`${organism} — ${f.category}. ${f.note}`)
+  }
+  function qOdd(){const eligible=activeFacts().filter(f=>f.organisms.length>=4);const f=weightedFact(eligible);const outsider=pick(pathogens().filter(x=>!f.organisms.includes(x)));return packMCQ('odd','속하지 않는 것',`다음 중 <em>${f.category}</em>에 속하지 않는 것은?`,outsider,sample(f.organisms,4),f,`${outsider}는 이 묶음에 포함되지 않습니다. ${f.note}`)}
+  function makeWrongPair(facts){const f=pick(facts), outsider=pick(pathogens(facts).filter(x=>!f.organisms.includes(x)));return {text:`${f.category} — ${outsider}`,f,outsider}}
+  function qPair(){
+    const facts=activeFacts();
+    if(Math.random()<.5){const f=weightedFact(facts),org=pick(f.organisms),correct=`${f.category} — ${org}`;const wrong=[];while(wrong.length<4){const p=makeWrongPair(facts);if(!wrong.includes(p.text)&&p.text!==correct)wrong.push(p.text)}return packMCQ('pair','옳은 연결','다음 경로·기전–병원체 연결 중 <em>옳은 것</em>은?',correct,wrong,f,`${org}는 자료에서 ${f.category}와 연결됩니다. ${f.note}`)}
+    const correctPairs=[];for(const f of sample(facts,Math.min(8,facts.length))){const text=`${f.category} — ${pick(f.organisms)}`;if(!correctPairs.includes(text))correctPairs.push(text);if(correctPairs.length===4)break}while(correctPairs.length<4){const f=pick(facts),text=`${f.category} — ${pick(f.organisms)}`;if(!correctPairs.includes(text))correctPairs.push(text)}const bad=makeWrongPair(facts);return packMCQ('pair','옳지 않은 연결','다음 경로·기전–병원체 연결 중 <em>옳지 않은 것</em>은?',bad.text,correctPairs,bad.f,`${bad.outsider}는 자료에서 ${bad.f.category}에 포함되지 않습니다.`)
+  }
+  function qTyping(){const f=weightedFact(activeFacts());return{mode:'typing',type:'typing',tag:'이름 기입',prompt:`자료에서 <em>${f.category}</em>와 연결된 병원체를 하나 입력하세요.`,answerText:f.organisms.join(' / '),accepted:f.organisms,fact:f,explanation:f.note,source:sourceFor(f)}}
+  function buildQuestion(){if(state.reviewOnly){if(state.mistakes.length)return JSON.parse(JSON.stringify(pick(state.mistakes)));state.reviewOnly=false;updateReviewButton();toast('저장된 오답을 모두 해결했습니다. 전체 문제로 돌아갑니다.')}let gens=[qCatOrg,qCatOrg,qOrgCat,qOrgCat,qOdd,qPair,qTyping];if(!$('#typingToggle').checked)gens=gens.filter(g=>g!==qTyping);let q,guard=0;do{q=pick(gens)();guard++}while(state.recent.includes(`${q.type}|${q.prompt}`)&&guard<15);state.recent.push(`${q.type}|${q.prompt}`);if(state.recent.length>9)state.recent.shift();return q}
+
+  function renderQuestion(){state.answered=false;state.current=buildQuestion();const q=state.current;$('#roundLabel').textContent=`ROUND ${String(state.round).padStart(3,'0')}`;$('#typeBadge').textContent=TYPE_LABEL[q.type];$('#axisBadge').textContent=state.reviewOnly?'오답 복습':(state.scope==='all'?'전체':AXIS[state.scope]);$('#axisBadge').className=`pill ${q.fact.axis==='entry'?'blue':q.fact.axis==='transmission'?'orange':'teal'}`;$('#question').innerHTML=q.prompt;$('#options').innerHTML='';$('#typingWrap').classList.toggle('active',q.mode==='typing');$('#typingInput').value='';$('#typingInput').disabled=false;$('#typingInput').className='';$('#submitBtn').disabled=false;$('#feedback').className='feedback';$('#nextBtn').classList.remove('show');$('#progressBar').style.width=`${8+((state.round-1)%10)*10.2}%`;
+    if(q.mode==='mcq')q.choices.forEach((c,i)=>{const b=document.createElement('button');b.className='option';b.innerHTML=`<span class="num">${i+1}</span><span class="choice"></span><span class="sign"></span>`;b.querySelector('.choice').textContent=c;b.onclick=()=>answerMCQ(i);$('#options').appendChild(b)});else setTimeout(()=>$('#typingInput').focus(),80);updateStats()}
+  function answerMCQ(i){if(state.answered||state.current.mode!=='mcq')return;const q=state.current,ok=i===q.answerIndex;[...document.querySelectorAll('.option')].forEach((b,j)=>{b.disabled=true;if(j===q.answerIndex){b.classList.add('correct');b.querySelector('.sign').textContent='✓'}else if(j===i){b.classList.add('wrong');b.querySelector('.sign').textContent='×'}});finish(ok,q.choices[i])}
+  function answerTyping(){if(state.answered||state.current.mode!=='typing')return;const raw=$('#typingInput').value.trim();if(!raw){toast('병원체 이름을 입력하세요.');return}const ok=typingMatch(raw,state.current.accepted);$('#typingInput').disabled=true;$('#submitBtn').disabled=true;$('#typingInput').classList.add(ok?'good':'bad');finish(ok,raw)}
+  function finish(ok,userAnswer){state.answered=true;state.total++;if(ok){state.correct++;state.streak++;state.best=Math.max(state.best,state.streak)}else state.streak=0;const f=state.current.fact;state.weak[f.id]=ok?Math.max(0,(state.weak[f.id]||0)-1):Math.min(5,(state.weak[f.id]||0)+2);state.mastery[f.id]=Math.max(0,Math.min(5,(state.mastery[f.id]||0)+(ok?1:-1)));if(ok)removeMistake(state.current);else addMistake(state.current);save();$('#feedback').className=`feedback show ${ok?'good':'bad'}`;$('#feedbackTitle').textContent=ok?'정답입니다.':`오답 — 정답: ${state.current.answerText}`;$('#feedbackText').textContent=state.current.explanation;$('#feedbackSource').textContent=`출처: ${state.current.source}`;$('#nextBtn').classList.add('show');state.history.unshift({round:state.round,axis:AXIS_KO[f.axis],prompt:strip(state.current.prompt),user:userAnswer,answer:state.current.answerText,ok});state.history=state.history.slice(0,30);renderHistory();renderCoverage();updateStats()}
+  function strip(s){const d=document.createElement('div');d.innerHTML=s;return d.textContent}
+  function next(){if(!state.answered)return;state.round++;renderQuestion()}
+  function questionKey(q){return `${q.type}|${q.prompt}|${q.answerText}`}
+  function addMistake(q){const key=questionKey(q);if(!state.mistakes.some(x=>questionKey(x)===key))state.mistakes.push(JSON.parse(JSON.stringify(q)));updateReviewButton()}
+  function removeMistake(q){const key=questionKey(q);state.mistakes=state.mistakes.filter(x=>questionKey(x)!==key);updateReviewButton()}
+  function updateReviewButton(){const b=$('#reviewBtn');if(!b)return;b.textContent=state.reviewOnly?`전체 문제로 돌아가기 (${state.mistakes.length})`:`오답만 풀기 (${state.mistakes.length})`;b.classList.toggle('review-active',state.reviewOnly)}
+  function toggleReview(){if(!state.reviewOnly&&!state.mistakes.length){toast('아직 저장된 오답이 없습니다.');return}state.reviewOnly=!state.reviewOnly;state.round++;updateReviewButton();renderQuestion()}
+  function save(){localStorage.setItem('pathogenesisQuizV1',JSON.stringify({best:state.best,weak:state.weak,mastery:state.mastery,mistakes:state.mistakes,scope:state.scope}))}
+  function updateStats(){const acc=state.total?Math.round(state.correct/state.total*100):0;$('#correctStat').textContent=state.correct;$('#streakStat').textContent=state.streak;$('#bestStat').textContent=state.best;$('#totalStat').textContent=state.total;$('#accText').textContent=`${acc}%`;$('#accFill').style.width=`${acc}%`}
+  function renderHistory(){const has=state.history.length>0;$('#historyEmpty').hidden=has;$('#historyTable').hidden=!has;const body=$('#historyBody');body.innerHTML='';for(const h of state.history){const tr=document.createElement('tr');[h.round,h.axis,h.prompt,`${h.user} → ${h.answer}`].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});const td=document.createElement('td');td.innerHTML=`<span class="result ${h.ok?'o':'x'}">${h.ok?'O':'X'}</span>`;tr.appendChild(td);body.appendChild(tr)}}
+  function renderCoverage(){const root=$('#coverage');root.innerHTML='';for(const axis of ['entry','transmission','evasion']){const facts=FACTS.filter(f=>f.axis===axis);const score=facts.reduce((s,f)=>s+(state.mastery[f.id]||0),0);const pct=Math.round(score/(facts.length*5)*100);const d=document.createElement('div');d.className='cov';d.innerHTML=`<span>${AXIS[axis]}</span><div class="track"><div style="width:${pct}%"></div></div><b>${pct}%</b>`;root.appendChild(d)}}
+  function renderReference(){const root=$('#referenceContent');root.innerHTML='';for(const axis of ['entry','transmission','evasion']){const section=document.createElement('section');section.className='ref-section';section.innerHTML=`<h3>${AXIS_KO[axis]}</h3><div class="ref-box"><table><thead><tr><th>경로·기전</th><th>병원체·질환 예시</th><th>설명·출처</th></tr></thead><tbody></tbody></table></div>`;const body=section.querySelector('tbody');for(const f of FACTS.filter(x=>x.axis===axis)){const tr=document.createElement('tr');const cls=axis==='entry'?'axis-entry':axis==='transmission'?'axis-transmission':'axis-evasion';tr.innerHTML=`<td><span class="axis-tag ${cls}">${AXIS[axis]}</span><br><br>${f.category}</td><td>${f.organisms.join(' · ')}</td><td>${f.note}<br><span style="color:var(--muted);font-size:11px">${f.source}</span></td>`;body.appendChild(tr)}section.appendChild(section.querySelector('.ref-box'));root.appendChild(section)}}
+  function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),1700)}
+
+  $('#scope').value=state.scope;$('#scope').onchange=e=>{state.scope=e.target.value;save();state.round++;renderQuestion();toast(`${state.scope==='all'?'전체':AXIS[state.scope]} 범위로 변경했습니다.`)};$('#nextBtn').onclick=next;$('#submitBtn').onclick=answerTyping;$('#referenceBtn').onclick=()=>$('#referenceDialog').showModal();$('#reviewBtn').onclick=toggleReview;$('#closeReference').onclick=()=>$('#referenceDialog').close();$('#referenceDialog').onclick=e=>{if(e.target===$('#referenceDialog'))$('#referenceDialog').close()};$('#historyBtn').onclick=()=>$('#historyCard').scrollIntoView({behavior:'smooth'});$('#resetBtn').onclick=()=>{if(!confirm('누적 숙련도·오답 목록·최고 연속 정답 기록을 초기화할까요?'))return;state.weak={};state.mastery={};state.mistakes=[];state.reviewOnly=false;state.best=0;save();updateReviewButton();renderCoverage();updateStats();toast('누적 기록을 초기화했습니다.')};document.addEventListener('keydown',e=>{if($('#referenceDialog').open)return;if(state.current?.mode==='typing'){if(e.key==='Enter'){e.preventDefault();state.answered?next():answerTyping()}return}if(!state.answered&&/^[1-5]$/.test(e.key))answerMCQ(Number(e.key)-1);else if(state.answered&&e.key==='Enter'){e.preventDefault();next()}});
+  $('#factCount').textContent=FACTS.length;$('#pathogenCount').textContent=new Set(FACTS.flatMap(f=>f.organisms)).size;renderReference();renderCoverage();renderHistory();updateReviewButton();updateStats();renderQuestion();
+</script>
+</body>
+</html>

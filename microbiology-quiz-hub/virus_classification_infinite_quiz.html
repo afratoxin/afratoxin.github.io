@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>바이러스 분류 무한회독</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #697386;
+      --line: #dce4ee;
+      --paper: #ffffff;
+      --canvas: #f3f7fb;
+      --blue: #3157d5;
+      --blue-2: #e8edff;
+      --mint: #daf5eb;
+      --mint-ink: #136a53;
+      --amber: #fff1c7;
+      --amber-ink: #866000;
+      --red: #c43e54;
+      --red-bg: #ffe8ec;
+      --green: #19865f;
+      --green-bg: #def6eb;
+      --shadow: 0 18px 50px rgba(36, 54, 90, .10);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(49,87,213,.09), transparent 27rem),
+        radial-gradient(circle at 94% 9%, rgba(58,190,150,.09), transparent 24rem),
+        var(--canvas);
+      font-family: Pretendard, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+
+    .app { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark {
+      width: 43px; height: 43px; border-radius: 14px;
+      display: grid; place-items: center;
+      background: linear-gradient(145deg, #3157d5, #6985ed);
+      color: white; font-weight: 900; box-shadow: 0 10px 24px rgba(49,87,213,.25);
+    }
+    .brand h1 { font-size: clamp(20px, 3vw, 28px); margin: 0; letter-spacing: -.04em; }
+    .brand p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+
+    .top-actions { display: flex; gap: 9px; flex-wrap: wrap; justify-content: flex-end; }
+    .ghost, .primary, .danger-ghost {
+      border: 1px solid var(--line); background: rgba(255,255,255,.78);
+      border-radius: 12px; padding: 10px 13px; cursor: pointer; font-weight: 750;
+      transition: .18s ease;
+    }
+    .ghost:hover { border-color: #aebbd0; transform: translateY(-1px); }
+    .ghost.review-active { color: var(--red); background: var(--red-bg); border-color: #e7a1ae; }
+    .primary { background: var(--blue); border-color: var(--blue); color: white; }
+    .primary:hover { background: #2649bd; transform: translateY(-1px); }
+    .danger-ghost { color: var(--red); background: #fff; }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 22px; align-items: start; }
+    .card { background: var(--paper); border: 1px solid rgba(208,218,231,.92); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+    .quiz-card { overflow: hidden; }
+    .progress-track { height: 6px; background: #edf1f7; }
+    .progress-bar { height: 100%; width: 12%; background: linear-gradient(90deg, var(--blue), #7a8ff1); transition: width .3s ease; }
+    .quiz-inner { padding: clamp(23px, 4vw, 42px); min-height: 610px; display: flex; flex-direction: column; }
+    .question-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 23px; }
+    .round { color: var(--muted); font-size: 12px; font-weight: 850; letter-spacing: .08em; }
+    .pill { border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 800; }
+    .pill.blue { color: #2747b6; background: var(--blue-2); }
+    .pill.mint { color: var(--mint-ink); background: var(--mint); }
+    .pill.amber { color: var(--amber-ink); background: var(--amber); }
+
+    .question {
+      margin: 0 0 27px;
+      min-height: 75px;
+      font-size: clamp(22px, 3.15vw, 31px);
+      line-height: 1.42;
+      letter-spacing: -.035em;
+      word-break: keep-all;
+    }
+    .question em { font-style: normal; color: var(--blue); }
+
+    .options { display: grid; gap: 11px; }
+    .option {
+      width: 100%; min-height: 58px; text-align: left;
+      display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 12px;
+      padding: 12px 15px; border: 1.5px solid var(--line); border-radius: 15px;
+      background: #fff; cursor: pointer; transition: .15s ease;
+    }
+    .option:hover:not(:disabled) { border-color: #879bea; background: #f8f9ff; transform: translateY(-1px); }
+    .option:disabled { cursor: default; opacity: 1; }
+    .num {
+      width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+      background: #f0f3f8; color: #5b667a; font-size: 13px; font-weight: 900;
+    }
+    .choice-text { font-size: 16px; font-weight: 720; line-height: 1.35; }
+    .option.correct { border-color: #67b99b; background: var(--green-bg); }
+    .option.correct .num { background: var(--green); color: white; }
+    .option.wrong { border-color: #e18696; background: var(--red-bg); }
+    .option.wrong .num { background: var(--red); color: white; }
+    .mark { font-weight: 1000; }
+
+    .typing-wrap { display: none; }
+    .typing-wrap.active { display: block; }
+    .typing-label { display: block; color: var(--muted); font-size: 13px; font-weight: 760; margin-bottom: 8px; }
+    .typing-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    .typing-input {
+      width: 100%; min-height: 58px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 14px;
+      outline: none; font-size: 17px; font-weight: 700; background: #fbfcfe;
+    }
+    .typing-input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(49,87,213,.10); background: white; }
+    .typing-input.good { border-color: var(--green); background: var(--green-bg); }
+    .typing-input.bad { border-color: var(--red); background: var(--red-bg); }
+
+    .feedback {
+      display: none; margin-top: 18px; padding: 16px 18px; border-radius: 15px;
+      border: 1px solid var(--line); line-height: 1.55;
+    }
+    .feedback.show { display: block; animation: rise .18s ease both; }
+    .feedback.good { background: var(--green-bg); border-color: #a6dcc7; }
+    .feedback.bad { background: var(--red-bg); border-color: #efb4be; }
+    .feedback-title { font-size: 15px; font-weight: 900; margin-bottom: 4px; }
+    .feedback p { margin: 0; color: #344055; font-size: 14px; }
+    @keyframes rise { from { opacity: 0; transform: translateY(5px); } }
+
+    .quiz-footer { margin-top: auto; padding-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .key-help { color: var(--muted); font-size: 12px; }
+    kbd { border: 1px solid #ccd5e2; border-bottom-width: 2px; background: #fff; border-radius: 6px; padding: 2px 6px; font-size: 11px; }
+    #nextBtn { display: none; min-width: 140px; }
+    #nextBtn.show { display: inline-block; }
+
+    .side { display: grid; gap: 16px; position: sticky; top: 20px; }
+    .side-card { padding: 20px; box-shadow: 0 10px 32px rgba(36,54,90,.07); }
+    .side-title { margin: 0 0 13px; font-size: 13px; letter-spacing: .03em; }
+    .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .stat { background: #f6f8fb; border-radius: 14px; padding: 13px; }
+    .stat span { display: block; color: var(--muted); font-size: 11px; margin-bottom: 3px; }
+    .stat strong { font-size: 22px; letter-spacing: -.03em; }
+
+    .accuracy-row { margin-top: 15px; }
+    .accuracy-copy { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+    .accuracy-track { height: 8px; border-radius: 99px; overflow: hidden; background: #e8edf4; }
+    .accuracy-fill { width: 0; height: 100%; background: linear-gradient(90deg, #4cb78f, #3157d5); transition: width .25s; }
+
+    .filter-label { display: block; color: var(--muted); font-size: 11px; font-weight: 800; margin-bottom: 7px; }
+    .select {
+      width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 11px;
+      background: #fff; font-weight: 750; outline: none;
+    }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 15px; font-size: 13px; font-weight: 750; }
+    .switch { position: relative; width: 45px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; cursor: pointer; background: #ccd4e0; border-radius: 999px; transition: .2s; }
+    .slider::before { content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; border-radius: 50%; background: white; transition: .2s; box-shadow: 0 2px 5px rgba(0,0,0,.18); }
+    .switch input:checked + .slider { background: var(--blue); }
+    .switch input:checked + .slider::before { transform: translateX(19px); }
+
+    .coverage { display: grid; gap: 9px; }
+    .coverage-item { display: grid; grid-template-columns: 84px 1fr auto; align-items: center; gap: 8px; font-size: 12px; }
+    .mini-track { height: 7px; border-radius: 9px; background: #e9edf3; overflow: hidden; }
+    .mini-fill { height: 100%; background: var(--blue); }
+    .coverage-item b { font-size: 11px; color: var(--muted); }
+
+    .history-card { margin-top: 22px; padding: 0; overflow: hidden; }
+    .history-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 22px; border-bottom: 1px solid var(--line); }
+    .history-head h2 { margin: 0; font-size: 17px; }
+    .history-head span { color: var(--muted); font-size: 12px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 13px 16px; border-bottom: 1px solid #edf0f4; text-align: left; font-size: 13px; vertical-align: top; }
+    th { color: var(--muted); background: #fafbfd; font-size: 11px; letter-spacing: .03em; }
+    td:first-child { color: var(--muted); width: 62px; }
+    .result-dot { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-weight: 900; }
+    .result-dot.o { color: var(--green); background: var(--green-bg); }
+    .result-dot.x { color: var(--red); background: var(--red-bg); }
+    .empty { padding: 28px; color: var(--muted); text-align: center; font-size: 13px; }
+
+    dialog { width: min(1000px, calc(100% - 30px)); max-height: 88vh; border: 0; padding: 0; border-radius: 22px; box-shadow: 0 28px 90px rgba(20,29,55,.30); }
+    dialog::backdrop { background: rgba(23,32,51,.55); backdrop-filter: blur(4px); }
+    .modal-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 19px 22px; background: #fff; border-bottom: 1px solid var(--line); }
+    .modal-head h2 { margin: 0; font-size: 19px; }
+    .modal-body { padding: 20px 22px 30px; background: #fbfcfe; }
+    .reference-note { margin: 0 0 15px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .ref-section { margin-top: 22px; }
+    .ref-section h3 { margin: 0 0 10px; font-size: 16px; }
+    .ref-table { background: white; border: 1px solid var(--line); border-radius: 14px; overflow-x: auto; }
+    .ref-table table { min-width: 720px; }
+    .ref-table td, .ref-table th { font-size: 12px; padding: 10px 12px; }
+    .tag-dna { color: #2754b9; background: #e7edff; }
+    .tag-rna { color: #8c5410; background: #fff0d5; }
+    .tiny-tag { display: inline-block; border-radius: 99px; padding: 3px 7px; font-size: 10px; font-weight: 850; white-space: nowrap; }
+
+    .practice-dialog { width: min(1220px, calc(100% - 24px)); max-height: 92vh; }
+    .practice-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .mode-tabs { display: inline-flex; padding: 4px; gap: 4px; border-radius: 13px; background: #e9edf5; }
+    .mode-tab { border: 0; border-radius: 10px; padding: 9px 13px; color: #5e6879; background: transparent; font-weight: 850; cursor: pointer; }
+    .mode-tab.active { color: white; background: var(--blue); box-shadow: 0 5px 14px rgba(49,87,213,.24); }
+    .practice-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .practice-help { margin: 0 0 15px; padding: 11px 14px; color: #465269; background: #edf3ff; border-radius: 12px; font-size: 12px; line-height: 1.65; }
+    .sort-bank { min-height: 92px; display: flex; align-content: flex-start; flex-wrap: wrap; gap: 8px; padding: 13px; margin-bottom: 17px; border: 1.5px dashed #aebbd0; border-radius: 15px; background: white; }
+    .sort-bank.drag-over { border-color: var(--blue); background: #f2f5ff; }
+    .sort-empty { width: 100%; display: grid; place-items: center; min-height: 62px; color: var(--muted); font-size: 12px; }
+    .virus-block { display: inline-flex; align-items: center; min-height: 36px; padding: 8px 11px; border: 1px solid #cdd7e5; border-radius: 10px; color: #2e3d58; background: #fff; box-shadow: 0 3px 9px rgba(34,52,84,.07); font-size: 12px; font-weight: 820; cursor: grab; user-select: none; transition: .15s; }
+    .virus-block:hover { border-color: #8fa2dc; transform: translateY(-1px); }
+    .virus-block.selected { border-color: var(--blue); background: var(--blue-2); box-shadow: 0 0 0 3px rgba(49,87,213,.12); }
+    .virus-block.sort-correct { border-color: #58ad8c; background: var(--green-bg); color: #126348; }
+    .virus-block.sort-wrong { border-color: #dc7f90; background: var(--red-bg); color: #963246; }
+    .sort-board { display: grid; gap: 17px; }
+    .sort-nucleic { overflow: hidden; border: 1px solid #cfd9e6; border-radius: 17px; background: #fff; }
+    .sort-nucleic-title { padding: 10px 14px; text-align: center; background: #f7f9fc; border-bottom: 1px solid #dce4ee; font-size: 15px; font-weight: 900; }
+    .sort-groups { display: grid; grid-template-columns: repeat(var(--cols), minmax(190px,1fr)); overflow-x: auto; }
+    .sort-group { min-width: 190px; padding: 0 9px 11px; border-right: 1px solid #dce4ee; }
+    .sort-group:last-child { border-right: 0; }
+    .sort-group.env { background: #fff8d8; }
+    .sort-group.naked { background: #e2f7ee; }
+    .sort-group-head { min-height: 67px; display: grid; place-items: center; padding: 9px 5px; text-align: center; font-size: 12px; line-height: 1.45; font-weight: 900; }
+    .sort-group-head small { display: block; color: var(--muted); font-size: 10px; font-weight: 750; }
+    .drop-zone { min-height: 92px; display: flex; align-content: flex-start; flex-wrap: wrap; gap: 7px; padding: 9px; border: 1.5px dashed rgba(78,101,130,.42); border-radius: 12px; background: rgba(255,255,255,.72); transition: .15s; }
+    .drop-zone.drag-over, .drop-zone.selected-target { border-color: var(--blue); background: rgba(237,242,255,.94); }
+    .drop-zone::before { content: attr(data-placeholder); width: 100%; color: #8a94a5; text-align: center; font-size: 10px; font-weight: 750; }
+    .drop-zone:has(.virus-block)::before { display: none; }
+    .family-zone { min-height: 111px; margin-bottom: 8px; padding-top: 0; }
+    .family-zone::before { order: 2; }
+    .family-zone .virus-block { order: 3; }
+    .family-zone-title { order: 1; width: calc(100% + 18px); margin: 0 -9px 2px; padding: 7px 6px; color: #2c3d58; background: rgba(255,255,255,.76); border-bottom: 1px solid rgba(115,132,157,.20); text-align: center; font-size: 11px; font-weight: 900; }
+    .sort-result { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; padding: 13px 15px; border-radius: 13px; background: #f2f5fa; font-size: 13px; font-weight: 800; }
+    .sort-result.good { color: #126348; background: var(--green-bg); }
+    .sort-result.bad { color: #963246; background: var(--red-bg); }
+    .practice-progress { color: var(--muted); font-size: 12px; font-weight: 850; }
+
+    .herpes-practice { width: min(690px, calc(100% - 24px)); }
+    .herpes-card { padding: clamp(19px,4vw,32px); border: 1px solid var(--line); border-radius: 18px; background: white; }
+    .herpes-progress-track { height: 7px; overflow: hidden; margin: 9px 0 25px; border-radius: 99px; background: #e8edf4; }
+    .herpes-progress-fill { height: 100%; width: 0; background: linear-gradient(90deg,var(--blue),#798ef0); transition: .2s; }
+    .herpes-number { color: var(--blue); font-size: 12px; font-weight: 950; letter-spacing: .08em; }
+    .herpes-prompt { margin: 8px 0 19px; font-size: clamp(21px,4vw,28px); line-height: 1.45; }
+    .herpes-input-row { display: grid; grid-template-columns: 1fr auto; gap: 9px; }
+    .herpes-input { min-height: 55px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 13px; outline: 0; font-size: 16px; font-weight: 740; }
+    .herpes-input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(49,87,213,.1); }
+    .herpes-feedback { display: none; margin-top: 14px; padding: 13px 15px; border-radius: 12px; font-size: 13px; line-height: 1.6; }
+    .herpes-feedback.show { display: block; }
+    .herpes-feedback.good { color: #126348; background: var(--green-bg); }
+    .herpes-feedback.bad { color: #963246; background: var(--red-bg); }
+    .herpes-summary { text-align: center; padding: 12px 4px; }
+    .herpes-summary strong { display: block; margin: 7px 0; font-size: 42px; color: var(--blue); }
+
+    .toast { position: fixed; left: 50%; bottom: 25px; z-index: 10; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 11px 15px; border-radius: 12px; color: #fff; background: #202a3d; box-shadow: 0 8px 30px rgba(0,0,0,.22); font-size: 13px; font-weight: 750; transition: .2s; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { position: static; grid-template-columns: 1fr 1fr; }
+      .quiz-inner { min-height: 580px; }
+    }
+    @media (max-width: 620px) {
+      .app { width: min(100% - 20px, 1180px); padding-top: 16px; }
+      .topbar { align-items: flex-start; }
+      .brand p { display: none; }
+      .top-actions { width: 100%; justify-content: flex-start; }
+      .top-actions .ghost { flex: 1 1 42%; }
+      .top-actions .ghost:first-child { display: none; }
+      .quiz-inner { padding: 22px 17px; min-height: 600px; }
+      .question { font-size: 22px; min-height: 86px; }
+      .side { grid-template-columns: 1fr; }
+      .typing-row { grid-template-columns: 1fr; }
+      .quiz-footer { align-items: flex-end; }
+      .key-help { max-width: 160px; line-height: 1.7; }
+      #historyTable th:nth-child(2), #historyTable td:nth-child(2) { display: none; }
+      .modal-head { align-items: flex-start; gap: 8px; }
+      .practice-toolbar { align-items: stretch; }
+      .mode-tabs { width: 100%; }
+      .mode-tab { flex: 1; }
+      .practice-actions { width: 100%; }
+      .practice-actions button { flex: 1; }
+      .herpes-input-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<a href="index.html" aria-label="퀴즈 허브로 돌아가기" style="position:fixed;z-index:1000;left:14px;bottom:14px;padding:10px 13px;border:1px solid rgba(255,255,255,.72);border-radius:999px;color:#fff;background:rgba(24,48,61,.92);box-shadow:0 7px 22px rgba(0,0,0,.18);font:800 12px/1 Pretendard,'Apple SD Gothic Neo',sans-serif;text-decoration:none;backdrop-filter:blur(8px)">← 전체 퀴즈</a>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">V</div>
+        <div>
+          <h1>바이러스 분류 무한회독</h1>
+          <p>Family · 핵산 · ssRNA polarity · envelope · Herpes 8종</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="ghost" id="scrollHistoryBtn" type="button">기록 보기</button>
+        <button class="ghost" id="reviewBtn" type="button">오답만 풀기 (0)</button>
+        <button class="ghost" id="openSortBtn" type="button">분류표 채우기</button>
+        <button class="ghost" id="openHerpesTypingBtn" type="button">Herpes 이름 쓰기</button>
+        <button class="ghost" id="openReferenceBtn" type="button">학습표 열기</button>
+      </div>
+    </header>
+
+    <section class="layout">
+      <article class="card quiz-card" aria-live="polite">
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="quiz-inner">
+          <div class="question-meta">
+            <span class="round" id="roundLabel">ROUND 001</span>
+            <span class="pill blue" id="typeBadge">FAMILY ↔ VIRUS</span>
+            <span class="pill mint" id="scopeBadge">전체</span>
+          </div>
+
+          <h2 class="question" id="questionText">문항을 준비하고 있습니다.</h2>
+
+          <div class="options" id="options"></div>
+
+          <div class="typing-wrap" id="typingWrap">
+            <label class="typing-label" for="typingInput">영문 이름을 입력하세요. 대소문자·하이픈은 채점에 영향을 주지 않습니다.</label>
+            <div class="typing-row">
+              <input class="typing-input" id="typingInput" autocomplete="off" spellcheck="false" placeholder="정답 입력" />
+              <button class="primary" id="submitTypingBtn" type="button">채점</button>
+            </div>
+          </div>
+
+          <div class="feedback" id="feedback">
+            <div class="feedback-title" id="feedbackTitle"></div>
+            <p id="feedbackText"></p>
+          </div>
+
+          <div class="quiz-footer">
+            <div class="key-help"><kbd>1</kbd>–<kbd>5</kbd> 선택 · <kbd>Enter</kbd> 채점/다음</div>
+            <button class="primary" id="nextBtn" type="button">다음 문항 →</button>
+          </div>
+        </div>
+      </article>
+
+      <aside class="side">
+        <section class="card side-card">
+          <h2 class="side-title">현재 세션</h2>
+          <div class="score-grid">
+            <div class="stat"><span>정답</span><strong id="correctStat">0</strong></div>
+            <div class="stat"><span>연속 정답</span><strong id="streakStat">0</strong></div>
+            <div class="stat"><span>최고 연속</span><strong id="bestStat">0</strong></div>
+            <div class="stat"><span>풀이</span><strong id="totalStat">0</strong></div>
+          </div>
+          <div class="accuracy-row">
+            <div class="accuracy-copy"><span>정답률</span><strong id="accuracyText">0%</strong></div>
+            <div class="accuracy-track"><div class="accuracy-fill" id="accuracyFill"></div></div>
+          </div>
+        </section>
+
+        <section class="card side-card">
+          <h2 class="side-title">출제 설정</h2>
+          <label class="filter-label" for="scopeSelect">범위</label>
+          <select class="select" id="scopeSelect">
+            <option value="all">전체 섞기</option>
+            <option value="DNA">DNA virus</option>
+            <option value="RNA">RNA virus</option>
+            <option value="herpes">Herpes 8종</option>
+            <option value="hepatitis">Hepatitis A·B·C·E</option>
+          </select>
+          <div class="toggle-row">
+            <span>오답 개념 우선</span>
+            <label class="switch"><input id="adaptiveToggle" type="checkbox" checked><span class="slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <span>직접 입력 포함</span>
+            <label class="switch"><input id="typingToggle" type="checkbox" checked><span class="slider"></span></label>
+          </div>
+        </section>
+
+        <section class="card side-card">
+          <h2 class="side-title">누적 개념 숙련도</h2>
+          <div class="coverage" id="coverage"></div>
+          <button class="danger-ghost" id="resetBtn" type="button" style="width:100%; margin-top:16px;">학습 기록 초기화</button>
+        </section>
+      </aside>
+    </section>
+
+    <section class="card history-card" id="historyCard">
+      <div class="history-head">
+        <h2>이번 세션의 정답·오답</h2>
+        <span>최근 30문항</span>
+      </div>
+      <div class="table-wrap">
+        <div class="empty" id="historyEmpty">아직 푼 문항이 없습니다.</div>
+        <table id="historyTable" hidden>
+          <thead><tr><th>회차</th><th>유형</th><th>문항</th><th>내 답 → 정답</th><th>결과</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="referenceDialog">
+    <div class="modal-head">
+      <h2>완전 학습표</h2>
+      <button class="ghost" id="closeReferenceBtn" type="button">문제로 돌아가기</button>
+    </div>
+    <div class="modal-body">
+      <p class="reference-note"><b>사용자가 첨부한 이미지에 적힌 내용만</b> 수록했습니다. PDF나 외부 자료의 바이러스 예시는 포함하지 않았습니다. Picorna/Picornaviridae와 Flavi/Flaviviridae처럼 이미지 안에 두 표기가 함께 나온 경우에는 어느 쪽을 입력해도 정답으로 인정합니다.</p>
+      <div id="referenceContent"></div>
+    </div>
+  </dialog>
+
+  <dialog class="practice-dialog" id="sortDialog">
+    <div class="modal-head">
+      <div><h2>드래그로 분류표 채우기</h2><div class="practice-progress" id="sortProgress">0 / 0 배치</div></div>
+      <button class="ghost" id="closeSortBtn" type="button">문제로 돌아가기</button>
+    </div>
+    <div class="modal-body">
+      <div class="practice-toolbar">
+        <div class="mode-tabs" role="tablist" aria-label="분류표 채우기 모드">
+          <button class="mode-tab active" id="familyModeBtn" type="button">속명 블록</button>
+          <button class="mode-tab" id="exampleModeBtn" type="button">바이러스 예시 블록</button>
+        </div>
+        <div class="practice-actions">
+          <button class="ghost" id="resetSortBtn" type="button">다시 섞기</button>
+          <button class="ghost" id="revealSortBtn" type="button">정답 배치</button>
+          <button class="primary" id="checkSortBtn" type="button">채점하기</button>
+        </div>
+      </div>
+      <p class="practice-help" id="sortHelp">블록을 잡아 알맞은 분류 칸으로 끌어놓으세요. 모바일에서는 블록을 누른 뒤 칸을 누르면 이동합니다. 칸 안의 블록도 다시 옮길 수 있습니다.</p>
+      <div class="sort-bank" id="sortBank" data-placeholder="바이러스 블록 보관함"></div>
+      <div class="sort-board" id="sortBoard"></div>
+      <div class="sort-result" id="sortResult">모든 블록을 배치한 뒤 채점하세요.</div>
+    </div>
+  </dialog>
+
+  <dialog class="herpes-practice" id="herpesTypingDialog">
+    <div class="modal-head">
+      <div><h2>Herpesvirus 8종 이름 쓰기</h2><div class="practice-progress" id="herpesTypingProgress">1 / 8</div></div>
+      <button class="ghost" id="closeHerpesTypingBtn" type="button">문제로 돌아가기</button>
+    </div>
+    <div class="modal-body">
+      <div class="herpes-progress-track"><div class="herpes-progress-fill" id="herpesTypingFill"></div></div>
+      <div class="herpes-card" id="herpesTypingCard">
+        <div class="herpes-number" id="herpesTypingNumber">HHV-1</div>
+        <h3 class="herpes-prompt" id="herpesTypingPrompt">바이러스 이름을 입력하세요.</h3>
+        <div class="herpes-input-row" id="herpesTypingInputRow">
+          <input class="herpes-input" id="herpesNameInput" autocomplete="off" spellcheck="false" placeholder="예: Herpes simplex virus 1">
+          <button class="primary" id="checkHerpesNameBtn" type="button">채점</button>
+        </div>
+        <div class="herpes-feedback" id="herpesTypingFeedback"></div>
+      </div>
+      <div class="practice-actions" style="margin-top:13px;justify-content:flex-end">
+        <button class="ghost" id="showHerpesAnswerBtn" type="button">정답 보기</button>
+        <button class="primary" id="nextHerpesNameBtn" type="button" hidden>다음 이름 →</button>
+      </div>
+    </div>
+  </dialog>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const FAMILIES = [
+      { id:'pox', name:'Pox', short:'Pox', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
+        ['Smallpox virus', 'smallpox virus', 'small pox'], ['Variola virus', 'variola virus'] ] },
+      { id:'herpes', name:'Herpes', short:'Herpes', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
+        ['Herpes simplex virus 1 (HSV-1)', 'herpes simplex virus 1', 'hsv1', 'hsv-1'],
+        ['Herpes simplex virus 2 (HSV-2)', 'herpes simplex virus 2', 'hsv2', 'hsv-2'],
+        ['Varicella-zoster virus (VZV)', 'varicella zoster virus', 'vzv'], ['Epstein-Barr virus (EBV)', 'epstein barr virus', 'ebv'],
+        ['Cytomegalovirus (CMV)', 'cytomegalovirus', 'cmv'], ['Human herpesvirus 6 (HHV-6)', 'human herpesvirus 6', 'hhv6', 'hhv-6'],
+        ['Human herpesvirus 7 (HHV-7)', 'human herpesvirus 7', 'hhv7', 'hhv-7'], ['Human herpesvirus 8 (HHV-8)', 'human herpesvirus 8', 'hhv8', 'hhv-8'] ] },
+      { id:'hepadna', name:'Hepanda', short:'Hepanda', familyAliases:['Hepadna'], nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
+        ['Hepatitis B virus (HBV)', 'hepatitis b virus', 'hbv'] ] },
+      { id:'polyoma', name:'Polyoma', short:'Polyoma', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
+        ['BK virus', 'bk virus', 'bkv'], ['JC virus', 'jc virus', 'jcv'] ] },
+      { id:'papilloma', name:'Papilloma', short:'Papilloma', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
+        ['HPV-16', 'human papillomavirus 16', 'hpv16', 'hpv-16'] ] },
+      { id:'adeno', name:'Adeno', short:'Adeno', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
+        ['Human adenovirus 5', 'human adenovirus 5', 'adenovirus 5'] ] },
+      { id:'parvo', name:'Parvo', short:'Parvo', nucleic:'DNA', genome:'DNA', coat:'Naked capsid', examples:[
+        ['Parvovirus B19', 'parvovirus b19', 'b19 parvovirus'], ['Adeno-associated virus (AAV)', 'adeno associated virus', 'aav'] ] },
+
+      { id:'picorna', name:'Picorna', short:'Picorna', familyAliases:['Picornaviridae'], nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
+        ['Poliovirus', 'poliovirus', 'polio virus'], ['Hepatitis A virus (HAV)', 'hepatitis a virus', 'hav'] ] },
+      { id:'calici', name:'Calici', short:'Calici', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
+        ['Norovirus', 'norovirus'] ] },
+      { id:'hepe', name:'Hepe', short:'Hepe', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
+        ['Hepatitis E virus (HEV)', 'hepatitis e virus', 'hev'] ] },
+      { id:'astro', name:'Astro', short:'Astro', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
+        ['Human astrovirus', 'human astrovirus', 'astrovirus'] ] },
+      { id:'toga', name:'Toga', short:'Toga', nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
+        ['Chikungunya virus', 'chikungunya virus'] ] },
+      { id:'flavi', name:'Flavi', short:'Flavi', familyAliases:['Flaviviridae'], nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
+        ['Dengue virus', 'dengue virus'], ['Hepatitis C virus (HCV)', 'hepatitis c virus', 'hcv'] ] },
+      { id:'corona', name:'Corona', short:'Corona', nucleic:'RNA', genome:'+ssRNA', coat:'Enveloped', examples:[
+        ['SARS-CoV-2', 'sars cov 2', 'sars-cov-2'] ] },
+
+      { id:'rhabdo', name:'Rhabdo', short:'Rhabdo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Rabies virus', 'rabies virus'] ] },
+      { id:'filo', name:'Filo', short:'Filo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Ebola virus', 'ebola virus'] ] },
+      { id:'orthomyxo', name:'Orthomyxo', short:'Orthomyxo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Influenza A virus', 'influenza a virus'] ] },
+      { id:'paramyxo', name:'Paramyxo', short:'Paramyxo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Measles virus', 'measles virus'] ] },
+      { id:'pneumo', name:'Pneumoviridae', short:'Pneumo', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Respiratory syncytial virus (RSV)', 'respiratory syncytial virus', 'rsv'] ] },
+      { id:'bunya', name:'Bunya', short:'Bunya', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Hantaan virus', 'hantaan virus'] ] },
+      { id:'arena', name:'Arena', short:'Arena', nucleic:'RNA', genome:'-ssRNA', coat:'Enveloped', examples:[
+        ['Lassa virus', 'lassa virus'] ] },
+      { id:'reo', name:'Sedoreo', short:'Sedoreo', nucleic:'RNA', genome:'dsRNA', coat:'Naked capsid', examples:[
+        ['Rotavirus', 'rotavirus', 'rota virus'] ] },
+      { id:'retro', name:'Retro', short:'Retro', nucleic:'RNA', genome:'+ssRNA via DNA', coat:'Enveloped', examples:[
+        ['HIV-1', 'human immunodeficiency virus 1', 'hiv1', 'hiv-1'] ] }
+    ];
+
+    const HERPES = [
+      {n:1, name:'Herpes simplex virus 1 (HSV-1)', aliases:['hsv1','hsv-1','herpes simplex virus 1'], latency:'신경계', clue:'피로할 때 입술 물집'},
+      {n:2, name:'Herpes simplex virus 2 (HSV-2)', aliases:['hsv2','hsv-2','herpes simplex virus 2'], latency:'신경계', clue:'피로할 때 입술 물집'},
+      {n:3, name:'Varicella-zoster virus (VZV)', aliases:['vzv','varicella zoster virus'], latency:'신경계', clue:'수두·대상포진'},
+      {n:4, name:'Epstein-Barr virus (EBV)', aliases:['ebv','epstein barr virus'], latency:'백혈구·혈관·림프', clue:'12세 이전 감염 시 심각함'},
+      {n:5, name:'Cytomegalovirus (CMV)', aliases:['cmv','cytomegalovirus'], latency:'백혈구·혈관·림프', clue:'장기 이식 뒤 재활성화'},
+      {n:6, name:'Human herpesvirus 6 (HHV-6)', aliases:['hhv6','hhv-6','human herpesvirus 6'], latency:'백혈구·혈관·림프', clue:'HHV-6'},
+      {n:7, name:'Human herpesvirus 7 (HHV-7)', aliases:['hhv7','hhv-7','human herpesvirus 7'], latency:'백혈구·혈관·림프', clue:'HHV-7'},
+      {n:8, name:'Human herpesvirus 8 (Kaposi sarcoma virus)', aliases:['hhv8','hhv-8','human herpesvirus 8','kaposi sarcoma virus'], latency:'백혈구·혈관·림프', clue:'Kaposi sarcoma'}
+    ];
+
+    const SORT_GROUPS = [
+      {id:'dna-env', nucleic:'DNA', title:'Enveloped', detail:'DNA virus', tone:'env', familyIds:['pox','herpes','hepadna']},
+      {id:'dna-naked', nucleic:'DNA', title:'Naked capsid', detail:'DNA virus', tone:'naked', familyIds:['polyoma','papilloma','adeno','parvo']},
+      {id:'rna-pos-naked', nucleic:'RNA', title:'+ssRNA', detail:'Naked capsid', tone:'naked', familyIds:['picorna','calici','hepe','astro']},
+      {id:'rna-pos-env', nucleic:'RNA', title:'+ssRNA', detail:'Enveloped', tone:'env', familyIds:['toga','flavi','corona']},
+      {id:'rna-neg-env', nucleic:'RNA', title:'-ssRNA', detail:'Enveloped', tone:'env', familyIds:['rhabdo','filo','orthomyxo','paramyxo','bunya','arena']},
+      {id:'rna-ds-naked', nucleic:'RNA', title:'dsRNA', detail:'Naked capsid', tone:'naked', familyIds:['reo']},
+      {id:'rna-rt-env', nucleic:'RNA', title:'RNA via DNA', detail:'Enveloped', tone:'env', familyIds:['retro']},
+      {id:'rna-extra', nucleic:'RNA', title:'기타 family 연결', detail:'원본 표 밖', tone:'env', familyIds:['pneumo'], extra:true}
+    ];
+
+    const DRAG_EXAMPLES = [
+      {id:'ex-smallpox',label:'Smallpox virus',target:'pox'}, {id:'ex-variola',label:'Variola virus',target:'pox'},
+      {id:'ex-hsv1',label:'Herpes simplex virus 1 (HSV-1)',target:'herpes'},
+      {id:'ex-hbv',label:'Hepatitis B virus (HBV)',target:'hepadna'},
+      {id:'ex-bk',label:'BK virus',target:'polyoma'}, {id:'ex-jc',label:'JC virus',target:'polyoma'},
+      {id:'ex-hpv16',label:'HPV-16',target:'papilloma'}, {id:'ex-adeno5',label:'Human adenovirus 5',target:'adeno'},
+      {id:'ex-b19',label:'Parvovirus B19',target:'parvo'}, {id:'ex-aav',label:'Adeno-associated virus',target:'parvo'},
+      {id:'ex-polio',label:'Poliovirus',target:'picorna'}, {id:'ex-hava',label:'Hepatitis A virus',target:'picorna'},
+      {id:'ex-noro',label:'Norovirus',target:'calici'}, {id:'ex-hev',label:'Hepatitis E virus',target:'hepe'},
+      {id:'ex-astro',label:'Human astrovirus',target:'astro'}, {id:'ex-chik',label:'Chikungunya virus',target:'toga'},
+      {id:'ex-dengue',label:'Dengue virus',target:'flavi'}, {id:'ex-hcv',label:'Hepatitis C virus',target:'flavi'},
+      {id:'ex-sars',label:'SARS-CoV-2',target:'corona'}, {id:'ex-rabies',label:'Rabies virus',target:'rhabdo'},
+      {id:'ex-ebola',label:'Ebola virus',target:'filo'}, {id:'ex-flua',label:'Influenza A virus',target:'orthomyxo'},
+      {id:'ex-measles',label:'Measles virus',target:'paramyxo'}, {id:'ex-hantaan',label:'Hantaan virus',target:'bunya'},
+      {id:'ex-lassa',label:'Lassa virus',target:'arena'}, {id:'ex-rota',label:'Rotavirus',target:'reo'},
+      {id:'ex-hiv1',label:'HIV-1',target:'retro'}, {id:'ex-rsv',label:'RSV',target:'pneumo'}
+    ];
+
+    const VIRUSES = FAMILIES.flatMap(f => f.examples.map((e, i) => ({
+      key:`${f.id}:${i}`, display:e[0], aliases:e.slice(1), family:f
+    })));
+    const HEPATITIS_IDS = new Set(['picorna:1','hepadna:0','flavi:1','hepe:0']);
+    const CATEGORY_NAMES = { all:'전체', DNA:'DNA', RNA:'RNA', herpes:'Herpes 8종', hepatitis:'Hepatitis A·B·C·E' };
+    const GENOME_LABEL = {
+      'DNA':'DNA',
+      '+ssRNA':'+ssRNA', '-ssRNA':'-ssRNA', 'dsRNA':'dsRNA', '+ssRNA via DNA':'+ssRNA → DNA'
+    };
+    const TYPE_NAMES = {
+      familyVirus:'FAMILY ↔ VIRUS', oddFamily:'소속 / 비소속', nucleic:'DNA / RNA', envelope:'ENVELOPE',
+      genome:'RNA POLARITY', strand:'가닥 수', feature:'복합 분류', pair:'연결 판단', herpes:'HERPES 8종', typing:'직접 입력'
+    };
+
+    const $ = s => document.querySelector(s);
+    const state = {
+      round: 1, answered: false, current: null, correct: 0, total: 0, streak: 0,
+      best: Number(localStorage.getItem('virusQuizBest') || 0),
+      history: [], scope: localStorage.getItem('virusQuizScope') || 'all',
+      mastery: JSON.parse(localStorage.getItem('virusQuizMastery') || '{}'),
+      weak: JSON.parse(localStorage.getItem('virusQuizWeak') || '{}'),
+      mistakes: JSON.parse(localStorage.getItem('virusQuizMistakes') || '[]'),
+      reviewOnly: false, recentKeys: []
+    };
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+      return a;
+    }
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function sample(arr, n) { return shuffle(arr).slice(0, n); }
+    function norm(s) { return String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9가-힣]/g, ''); }
+    function familyAnswerAliases(f) { return [f.name, f.short, ...(f.familyAliases || [])]; }
+    function signature(f) { return `${f.nucleic}|${f.genome}|${f.coat}`; }
+    function signatureText(f) { return f.nucleic === f.genome ? `${f.nucleic} virus · ${f.coat}` : `${f.nucleic} · ${GENOME_LABEL[f.genome]} · ${f.coat}`; }
+    function displayFamily(f) { return f.name === f.short ? f.name : `${f.name} (${f.short})`; }
+    function poolFamilies() {
+      if (state.scope === 'DNA' || state.scope === 'RNA') return FAMILIES.filter(f => f.nucleic === state.scope);
+      if (state.scope === 'herpes') return FAMILIES.filter(f => f.id === 'herpes');
+      if (state.scope === 'hepatitis') return FAMILIES.filter(f => ['picorna','hepadna','flavi','hepe'].includes(f.id));
+      return FAMILIES;
+    }
+    function poolViruses() {
+      if (state.scope === 'DNA' || state.scope === 'RNA') return VIRUSES.filter(v => v.family.nucleic === state.scope);
+      if (state.scope === 'herpes') return VIRUSES.filter(v => v.family.id === 'herpes');
+      if (state.scope === 'hepatitis') return VIRUSES.filter(v => HEPATITIS_IDS.has(v.key));
+      return VIRUSES;
+    }
+    function weightedFact(items, keyFn) {
+      const adaptive = $('#adaptiveToggle').checked;
+      if (!adaptive) return pick(items);
+      const weighted = items.flatMap(item => {
+        const key = keyFn(item);
+        const weakness = Math.min(5, Number(state.weak[key] || 0));
+        const copies = 1 + weakness * 2;
+        return Array(copies).fill(item);
+      });
+      return pick(weighted);
+    }
+    function packMCQ({type, tag, prompt, correct, distractors, explanation, factKey}) {
+      const choices = shuffle([correct, ...distractors.slice(0,4)]);
+      return { mode:'mcq', type, tag, prompt, choices, answerIndex:choices.indexOf(correct), answerText:correct, explanation, factKey };
+    }
+    function packTyping({prompt, answerText, accepted, explanation, factKey, tag='이름 기입'}) {
+      return { mode:'typing', type:'typing', tag, prompt, answerText, accepted:[answerText, ...accepted], explanation, factKey };
+    }
+    function sameClassDistractors(target, count, selector = v => v.display) {
+      let candidates = poolViruses().filter(v => v.key !== target.key && v.family.id !== target.family.id);
+      if (candidates.length < count) candidates = VIRUSES.filter(v => v.key !== target.key && v.family.id !== target.family.id);
+      return sample(candidates, count).map(selector);
+    }
+
+    function qFamilyVirus() {
+      const viruses = poolViruses();
+      const v = weightedFact(viruses, x => x.key);
+      if (Math.random() < .5) {
+        const candidateFamilies = FAMILIES.filter(f => f.id !== v.family.id && (state.scope === 'all' || f.nucleic === v.family.nucleic));
+        const ds = sample(candidateFamilies.length >= 4 ? candidateFamilies : FAMILIES.filter(f => f.id !== v.family.id), 4).map(displayFamily);
+        return packMCQ({ type:'familyVirus', tag:'virus → family', prompt:`<em>${v.display}</em>가 속하는 family는?`, correct:displayFamily(v.family), distractors:ds,
+          explanation:`${v.display} → ${v.family.name}. ${signatureText(v.family)}에 해당합니다.`, factKey:v.key });
+      }
+      const other = sameClassDistractors(v, 4);
+      return packMCQ({ type:'familyVirus', tag:'family → virus', prompt:`다음 중 <em>${v.family.name}</em>에 속하는 바이러스는?`, correct:v.display, distractors:other,
+        explanation:`${v.family.name}의 대표 바이러스는 ${v.display}입니다.`, factKey:v.key });
+    }
+
+    function qOddFamily() {
+      const rules = state.scope === 'DNA' ? [
+        {label:'naked capsid DNA virus', test:f => f.nucleic === 'DNA' && f.coat === 'Naked capsid'}
+      ] : state.scope === 'RNA' ? [
+        {label:'+ssRNA virus', test:f => f.genome === '+ssRNA'},
+        {label:'-ssRNA virus', test:f => f.genome === '-ssRNA'},
+        {label:'enveloped RNA virus', test:f => f.nucleic === 'RNA' && f.coat === 'Enveloped'}
+      ] : [
+        {label:'DNA virus', test:f => f.nucleic === 'DNA'},
+        {label:'RNA virus', test:f => f.nucleic === 'RNA'},
+        {label:'enveloped virus', test:f => f.coat === 'Enveloped'},
+        {label:'naked capsid virus', test:f => f.coat === 'Naked capsid'},
+        {label:'+ssRNA virus', test:f => f.genome === '+ssRNA'},
+        {label:'-ssRNA virus', test:f => f.genome === '-ssRNA'}
+      ];
+      const rule = pick(rules.filter(r => FAMILIES.filter(r.test).length >= 4));
+      const members = sample(FAMILIES.filter(rule.test), 4);
+      const intruder = pick(FAMILIES.filter(f => !rule.test(f)));
+      return packMCQ({ type:'oddFamily', tag:'속하지 않는 것', prompt:`다음 중 <em>${rule.label}</em>에 속하지 않는 family는?`, correct:displayFamily(intruder), distractors:members.map(displayFamily),
+        explanation:`${intruder.name}은 ${rule.label}에 속하지 않습니다. 나머지 4개 family는 모두 해당 분류에 속합니다.`, factKey:`fam:${intruder.id}` });
+    }
+
+    function qNucleic() {
+      const targetClass = state.scope === 'DNA' ? 'DNA' : state.scope === 'RNA' ? 'RNA' : (Math.random() < .5 ? 'DNA' : 'RNA');
+      let targetPool = poolViruses().filter(v => v.family.nucleic === targetClass);
+      if (!targetPool.length) targetPool = VIRUSES.filter(v => v.family.nucleic === targetClass);
+      const target = weightedFact(targetPool, v => v.key);
+      const ds = sample(VIRUSES.filter(v => v.family.nucleic !== targetClass), 4).map(v => v.display);
+      const negative = Math.random() < .35;
+      if (!negative) return packMCQ({ type:'nucleic', tag:`${targetClass} 찾기`, prompt:`다음 중 <em>${targetClass} virus</em>인 것은?`, correct:target.display, distractors:ds,
+        explanation:`${target.display}는 ${target.family.name} 소속의 ${target.family.nucleic} virus입니다.`, factKey:target.key });
+      const opposite = targetClass === 'DNA' ? 'RNA' : 'DNA';
+      return packMCQ({ type:'nucleic', tag:'아닌 것', prompt:`다음 중 <em>${opposite} virus가 아닌 것</em>은?`, correct:target.display, distractors:ds,
+        explanation:`${target.display}는 ${targetClass} virus이므로 ${opposite} virus가 아닙니다.`, factKey:target.key });
+    }
+
+    function qEnvelope() {
+      const coat = Math.random() < .5 ? 'Enveloped' : 'Naked capsid';
+      let targets = poolViruses().filter(v => v.family.coat === coat);
+      if (!targets.length) targets = VIRUSES.filter(v => v.family.coat === coat);
+      const target = weightedFact(targets, v => v.key);
+      const ds = sample(VIRUSES.filter(v => v.family.coat !== coat), 4).map(v => v.display);
+      return packMCQ({ type:'envelope', tag:coat, prompt:`다음 중 <em>${coat === 'Enveloped' ? 'enveloped virus' : 'naked capsid virus'}</em>는?`, correct:target.display, distractors:ds,
+        explanation:`${target.display} → ${target.family.name} → ${coat}.`, factKey:target.key });
+    }
+
+    function qGenome() {
+      let viruses = poolViruses().filter(v => v.family.nucleic === 'RNA');
+      if (!viruses.length) viruses = VIRUSES.filter(v => v.family.nucleic === 'RNA');
+      const target = weightedFact(viruses, v => v.key);
+      const g = target.family.genome;
+      let candidates = VIRUSES.filter(v => v.family.nucleic === 'RNA' && v.family.genome !== g);
+      const ds = sample(candidates, 4).map(v => v.display);
+      return packMCQ({ type:'genome', tag:GENOME_LABEL[g], prompt:`다음 중 genome이 <em>${GENOME_LABEL[g]}</em>인 바이러스는?`, correct:target.display, distractors:ds,
+        explanation:`${target.display}는 ${target.family.name} 소속이며 ${GENOME_LABEL[g]}입니다.`, factKey:target.key });
+    }
+
+    function qSsRNA() {
+      const target = weightedFact(VIRUSES.filter(v => v.family.genome === 'dsRNA'), v => v.key);
+      const singleStranded = VIRUSES.filter(v => ['+ssRNA','-ssRNA','+ssRNA via DNA'].includes(v.family.genome));
+      const ds = sample(singleStranded, 4).map(v => v.display);
+      return packMCQ({ type:'strand', tag:'ssRNA 여부', prompt:'다음 RNA virus 중 <em>ssRNA가 아닌 것</em>은?', correct:target.display, distractors:ds,
+        explanation:`${target.display}는 이미지의 Sedoreo 분류에 속하는 dsRNA virus입니다. 나머지는 ssRNA genome을 가집니다.`, factKey:target.key });
+    }
+
+    function qFeature() {
+      const fams = poolFamilies();
+      const target = weightedFact(fams, f => `fam:${f.id}`);
+      const uniqueSignatures = [...new Set(FAMILIES.map(signature))].filter(s => s !== signature(target));
+      const ds = sample(uniqueSignatures, 4).map(s => signatureText(FAMILIES.find(f => signature(f) === s)));
+      return packMCQ({ type:'feature', tag:'family 특징', prompt:`<em>${target.name}</em>의 분류 특성으로 옳은 것은?`, correct:signatureText(target), distractors:ds,
+        explanation:`${target.name}: ${signatureText(target)}.`, factKey:`fam:${target.id}` });
+    }
+
+    function qPair() {
+      const correctMode = Math.random() < .5;
+      if (correctMode) {
+        const target = weightedFact(poolViruses(), v => v.key);
+        const correct = `${target.family.name} — ${target.display}`;
+        const wrongPairs = sample(VIRUSES.filter(v => v.family.id !== target.family.id), 4).map(v => {
+          let wrongF = pick(FAMILIES.filter(f => f.id !== v.family.id));
+          return `${wrongF.name} — ${v.display}`;
+        });
+        return packMCQ({ type:'pair', tag:'옳은 연결', prompt:'다음 family–virus 연결 중 <em>옳은 것</em>은?', correct, distractors:wrongPairs,
+          explanation:`${target.display}는 ${target.family.name}에 속합니다.`, factKey:target.key });
+      }
+      const validViruses = sample(poolViruses().length >= 5 ? poolViruses() : VIRUSES, 5);
+      const correctPairs = validViruses.slice(0,4).map(v => `${v.family.name} — ${v.display}`);
+      const outsider = validViruses[4];
+      const wrongFamily = pick(FAMILIES.filter(f => f.id !== outsider.family.id));
+      const wrong = `${wrongFamily.name} — ${outsider.display}`;
+      return packMCQ({ type:'pair', tag:'옳지 않은 연결', prompt:'다음 family–virus 연결 중 <em>옳지 않은 것</em>은?', correct:wrong, distractors:correctPairs,
+        explanation:`${outsider.display}는 ${wrongFamily.name}가 아니라 ${outsider.family.name}에 속합니다.`, factKey:outsider.key });
+    }
+
+    function qHerpes() {
+      const mode = Math.floor(Math.random() * 5);
+      const h = pick(HERPES);
+      if (mode === 0) {
+        const ds = sample(HERPES.filter(x => x.n !== h.n), 4).map(x => x.name);
+        return packMCQ({ type:'herpes', tag:`HHV-${h.n}`, prompt:`<em>Human herpesvirus ${h.n} (HHV-${h.n})</em>에 해당하는 이름은?`, correct:h.name, distractors:ds,
+          explanation:`HHV-${h.n} = ${h.name}. 잠복 부위는 ${h.latency}입니다.`, factKey:`hhv:${h.n}` });
+      }
+      if (mode === 1) {
+        const ds = sample(HERPES.filter(x => x.n !== h.n), 4).map(x => `HHV-${x.n}`);
+        return packMCQ({ type:'herpes', tag:'이름 → 번호', prompt:`<em>${h.name}</em>의 HHV 번호는?`, correct:`HHV-${h.n}`, distractors:ds,
+          explanation:`${h.name} = HHV-${h.n}.`, factKey:`hhv:${h.n}` });
+      }
+      if (mode === 2) {
+        const wantNerve = Math.random() < .5;
+        const rightPool = HERPES.filter(x => wantNerve ? x.n <= 3 : x.n >= 4);
+        const wrongPool = HERPES.filter(x => wantNerve ? x.n >= 4 : x.n <= 3);
+        const target = pick(rightPool);
+        let ds = sample(wrongPool, Math.min(4, wrongPool.length)).map(x => x.name);
+        if (ds.length < 4) ds.push('Human adenovirus 5');
+        return packMCQ({ type:'herpes', tag:'잠복 부위', prompt:`다음 중 주로 <em>${wantNerve ? '신경계' : '백혈구·혈관·림프'}</em>에 잠복하는 herpesvirus는?`, correct:target.name, distractors:ds,
+          explanation:`HHV ${wantNerve ? '1–3은 신경계' : '4–8은 백혈구·혈관·림프계'}에 잠복합니다. ${target.name}은 HHV-${target.n}입니다.`, factKey:`hhv:${target.n}` });
+      }
+      if (mode === 3) {
+        const clues = HERPES.filter(x => [3,4,5,8].includes(x.n));
+        const target = pick(clues);
+        const ds = sample(HERPES.filter(x => x.n !== target.n), 4).map(x => x.name);
+        return packMCQ({ type:'herpes', tag:'임상 연결', prompt:`<em>${target.clue}</em>와 연결되는 herpesvirus는?`, correct:target.name, distractors:ds,
+          explanation:`${target.clue} → ${target.name} (HHV-${target.n}).`, factKey:`hhv:${target.n}` });
+      }
+      return packMCQ({ type:'herpes', tag:'공통 임상 단서', prompt:'이미지에서 <em>피로할 때 입술 물집</em>과 함께 묶인 조합은?', correct:'HSV-1 · HSV-2',
+        distractors:['VZV · EBV','CMV · HHV-6','HHV-6 · HHV-7','EBV · HHV-8'],
+        explanation:'첨부 이미지에서는 HSV-1과 HSV-2를 “피로할 때 입술 물집” 단서와 함께 제시합니다.', factKey:'hhv:1-2' });
+    }
+
+    function qTyping() {
+      if (state.scope === 'herpes' || Math.random() < .36) {
+        const candidates = HERPES.filter(x => x.n <= 5 || x.n === 8);
+        const h = pick(candidates);
+        return packTyping({ prompt:`<em>HHV-${h.n}</em>의 바이러스 이름을 직접 입력하세요.`, answerText:h.name, accepted:h.aliases,
+          explanation:`HHV-${h.n} = ${h.name}.`, factKey:`hhv:${h.n}`, tag:'Herpes 이름 기입' });
+      }
+      const v = weightedFact(poolViruses(), x => x.key);
+      return packTyping({ prompt:`<em>${v.display}</em>가 속하는 family를 직접 입력하세요.`, answerText:v.family.name,
+        accepted:familyAnswerAliases(v.family), explanation:`${v.display} → ${v.family.name} (${signatureText(v.family)}).`, factKey:v.key, tag:'Family 이름 기입' });
+    }
+
+    function nextQuestionObject() {
+      if (state.reviewOnly) {
+        if (state.mistakes.length) return JSON.parse(JSON.stringify(pick(state.mistakes)));
+        state.reviewOnly = false; updateReviewButton(); showToast('저장된 오답을 모두 해결했습니다. 전체 문제로 돌아갑니다.');
+      }
+      const typingAllowed = $('#typingToggle').checked;
+      let generators;
+      if (state.scope === 'herpes') generators = [qHerpes,qHerpes,qHerpes,qTyping];
+      else if (state.scope === 'hepatitis') generators = [qFamilyVirus,qNucleic,qEnvelope,qGenome,qFeature,qTyping];
+      else if (state.scope === 'DNA') generators = [qFamilyVirus,qOddFamily,qEnvelope,qFeature,qPair,qTyping,qFamilyVirus];
+      else if (state.scope === 'RNA') generators = [qFamilyVirus,qOddFamily,qEnvelope,qGenome,qSsRNA,qFeature,qPair,qTyping];
+      else generators = [qFamilyVirus,qOddFamily,qNucleic,qEnvelope,qGenome,qSsRNA,qFeature,qPair,qHerpes,qTyping];
+      if (!typingAllowed) generators = generators.filter(g => g !== qTyping);
+      let q, guard = 0;
+      do { q = pick(generators)(); guard++; } while (state.recentKeys.includes(`${q.type}|${q.prompt}`) && guard < 12);
+      state.recentKeys.push(`${q.type}|${q.prompt}`);
+      if (state.recentKeys.length > 8) state.recentKeys.shift();
+      return q;
+    }
+
+    function renderQuestion() {
+      state.answered = false;
+      state.current = nextQuestionObject();
+      const q = state.current;
+      $('#roundLabel').textContent = `ROUND ${String(state.round).padStart(3,'0')}`;
+      $('#typeBadge').textContent = TYPE_NAMES[q.type] || q.type;
+      $('#scopeBadge').textContent = state.reviewOnly ? '오답 복습' : CATEGORY_NAMES[state.scope];
+      $('#questionText').innerHTML = q.prompt;
+      $('#feedback').className = 'feedback';
+      $('#nextBtn').classList.remove('show');
+      $('#progressBar').style.width = `${8 + ((state.round - 1) % 10) * 10.2}%`;
+      $('#options').innerHTML = '';
+      $('#typingWrap').classList.toggle('active', q.mode === 'typing');
+      $('#typingInput').value = '';
+      $('#typingInput').disabled = false;
+      $('#typingInput').className = 'typing-input';
+      $('#submitTypingBtn').disabled = false;
+
+      if (q.mode === 'mcq') {
+        q.choices.forEach((choice, i) => {
+          const btn = document.createElement('button');
+          btn.type = 'button'; btn.className = 'option'; btn.dataset.index = i;
+          btn.innerHTML = `<span class="num">${i+1}</span><span class="choice-text"></span><span class="mark"></span>`;
+          btn.querySelector('.choice-text').textContent = choice;
+          btn.addEventListener('click', () => answerMCQ(i));
+          $('#options').appendChild(btn);
+        });
+      } else {
+        setTimeout(() => $('#typingInput').focus(), 80);
+      }
+      updateStats();
+    }
+
+    function answerMCQ(index) {
+      if (state.answered || state.current.mode !== 'mcq') return;
+      const q = state.current;
+      const correct = index === q.answerIndex;
+      [...document.querySelectorAll('.option')].forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.answerIndex) { btn.classList.add('correct'); btn.querySelector('.mark').textContent = '✓'; }
+        else if (i === index) { btn.classList.add('wrong'); btn.querySelector('.mark').textContent = '×'; }
+      });
+      finalizeAnswer(correct, q.choices[index]);
+    }
+
+    function answerTyping() {
+      if (state.answered || state.current.mode !== 'typing') return;
+      const raw = $('#typingInput').value.trim();
+      if (!raw) { showToast('정답을 입력하세요.'); return; }
+      const accepted = state.current.accepted.map(norm);
+      const correct = accepted.includes(norm(raw));
+      $('#typingInput').disabled = true;
+      $('#submitTypingBtn').disabled = true;
+      $('#typingInput').classList.add(correct ? 'good' : 'bad');
+      finalizeAnswer(correct, raw);
+    }
+
+    function finalizeAnswer(correct, userAnswer) {
+      state.answered = true; state.total++;
+      if (correct) { state.correct++; state.streak++; state.best = Math.max(state.best, state.streak); }
+      else { state.streak = 0; }
+      const q = state.current;
+      const weakNow = Number(state.weak[q.factKey] || 0);
+      state.weak[q.factKey] = correct ? Math.max(0, weakNow - 1) : Math.min(5, weakNow + 2);
+      const mastered = Number(state.mastery[q.factKey] || 0);
+      state.mastery[q.factKey] = Math.max(0, Math.min(5, mastered + (correct ? 1 : -1)));
+      if (correct) removeMistake(q); else addMistake(q);
+      localStorage.setItem('virusQuizBest', state.best);
+      localStorage.setItem('virusQuizMastery', JSON.stringify(state.mastery));
+      localStorage.setItem('virusQuizWeak', JSON.stringify(state.weak));
+
+      $('#feedback').className = `feedback show ${correct ? 'good' : 'bad'}`;
+      $('#feedbackTitle').textContent = correct ? '정답입니다.' : `오답 — 정답: ${q.answerText}`;
+      $('#feedbackText').textContent = q.explanation;
+      $('#nextBtn').classList.add('show');
+      state.history.unshift({ round:state.round, type:TYPE_NAMES[q.type], prompt:stripHTML(q.prompt), userAnswer, answer:q.answerText, correct });
+      state.history = state.history.slice(0,30);
+      renderHistory(); updateStats(); renderCoverage();
+    }
+
+    function stripHTML(s) { const d = document.createElement('div'); d.innerHTML = s; return d.textContent; }
+    function goNext() { if (!state.answered) return; state.round++; renderQuestion(); }
+    function questionKey(q) { return `${q.type}|${q.prompt}|${q.answerText}`; }
+    function saveMistakes() { localStorage.setItem('virusQuizMistakes', JSON.stringify(state.mistakes)); updateReviewButton(); }
+    function addMistake(q) { const key = questionKey(q); if (!state.mistakes.some(x => questionKey(x) === key)) state.mistakes.push(JSON.parse(JSON.stringify(q))); saveMistakes(); }
+    function removeMistake(q) { const key = questionKey(q); state.mistakes = state.mistakes.filter(x => questionKey(x) !== key); saveMistakes(); }
+    function updateReviewButton() { const b = $('#reviewBtn'); if (!b) return; b.textContent = state.reviewOnly ? `전체 문제로 돌아가기 (${state.mistakes.length})` : `오답만 풀기 (${state.mistakes.length})`; b.classList.toggle('review-active', state.reviewOnly); }
+    function toggleReview() { if (!state.reviewOnly && !state.mistakes.length) { showToast('아직 저장된 오답이 없습니다.'); return; } state.reviewOnly = !state.reviewOnly; state.round++; updateReviewButton(); renderQuestion(); }
+
+    function updateStats() {
+      $('#correctStat').textContent = state.correct;
+      $('#streakStat').textContent = state.streak;
+      $('#bestStat').textContent = state.best;
+      $('#totalStat').textContent = state.total;
+      const acc = state.total ? Math.round(state.correct / state.total * 100) : 0;
+      $('#accuracyText').textContent = `${acc}%`;
+      $('#accuracyFill').style.width = `${acc}%`;
+    }
+
+    function renderHistory() {
+      $('#historyEmpty').hidden = state.history.length > 0;
+      $('#historyTable').hidden = state.history.length === 0;
+      const body = $('#historyBody'); body.innerHTML = '';
+      state.history.forEach(h => {
+        const tr = document.createElement('tr');
+        const vals = [h.round, h.type, h.prompt, `${h.userAnswer} → ${h.answer}`];
+        vals.forEach(v => { const td = document.createElement('td'); td.textContent = v; tr.appendChild(td); });
+        const result = document.createElement('td'); result.innerHTML = `<span class="result-dot ${h.correct ? 'o' : 'x'}">${h.correct ? 'O' : 'X'}</span>`;
+        tr.appendChild(result); body.appendChild(tr);
+      });
+    }
+
+    function renderCoverage() {
+      const groups = [
+        ['DNA', FAMILIES.filter(f=>f.nucleic==='DNA').map(f=>`fam:${f.id}`)],
+        ['+ssRNA', FAMILIES.filter(f=>f.genome==='+ssRNA').map(f=>`fam:${f.id}`)],
+        ['-ssRNA', FAMILIES.filter(f=>f.genome==='-ssRNA').map(f=>`fam:${f.id}`)],
+        ['ds/RT RNA', FAMILIES.filter(f=>['dsRNA','+ssRNA via DNA'].includes(f.genome)).map(f=>`fam:${f.id}`)],
+        ['Herpes', HERPES.map(h=>`hhv:${h.n}`)]
+      ];
+      const root = $('#coverage'); root.innerHTML = '';
+      groups.forEach(([label, keys]) => {
+        const score = keys.reduce((s,k) => s + Number(state.mastery[k] || 0), 0);
+        const pct = Math.round(score / (keys.length * 5) * 100);
+        const row = document.createElement('div'); row.className = 'coverage-item';
+        row.innerHTML = `<span>${label}</span><div class="mini-track"><div class="mini-fill" style="width:${pct}%"></div></div><b>${pct}%</b>`;
+        root.appendChild(row);
+      });
+    }
+
+    function renderReference() {
+      const root = $('#referenceContent'); root.innerHTML = '';
+      ['DNA','RNA'].forEach(kind => {
+        const section = document.createElement('section'); section.className = 'ref-section';
+        section.innerHTML = `<h3>${kind} virus</h3><div class="ref-table"><table><thead><tr><th>Family</th><th>Genome</th><th>Capsid</th><th>대표 바이러스</th></tr></thead><tbody></tbody></table></div>`;
+        const tbody = section.querySelector('tbody');
+        FAMILIES.filter(f=>f.nucleic===kind).forEach(f => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td><b>${f.name}</b><br><span style="color:var(--muted)">${f.short}</span></td><td><span class="tiny-tag ${kind==='DNA'?'tag-dna':'tag-rna'}">${GENOME_LABEL[f.genome]}</span></td><td>${f.coat}</td><td>${f.examples.map(e=>e[0]).join(' · ')}</td>`;
+          tbody.appendChild(tr);
+        });
+        root.appendChild(section);
+      });
+      const hSection = document.createElement('section'); hSection.className = 'ref-section';
+      hSection.innerHTML = `<h3>Herpesvirus 8종</h3><div class="ref-table"><table><thead><tr><th>번호</th><th>이름</th><th>잠복</th><th>연결 단서</th></tr></thead><tbody></tbody></table></div>`;
+      HERPES.forEach(h => { const tr = document.createElement('tr'); tr.innerHTML = `<td><b>HHV-${h.n}</b></td><td>${h.name}</td><td>${h.latency}</td><td>${h.clue}</td>`; hSection.querySelector('tbody').appendChild(tr); });
+      root.appendChild(hSection);
+    }
+
+    const sortPractice = { mode:'family', placements:{}, order:[], selected:null, checked:false, message:'모든 블록을 배치한 뒤 채점하세요.', resultClass:'' };
+
+    function currentSortItems() {
+      if (sortPractice.mode === 'example') return DRAG_EXAMPLES.map(x => ({...x}));
+      return SORT_GROUPS.filter(g => !g.extra).flatMap(g => g.familyIds.map(fid => {
+        const f = FAMILIES.find(x => x.id === fid);
+        return {id:`fam-${fid}`, label:f.name, target:g.id};
+      }));
+    }
+
+    function familyBoardLabel(fid) {
+      const f = FAMILIES.find(x => x.id === fid);
+      if (fid === 'picorna') return 'Picorna / Picornaviridae';
+      if (fid === 'flavi') return 'Flavi / Flaviviridae';
+      return f.name;
+    }
+
+    function beginSortMode(mode) {
+      sortPractice.mode = mode;
+      sortPractice.placements = {};
+      sortPractice.order = shuffle(currentSortItems().map(x => x.id));
+      sortPractice.selected = null;
+      sortPractice.checked = false;
+      sortPractice.message = '모든 블록을 배치한 뒤 채점하세요.';
+      sortPractice.resultClass = '';
+      $('#familyModeBtn').classList.toggle('active', mode === 'family');
+      $('#exampleModeBtn').classList.toggle('active', mode === 'example');
+      $('#sortHelp').innerHTML = mode === 'family'
+        ? '<b>속명 블록:</b> Pox·Herpes·Picorna 같은 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 넣으세요. 칸 안의 순서는 상관없습니다.'
+        : '<b>바이러스 예시 블록:</b> 각 family 아래에 대표 바이러스를 넣으세요. RSV·Hepatitis A·Hepatitis C의 추가 연결도 포함됩니다.';
+      renderSortPractice();
+    }
+
+    function placeSortItem(itemId, target) {
+      if (!currentSortItems().some(x => x.id === itemId)) return;
+      if (target === '__bank__') delete sortPractice.placements[itemId];
+      else sortPractice.placements[itemId] = target;
+      sortPractice.selected = null;
+      sortPractice.checked = false;
+      sortPractice.message = '배치를 수정했습니다. 완료 후 다시 채점하세요.';
+      sortPractice.resultClass = '';
+      renderSortPractice();
+    }
+
+    function wireSortDropZone(zone, target) {
+      zone.ondragover = e => { e.preventDefault(); zone.classList.add('drag-over'); };
+      zone.ondragleave = () => zone.classList.remove('drag-over');
+      zone.ondrop = e => {
+        e.preventDefault(); zone.classList.remove('drag-over');
+        const id = e.dataTransfer.getData('text/plain');
+        if (id) placeSortItem(id, target);
+      };
+      zone.onclick = e => {
+        if (e.target.closest('.virus-block')) return;
+        if (sortPractice.selected) placeSortItem(sortPractice.selected, target);
+      };
+    }
+
+    function makeSortBlock(item) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'virus-block'; b.draggable = true;
+      b.dataset.itemId = item.id; b.textContent = item.label;
+      if (sortPractice.selected === item.id) b.classList.add('selected');
+      if (sortPractice.checked) b.classList.add(sortPractice.placements[item.id] === item.target ? 'sort-correct' : 'sort-wrong');
+      b.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', item.id); e.dataTransfer.effectAllowed = 'move'; });
+      b.addEventListener('click', e => {
+        e.stopPropagation();
+        sortPractice.selected = sortPractice.selected === item.id ? null : item.id;
+        renderSortPractice();
+      });
+      return b;
+    }
+
+    function renderSortPractice() {
+      const items = currentSortItems(), byId = new Map(items.map(x => [x.id,x]));
+      if (!sortPractice.order.length || sortPractice.order.some(id => !byId.has(id))) sortPractice.order = shuffle(items.map(x => x.id));
+      const bank = $('#sortBank'); bank.innerHTML = ''; bank.classList.toggle('selected-target', Boolean(sortPractice.selected));
+      const unplaced = sortPractice.order.filter(id => !sortPractice.placements[id]);
+      if (!unplaced.length) bank.innerHTML = '<div class="sort-empty">모든 블록을 표에 배치했습니다. 칸의 블록을 다시 누르면 이동할 수 있습니다.</div>';
+      else unplaced.forEach(id => bank.appendChild(makeSortBlock(byId.get(id))));
+      wireSortDropZone(bank, '__bank__');
+
+      const board = $('#sortBoard'); board.innerHTML = '';
+      ['DNA','RNA'].forEach(kind => {
+        const groups = SORT_GROUPS.filter(g => g.nucleic === kind && (sortPractice.mode === 'example' || !g.extra));
+        const section = document.createElement('section'); section.className = 'sort-nucleic';
+        const title = document.createElement('div'); title.className = 'sort-nucleic-title'; title.textContent = `${kind} virus`; section.appendChild(title);
+        const grid = document.createElement('div'); grid.className = 'sort-groups'; grid.style.setProperty('--cols', groups.length);
+        groups.forEach(group => {
+          const card = document.createElement('div'); card.className = `sort-group ${group.tone}`;
+          card.innerHTML = `<div class="sort-group-head"><div>${group.title}<small>${group.detail}</small></div></div>`;
+          if (sortPractice.mode === 'family') {
+            const zone = document.createElement('div'); zone.className = 'drop-zone'; zone.dataset.placeholder = `${group.familyIds.length}개 속명 배치`;
+            if (sortPractice.selected) zone.classList.add('selected-target');
+            items.filter(x => sortPractice.placements[x.id] === group.id).forEach(x => zone.appendChild(makeSortBlock(x)));
+            wireSortDropZone(zone, group.id); card.appendChild(zone);
+          } else {
+            group.familyIds.forEach(fid => {
+              const zone = document.createElement('div'); zone.className = 'drop-zone family-zone'; zone.dataset.placeholder = '예시 바이러스 배치';
+              if (sortPractice.selected) zone.classList.add('selected-target');
+              const zt = document.createElement('div'); zt.className = 'family-zone-title'; zt.textContent = familyBoardLabel(fid); zone.appendChild(zt);
+              items.filter(x => sortPractice.placements[x.id] === fid).forEach(x => zone.appendChild(makeSortBlock(x)));
+              wireSortDropZone(zone, fid); card.appendChild(zone);
+            });
+          }
+          grid.appendChild(card);
+        });
+        section.appendChild(grid); board.appendChild(section);
+      });
+      const placed = Object.keys(sortPractice.placements).length;
+      $('#sortProgress').textContent = `${placed} / ${items.length} 배치`;
+      const result = $('#sortResult'); result.textContent = sortPractice.message; result.className = `sort-result ${sortPractice.resultClass}`.trim();
+    }
+
+    function checkSortPractice() {
+      const items = currentSortItems(), placed = items.filter(x => sortPractice.placements[x.id]).length;
+      const correct = items.filter(x => sortPractice.placements[x.id] === x.target).length;
+      sortPractice.checked = true;
+      if (placed < items.length) {
+        sortPractice.message = `${placed}/${items.length}개를 배치했습니다. 빈 블록 ${items.length-placed}개를 먼저 채워주세요.`;
+        sortPractice.resultClass = 'bad';
+      } else if (correct === items.length) {
+        sortPractice.message = `완벽합니다. ${correct}/${items.length}개 모두 정확합니다.`;
+        sortPractice.resultClass = 'good';
+      } else {
+        sortPractice.message = `${correct}/${items.length}개 정답입니다. 빨간 블록을 다른 칸으로 옮겨보세요.`;
+        sortPractice.resultClass = 'bad';
+      }
+      renderSortPractice();
+    }
+
+    function revealSortPractice() {
+      const items = currentSortItems();
+      sortPractice.placements = Object.fromEntries(items.map(x => [x.id,x.target]));
+      sortPractice.checked = true; sortPractice.selected = null;
+      sortPractice.message = `정답 배치를 표시했습니다. ${items.length}개 연결을 표에서 확인하세요.`;
+      sortPractice.resultClass = 'good'; renderSortPractice();
+    }
+
+    const herpesNamePractice = { queue:[], index:0, correct:0, answered:false, missed:[] };
+
+    function acceptedHerpesNames(h) {
+      return [h.name, ...h.aliases].filter(x => !/^hhv-?\d$/i.test(x.trim()));
+    }
+
+    function beginHerpesTyping() {
+      herpesNamePractice.queue = shuffle(HERPES.map(x => x.n));
+      herpesNamePractice.index = 0; herpesNamePractice.correct = 0; herpesNamePractice.answered = false; herpesNamePractice.missed = [];
+      $('#showHerpesAnswerBtn').textContent = '정답 보기';
+      renderHerpesTyping();
+    }
+
+    function currentHerpesTyping() { return HERPES.find(x => x.n === herpesNamePractice.queue[herpesNamePractice.index]); }
+
+    function renderHerpesTyping() {
+      const done = herpesNamePractice.index >= herpesNamePractice.queue.length;
+      $('#herpesTypingFill').style.width = `${done ? 100 : herpesNamePractice.index / 8 * 100}%`;
+      $('#herpesTypingProgress').textContent = done ? '완료' : `${herpesNamePractice.index+1} / 8`;
+      $('#nextHerpesNameBtn').hidden = true;
+      if (done) {
+        $('#herpesTypingNumber').textContent = 'COMPLETE';
+        $('#herpesTypingPrompt').innerHTML = `<div class="herpes-summary">8종 회독 완료<strong>${herpesNamePractice.correct} / 8</strong><span>정답</span></div>`;
+        $('#herpesTypingInputRow').style.display = 'none';
+        const missed = herpesNamePractice.missed.map(n => `HHV-${n}`).join(' · ');
+        $('#herpesTypingFeedback').className = `herpes-feedback show ${herpesNamePractice.correct===8?'good':'bad'}`;
+        $('#herpesTypingFeedback').textContent = missed ? `다시 볼 번호: ${missed}` : '8종의 이름을 모두 정확히 입력했습니다.';
+        $('#showHerpesAnswerBtn').hidden = false; $('#showHerpesAnswerBtn').textContent = '8종 다시 풀기';
+        return;
+      }
+      const h = currentHerpesTyping();
+      $('#herpesTypingNumber').textContent = `HHV-${h.n}`;
+      $('#herpesTypingPrompt').textContent = `Human herpesvirus ${h.n}의 이름을 직접 입력하세요.`;
+      $('#herpesTypingInputRow').style.display = 'grid';
+      $('#herpesNameInput').value = ''; $('#herpesNameInput').disabled = false;
+      $('#checkHerpesNameBtn').disabled = false; $('#checkHerpesNameBtn').textContent = '채점';
+      $('#herpesTypingFeedback').className = 'herpes-feedback'; $('#herpesTypingFeedback').textContent = '';
+      $('#showHerpesAnswerBtn').hidden = false; $('#showHerpesAnswerBtn').textContent = '정답 보기';
+      herpesNamePractice.answered = false;
+      setTimeout(() => $('#herpesNameInput').focus(), 80);
+    }
+
+    function finishHerpesTyping(correct, revealed=false) {
+      if (herpesNamePractice.answered) return;
+      const h = currentHerpesTyping(); herpesNamePractice.answered = true;
+      if (correct) herpesNamePractice.correct++; else herpesNamePractice.missed.push(h.n);
+      $('#herpesNameInput').disabled = true; $('#checkHerpesNameBtn').disabled = true;
+      $('#herpesTypingFeedback').className = `herpes-feedback show ${correct?'good':'bad'}`;
+      $('#herpesTypingFeedback').innerHTML = correct
+        ? `<b>정답입니다.</b> ${h.name}`
+        : `<b>${revealed?'정답을 확인했습니다.':'오답입니다.'}</b> 정답: ${h.name}<br>${h.clue}`;
+      $('#showHerpesAnswerBtn').hidden = true; $('#nextHerpesNameBtn').hidden = false;
+      $('#herpesTypingFill').style.width = `${(herpesNamePractice.index+1)/8*100}%`;
+    }
+
+    function checkHerpesTyping() {
+      if (herpesNamePractice.answered) return;
+      const raw = $('#herpesNameInput').value.trim(); if (!raw) { showToast('바이러스 이름을 입력하세요.'); return; }
+      const h = currentHerpesTyping();
+      finishHerpesTyping(acceptedHerpesNames(h).map(norm).includes(norm(raw)));
+    }
+
+    function nextHerpesTyping() {
+      if (!herpesNamePractice.answered) return;
+      herpesNamePractice.index++; renderHerpesTyping();
+    }
+
+    function showToast(message) {
+      const t = $('#toast'); t.textContent = message; t.classList.add('show');
+      clearTimeout(showToast.timer); showToast.timer = setTimeout(() => t.classList.remove('show'), 1700);
+    }
+
+    $('#nextBtn').addEventListener('click', goNext);
+    $('#submitTypingBtn').addEventListener('click', answerTyping);
+    $('#scopeSelect').value = state.scope;
+    $('#scopeSelect').addEventListener('change', e => {
+      state.scope = e.target.value; localStorage.setItem('virusQuizScope', state.scope);
+      state.round++; renderQuestion(); showToast(`${CATEGORY_NAMES[state.scope]} 범위로 변경했습니다.`);
+    });
+    $('#openReferenceBtn').addEventListener('click', () => $('#referenceDialog').showModal());
+    $('#openSortBtn').addEventListener('click', () => {
+      if (!sortPractice.order.length) beginSortMode('family'); else renderSortPractice();
+      $('#sortDialog').showModal();
+    });
+    $('#closeSortBtn').addEventListener('click', () => $('#sortDialog').close());
+    $('#sortDialog').addEventListener('click', e => { if (e.target === $('#sortDialog')) $('#sortDialog').close(); });
+    $('#familyModeBtn').addEventListener('click', () => beginSortMode('family'));
+    $('#exampleModeBtn').addEventListener('click', () => beginSortMode('example'));
+    $('#resetSortBtn').addEventListener('click', () => beginSortMode(sortPractice.mode));
+    $('#checkSortBtn').addEventListener('click', checkSortPractice);
+    $('#revealSortBtn').addEventListener('click', revealSortPractice);
+    $('#openHerpesTypingBtn').addEventListener('click', () => { beginHerpesTyping(); $('#herpesTypingDialog').showModal(); });
+    $('#closeHerpesTypingBtn').addEventListener('click', () => $('#herpesTypingDialog').close());
+    $('#herpesTypingDialog').addEventListener('click', e => { if (e.target === $('#herpesTypingDialog')) $('#herpesTypingDialog').close(); });
+    $('#checkHerpesNameBtn').addEventListener('click', checkHerpesTyping);
+    $('#nextHerpesNameBtn').addEventListener('click', nextHerpesTyping);
+    $('#showHerpesAnswerBtn').addEventListener('click', () => {
+      if (herpesNamePractice.index >= herpesNamePractice.queue.length) beginHerpesTyping();
+      else finishHerpesTyping(false, true);
+    });
+    $('#herpesNameInput').addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation();
+      herpesNamePractice.answered ? nextHerpesTyping() : checkHerpesTyping();
+    });
+    $('#reviewBtn').addEventListener('click', toggleReview);
+    $('#closeReferenceBtn').addEventListener('click', () => $('#referenceDialog').close());
+    $('#referenceDialog').addEventListener('click', e => { if (e.target === $('#referenceDialog')) $('#referenceDialog').close(); });
+    $('#scrollHistoryBtn').addEventListener('click', () => $('#historyCard').scrollIntoView({behavior:'smooth'}));
+    $('#resetBtn').addEventListener('click', () => {
+      if (!confirm('누적 숙련도, 최고 연속 정답 기록, 저장된 오답을 모두 초기화할까요?')) return;
+      state.mastery = {}; state.weak = {}; state.best = 0; state.mistakes = []; state.reviewOnly = false;
+      localStorage.removeItem('virusQuizMastery'); localStorage.removeItem('virusQuizWeak'); localStorage.removeItem('virusQuizBest'); localStorage.removeItem('virusQuizMistakes');
+      updateReviewButton(); updateStats(); renderCoverage(); showToast('누적 학습 기록과 오답을 초기화했습니다.');
+    });
+    document.addEventListener('keydown', e => {
+      if ($('#referenceDialog').open || $('#sortDialog').open || $('#herpesTypingDialog').open) return;
+      if (state.current?.mode === 'typing') {
+        if (e.key === 'Enter') { e.preventDefault(); state.answered ? goNext() : answerTyping(); }
+        return;
+      }
+      if (!state.answered && /^[1-5]$/.test(e.key)) answerMCQ(Number(e.key)-1);
+      else if (state.answered && e.key === 'Enter') { e.preventDefault(); goNext(); }
+    });
+
+    renderReference(); renderCoverage(); updateReviewButton(); updateStats(); renderHistory(); renderQuestion();
+  </script>
+</body>
+</html>
