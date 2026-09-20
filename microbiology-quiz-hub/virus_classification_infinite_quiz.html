@@ -282,6 +282,13 @@
     .herpes-feedback.bad { color: #963246; background: var(--red-bg); }
     .herpes-summary { text-align: center; padding: 12px 4px; }
     .herpes-summary strong { display: block; margin: 7px 0; font-size: 42px; color: var(--blue); }
+    .vap-type { display: inline-flex; margin-bottom: 8px; padding: 5px 9px; border-radius: 99px; color: #2754b9; background: #e7edff; font-size: 10px; font-weight: 950; letter-spacing: .04em; }
+    .vap-question { margin: 3px 0 18px; min-height: 62px; font-size: clamp(20px,3.5vw,27px); line-height: 1.45; word-break: keep-all; }
+    .vap-question em { color: var(--blue); font-style: normal; }
+    .vap-options { display: grid; gap: 9px; }
+    .vap-options .option { min-height: 52px; padding: 10px 13px; }
+    .vap-summary { padding: 26px 5px; text-align: center; }
+    .vap-summary strong { display: block; margin: 8px 0 2px; color: var(--blue); font-size: 44px; }
 
     .toast { position: fixed; left: 50%; bottom: 25px; z-index: 10; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 11px 15px; border-radius: 12px; color: #fff; background: #202a3d; box-shadow: 0 8px 30px rgba(0,0,0,.22); font-size: 13px; font-weight: 750; transition: .2s; }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -330,13 +337,14 @@
         <div class="brand-mark">V</div>
         <div>
           <h1>바이러스 분류 무한회독</h1>
-          <p>Family · 핵산 · ssRNA polarity · envelope · Herpes 8종</p>
+          <p>Family · 핵산 · ssRNA polarity · envelope · Herpes 8종 · Viral attachment protein</p>
         </div>
       </div>
       <div class="top-actions">
         <button class="ghost" id="scrollHistoryBtn" type="button">기록 보기</button>
         <button class="ghost" id="reviewBtn" type="button">오답만 풀기 (0)</button>
         <button class="ghost" id="openSortBtn" type="button">분류표 채우기</button>
+        <button class="ghost" id="openAttachmentBtn" type="button">Viral attachment protein</button>
         <button class="ghost" id="openHerpesTypingBtn" type="button">Herpes 이름 쓰기</button>
         <button class="ghost" id="openReferenceBtn" type="button">학습표 열기</button>
       </div>
@@ -440,7 +448,7 @@
       <button class="ghost" id="closeReferenceBtn" type="button">문제로 돌아가기</button>
     </div>
     <div class="modal-body">
-      <p class="reference-note"><b>강의록 본문 분류표와 사용자가 첨부한 최신 분류 이미지를 기준</b>으로 정리했습니다. Family는 강의록처럼 Pox·Herpes·Picorna 등의 짧은 표기를 사용하며, RSV는 별도 추가 연결인 Pneumo에 배치합니다.</p>
+      <p class="reference-note"><b>강의록 본문 분류표와 13강 Table 4-5·4-6을 우선 기준</b>으로 정리했습니다. Family는 강의록처럼 Pox·Herpes·Picorna 등의 짧은 표기를 사용하며, RSV는 별도 추가 연결인 Pneumo에 배치합니다.</p>
       <div id="referenceContent"></div>
     </div>
   </dialog>
@@ -492,6 +500,26 @@
       </div>
     </div>
   </dialog>
+
+  <dialog class="herpes-practice" id="attachmentDialog">
+    <div class="modal-head">
+      <div><h2>Viral attachment protein 회독</h2><div class="practice-progress" id="attachmentProgress">1 / 15</div></div>
+      <button class="ghost" id="closeAttachmentBtn" type="button">문제로 돌아가기</button>
+    </div>
+    <div class="modal-body">
+      <div class="herpes-progress-track"><div class="herpes-progress-fill" id="attachmentFill"></div></div>
+      <div class="herpes-card">
+        <div class="vap-type" id="attachmentType">VIRUS → VAP</div>
+        <h3 class="vap-question" id="attachmentQuestion">문항을 준비하고 있습니다.</h3>
+        <div class="vap-options" id="attachmentOptions"></div>
+        <div class="herpes-feedback" id="attachmentFeedback"></div>
+      </div>
+      <div class="practice-actions" style="margin-top:13px;justify-content:flex-end">
+        <button class="ghost" id="restartAttachmentBtn" type="button">처음부터</button>
+        <button class="primary" id="nextAttachmentBtn" type="button" hidden>다음 문항 →</button>
+      </div>
+    </div>
+  </dialog>
   <div class="toast" id="toast"></div>
 
   <script>
@@ -516,7 +544,8 @@
         ['Parvovirus B19', 'parvovirus b19', 'b19 parvovirus'], ['Adeno-associated virus (AAV)', 'adeno associated virus', 'aav'] ] },
 
       { id:'picorna', name:'Picorna', short:'Picorna', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
-        ['Poliovirus', 'poliovirus', 'polio virus'], ['Hepatitis A virus (HAV)', 'hepatitis a virus', 'hav'] ] },
+        ['Poliovirus', 'poliovirus', 'polio virus'], ['Hepatitis A virus (HAV)', 'hepatitis a virus', 'hav'],
+        ['Rhinovirus', 'rhinovirus', 'rhino virus'] ] },
       { id:'calici', name:'Calici', short:'Calici', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
         ['Norovirus', 'norovirus'] ] },
       { id:'hepe', name:'Hepe', short:'Hepe', nucleic:'RNA', genome:'+ssRNA', coat:'Naked capsid', examples:[
@@ -561,6 +590,23 @@
       {n:8, name:'Human herpesvirus 8 (Kaposi sarcoma virus)', aliases:['hhv8','hhv-8','human herpesvirus 8','kaposi sarcoma virus'], latency:'백혈구·혈관·림프', clue:'Kaposi sarcoma'}
     ];
 
+    const ATTACHMENT_ROWS = [
+      {id:'rhinovirus',family:'Picorna',virus:'Rhinovirus',vap:'VP1-VP2-VP3 complex',receptor:'ICAM-1 (Ig superfamily protein)',target:'Epithelial cells',high:true},
+      {id:'adenovirus',family:'Adeno',virus:'Adenovirus',vap:'Fiber protein',receptor:null,target:null},
+      {id:'reovirus',family:'Reo',virus:'Reovirus',vap:'σ-1',receptor:null,target:null},
+      {id:'rotavirus',family:'Reo',virus:'Rotavirus',vap:'VP7',receptor:null,target:null},
+      {id:'semliki',family:'Toga',virus:'Semliki Forest virus',vap:'E1-E2-E3 complex gp',receptor:null,target:null},
+      {id:'rabies',family:'Rhabdo',virus:'Rabies virus',vap:'G protein gp',receptor:'Acetylcholine receptor, NCAM',target:'Neuron'},
+      {id:'influenza',family:'Orthomyxo',virus:'Influenza A virus',vap:'HA gp',receptor:'Sialic acid',target:'Epithelial cells',high:true},
+      {id:'measles',family:'Paramyxo',virus:'Measles virus',vap:'HA gp',receptor:null,target:null},
+      {id:'ebv',family:'Herpes',virus:'Epstein-Barr virus',vap:'gp350, gp220',receptor:'CR2 (CD21)',target:'B cell',high:true},
+      {id:'hsv',family:'Herpes',virus:'Herpes simplex virus',vap:null,receptor:'HVEM (HVEA), nectin-1',target:'Many cells'},
+      {id:'murine',family:'Retro',virus:'Murine leukemia virus',vap:'gp70',receptor:null,target:null},
+      {id:'hiv',family:'Retro',virus:'HIV',vap:'gp120',receptor:'CD4 + CCR5/CXCR4',target:'Helper T cell',high:true},
+      {id:'poliovirus',family:'Picorna',virus:'Poliovirus',vap:null,receptor:'Ig superfamily protein',target:'Epithelial cells'},
+      {id:'b19',family:'Parvo',virus:'Parvovirus B19',vap:null,receptor:'Erythrocyte P antigen (globoside)',target:'Erythroid precursors'}
+    ];
+
     const SORT_GROUPS = [
       {id:'dna-env', nucleic:'DNA', title:'Enveloped', detail:'DNA virus', tone:'env', familyIds:['pox','herpes','hepadna']},
       {id:'dna-naked', nucleic:'DNA', title:'Naked capsid', detail:'DNA virus', tone:'naked', familyIds:['polyoma','papilloma','adeno','parvo']},
@@ -579,7 +625,7 @@
       {id:'ex-bk',label:'BK virus',target:'polyoma'}, {id:'ex-jc',label:'JC virus',target:'polyoma'},
       {id:'ex-hpv16',label:'HPV-16',target:'papilloma'}, {id:'ex-adeno5',label:'Human adenovirus 5',target:'adeno'},
       {id:'ex-b19',label:'Parvovirus B19',target:'parvo'}, {id:'ex-aav',label:'Adeno-associated virus',target:'parvo'},
-      {id:'ex-polio',label:'Poliovirus',target:'picorna'}, {id:'ex-hava',label:'Hepatitis A virus',target:'picorna'},
+      {id:'ex-polio',label:'Poliovirus',target:'picorna'}, {id:'ex-hava',label:'Hepatitis A virus',target:'picorna'}, {id:'ex-rhino',label:'Rhinovirus',target:'picorna'},
       {id:'ex-noro',label:'Norovirus',target:'calici'}, {id:'ex-hev',label:'Hepatitis E virus',target:'hepe'},
       {id:'ex-astro',label:'Human astrovirus',target:'astro'}, {id:'ex-chik',label:'Chikungunya virus',target:'toga'},
       {id:'ex-dengue',label:'Dengue virus',target:'flavi'}, {id:'ex-hcv',label:'Hepatitis C virus',target:'flavi'},
@@ -987,6 +1033,10 @@
       hSection.innerHTML = `<h3>Herpesvirus 8종</h3><div class="ref-table"><table><thead><tr><th>번호</th><th>이름</th><th>잠복</th><th>연결 단서</th></tr></thead><tbody></tbody></table></div>`;
       HERPES.forEach(h => { const tr = document.createElement('tr'); tr.innerHTML = `<td><b>HHV-${h.n}</b></td><td>${h.name}</td><td>${h.latency}</td><td>${h.clue}</td>`; hSection.querySelector('tbody').appendChild(tr); });
       root.appendChild(hSection);
+      const aSection = document.createElement('section'); aSection.className = 'ref-section';
+      aSection.innerHTML = `<h3>Viral attachment protein · receptor</h3><div class="ref-table"><table><thead><tr><th>Family</th><th>Virus</th><th>VAP</th><th>Target cell</th><th>Host receptor</th></tr></thead><tbody></tbody></table></div>`;
+      ATTACHMENT_ROWS.forEach(a => { const tr = document.createElement('tr'); tr.innerHTML = `<td><b>${a.family}</b></td><td>${a.virus}</td><td>${a.vap || '—'}</td><td>${a.target || '—'}</td><td>${a.receptor || '—'}</td>`; aSection.querySelector('tbody').appendChild(tr); });
+      root.appendChild(aSection);
     }
 
     const sortPractice = { mode:'family', placements:{}, order:[], familyOrder:{}, selected:null, checked:false, message:'모든 블록을 배치한 뒤 채점하세요.', resultClass:'' };
@@ -1215,6 +1265,121 @@
       herpesNamePractice.index++; renderHerpesTyping();
     }
 
+    const ATTACHMENT_PRACTICE_LENGTH = 15;
+    const attachmentPractice = { index:0, correct:0, answered:false, current:null, recent:[], missed:[] };
+
+    function attachmentWeighted(items) {
+      return items.flatMap(item => Array(item.high ? 3 : 1).fill(item));
+    }
+
+    function attachmentPack(type, prompt, correct, pool, explanation, id) {
+      const distractors = sample([...new Set(pool)].filter(x => x !== correct), 4);
+      const choices = shuffle([correct, ...distractors]);
+      return {type, prompt, choices, answerIndex:choices.indexOf(correct), answerText:correct, explanation, id};
+    }
+
+    function qAttachmentVap() {
+      const rows = ATTACHMENT_ROWS.filter(x => x.vap);
+      const row = pick(attachmentWeighted(rows));
+      return attachmentPack('VIRUS → VAP', `<em>${row.virus}</em>의 viral attachment protein은?`, row.vap, rows.map(x => x.vap),
+        `${row.family} · ${row.virus} → ${row.vap}.`, `vap:${row.id}`);
+    }
+
+    function qAttachmentReceptor() {
+      const rows = ATTACHMENT_ROWS.filter(x => x.receptor);
+      const row = pick(attachmentWeighted(rows));
+      return attachmentPack('VIRUS → RECEPTOR', `<em>${row.virus}</em>가 결합하는 host receptor는?`, row.receptor, rows.map(x => x.receptor),
+        `${row.virus} → ${row.receptor}${row.target ? ` → ${row.target}` : ''}.`, `receptor:${row.id}`);
+    }
+
+    function qAttachmentTarget() {
+      const rows = ATTACHMENT_ROWS.filter(x => x.target);
+      const row = pick(attachmentWeighted(rows));
+      return attachmentPack('VIRUS → TARGET CELL', `<em>${row.virus}</em>의 표적 세포로 강의록과 일치하는 것은?`, row.target, rows.map(x => x.target),
+        `${row.virus} → ${row.target}${row.receptor ? ` → ${row.receptor}` : ''}.`, `target:${row.id}`);
+    }
+
+    function qAttachmentReverse() {
+      const withVap = ATTACHMENT_ROWS.filter(x => x.vap);
+      const unique = withVap.filter(row => withVap.filter(x => x.vap === row.vap).length === 1);
+      const row = pick(attachmentWeighted(unique));
+      return attachmentPack('VAP → VIRUS', `<em>${row.vap}</em>을 viral attachment protein으로 사용하는 바이러스는?`, row.virus, ATTACHMENT_ROWS.map(x => x.virus),
+        `${row.vap} → ${row.virus} (${row.family}).`, `vap:${row.id}`);
+    }
+
+    function qAttachmentTriple() {
+      const rows = ATTACHMENT_ROWS.filter(x => x.vap && x.receptor);
+      const row = pick(attachmentWeighted(rows));
+      const correct = `${row.vap} — ${row.receptor} — ${row.target}`;
+      const wrong = rows.filter(x => x.id !== row.id).map(x => `${x.vap} — ${x.receptor} — ${x.target}`);
+      return attachmentPack('VAP · RECEPTOR · CELL', `<em>${row.virus}</em>의 VAP–receptor–target cell 연결로 옳은 것은?`, correct, wrong,
+        `${row.virus}: ${correct}.`, `triple:${row.id}`);
+    }
+
+    function buildAttachmentQuestion() {
+      const generators = [qAttachmentVap,qAttachmentVap,qAttachmentReceptor,qAttachmentReceptor,qAttachmentTriple,qAttachmentTriple,qAttachmentTarget,qAttachmentReverse];
+      let q, guard = 0;
+      do { q = pick(generators)(); guard++; } while (attachmentPractice.recent.includes(`${q.type}|${q.prompt}`) && guard < 20);
+      attachmentPractice.recent.push(`${q.type}|${q.prompt}`);
+      if (attachmentPractice.recent.length > 5) attachmentPractice.recent.shift();
+      return q;
+    }
+
+    function beginAttachmentPractice() {
+      attachmentPractice.index = 0; attachmentPractice.correct = 0; attachmentPractice.answered = false;
+      attachmentPractice.current = null; attachmentPractice.recent = []; attachmentPractice.missed = [];
+      $('#restartAttachmentBtn').textContent = '처음부터';
+      renderAttachmentPractice();
+    }
+
+    function renderAttachmentPractice() {
+      const done = attachmentPractice.index >= ATTACHMENT_PRACTICE_LENGTH;
+      $('#attachmentProgress').textContent = done ? '완료' : `${attachmentPractice.index + 1} / ${ATTACHMENT_PRACTICE_LENGTH}`;
+      $('#attachmentFill').style.width = `${done ? 100 : attachmentPractice.index / ATTACHMENT_PRACTICE_LENGTH * 100}%`;
+      $('#nextAttachmentBtn').hidden = true;
+      $('#attachmentFeedback').className = 'herpes-feedback'; $('#attachmentFeedback').textContent = '';
+      $('#attachmentOptions').innerHTML = '';
+      if (done) {
+        $('#attachmentType').textContent = 'COMPLETE';
+        $('#attachmentQuestion').innerHTML = `<div class="vap-summary">15문항 회독 완료<strong>${attachmentPractice.correct} / ${ATTACHMENT_PRACTICE_LENGTH}</strong><span>정답</span></div>`;
+        const missed = [...new Set(attachmentPractice.missed)].join(' · ');
+        $('#attachmentFeedback').className = `herpes-feedback show ${attachmentPractice.correct===ATTACHMENT_PRACTICE_LENGTH?'good':'bad'}`;
+        $('#attachmentFeedback').textContent = missed ? `다시 볼 연결: ${missed}` : 'VAP·receptor·target cell 연결을 모두 정확히 맞혔습니다.';
+        $('#restartAttachmentBtn').textContent = '15문항 다시 풀기';
+        return;
+      }
+      const q = buildAttachmentQuestion(); attachmentPractice.current = q; attachmentPractice.answered = false;
+      $('#attachmentType').textContent = q.type;
+      $('#attachmentQuestion').innerHTML = q.prompt;
+      q.choices.forEach((choice, i) => {
+        const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'option';
+        btn.innerHTML = `<span class="num">${i+1}</span><span class="choice-text"></span><span class="mark"></span>`;
+        btn.querySelector('.choice-text').textContent = choice;
+        btn.addEventListener('click', () => answerAttachment(i));
+        $('#attachmentOptions').appendChild(btn);
+      });
+    }
+
+    function answerAttachment(index) {
+      if (attachmentPractice.answered || !attachmentPractice.current) return;
+      const q = attachmentPractice.current, correct = index === q.answerIndex; attachmentPractice.answered = true;
+      if (correct) attachmentPractice.correct++; else attachmentPractice.missed.push(q.answerText);
+      [...document.querySelectorAll('#attachmentOptions .option')].forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.answerIndex) { btn.classList.add('correct'); btn.querySelector('.mark').textContent = '✓'; }
+        else if (i === index) { btn.classList.add('wrong'); btn.querySelector('.mark').textContent = '×'; }
+      });
+      $('#attachmentFeedback').className = `herpes-feedback show ${correct?'good':'bad'}`;
+      $('#attachmentFeedback').innerHTML = correct ? `<b>정답입니다.</b> ${q.explanation}` : `<b>오답입니다.</b> 정답: ${q.answerText}<br>${q.explanation}`;
+      $('#attachmentFill').style.width = `${(attachmentPractice.index + 1) / ATTACHMENT_PRACTICE_LENGTH * 100}%`;
+      $('#nextAttachmentBtn').hidden = false;
+    }
+
+    function nextAttachmentQuestion() {
+      if (!attachmentPractice.answered) return;
+      attachmentPractice.index++; renderAttachmentPractice();
+    }
+
     function showToast(message) {
       const t = $('#toast'); t.textContent = message; t.classList.add('show');
       clearTimeout(showToast.timer); showToast.timer = setTimeout(() => t.classList.remove('show'), 1700);
@@ -1240,6 +1405,19 @@
     $('#resetSortBtn').addEventListener('click', () => beginSortMode(sortPractice.mode));
     $('#checkSortBtn').addEventListener('click', checkSortPractice);
     $('#revealSortBtn').addEventListener('click', revealSortPractice);
+    $('#openAttachmentBtn').addEventListener('click', () => { beginAttachmentPractice(); $('#attachmentDialog').showModal(); });
+    $('#closeAttachmentBtn').addEventListener('click', () => $('#attachmentDialog').close());
+    $('#attachmentDialog').addEventListener('click', e => { if (e.target === $('#attachmentDialog')) $('#attachmentDialog').close(); });
+    $('#restartAttachmentBtn').addEventListener('click', beginAttachmentPractice);
+    $('#nextAttachmentBtn').addEventListener('click', nextAttachmentQuestion);
+    $('#attachmentDialog').addEventListener('keydown', e => {
+      if (/^[1-5]$/.test(e.key) && !attachmentPractice.answered && attachmentPractice.index < ATTACHMENT_PRACTICE_LENGTH) {
+        e.preventDefault(); e.stopPropagation(); answerAttachment(Number(e.key)-1); return;
+      }
+      if (e.key === 'Enter' && attachmentPractice.answered && attachmentPractice.index < ATTACHMENT_PRACTICE_LENGTH) {
+        e.preventDefault(); e.stopPropagation(); nextAttachmentQuestion();
+      }
+    });
     $('#openHerpesTypingBtn').addEventListener('click', () => { beginHerpesTyping(); $('#herpesTypingDialog').showModal(); });
     $('#closeHerpesTypingBtn').addEventListener('click', () => $('#herpesTypingDialog').close());
     $('#herpesTypingDialog').addEventListener('click', e => { if (e.target === $('#herpesTypingDialog')) $('#herpesTypingDialog').close(); });
@@ -1265,7 +1443,7 @@
       updateReviewButton(); updateStats(); renderCoverage(); showToast('누적 학습 기록과 오답을 초기화했습니다.');
     });
     document.addEventListener('keydown', e => {
-      if ($('#referenceDialog').open || $('#sortDialog').open || $('#herpesTypingDialog').open) return;
+      if ($('#referenceDialog').open || $('#sortDialog').open || $('#attachmentDialog').open || $('#herpesTypingDialog').open) return;
       if (state.current?.mode === 'typing') {
         if (e.key === 'Enter') { e.preventDefault(); state.answered ? goNext() : answerTyping(); }
         return;
