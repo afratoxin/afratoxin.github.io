@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#244a78">
+  <meta name="description" content="강의록 기반 viral attachment protein, receptor, target cell 무한회독 퀴즈">
+  <title>Viral attachment protein 무한회독</title>
+  <style>
+    :root {
+      --ink:#162433; --muted:#66788a; --paper:#fff; --canvas:#f3f7fb; --line:#dce5ee;
+      --navy:#244a78; --blue:#3379bd; --sky:#eaf4ff; --green:#168568; --green-bg:#e9f8f2;
+      --red:#c34855; --red-bg:#fff0f2; --amber:#b56a14; --amber-bg:#fff5e7;
+      --shadow:0 18px 46px rgba(31,67,101,.11);
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; min-height:100vh; color:var(--ink);
+      background:radial-gradient(circle at 0 0,rgba(51,121,189,.14),transparent 28rem),radial-gradient(circle at 100% 8%,rgba(91,190,171,.12),transparent 30rem),var(--canvas);
+      font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,sans-serif;
+    }
+    button,select { font:inherit; }
+    button { cursor:pointer; }
+    .shell { width:min(1120px,calc(100% - 32px)); margin:0 auto; padding:24px 0 54px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:20px; }
+    .back { color:#315570; font-size:13px; font-weight:850; text-decoration:none; }
+    .source { color:var(--muted); font-size:11px; font-weight:800; }
+    .hero { position:relative; overflow:hidden; padding:34px 38px; border-radius:27px; color:#fff; background:linear-gradient(135deg,#203f69,#2e6fa8 62%,#278f88); box-shadow:var(--shadow); }
+    .hero::after { content:"VAP"; position:absolute; right:28px; bottom:-31px; color:rgba(255,255,255,.08); font-size:128px; font-weight:950; letter-spacing:-.08em; }
+    .eyebrow { margin:0 0 9px; color:#bfe5ff; font-size:11px; font-weight:950; letter-spacing:.15em; text-transform:uppercase; }
+    h1 { position:relative; z-index:1; margin:0; font-size:clamp(30px,5vw,50px); line-height:1.1; letter-spacing:-.055em; }
+    .hero p:last-child { position:relative; z-index:1; max-width:700px; margin:14px 0 0; color:rgba(255,255,255,.82); font-size:13px; line-height:1.65; word-break:keep-all; }
+    .toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin:18px 0; }
+    .toolbar label { color:var(--muted); font-size:12px; font-weight:900; }
+    select,.ghost { min-height:40px; padding:0 13px; border:1px solid var(--line); border-radius:11px; color:var(--ink); background:#fff; font-size:12px; font-weight:800; }
+    .ghost:hover { border-color:#9fc5e7; background:#f7fbff; }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-left:auto; }
+    .stat { min-width:76px; padding:8px 12px; border:1px solid var(--line); border-radius:11px; background:rgba(255,255,255,.8); text-align:center; }
+    .stat b { display:block; font-size:17px; }
+    .stat span { color:var(--muted); font-size:9px; font-weight:850; letter-spacing:.04em; }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) 290px; gap:17px; align-items:start; }
+    .card { border:1px solid var(--line); border-radius:22px; background:rgba(255,255,255,.94); box-shadow:0 9px 27px rgba(31,67,101,.065); }
+    .quiz { min-height:490px; padding:27px; }
+    .question-top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .question-kind { display:inline-flex; align-items:center; min-height:27px; padding:0 9px; border-radius:8px; color:#245c8d; background:var(--sky); font-size:10px; font-weight:950; }
+    .question-no { color:var(--muted); font-size:11px; font-weight:850; }
+    .high { display:none; margin:18px 0 -5px; color:var(--amber); font-size:10px; font-weight:950; }
+    .high.show { display:block; }
+    h2 { margin:25px 0 9px; font-size:clamp(21px,3.3vw,29px); line-height:1.38; letter-spacing:-.04em; word-break:keep-all; }
+    .hint { min-height:20px; margin:0 0 20px; color:var(--muted); font-size:12px; line-height:1.55; }
+    .choices { display:grid; gap:9px; }
+    .choice { display:grid; grid-template-columns:29px minmax(0,1fr); gap:10px; align-items:center; width:100%; padding:12px 13px; border:1px solid var(--line); border-radius:13px; color:var(--ink); background:#fff; text-align:left; line-height:1.4; transition:.15s ease; }
+    .choice:hover:not(:disabled) { transform:translateY(-1px); border-color:#8db8df; background:#f8fbff; }
+    .choice:disabled { cursor:default; }
+    .choice .num { display:grid; place-items:center; width:27px; height:27px; border-radius:8px; color:#45627b; background:#eef3f7; font-size:11px; font-weight:950; }
+    .choice .label { font-size:13px; font-weight:800; }
+    .choice.correct { border-color:#77cbb3; background:var(--green-bg); }
+    .choice.correct .num { color:#fff; background:var(--green); }
+    .choice.wrong { border-color:#e2a2aa; background:var(--red-bg); }
+    .choice.wrong .num { color:#fff; background:var(--red); }
+    .feedback { display:none; margin-top:15px; padding:13px 15px; border-radius:13px; font-size:12px; font-weight:800; line-height:1.6; }
+    .feedback.show { display:block; }
+    .feedback.ok { color:#12654f; background:var(--green-bg); }
+    .feedback.no { color:#943541; background:var(--red-bg); }
+    .next { display:none; width:100%; margin-top:12px; min-height:45px; border:0; border-radius:13px; color:#fff; background:linear-gradient(110deg,var(--navy),var(--blue)); font-size:13px; font-weight:950; }
+    .next.show { display:block; }
+    .side { padding:21px; }
+    .side h3 { margin:0; font-size:16px; letter-spacing:-.03em; }
+    .side-note { margin:7px 0 17px; color:var(--muted); font-size:11px; line-height:1.5; }
+    .history { display:grid; gap:8px; }
+    .history-empty { padding:30px 8px; color:#8998a5; font-size:11px; text-align:center; }
+    .history-item { padding:10px 11px; border-radius:11px; background:#f4f7fa; }
+    .history-item b { display:block; overflow:hidden; margin-bottom:3px; font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+    .history-item span { color:var(--muted); font-size:10px; }
+    .history-item.ok { border-left:3px solid var(--green); }
+    .history-item.no { border-left:3px solid var(--red); }
+    .tip { margin-top:18px; padding:13px; border-radius:12px; color:#526b7f; background:#edf5fb; font-size:10px; font-weight:750; line-height:1.55; }
+    dialog { width:min(1060px,calc(100% - 24px)); max-height:88vh; padding:0; border:0; border-radius:22px; box-shadow:0 28px 80px rgba(10,29,47,.28); }
+    dialog::backdrop { background:rgba(16,31,45,.57); backdrop-filter:blur(3px); }
+    .dialog-head { position:sticky; top:0; z-index:2; display:flex; justify-content:space-between; align-items:center; gap:15px; padding:19px 22px; border-bottom:1px solid var(--line); background:#fff; }
+    .dialog-head h3 { margin:0; font-size:19px; }
+    .dialog-head p { margin:4px 0 0; color:var(--muted); font-size:10px; }
+    .close { width:35px; height:35px; border:0; border-radius:10px; color:#fff; background:var(--navy); font-weight:950; }
+    .table-wrap { overflow:auto; padding:18px 20px 23px; }
+    table { width:100%; border-collapse:collapse; font-size:11px; }
+    th,td { padding:10px 9px; border:1px solid #dce4eb; text-align:left; vertical-align:middle; }
+    th { position:sticky; top:0; color:#fff; background:var(--navy); font-size:10px; }
+    tbody tr.core { background:#fff8e9; }
+    td.blank { color:#a7b0b8; text-align:center; }
+    .core-mark { display:inline-block; margin-left:5px; padding:2px 5px; border-radius:5px; color:#9a5b10; background:#ffe7bc; font-size:8px; font-weight:950; }
+    @media (max-width:850px) {
+      .layout { grid-template-columns:1fr; }
+      .stats { order:3; width:100%; margin-left:0; }
+      .side { display:none; }
+    }
+    @media (max-width:560px) {
+      .shell { width:min(100% - 18px,540px); padding-top:14px; }
+      .source { display:none; }
+      .hero { padding:27px 22px; border-radius:21px; }
+      .quiz { min-height:0; padding:20px 16px; }
+      .stats { grid-template-columns:repeat(2,1fr); }
+      h2 { margin-top:20px; }
+      .choice { padding:11px 10px; }
+      .table-wrap { padding:10px; }
+      th,td { min-width:115px; padding:8px 7px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar">
+      <a class="back" href="index.html">← 미생물학 퀴즈 목록</a>
+      <span class="source">강의록 13강 Viral attachment protein 표 기반</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">Virus · Host interaction</p>
+      <h1>Viral attachment protein</h1>
+      <p>바이러스–부착 단백질–receptor–target cell 연결을 반복합니다. 강의록 표의 빈칸은 추정하지 않고 출제에서 제외했습니다.</p>
+    </header>
+
+    <section class="toolbar" aria-label="퀴즈 설정">
+      <label for="scopeSelect">출제 범위</label>
+      <select id="scopeSelect">
+        <option value="all">전체 연결</option>
+        <option value="vap">VAP 중심</option>
+        <option value="receptor">Receptor 중심</option>
+        <option value="target">Target cell 중심</option>
+        <option value="links">핵심 연결 세트</option>
+      </select>
+      <button class="ghost" id="openTableBtn" type="button">강의록 표 보기</button>
+      <button class="ghost" id="resetBtn" type="button">기록 초기화</button>
+      <div class="stats" aria-label="학습 통계">
+        <div class="stat"><b id="correctStat">0</b><span>정답</span></div>
+        <div class="stat"><b id="accuracyStat">—</b><span>정답률</span></div>
+        <div class="stat"><b id="streakStat">0</b><span>연속 정답</span></div>
+        <div class="stat"><b id="bestStat">0</b><span>최고 기록</span></div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="card quiz" aria-live="polite">
+        <div class="question-top">
+          <span class="question-kind" id="questionKind">VAP</span>
+          <span class="question-no" id="questionNo">QUESTION 1</span>
+        </div>
+        <div class="high" id="highYield">● 강의록 강조 연결</div>
+        <h2 id="prompt"></h2>
+        <p class="hint" id="hint"></p>
+        <div class="choices" id="choices"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="next" id="nextBtn" type="button">다음 문제 <span aria-hidden="true">→</span></button>
+      </section>
+
+      <aside class="card side">
+        <h3>최근 풀이</h3>
+        <p class="side-note">현재 브라우저에 최대 8개까지 표시됩니다.</p>
+        <div class="history" id="history"></div>
+        <div class="tip">숫자키 1–5로 답하고, 해설이 나온 뒤 Enter를 누르면 다음 문제로 이동합니다.</div>
+      </aside>
+    </div>
+  </main>
+
+  <dialog id="tableDialog">
+    <div class="dialog-head">
+      <div><h3>Viral attachment protein 강의록 표</h3><p>— 표시는 강의록의 빈칸이며 해당 방향의 문제는 출제하지 않습니다.</p></div>
+      <button class="close" id="closeTableBtn" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Virus family</th><th>Virus</th><th>Viral attachment protein</th><th>Receptor</th><th>Target cell</th></tr></thead>
+        <tbody id="referenceBody"></tbody>
+      </table>
+    </div>
+  </dialog>
+
+  <script>
+    const ATTACHMENT_ROWS = [
+      {family:'Picorna', virus:'Rhinovirus', vap:'VP1–VP2–VP3 complex', receptor:'ICAM-1 (Ig superfamily protein)', target:'Epithelial cell', high:true},
+      {family:'Adeno', virus:'Adenovirus', vap:'Fiber protein', receptor:'', target:'', high:false},
+      {family:'Reo', virus:'Reovirus', vap:'σ-1', receptor:'', target:'', high:false},
+      {family:'Reo', virus:'Rotavirus', vap:'VP7', receptor:'', target:'', high:false},
+      {family:'Toga', virus:'Semliki Forest virus', vap:'E1–E2–E3 complex gp', receptor:'', target:'', high:false},
+      {family:'Rhabdo', virus:'Rabies virus', vap:'G protein gp', receptor:'Acetylcholine receptor, NCAM', target:'Neuron', high:true},
+      {family:'Orthomyxo', virus:'Influenza A virus', vap:'HA gp', receptor:'Sialic acid', target:'Epithelial cell', high:true},
+      {family:'Paramyxo', virus:'Measles virus', vap:'HA gp', receptor:'', target:'', high:false},
+      {family:'Herpes', virus:'Epstein–Barr virus', vap:'gp350, gp220', receptor:'CR2 (CD21)', target:'B cell', high:true},
+      {family:'Herpes', virus:'Herpes simplex virus', vap:'', receptor:'HVEM (HVEA), nectin-1', target:'Many cells', high:false},
+      {family:'Retro', virus:'Murine leukemia virus', vap:'gp70', receptor:'', target:'', high:false},
+      {family:'Retro', virus:'HIV', vap:'gp120', receptor:'CD4 + CCR5/CXCR4', target:'Helper T cell', high:true},
+      {family:'Picorna', virus:'Poliovirus', vap:'', receptor:'Ig superfamily protein', target:'Epithelial cell', high:false},
+      {family:'Parvo', virus:'Parvovirus B19', vap:'', receptor:'Erythrocyte P antigen (globoside)', target:'Erythroid precursor', high:false}
+    ];
+
+    const $ = selector => document.querySelector(selector);
+    const shuffle = values => {
+      const copy = [...values];
+      for (let i=copy.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]]; }
+      return copy;
+    };
+    const unique = values => [...new Set(values.filter(Boolean))];
+    const weightedRow = rows => {
+      const pool = rows.flatMap(row => Array(row.high ? 3 : 1).fill(row));
+      return pool[Math.floor(Math.random()*pool.length)];
+    };
+    const fiveOptions = (correct, pool) => shuffle([correct,...shuffle(unique(pool).filter(value=>value!==correct)).slice(0,4)]);
+    const relation = row => [row.virus,row.vap,row.receptor,row.target].filter(Boolean).join(' → ');
+    const triple = row => `${row.vap} — ${row.receptor} — ${row.target}`;
+
+    function vapQuestion() {
+      const rows=ATTACHMENT_ROWS.filter(row=>row.vap); const row=weightedRow(rows);
+      return {id:`vap:${row.virus}`,kind:'VAP',prompt:`${row.virus}의 viral attachment protein은?`,hint:'바이러스와 부착 단백질을 연결하세요.',options:fiveOptions(row.vap,rows.map(x=>x.vap)),answer:row.vap,explanation:relation(row),high:row.high};
+    }
+    function receptorQuestion() {
+      const rows=ATTACHMENT_ROWS.filter(row=>row.receptor); const row=weightedRow(rows);
+      return {id:`receptor:${row.virus}`,kind:'RECEPTOR',prompt:`${row.virus}가 결합하는 receptor는?`,hint:'강의록에 receptor가 제시된 바이러스만 출제됩니다.',options:fiveOptions(row.receptor,rows.map(x=>x.receptor)),answer:row.receptor,explanation:relation(row),high:row.high};
+    }
+    function targetQuestion() {
+      const rows=ATTACHMENT_ROWS.filter(row=>row.target); const row=weightedRow(rows);
+      return {id:`target:${row.virus}`,kind:'TARGET CELL',prompt:`${row.virus}의 표적 세포는?`,hint:'강의록 표의 target cell 열을 떠올리세요.',options:fiveOptions(row.target,rows.map(x=>x.target)),answer:row.target,explanation:relation(row),high:row.high};
+    }
+    function reverseVapQuestion() {
+      const rows=ATTACHMENT_ROWS.filter(row=>row.vap && ATTACHMENT_ROWS.filter(x=>x.vap===row.vap).length===1); const row=weightedRow(rows);
+      return {id:`reverse-vap:${row.virus}`,kind:'역방향 연결',prompt:`VAP가 “${row.vap}”인 바이러스는?`,hint:'부착 단백질에서 바이러스를 거꾸로 찾아보세요.',options:fiveOptions(row.virus,rows.map(x=>x.virus)),answer:row.virus,explanation:relation(row),high:row.high};
+    }
+    function reverseReceptorQuestion() {
+      const rows=ATTACHMENT_ROWS.filter(row=>row.receptor); const row=weightedRow(rows);
+      return {id:`reverse-receptor:${row.virus}`,kind:'역방향 연결',prompt:`Receptor가 “${row.receptor}”인 바이러스는?`,hint:'Receptor에서 바이러스를 거꾸로 찾아보세요.',options:fiveOptions(row.virus,rows.map(x=>x.virus)),answer:row.virus,explanation:relation(row),high:row.high};
+    }
+    function familyQuestion() {
+      const row=weightedRow(ATTACHMENT_ROWS);
+      return {id:`family:${row.virus}`,kind:'VIRUS FAMILY',prompt:`${row.virus}가 속하는 virus family는?`,hint:'같은 표 안의 family–virus 연결입니다.',options:fiveOptions(row.family,ATTACHMENT_ROWS.map(x=>x.family)),answer:row.family,explanation:relation(row),high:row.high};
+    }
+    function fullLinkQuestion() {
+      const rows=ATTACHMENT_ROWS.filter(row=>row.vap&&row.receptor&&row.target); const row=weightedRow(rows);
+      return {id:`link:${row.virus}`,kind:'전체 연결',prompt:`${row.virus}의 올바른 VAP–receptor–target cell 연결은?`,hint:'세 항목을 한 번에 묶어 확인하세요.',options:fiveOptions(triple(row),rows.map(triple)),answer:triple(row),explanation:relation(row),high:row.high};
+    }
+
+    const FACTORIES = {
+      all:[vapQuestion,receptorQuestion,targetQuestion,reverseVapQuestion,reverseReceptorQuestion,familyQuestion,fullLinkQuestion],
+      vap:[vapQuestion,reverseVapQuestion], receptor:[receptorQuestion,reverseReceptorQuestion],
+      target:[targetQuestion], links:[fullLinkQuestion,reverseVapQuestion,reverseReceptorQuestion]
+    };
+    const saved = JSON.parse(localStorage.getItem('viralAttachmentQuizV1') || '{}');
+    const state = {correct:saved.correct||0,total:saved.total||0,streak:0,best:saved.best||0,number:1,answered:false,current:null,history:[],scope:localStorage.getItem('viralAttachmentScope')||'all'};
+
+    function save() { localStorage.setItem('viralAttachmentQuizV1',JSON.stringify({correct:state.correct,total:state.total,best:state.best})); }
+    function makeQuestion() {
+      const factories=FACTORIES[state.scope]||FACTORIES.all;
+      let next;
+      for (let i=0;i<12;i++) { next=factories[Math.floor(Math.random()*factories.length)](); if (!state.current || next.id!==state.current.id) break; }
+      return next;
+    }
+    function renderQuestion() {
+      state.current=makeQuestion(); state.answered=false;
+      $('#questionKind').textContent=state.current.kind; $('#questionNo').textContent=`QUESTION ${state.number}`;
+      $('#highYield').classList.toggle('show',state.current.high); $('#prompt').textContent=state.current.prompt; $('#hint').textContent=state.current.hint;
+      $('#feedback').className='feedback'; $('#feedback').textContent=''; $('#nextBtn').classList.remove('show');
+      $('#choices').innerHTML='';
+      state.current.options.forEach((label,index)=>{
+        const button=document.createElement('button'); button.type='button'; button.className='choice'; button.dataset.value=label;
+        const number=document.createElement('span'); number.className='num'; number.textContent=index+1;
+        const text=document.createElement('span'); text.className='label'; text.textContent=label;
+        button.append(number,text); button.addEventListener('click',()=>answer(label,button)); $('#choices').append(button);
+      });
+    }
+    function answer(value,selected) {
+      if (state.answered) return; state.answered=true; state.total++;
+      const ok=value===state.current.answer;
+      if (ok) { state.correct++; state.streak++; state.best=Math.max(state.best,state.streak); }
+      else state.streak=0;
+      document.querySelectorAll('.choice').forEach(button=>{ button.disabled=true; if (button.dataset.value===state.current.answer) button.classList.add('correct'); });
+      if (!ok) selected.classList.add('wrong');
+      const feedback=$('#feedback'); feedback.className=`feedback show ${ok?'ok':'no'}`;
+      feedback.textContent=`${ok?'정답입니다.':'정답: '+state.current.answer}  ${state.current.explanation}`;
+      $('#nextBtn').classList.add('show');
+      state.history.unshift({ok,prompt:state.current.prompt,answer:state.current.answer}); state.history=state.history.slice(0,8);
+      save(); updateStats(); renderHistory();
+    }
+    function nextQuestion() { if (!state.answered) return; state.number++; renderQuestion(); window.scrollTo({top:Math.max(0,$('.quiz').offsetTop-15),behavior:'smooth'}); }
+    function updateStats() {
+      $('#correctStat').textContent=state.correct; $('#accuracyStat').textContent=state.total?`${Math.round(state.correct/state.total*100)}%`:'—';
+      $('#streakStat').textContent=state.streak; $('#bestStat').textContent=state.best;
+    }
+    function renderHistory() {
+      const root=$('#history'); root.innerHTML='';
+      if (!state.history.length) { root.innerHTML='<div class="history-empty">문제를 풀면 이곳에 기록됩니다.</div>'; return; }
+      state.history.forEach(item=>{ const box=document.createElement('div'); box.className=`history-item ${item.ok?'ok':'no'}`; const title=document.createElement('b'); title.textContent=item.prompt; const answerText=document.createElement('span'); answerText.textContent=`${item.ok?'정답':'오답'} · ${item.answer}`; box.append(title,answerText); root.append(box); });
+    }
+    function renderReference() {
+      const root=$('#referenceBody');
+      ATTACHMENT_ROWS.forEach(row=>{ const tr=document.createElement('tr'); if(row.high) tr.className='core';
+        [row.family,row.virus,row.vap,row.receptor,row.target].forEach((value,index)=>{ const td=document.createElement('td'); td.textContent=value||'—'; if(!value) td.className='blank'; if(index===1&&row.high){ const mark=document.createElement('span'); mark.className='core-mark'; mark.textContent='핵심'; td.append(mark); } tr.append(td); }); root.append(tr);
+      });
+    }
+
+    $('#scopeSelect').value=state.scope;
+    $('#scopeSelect').addEventListener('change',event=>{ state.scope=event.target.value; localStorage.setItem('viralAttachmentScope',state.scope); state.number++; renderQuestion(); });
+    $('#nextBtn').addEventListener('click',nextQuestion);
+    $('#openTableBtn').addEventListener('click',()=>$('#tableDialog').showModal());
+    $('#closeTableBtn').addEventListener('click',()=>$('#tableDialog').close());
+    $('#tableDialog').addEventListener('click',event=>{ if(event.target===$('#tableDialog')) $('#tableDialog').close(); });
+    $('#resetBtn').addEventListener('click',()=>{ if(!confirm('정답 수, 정답률, 최고 연속 정답 기록을 초기화할까요?')) return; state.correct=0; state.total=0; state.streak=0; state.best=0; state.history=[]; localStorage.removeItem('viralAttachmentQuizV1'); updateStats(); renderHistory(); });
+    document.addEventListener('keydown',event=>{
+      if($('#tableDialog').open) return;
+      if(!state.answered&&/^[1-5]$/.test(event.key)){ const button=document.querySelectorAll('.choice')[Number(event.key)-1]; if(button){ event.preventDefault(); button.click(); } }
+      else if(state.answered&&event.key==='Enter'){ event.preventDefault(); nextQuestion(); }
+    });
+
+    renderReference(); updateStats(); renderHistory(); renderQuestion();
+  </script>
+</body>
+</html>
