@@ -262,8 +262,10 @@
     .sort-result.good { color: #126348; background: var(--green-bg); }
     .sort-result.bad { color: #963246; background: var(--red-bg); }
     .practice-progress { color: var(--muted); font-size: 10px; font-weight: 850; }
-    .practice-dialog[data-sort-mode="family"] .sort-group { display: grid; grid-template-rows: auto minmax(0, 1fr); }
-    .practice-dialog[data-sort-mode="family"] .drop-zone { min-height: 0; height: 100%; }
+    .practice-dialog[data-sort-mode="family"] .sort-group,
+    .practice-dialog[data-sort-mode="exampleGroup"] .sort-group { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+    .practice-dialog[data-sort-mode="family"] .drop-zone,
+    .practice-dialog[data-sort-mode="exampleGroup"] .drop-zone { min-height: 0; height: 100%; }
 
     .herpes-practice { width: min(690px, calc(100% - 24px)); }
     .herpes-card { padding: clamp(19px,4vw,32px); border: 1px solid var(--line); border-radius: 18px; background: white; }
@@ -452,7 +454,8 @@
       <div class="practice-toolbar">
         <div class="mode-tabs" role="tablist" aria-label="분류표 채우기 모드">
           <button class="mode-tab active" id="familyModeBtn" type="button">Family 블록</button>
-          <button class="mode-tab" id="exampleModeBtn" type="button">바이러스 예시 블록</button>
+          <button class="mode-tab" id="exampleGroupModeBtn" type="button">바이러스 · 속명 숨김</button>
+          <button class="mode-tab" id="exampleModeBtn" type="button">바이러스 · 속명 표시</button>
         </div>
         <div class="practice-actions">
           <button class="ghost" id="resetSortBtn" type="button">다시 섞기</button>
@@ -986,10 +989,15 @@
       root.appendChild(hSection);
     }
 
-    const sortPractice = { mode:'family', placements:{}, order:[], selected:null, checked:false, message:'모든 블록을 배치한 뒤 채점하세요.', resultClass:'' };
+    const sortPractice = { mode:'family', placements:{}, order:[], familyOrder:{}, selected:null, checked:false, message:'모든 블록을 배치한 뒤 채점하세요.', resultClass:'' };
+
+    function sortGroupForFamily(fid) {
+      return SORT_GROUPS.find(g => g.familyIds.includes(fid));
+    }
 
     function currentSortItems() {
       if (sortPractice.mode === 'example') return DRAG_EXAMPLES.map(x => ({...x}));
+      if (sortPractice.mode === 'exampleGroup') return DRAG_EXAMPLES.map(x => ({...x, target:sortGroupForFamily(x.target).id}));
       return SORT_GROUPS.filter(g => !g.extra).flatMap(g => g.familyIds.map(fid => {
         const f = FAMILIES.find(x => x.id === fid);
         return {id:`fam-${fid}`, label:f.short, target:g.id};
@@ -1001,9 +1009,21 @@
       return f.name;
     }
 
+    function shuffledDifferent(values, previous=[]) {
+      let next = shuffle(values);
+      if (values.length > 1 && previous.length === values.length && next.every((x,i) => x === previous[i])) {
+        next = [...next.slice(1), next[0]];
+      }
+      return next;
+    }
+
     function beginSortMode(mode) {
       sortPractice.mode = mode;
       $('#sortDialog').dataset.sortMode = mode;
+      if (mode === 'example') {
+        const previous = sortPractice.familyOrder;
+        sortPractice.familyOrder = Object.fromEntries(SORT_GROUPS.map(g => [g.id, shuffledDifferent(g.familyIds, previous[g.id])]));
+      }
       sortPractice.placements = {};
       sortPractice.order = shuffle(currentSortItems().map(x => x.id));
       sortPractice.selected = null;
@@ -1011,10 +1031,13 @@
       sortPractice.message = '모든 블록을 배치한 뒤 채점하세요.';
       sortPractice.resultClass = '';
       $('#familyModeBtn').classList.toggle('active', mode === 'family');
+      $('#exampleGroupModeBtn').classList.toggle('active', mode === 'exampleGroup');
       $('#exampleModeBtn').classList.toggle('active', mode === 'example');
       $('#sortHelp').innerHTML = mode === 'family'
         ? '<b>Family 블록:</b> Pox·Herpes·Picorna 같은 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 넣으세요. 칸 안의 순서는 상관없습니다.'
-        : '<b>바이러스 예시 블록:</b> 각 family 아래에 대표 바이러스를 넣으세요. RSV는 별도 추가 연결인 Pneumo에 배치합니다.';
+        : mode === 'exampleGroup'
+          ? '<b>바이러스 · 속명 숨김:</b> 속명 단서 없이 바이러스 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 직접 넣으세요.'
+          : '<b>바이러스 · 속명 표시:</b> 무작위로 섞인 속명 칸에 대표 바이러스를 넣으세요. 다시 섞을 때마다 속명 위치도 바뀝니다.';
       renderSortPractice();
     }
 
@@ -1069,20 +1092,21 @@
 
       const board = $('#sortBoard'); board.innerHTML = '';
       ['DNA','RNA'].forEach(kind => {
-        const groups = SORT_GROUPS.filter(g => g.nucleic === kind && (sortPractice.mode === 'example' || !g.extra));
+        const groups = SORT_GROUPS.filter(g => g.nucleic === kind && (sortPractice.mode !== 'family' || !g.extra));
         const section = document.createElement('section'); section.className = 'sort-nucleic';
         const title = document.createElement('div'); title.className = 'sort-nucleic-title'; title.textContent = `${kind} virus`; section.appendChild(title);
         const grid = document.createElement('div'); grid.className = 'sort-groups'; grid.style.setProperty('--cols', groups.length);
         groups.forEach(group => {
           const card = document.createElement('div'); card.className = `sort-group ${group.tone}`;
           card.innerHTML = `<div class="sort-group-head"><div>${group.title}<small>${group.detail}</small></div></div>`;
-          if (sortPractice.mode === 'family') {
-            const zone = document.createElement('div'); zone.className = 'drop-zone'; zone.dataset.placeholder = `${group.familyIds.length}개 속명 배치`;
+          if (sortPractice.mode === 'family' || sortPractice.mode === 'exampleGroup') {
+            const zone = document.createElement('div'); zone.className = 'drop-zone';
+            zone.dataset.placeholder = sortPractice.mode === 'family' ? `${group.familyIds.length}개 속명 배치` : `${items.filter(x => x.target === group.id).length}개 바이러스 배치`;
             if (sortPractice.selected) zone.classList.add('selected-target');
             items.filter(x => sortPractice.placements[x.id] === group.id).forEach(x => zone.appendChild(makeSortBlock(x)));
             wireSortDropZone(zone, group.id); card.appendChild(zone);
           } else {
-            group.familyIds.forEach(fid => {
+            (sortPractice.familyOrder[group.id] || group.familyIds).forEach(fid => {
               const zone = document.createElement('div'); zone.className = 'drop-zone family-zone'; zone.dataset.placeholder = '예시 바이러스 배치';
               if (sortPractice.selected) zone.classList.add('selected-target');
               const zt = document.createElement('div'); zt.className = 'family-zone-title'; zt.textContent = familyBoardLabel(fid); zone.appendChild(zt);
@@ -1211,6 +1235,7 @@
     $('#closeSortBtn').addEventListener('click', () => $('#sortDialog').close());
     $('#sortDialog').addEventListener('click', e => { if (e.target === $('#sortDialog')) $('#sortDialog').close(); });
     $('#familyModeBtn').addEventListener('click', () => beginSortMode('family'));
+    $('#exampleGroupModeBtn').addEventListener('click', () => beginSortMode('exampleGroup'));
     $('#exampleModeBtn').addEventListener('click', () => beginSortMode('example'));
     $('#resetSortBtn').addEventListener('click', () => beginSortMode(sortPractice.mode));
     $('#checkSortBtn').addEventListener('click', checkSortPractice);
