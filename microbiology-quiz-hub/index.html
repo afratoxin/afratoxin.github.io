@@ -59,11 +59,13 @@
     .quiz-card:hover { transform:translateY(-3px); border-color:#a7d6ce; box-shadow:0 16px 34px rgba(29,58,73,.11); }
     .quiz-card:focus-visible { outline:3px solid rgba(21,154,140,.28); outline-offset:3px; }
     .quiz-card.wide { grid-column:1/-1; }
+    .quiz-card.featured { border-color:#a7d6ce; background:linear-gradient(125deg,#ffffff 0%,#effaf7 100%); }
     .icon { display:grid; place-items:center; width:54px; height:54px; border-radius:17px; color:var(--navy); background:var(--mint); font-size:17px; font-weight:950; letter-spacing:-.04em; }
     .quiz-card:nth-child(2) .icon { color:#7c4d12; background:#fff2dc; }
     .quiz-card:nth-child(3) .icon { color:#3156b5; background:#e9efff; }
     .quiz-card:nth-child(4) .icon { color:#8b3e66; background:#fbe9f2; }
     .quiz-card:nth-child(5) .icon { color:#6d4bac; background:#f0eaff; }
+    .quiz-card.vap .icon { color:#1d6592; background:#e5f4ff; }
     .card-copy h3 { margin:0 0 7px; font-size:18px; letter-spacing:-.035em; }
     .card-copy p { margin:0; color:var(--muted); font-size:12px; line-height:1.55; word-break:keep-all; }
     .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
@@ -102,7 +104,7 @@
       <div class="hero-main">
         <p class="eyebrow">Infinite Recall Lab</p>
         <h1>외울 때까지,<br>계속 나오는 퀴즈</h1>
-        <p class="hero-copy">강의록의 핵심 연결을 5지선다·직접 입력·분류표 활동으로 반복합니다. 틀린 문항은 오답 목록에 남기고, 학습표를 펼쳐 복습한 뒤 다시 문제로 돌아올 수 있습니다.</p>
+        <p class="hero-copy">족보 423문항과 강의록의 핵심 연결을 5지선다·직접 입력·분류표 활동으로 반복합니다. 틀린 문항은 오답 목록에 남겨 다시 풀 수 있습니다.</p>
       </div>
       <aside class="study-card">
         <div>
@@ -124,6 +126,16 @@
     </div>
 
     <section class="grid" aria-label="미생물학 퀴즈 목록">
+      <a class="quiz-card wide featured" href="past_exam_unit_review.html">
+        <span class="icon">423</span>
+        <span class="card-copy">
+          <h3>족보 단원별 회독</h3>
+          <p>2020~2025 복원 기출 423문항을 19개 단원으로 나누어 원본 도표와 함께 풉니다.</p>
+          <span class="tags"><span class="tag">전 문항</span><span class="tag">단원별</span><span class="tag">오답 회독</span><span class="tag">주관식</span></span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+
       <a class="quiz-card" href="lecture1_scientists_achievements_infinite_quiz.html">
         <span class="icon">L1</span>
         <span class="card-copy">
@@ -164,6 +176,16 @@
         <span class="arrow" aria-hidden="true">→</span>
       </a>
 
+      <a class="quiz-card vap" href="viral_attachment_protein_quiz.html">
+        <span class="icon">VAP</span>
+        <span class="card-copy">
+          <h3>Viral attachment protein</h3>
+          <p>바이러스별 부착 단백질, receptor, target cell 연결을 강의록 표대로 반복합니다.</p>
+          <span class="tags"><span class="tag">VAP</span><span class="tag">Receptor</span><span class="tag">Target cell</span></span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+
       <a class="quiz-card wide" href="antibiotic_mechanism_resistance_infinite_quiz.html">
         <span class="icon">Rx</span>
         <span class="card-copy">
@@ -177,7 +199,7 @@
 
     <footer>
       <span>미생물학 강의자료 기반 개인 학습용 퀴즈</span>
-      <span>마지막 통합: 2026-09-19</span>
+      <span>마지막 통합: 2026-09-20</span>
     </footer>
   </main>
 </body>
