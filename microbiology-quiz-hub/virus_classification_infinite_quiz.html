@@ -330,7 +330,7 @@
         <div class="brand-mark">V</div>
         <div>
           <h1>바이러스 분류 무한회독</h1>
-          <p>Family · 핵산 · ssRNA polarity · envelope · Herpes 8종</p>
+          <p>Family · 핵산 · ssRNA polarity · envelope · 13강 복제 예외 · Herpes 8종</p>
         </div>
       </div>
       <div class="top-actions">
@@ -398,6 +398,7 @@
             <option value="all">전체 섞기</option>
             <option value="DNA">DNA virus</option>
             <option value="RNA">RNA virus</option>
+            <option value="replication">13강 복제 핵심</option>
             <option value="herpes">Herpes 8종</option>
             <option value="hepatitis">Hepatitis A·B·C·E</option>
           </select>
@@ -596,15 +597,53 @@
       key:`${f.id}:${i}`, display:e[0], aliases:e.slice(1), family:f
     })));
     const HEPATITIS_IDS = new Set(['picorna:1','hepadna:0','flavi:1','hepe:0']);
-    const CATEGORY_NAMES = { all:'전체', DNA:'DNA', RNA:'RNA', herpes:'Herpes 8종', hepatitis:'Hepatitis A·B·C·E' };
+    const CATEGORY_NAMES = { all:'전체', DNA:'DNA', RNA:'RNA', replication:'13강 복제 핵심', herpes:'Herpes 8종', hepatitis:'Hepatitis A·B·C·E' };
     const GENOME_LABEL = {
       'DNA':'DNA',
       '+ssRNA':'+ssRNA', '-ssRNA':'-ssRNA', 'dsRNA':'dsRNA', '+ssRNA via DNA':'RNA → DNA'
     };
     const TYPE_NAMES = {
       familyVirus:'FAMILY ↔ VIRUS', oddFamily:'소속 / 비소속', nucleic:'DNA / RNA', envelope:'ENVELOPE',
-      genome:'RNA POLARITY', strand:'가닥 수', feature:'복합 분류', pair:'연결 판단', herpes:'HERPES 8종', typing:'직접 입력'
+      genome:'RNA POLARITY', strand:'가닥 수', feature:'복합 분류', pair:'연결 판단', replication:'13강 REPLICATION', herpes:'HERPES 8종', typing:'직접 입력'
     };
+
+    const REPLICATION_RULES = [
+      {
+        id:'mrna',
+        prompts:['다음 중 <em>genome 자체가 mRNA로 기능</em>하는 virus family는?', '세포에 들어온 직후 genome을 그대로 번역에 사용할 수 있는 것은?'],
+        answers:['Picorna','Toga','Flavi','Corona'],
+        distractors:['Orthomyxo','Paramyxo','Rhabdo','Reo','Retro','Parvo'],
+        explanation:'Picorna·Toga·Flavi·Corona는 (+)RNA virus로, genome 자체가 mRNA처럼 기능합니다. Retro는 (+)RNA이지만 먼저 DNA intermediate를 만드므로 이 규칙에서 제외합니다.'
+      },
+      {
+        id:'rdrp',
+        prompts:['다음 중 <em>virion 유래 RdRp</em>를 가지고 들어오지 않는 것은?', 'Rhabdo·Filo·Bunya·Orthomyxo와 달리 virion 내부에 RNA-dependent RNA polymerase를 싣지 않는 것은?'],
+        answer:'Flavi',
+        distractors:['Rhabdo','Filo','Bunya','Orthomyxo'],
+        explanation:'Flavi는 (+)RNA genome을 먼저 번역해 RdRp를 새로 만듭니다. 즉 RdRp가 필요 없다는 뜻이 아니라, virion 안에 미리 가지고 들어오지 않는다는 뜻입니다.'
+      },
+      {
+        id:'pox',
+        prompts:['DNA virus이면서 <em>virus-specific RNA polymerase</em>를 자체적으로 사용하는 것은?', '복제에 필요한 polymerase와 enzyme을 갖추고 cytoplasm에서 복제하는 DNA virus는?'],
+        answer:'Pox',
+        distractors:['Parvo','Adeno','Polyoma','Papilloma'],
+        explanation:'Poxvirus는 DNA virus이지만 예외적으로 cytoplasm에서 복제하므로 host nuclear machinery 대신 자체 RNA polymerase와 관련 enzyme을 사용합니다.'
+      },
+      {
+        id:'orthomyxo',
+        prompts:['RNA virus이지만 <em>nucleus에서 transcription·replication의 일부</em>가 진행되는 것은?', '대부분의 RNA virus와 달리 핵을 복제 과정에 이용하는 것은?'],
+        answer:'Orthomyxo',
+        distractors:['Paramyxo','Rhabdo','Filo','Picorna'],
+        explanation:'Orthomyxovirus는 (-)RNA virus이지만 transcription과 replication의 일부가 nucleus에서 진행됩니다. Translation 자체는 host ribosome이 있는 cytoplasm에서 일어납니다.'
+      },
+      {
+        id:'parvo',
+        prompts:['<em>활동적으로 분열하며 DNA를 합성 중인 세포</em>에서만 효과적으로 복제하는 것은?', '휴지기 세포에서는 자손 virus를 만들지 못하고 S phase의 host machinery에 의존하는 것은?'],
+        answer:'Parvo',
+        distractors:['Adeno','Herpes','Polyoma','Papilloma'],
+        explanation:'Parvovirus는 세포가 DNA 합성 중일 때의 host machinery에 의존하므로, 활동적으로 분열 중인 세포에서만 효과적으로 복제합니다.'
+      }
+    ];
 
     const $ = s => document.querySelector(s);
     const state = {
@@ -822,6 +861,21 @@
         accepted:familyAnswerAliases(v.family), explanation:`${v.display} → ${v.family.name} (${signatureText(v.family)}).`, factKey:v.key, tag:'Family 이름 기입' });
     }
 
+    function qReplicationRule() {
+      const rule = weightedFact(REPLICATION_RULES, x => `rep:${x.id}`);
+      const correct = rule.answers ? pick(rule.answers) : rule.answer;
+      const distractors = sample(rule.distractors, 4);
+      return packMCQ({
+        type:'replication',
+        tag:'13강 족보 핵심',
+        prompt:pick(rule.prompts),
+        correct,
+        distractors,
+        explanation:rule.explanation,
+        factKey:`rep:${rule.id}`
+      });
+    }
+
     function nextQuestionObject() {
       if (state.reviewOnly) {
         if (state.mistakes.length) return JSON.parse(JSON.stringify(pick(state.mistakes)));
@@ -829,11 +883,12 @@
       }
       const typingAllowed = $('#typingToggle').checked;
       let generators;
-      if (state.scope === 'herpes') generators = [qHerpes,qHerpes,qHerpes,qTyping];
+      if (state.scope === 'replication') generators = [qReplicationRule,qReplicationRule,qReplicationRule];
+      else if (state.scope === 'herpes') generators = [qHerpes,qHerpes,qHerpes,qTyping];
       else if (state.scope === 'hepatitis') generators = [qFamilyVirus,qNucleic,qEnvelope,qGenome,qFeature,qTyping];
       else if (state.scope === 'DNA') generators = [qFamilyVirus,qOddFamily,qEnvelope,qFeature,qPair,qTyping,qFamilyVirus];
       else if (state.scope === 'RNA') generators = [qFamilyVirus,qOddFamily,qEnvelope,qGenome,qSsRNA,qFeature,qPair,qTyping];
-      else generators = [qFamilyVirus,qOddFamily,qNucleic,qEnvelope,qGenome,qSsRNA,qFeature,qPair,qHerpes,qTyping];
+      else generators = [qFamilyVirus,qOddFamily,qNucleic,qEnvelope,qGenome,qSsRNA,qFeature,qPair,qReplicationRule,qReplicationRule,qHerpes,qTyping];
       if (!typingAllowed) generators = generators.filter(g => g !== qTyping);
       let q, guard = 0;
       do { q = pick(generators)(); guard++; } while (state.recentKeys.includes(`${q.type}|${q.prompt}`) && guard < 12);
@@ -960,6 +1015,7 @@
         ['+ssRNA', FAMILIES.filter(f=>f.genome==='+ssRNA').map(f=>`fam:${f.id}`)],
         ['-ssRNA', FAMILIES.filter(f=>f.genome==='-ssRNA').map(f=>`fam:${f.id}`)],
         ['ds/RT RNA', FAMILIES.filter(f=>['dsRNA','+ssRNA via DNA'].includes(f.genome)).map(f=>`fam:${f.id}`)],
+        ['13강 복제', REPLICATION_RULES.map(rule=>`rep:${rule.id}`)],
         ['Herpes', HERPES.map(h=>`hhv:${h.n}`)]
       ];
       const root = $('#coverage'); root.innerHTML = '';
@@ -989,6 +1045,16 @@
       hSection.innerHTML = `<h3>Herpesvirus 8종</h3><div class="ref-table"><table><thead><tr><th>번호</th><th>이름</th><th>잠복</th><th>연결 단서</th></tr></thead><tbody></tbody></table></div>`;
       HERPES.forEach(h => { const tr = document.createElement('tr'); tr.innerHTML = `<td><b>HHV-${h.n}</b></td><td>${h.name}</td><td>${h.latency}</td><td>${h.clue}</td>`; hSection.querySelector('tbody').appendChild(tr); });
       root.appendChild(hSection);
+
+      const rSection = document.createElement('section'); rSection.className = 'ref-section';
+      rSection.innerHTML = `<h3>13강 족보 반복 출제: replication 핵심</h3><div class="ref-table"><table><thead><tr><th>질문 기준</th><th>정답</th><th>구분 포인트</th></tr></thead><tbody>
+        <tr><td>Genome 자체가 mRNA</td><td><b>Picorna · Toga · Flavi · Corona</b></td><td>(+)RNA. Retro는 DNA intermediate를 먼저 만듦</td></tr>
+        <tr><td>Virion 유래 RdRp를 갖지 않음</td><td><b>Flavi</b></td><td>감염 후 (+)RNA를 번역해 RdRp 생성</td></tr>
+        <tr><td>자체 RNA polymerase를 쓰는 DNA virus</td><td><b>Pox</b></td><td>Cytoplasm에서 복제하는 DNA virus 예외</td></tr>
+        <tr><td>RNA virus지만 nucleus 이용</td><td><b>Orthomyxo</b></td><td>Transcription·replication 일부는 핵, translation은 세포질</td></tr>
+        <tr><td>분열 중인 세포에서만 효과적 복제</td><td><b>Parvo</b></td><td>DNA synthesis 중인 세포의 host machinery에 의존</td></tr>
+      </tbody></table></div>`;
+      root.appendChild(rSection);
     }
 
     const sortPractice = { mode:'family', placements:{}, order:[], familyOrder:{}, selected:null, checked:false, message:'모든 블록을 배치한 뒤 채점하세요.', resultClass:'' };
