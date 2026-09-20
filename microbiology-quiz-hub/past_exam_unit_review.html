@@ -142,6 +142,13 @@
     .explanation-label { display:inline-flex; align-items:center; min-height:23px; margin-bottom:7px; padding:0 8px; border-radius:7px; color:#0b7066; background:rgba(255,255,255,.72); font-size:9px; font-weight:950; letter-spacing:.05em; }
     .explanation p { margin:0; color:#314650; font-size:12px; line-height:1.65; word-break:keep-all; }
     .explanation p + p { margin-top:7px; }
+    .direct-block { margin-top:9px; padding:11px 12px; border:1px solid rgba(62,101,111,.14); border-radius:11px; background:rgba(255,255,255,.72); }
+    .direct-block:first-of-type { margin-top:0; }
+    .direct-block h4 { margin:0 0 5px; color:#0b6d64; font-size:10px; letter-spacing:.02em; }
+    .direct-block p { color:#293f49; }
+    .direct-block.contrast h4 { color:#8a5513; }
+    .direct-caution { margin-top:9px; padding:10px 12px; border:1px solid #efd3a8; border-radius:10px; color:#754b13; background:#fff9ed; font-size:11px; line-height:1.6; }
+    .pending-explanation { color:#6f5a35 !important; }
     .answer-compare { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin-top:10px; }
     .answer-box { padding:10px 11px; border:1px solid rgba(83,111,121,.16); border-radius:10px; background:rgba(255,255,255,.7); }
     .answer-box b { display:block; margin-bottom:3px; color:var(--muted); font-size:9px; letter-spacing:.03em; }
@@ -310,6 +317,7 @@
   </main>
 
   <script src="past_exam_assets.js"></script>
+  <script src="past_exam_explanations.js"></script>
   <script>
     (() => {
       'use strict';
@@ -563,13 +571,8 @@
           .map((item) => item.candidate);
       }
 
-      function isNegativePrompt(prompt) {
-        return /옳지\s*않|적절하지\s*않|아닌\s*것|틀린|잘못된|일어나지\s*않|제외/.test(prompt || '');
-      }
-
       function explanationHtml(q) {
-        const negative = isNegativePrompt(q.prompt);
-        const multi = q.answer?.kind === 'choice' && q.answer.value.length > 1;
+        const direct = window.PAST_EXAM_EXPLANATIONS?.[q.id];
         const unit = data.units.find((item) => item.id === q.unit);
         const terms = keyTerms(q);
         const related = relatedQuestions(q);
@@ -578,15 +581,6 @@
         const chosenText = q.options.length && selected.size
           ? [...selected].sort((a, b) => a - b).map((number) => `${number}) ${q.options[number - 1] || ''}`).join(' / ')
           : '';
-
-        let rule;
-        if (multi) {
-          rule = `이 문항은 <b>복수정답</b>입니다. 정답 선지를 일부만 고르는 것도 오답이므로 ${q.answer.value.join('·')}번을 하나의 정답 집합으로 기억해야 합니다.`;
-        } else if (negative) {
-          rule = '발문이 <b>옳지 않은 것·아닌 것</b>을 찾는 형태입니다. 따라서 초록색 선지는 외울 사실이 아니라, 강의록의 정의나 연결과 어긋나서 <b>고쳐야 하는 문장</b>입니다.';
-        } else {
-          rule = '발문이 <b>옳은 설명</b>을 찾는 형태입니다. 초록색 선지에 들어 있는 대상–특징 또는 원인–결과의 연결이 이 문항의 핵심 암기 단위입니다.';
-        }
 
         const compare = chosenText && chosenText !== correctText
           ? `<div class="answer-compare"><div class="answer-box wrong-box"><b>내가 고른 선지</b><span>${escapeHtml(chosenText)}</span></div><div class="answer-box correct-box"><b>족보 정답</b><span>${escapeHtml(correctText)}</span></div></div>`
@@ -600,8 +594,11 @@
         const keywordHtml = terms.length
           ? `<p class="study-keywords">강의록에서 다시 찾을 키워드 · ${escapeHtml(terms.join(' · '))}</p>`
           : '';
-
-        return `<div class="explanation"><span class="explanation-label">정답 판단 기준</span><p>${rule}</p><p><b>관련 강의록:</b> ${escapeHtml(unit?.id || q.unit)}강 ${escapeHtml(unit?.title || '')}</p>${compare}${keywordHtml}${relatedHtml}${linksHtml}</div>`;
+        if (!direct) {
+          return `<div class="explanation"><span class="explanation-label">해설 보강 대기</span><p class="pending-explanation">${escapeHtml(unit?.id || q.unit)}강은 아직 학습 전 범위라 직접 해설을 추가하지 않았습니다.</p>${compare}</div>`;
+        }
+        const directHtml = `<div class="direct-block"><h4>왜 이 답이 맞는가</h4><p>${escapeHtml(direct.why)}</p></div>${direct.contrast ? `<div class="direct-block contrast"><h4>오답을 가르는 기준</h4><p>${escapeHtml(direct.contrast)}</p></div>` : ''}${direct.caution ? `<div class="direct-caution"><b>복원 주의:</b> ${escapeHtml(direct.caution)}</div>` : ''}`;
+        return `<div class="explanation"><span class="explanation-label">직접 해설</span>${directHtml}${compare}${keywordHtml}${relatedHtml}${linksHtml}</div>`;
       }
 
       function markChoiceOptions(q) {
@@ -618,7 +615,7 @@
         const q = currentQuestion();
         if (!isGradable(q)) {
           graded = true;
-          showFeedback('neutral', '정답 미확정', q.answer?.value || '족보에 정답이 없거나 문항 복원이 완료되지 않아 채점하지 않습니다.');
+          showFeedback('neutral', '정답 미확정', `${escapeHtml(q.answer?.value || '족보에 정답이 없거나 문항 복원이 완료되지 않아 채점하지 않습니다.')}${explanationHtml(q)}`);
           revealNext();
           return;
         }
