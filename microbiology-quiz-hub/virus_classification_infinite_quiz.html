@@ -451,7 +451,7 @@
         <div class="herpes-number" id="herpesTypingNumber">HHV-1</div>
         <h3 class="herpes-prompt" id="herpesTypingPrompt">바이러스 이름을 입력하세요.</h3>
         <div class="herpes-input-row" id="herpesTypingInputRow">
-          <input class="herpes-input" id="herpesNameInput" autocomplete="off" spellcheck="false" placeholder="예: Herpes simplex virus 1">
+          <input class="herpes-input" id="herpesNameInput" autocomplete="off" spellcheck="false" placeholder="예: herpes simplex virus 1 또는 hsv-1">
           <button class="primary" id="checkHerpesNameBtn" type="button">채점</button>
         </div>
         <div class="herpes-feedback" id="herpesTypingFeedback"></div>
@@ -1100,7 +1100,7 @@
     const herpesNamePractice = { queue:[], index:0, correct:0, answered:false, missed:[] };
 
     function acceptedHerpesNames(h) {
-      return [h.name, ...h.aliases].filter(x => !/^hhv-?\d$/i.test(x.trim()));
+      return [h.name, ...h.aliases];
     }
 
     function beginHerpesTyping() {
@@ -1131,7 +1131,7 @@
       $('#herpesTypingNumber').textContent = `HHV-${h.n}`;
       $('#herpesTypingPrompt').textContent = `Human herpesvirus ${h.n}의 이름을 직접 입력하세요.`;
       $('#herpesTypingInputRow').style.display = 'grid';
-      $('#herpesNameInput').value = ''; $('#herpesNameInput').disabled = false;
+      $('#herpesNameInput').value = ''; $('#herpesNameInput').disabled = false; $('#herpesNameInput').readOnly = false;
       $('#checkHerpesNameBtn').disabled = false; $('#checkHerpesNameBtn').textContent = '채점';
       $('#herpesTypingFeedback').className = 'herpes-feedback'; $('#herpesTypingFeedback').textContent = '';
       $('#showHerpesAnswerBtn').hidden = false; $('#showHerpesAnswerBtn').textContent = '정답 보기';
@@ -1143,7 +1143,7 @@
       if (herpesNamePractice.answered) return;
       const h = currentHerpesTyping(); herpesNamePractice.answered = true;
       if (correct) herpesNamePractice.correct++; else herpesNamePractice.missed.push(h.n);
-      $('#herpesNameInput').disabled = true; $('#checkHerpesNameBtn').disabled = true;
+      $('#herpesNameInput').readOnly = true; $('#checkHerpesNameBtn').disabled = true;
       $('#herpesTypingFeedback').className = `herpes-feedback show ${correct?'good':'bad'}`;
       $('#herpesTypingFeedback').innerHTML = correct
         ? `<b>정답입니다.</b> ${h.name}`
@@ -1197,8 +1197,9 @@
       if (herpesNamePractice.index >= herpesNamePractice.queue.length) beginHerpesTyping();
       else finishHerpesTyping(false, true);
     });
-    $('#herpesNameInput').addEventListener('keydown', e => {
-      if (e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation();
+    $('#herpesTypingDialog').addEventListener('keydown', e => {
+      if (e.key !== 'Enter' || herpesNamePractice.index >= herpesNamePractice.queue.length) return;
+      e.preventDefault(); e.stopPropagation();
       herpesNamePractice.answered ? nextHerpesTyping() : checkHerpesTyping();
     });
     $('#reviewBtn').addEventListener('click', toggleReview);
