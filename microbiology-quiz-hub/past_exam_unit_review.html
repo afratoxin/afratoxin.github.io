@@ -135,6 +135,30 @@
     .feedback.wrong { color:#8b3038; background:var(--red-bg); border:1px solid #f0c9cd; }
     .feedback.neutral { color:#765019; background:var(--amber-bg); border:1px solid #edd5ad; }
     .feedback strong { display:block; margin-bottom:4px; font-size:13px; }
+    .feedback-answer { display:grid; gap:3px; }
+    .explanation { margin-top:14px; padding-top:14px; border-top:1px solid currentColor; border-color:rgba(27,89,76,.16); color:var(--ink); }
+    .feedback.wrong .explanation { border-color:rgba(139,48,56,.16); }
+    .feedback.neutral .explanation { border-color:rgba(118,80,25,.16); }
+    .explanation-label { display:inline-flex; align-items:center; min-height:23px; margin-bottom:7px; padding:0 8px; border-radius:7px; color:#0b7066; background:rgba(255,255,255,.72); font-size:9px; font-weight:950; letter-spacing:.05em; }
+    .explanation p { margin:0; color:#314650; font-size:12px; line-height:1.65; word-break:keep-all; }
+    .explanation p + p { margin-top:7px; }
+    .answer-compare { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin-top:10px; }
+    .answer-box { padding:10px 11px; border:1px solid rgba(83,111,121,.16); border-radius:10px; background:rgba(255,255,255,.7); }
+    .answer-box b { display:block; margin-bottom:3px; color:var(--muted); font-size:9px; letter-spacing:.03em; }
+    .answer-box span { color:#263b45; font-size:11px; line-height:1.55; }
+    .answer-box.correct-box { border-color:#b5dfd3; background:#f7fffc; }
+    .answer-box.wrong-box { border-color:#edc5c9; background:#fffafa; }
+    .study-keywords { margin-top:9px !important; color:#607680 !important; font-size:10px !important; }
+    .related-study { margin-top:12px; padding:12px; border:1px solid rgba(83,111,121,.14); border-radius:11px; background:rgba(255,255,255,.62); }
+    .related-study h4 { margin:0 0 8px; font-size:11px; color:#27434f; }
+    .related-question { padding:8px 0; border-top:1px solid rgba(83,111,121,.11); }
+    .related-question:first-of-type { padding-top:0; border-top:0; }
+    .related-question b { display:inline; margin:0; color:#0d7167; font-size:9px; }
+    .related-question span { color:#38505a; font-size:10px; line-height:1.5; }
+    .related-answer { display:block; margin-top:2px; color:#697d86 !important; }
+    .study-links { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .study-link { display:inline-flex; align-items:center; min-height:32px; padding:0 10px; border:1px solid #b8d9d4; border-radius:9px; color:#0c6d64; background:#f6fffc; font-size:10px; font-weight:900; text-decoration:none; }
+    .study-link:hover { border-color:#78bdb3; background:#ebf9f5; }
     .self-grade { display:flex; gap:8px; flex-wrap:wrap; margin-top:11px; }
     .self-grade button { min-height:38px; padding:0 12px; border:1px solid currentColor; border-radius:10px; background:rgba(255,255,255,.55); font-size:11px; font-weight:900; cursor:pointer; }
     .finish-card { max-width:760px; margin:45px auto; padding:34px; border:1px solid var(--line); border-radius:25px; text-align:center; background:#fff; box-shadow:var(--shadow); }
@@ -171,6 +195,7 @@
       .question-actions { align-items:stretch; flex-direction:column; }
       .action-right { width:100%; margin:0; }
       .action-right button { flex:1; }
+      .answer-compare { grid-template-columns:1fr; }
     }
     @media (max-width:500px) {
       .brand small,.top-actions .ghost-btn { display:none; }
@@ -291,6 +316,22 @@
 
       const DATA_URL = 'past_exam_questions.json';
       const STORAGE_KEY = 'microbiology_past_exam_review_v1';
+      const STUDY_LINKS = {
+        '1': [{ title:'1강 과학자·업적 회독', href:'lecture1_scientists_achievements_infinite_quiz.html' }],
+        '4': [{ title:'산소 요구도·효소 학습표', href:'aeration_infinite_quiz.html' }],
+        '6-7': [{ title:'항균제 작용·내성 회독', href:'antibiotic_mechanism_resistance_infinite_quiz.html' }],
+        '8': [{ title:'전파·침입경로 회독', href:'pathogenesis_routes_evasion_infinite_quiz.html' }],
+        '9': [{ title:'세균 병인론 회독', href:'pathogenesis_routes_evasion_infinite_quiz.html' }],
+        '10-11': [
+          { title:'바이러스 분류 학습표', href:'virus_classification_infinite_quiz.html' },
+          { title:'Viral attachment protein', href:'viral_attachment_protein_quiz.html' },
+        ],
+        '13': [
+          { title:'13강 replication 예외', href:'virus_classification_infinite_quiz.html' },
+          { title:'Viral attachment protein', href:'viral_attachment_protein_quiz.html' },
+        ],
+      };
+      const STOPWORDS = new Set(['다음','설명','대한','것은','것으로','중에서','모두','가장','옳은','옳지','않은','적절한','적절하지','아닌','있는','없는','경우','해당하는','고르시오','무엇인가','무엇은','관련된','바르게','잘못된','보기','의하여','통해','이를','이것','다음과','같다']);
       const views = ['homeView', 'quizView', 'finishView'];
       const $ = (id) => document.getElementById(id);
 
@@ -485,8 +526,82 @@
       function choiceAnswerHtml(q) {
         return q.answer.value.map((number) => {
           const text = q.options[number - 1];
-          return `<div><b>${number})</b> ${escapeHtml(text || '선지 원문 미복원')}</div>`;
+          return `<div class="feedback-answer"><span><b>${number})</b> ${escapeHtml(text || '선지 원문 미복원')}</span></div>`;
         }).join('');
+      }
+
+      function answerText(q) {
+        if (!q?.answer) return '';
+        if (q.answer.kind === 'choice') return q.answer.value.map((number) => `${number}) ${q.options[number - 1] || '선지 원문 미복원'}`).join(' / ');
+        return String(q.answer.value || '');
+      }
+
+      function tokensFor(text) {
+        return [...new Set(String(text || '').toLowerCase().match(/[a-z][a-z0-9+\-]{1,}|[가-힣]{2,}/g) || [])]
+          .filter((word) => !STOPWORDS.has(word) && !/^\d+$/.test(word));
+      }
+
+      function keyTerms(q) {
+        const promptTerms = tokensFor(q.prompt);
+        const answerTerms = tokensFor(answerText(q));
+        return [...new Set([...promptTerms, ...answerTerms])].slice(0, 5);
+      }
+
+      function relatedQuestions(q) {
+        const terms = keyTerms(q);
+        if (!terms.length) return [];
+        return data.questions
+          .filter((candidate) => candidate.id !== q.id && candidate.unit === q.unit && isGradable(candidate))
+          .map((candidate) => {
+            const candidateText = `${candidate.prompt} ${answerText(candidate)}`.toLowerCase();
+            const score = terms.reduce((sum, term) => sum + (candidateText.includes(term) ? (term.length >= 4 ? 3 : 2) : 0), 0);
+            return { candidate, score };
+          })
+          .filter((item) => item.score > 0)
+          .sort((a, b) => b.score - a.score || Number(b.candidate.year) - Number(a.candidate.year))
+          .slice(0, 2)
+          .map((item) => item.candidate);
+      }
+
+      function isNegativePrompt(prompt) {
+        return /옳지\s*않|적절하지\s*않|아닌\s*것|틀린|잘못된|일어나지\s*않|제외/.test(prompt || '');
+      }
+
+      function explanationHtml(q) {
+        const negative = isNegativePrompt(q.prompt);
+        const multi = q.answer?.kind === 'choice' && q.answer.value.length > 1;
+        const unit = data.units.find((item) => item.id === q.unit);
+        const terms = keyTerms(q);
+        const related = relatedQuestions(q);
+        const links = STUDY_LINKS[q.unit] || [];
+        const correctText = answerText(q);
+        const chosenText = q.options.length && selected.size
+          ? [...selected].sort((a, b) => a - b).map((number) => `${number}) ${q.options[number - 1] || ''}`).join(' / ')
+          : '';
+
+        let rule;
+        if (multi) {
+          rule = `이 문항은 <b>복수정답</b>입니다. 정답 선지를 일부만 고르는 것도 오답이므로 ${q.answer.value.join('·')}번을 하나의 정답 집합으로 기억해야 합니다.`;
+        } else if (negative) {
+          rule = '발문이 <b>옳지 않은 것·아닌 것</b>을 찾는 형태입니다. 따라서 초록색 선지는 외울 사실이 아니라, 강의록의 정의나 연결과 어긋나서 <b>고쳐야 하는 문장</b>입니다.';
+        } else {
+          rule = '발문이 <b>옳은 설명</b>을 찾는 형태입니다. 초록색 선지에 들어 있는 대상–특징 또는 원인–결과의 연결이 이 문항의 핵심 암기 단위입니다.';
+        }
+
+        const compare = chosenText && chosenText !== correctText
+          ? `<div class="answer-compare"><div class="answer-box wrong-box"><b>내가 고른 선지</b><span>${escapeHtml(chosenText)}</span></div><div class="answer-box correct-box"><b>족보 정답</b><span>${escapeHtml(correctText)}</span></div></div>`
+          : '';
+        const relatedHtml = related.length
+          ? `<div class="related-study"><h4>같이 확인할 같은 단원 기출</h4>${related.map((item) => `<div class="related-question"><b>${escapeHtml(item.year)}년 ${escapeHtml(item.number)}번</b> <span>${escapeHtml(item.prompt)}</span><span class="related-answer">정답: ${escapeHtml(answerText(item))}</span></div>`).join('')}</div>`
+          : '';
+        const linksHtml = links.length
+          ? `<div class="study-links">${links.map((link) => `<a class="study-link" href="${escapeHtml(link.href)}">${escapeHtml(link.title)} →</a>`).join('')}</div>`
+          : '';
+        const keywordHtml = terms.length
+          ? `<p class="study-keywords">강의록에서 다시 찾을 키워드 · ${escapeHtml(terms.join(' · '))}</p>`
+          : '';
+
+        return `<div class="explanation"><span class="explanation-label">정답 판단 기준</span><p>${rule}</p><p><b>관련 강의록:</b> ${escapeHtml(unit?.id || q.unit)}강 ${escapeHtml(unit?.title || '')}</p>${compare}${keywordHtml}${relatedHtml}${linksHtml}</div>`;
       }
 
       function markChoiceOptions(q) {
@@ -516,7 +631,7 @@
           graded = true;
           markChoiceOptions(q);
           applyResult(q, correct);
-          showFeedback(correct ? 'correct' : 'wrong', correct ? '정답입니다.' : '다시 볼 문항으로 저장했습니다.', choiceAnswerHtml(q));
+          showFeedback(correct ? 'correct' : 'wrong', correct ? '정답입니다.' : '다시 볼 문항으로 저장했습니다.', `${choiceAnswerHtml(q)}${explanationHtml(q)}`);
           revealNext();
           return;
         }
@@ -526,7 +641,7 @@
         awaitingSelfGrade = true;
         $('textAnswer').disabled = true;
         $('checkBtn').classList.add('hidden');
-        showFeedback('neutral', '족보 정답', `${escapeHtml(q.answer.value)}<div class="self-grade"><button type="button" data-self="correct">1 · 맞게 썼음</button><button type="button" data-self="wrong">2 · 다시 볼래</button></div>`);
+        showFeedback('neutral', '족보 정답', `${escapeHtml(q.answer.value)}${explanationHtml(q)}<div class="self-grade"><button type="button" data-self="correct">1 · 맞게 썼음</button><button type="button" data-self="wrong">2 · 다시 볼래</button></div>`);
         $('feedback').querySelectorAll('[data-self]').forEach((button) => button.addEventListener('click', () => completeSelfGrade(button.dataset.self === 'correct')));
       }
 
