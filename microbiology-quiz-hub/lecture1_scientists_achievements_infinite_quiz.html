@@ -106,8 +106,8 @@
     {id:'n2020',year:2020,people:'Alter, Houghton, Rice',achievement:'HCV 발견',aliases:['alter houghton rice','앨터 호턴 라이스']},
     {id:'n2023',year:2023,people:'Karikó, Weissman',achievement:'mRNA vaccine',aliases:['kariko weissman','karikó weissman','커리코 와이스먼']}
   ];
-  const ANTIBIOTIC_SCIENTIST_IDS=['ehrlich','fleming','florey_chain','waksman'];
-  const ANTIBIOTIC_NOBEL_IDS=['n1908e','n1945','n1952'];
+  const ANTIBIOTIC_SCIENTIST_IDS=['fleming','florey_chain','waksman'];
+  const ANTIBIOTIC_NOBEL_IDS=['n1945','n1952'];
   const ANTIBIOTIC_NOBEL=NOBEL.filter(x=>ANTIBIOTIC_NOBEL_IDS.includes(x.id));
   const TYPE_NAME={sciAchievement:'과학자 → 성과',achievementSci:'성과 → 과학자',notAchievement:'속하지 않는 성과',pair:'연결 판단',pasteur:'Pasteur 세부',kochPostulate:'Koch 4가설',kochPathogen:'Koch 병원체',nobelPerson:'노벨 성과 → 인물',nobelAchievement:'노벨 인물 → 성과',nobelPair:'노벨 연결',typing:'직접 입력'};
   const AXIS_LABEL={early:'초기 미생물학',pasteur:'Pasteur',koch:'Koch',postkoch:'Koch 이후',antibiotic:'항생제 개발',nobel:'노벨상'};
@@ -137,10 +137,10 @@
   function qNobelPerson(){const f=weighted(NOBEL,x=>'nobel:'+x.id),pool=NOBEL.filter(x=>x!==f).map(x=>x.people);return pack('nobelPerson','nobel','<em>'+f.achievement+'</em>과 연결되는 과학자는?',f.people,sample(pool,4),f.people+' — '+f.achievement+'.','nobel:'+f.id)}
   function qNobelAchievement(){const f=weighted(NOBEL,x=>'nobel:'+x.id),pool=NOBEL.filter(x=>x!==f).map(x=>x.achievement);return pack('nobelAchievement','nobel','강의록의 노벨상 표에서 <em>'+f.people+'</em>와 연결되는 성과는?',f.achievement,sample(pool,4),f.people+' — '+f.achievement+'.','nobel:'+f.id)}
   function qNobelPair(){const f=weighted(NOBEL,x=>'nobel:'+x.id),correct=f.people+' — '+f.achievement,wrong=[];while(wrong.length<4){const x=pick(NOBEL),y=pick(NOBEL.filter(z=>z.id!==x.id)),p=x.people+' — '+y.achievement;if(!wrong.includes(p)&&p!==correct)wrong.push(p)}return pack('nobelPair','nobel','다음 노벨상 과학자–성과 연결 중 <em>옳은 것</em>은?',correct,wrong,correct+'은 강의록의 표와 일치합니다.','nobel:'+f.id)}
-  function qAntibioticNobelPerson(){const f=weighted(ANTIBIOTIC_NOBEL,x=>'nobel:'+x.id),pool=NOBEL.filter(x=>x.id!==f.id).map(x=>x.people);return pack('nobelPerson','antibiotic','<em>'+f.achievement+'</em>과 연결되는 항생제·화학요법 연구자는?',f.people,sample(pool,4),f.people+' — '+f.achievement+'.','nobel:'+f.id)}
-  function qAntibioticNobelAchievement(){const f=weighted(ANTIBIOTIC_NOBEL,x=>'nobel:'+x.id),pool=NOBEL.filter(x=>x.id!==f.id).map(x=>x.achievement);return pack('nobelAchievement','antibiotic','강의록의 노벨상 표에서 <em>'+f.people+'</em>와 연결되는 항생제·화학요법 성과는?',f.achievement,sample(pool,4),f.people+' — '+f.achievement+'.','nobel:'+f.id)}
-  function qAntibioticNobelPair(){const f=weighted(ANTIBIOTIC_NOBEL,x=>'nobel:'+x.id),correct=f.people+' — '+f.achievement,wrong=[];while(wrong.length<4){const x=pick(NOBEL),y=pick(NOBEL.filter(z=>z.id!==x.id)),p=x.people+' — '+y.achievement;if(!wrong.includes(p)&&p!==correct)wrong.push(p)}return pack('nobelPair','antibiotic','다음 항생제·화학요법 관련 노벨상 연결 중 <em>옳은 것</em>은?',correct,wrong,correct+'은 강의록의 표와 일치합니다.','nobel:'+f.id)}
-  function qTyping(){let scope=state.scope==='all'?(Math.random()<.8?'nobel':pick(['early','koch','postkoch'])):state.scope;if(scope==='nobel'){const f=weighted(NOBEL,x=>'nobel:'+x.id);return typing('nobel','<em>'+f.achievement+'</em>과 연결되는 과학자 이름을 입력하세요.',f.people,f.aliases,f.people+' — '+f.achievement+'.','nobel:'+f.id)}if(scope==='antibiotic'&&Math.random()<.45){const f=weighted(ANTIBIOTIC_NOBEL,x=>'nobel:'+x.id);return typing('antibiotic','<em>'+f.achievement+'</em>과 연결되는 항생제·화학요법 연구자 이름을 입력하세요.',f.people,f.aliases,f.people+' — '+f.achievement+'.','nobel:'+f.id)}if(scope==='koch'&&Math.random()<.5){const f=weighted(KOCH_PATHOGENS,x=>'kochpath:'+x.id);return typing('koch','<em>'+f.disease+'</em>의 원인균 학명을 입력하세요.',f.pathogen,f.aliases,f.disease+' → '+f.pathogen+'.','kochpath:'+f.id)}const list=scopedScientists(scope),s=weighted(list,x=>'scientist:'+x.id),a=pick(s.achievements),axis=scope==='antibiotic'?'antibiotic':s.scope;return typing(axis,'<em>'+a+'</em>와 연결되는 과학자 이름을 입력하세요.',s.name,s.aliases,s.name+'의 성과입니다.','scientist:'+s.id)}
+  function qAntibioticNobelPerson(){const f=weighted(ANTIBIOTIC_NOBEL,x=>'nobel:'+x.id),pool=NOBEL.filter(x=>x.id!==f.id).map(x=>x.people);return pack('nobelPerson','antibiotic','<em>'+f.achievement+'</em>과 연결되는 항생제 연구자는?',f.people,sample(pool,4),f.people+' — '+f.achievement+'.','nobel:'+f.id)}
+  function qAntibioticNobelAchievement(){const f=weighted(ANTIBIOTIC_NOBEL,x=>'nobel:'+x.id),pool=NOBEL.filter(x=>x.id!==f.id).map(x=>x.achievement);return pack('nobelAchievement','antibiotic','강의록의 노벨상 표에서 <em>'+f.people+'</em>와 연결되는 항생제 연구 성과는?',f.achievement,sample(pool,4),f.people+' — '+f.achievement+'.','nobel:'+f.id)}
+  function qAntibioticNobelPair(){const f=weighted(ANTIBIOTIC_NOBEL,x=>'nobel:'+x.id),correct=f.people+' — '+f.achievement,wrong=[];while(wrong.length<4){const x=pick(NOBEL),y=pick(NOBEL.filter(z=>z.id!==x.id)),p=x.people+' — '+y.achievement;if(!wrong.includes(p)&&p!==correct)wrong.push(p)}return pack('nobelPair','antibiotic','다음 항생제 관련 노벨상 연결 중 <em>옳은 것</em>은?',correct,wrong,correct+'은 강의록의 표와 일치합니다.','nobel:'+f.id)}
+  function qTyping(){let scope=state.scope==='all'?(Math.random()<.8?'nobel':pick(['early','koch','postkoch'])):state.scope;if(scope==='nobel'){const f=weighted(NOBEL,x=>'nobel:'+x.id);return typing('nobel','<em>'+f.achievement+'</em>과 연결되는 과학자 이름을 입력하세요.',f.people,f.aliases,f.people+' — '+f.achievement+'.','nobel:'+f.id)}if(scope==='antibiotic'&&Math.random()<.45){const f=weighted(ANTIBIOTIC_NOBEL,x=>'nobel:'+x.id);return typing('antibiotic','<em>'+f.achievement+'</em>과 연결되는 항생제 연구자 이름을 입력하세요.',f.people,f.aliases,f.people+' — '+f.achievement+'.','nobel:'+f.id)}if(scope==='koch'&&Math.random()<.5){const f=weighted(KOCH_PATHOGENS,x=>'kochpath:'+x.id);return typing('koch','<em>'+f.disease+'</em>의 원인균 학명을 입력하세요.',f.pathogen,f.aliases,f.disease+' → '+f.pathogen+'.','kochpath:'+f.id)}const list=scopedScientists(scope),s=weighted(list,x=>'scientist:'+x.id),a=pick(s.achievements),axis=scope==='antibiotic'?'antibiotic':s.scope;return typing(axis,'<em>'+a+'</em>와 연결되는 과학자 이름을 입력하세요.',s.name,s.aliases,s.name+'의 성과입니다.','scientist:'+s.id)}
   function copies(fn,count){return Array(count).fill(fn)}
   function generators(){
     const map={
@@ -182,12 +182,11 @@
     const afterRows=SCIENTISTS.filter(x=>x.scope==='postkoch').map(x=>['<b>'+x.name+'</b>',x.achievements.join('<br>· ')]);afterRows.splice(1,0,['<b>Louis Pasteur</b>','강의록의 Germ Theory 표: 누에병–protozoan']);
     root.appendChild(section('5. Koch 이후의 과학자',['과학자','성과'],afterRows,'Bassi–누에병·진균과 Pasteur–누에병·protozoan은 강의록 표에서 별도로 제시됩니다. 이 분류 표현은 강의록 기준입니다.'));
     const antibioticRows=[
-      ['<b>Paul Ehrlich</b>','Salvarsan 개발 → Syphilis 치료','합성 화학요법제'],
       ['<b>Alexander Fleming</b>','Penicillin 발견 · <i>Penicillium</i>이 <i>S. aureus</i> 성장 억제','최초 항생제 발견'],
       ['<b>Florey & Chain</b>','Penicillin 임상시험 · 대량생산','임상 적용'],
       ['<b>Selman Waksman</b>','Streptomycin 발견','항결핵 항생제']
     ];
-    root.appendChild(section('6. 항생제 개발 관련 과학자',['과학자','강의록의 성과','구분'],antibioticRows,'<b>구분:</b> Ehrlich의 Salvarsan은 엄밀히 말해 항생제가 아니라 합성 화학요법제이지만, 강의록의 <i>Birth of Modern Chemotherapy</i> 흐름에 함께 제시되어 이 범위에 포함합니다. 관련 노벨상 연결은 Paul Ehrlich–Salvarsan, Fleming·Chain·Florey–Penicillin, Waksman–Streptomycin입니다.'));
+    root.appendChild(section('6. 항생제 개발 관련 과학자',['과학자','강의록의 성과','구분'],antibioticRows,'<b>주의:</b> Ehrlich의 Salvarsan은 합성 비소계 화학요법제이므로 항생제 개발 범위에서는 제외합니다. 관련 노벨상 연결은 Fleming·Chain·Florey–Penicillin, Waksman–Streptomycin입니다.'));
     root.appendChild(section('7. Nobel Prize & Microbiology',['과학자','강의록의 성과'],NOBEL.map(x=>['<b>'+x.people+'</b>',x.achievement]),'연도는 출제·표시하지 않습니다. 과학자와 성과의 연결만 익히면 됩니다. 인명과 학명은 표준 철자로 다듬었습니다.'));
   }
   function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),1700)}
