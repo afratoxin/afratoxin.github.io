@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#234e70">
+  <meta name="description" content="급성·지속성 바이러스 감염 양상 그래프와 대표 질환을 연결하는 족보형 무한회독 퀴즈">
+  <title>바이러스 감염 양상 그래프 퀴즈</title>
+  <style>
+    :root {
+      --ink:#182934; --muted:#667b87; --paper:#fff; --canvas:#f2f7f8; --line:#d9e5e8;
+      --navy:#234e70; --blue:#6da5c5; --blue-deep:#427d9d; --mint:#dff3e9; --teal:#16877d;
+      --green:#16745f; --green-bg:#e9f7f1; --red:#ba3e49; --red-bg:#fff0f1;
+      --amber:#a76712; --amber-bg:#fff5e5; --shadow:0 18px 48px rgba(27,65,82,.11);
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; min-height:100vh; color:var(--ink);
+      background:radial-gradient(circle at 0 0,rgba(22,135,125,.12),transparent 30rem),radial-gradient(circle at 100% 4%,rgba(35,78,112,.11),transparent 32rem),var(--canvas);
+      font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,sans-serif;
+    }
+    button,select { font:inherit; }
+    button { color:inherit; cursor:pointer; }
+    .shell { width:min(1160px,calc(100% - 32px)); margin:0 auto; padding:24px 0 54px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:20px; }
+    .back { color:#31566e; font-size:13px; font-weight:850; text-decoration:none; }
+    .source { color:var(--muted); font-size:11px; font-weight:800; }
+    .hero { position:relative; overflow:hidden; padding:35px 39px; border-radius:27px; color:#fff; background:linear-gradient(135deg,#1f4566,#2d7188 62%,#16877d); box-shadow:var(--shadow); }
+    .hero::after { content:"A–F"; position:absolute; right:28px; bottom:-36px; color:rgba(255,255,255,.08); font-size:130px; font-weight:950; letter-spacing:-.08em; }
+    .eyebrow { margin:0 0 9px; color:#bcebe1; font-size:11px; font-weight:950; letter-spacing:.15em; text-transform:uppercase; }
+    h1 { position:relative; z-index:1; margin:0; font-size:clamp(30px,5vw,50px); line-height:1.1; letter-spacing:-.055em; }
+    .hero p:last-child { position:relative; z-index:1; max-width:730px; margin:14px 0 0; color:rgba(255,255,255,.84); font-size:13px; line-height:1.7; word-break:keep-all; }
+    .toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin:18px 0; }
+    .toolbar label { color:var(--muted); font-size:12px; font-weight:900; }
+    select,.ghost { min-height:41px; padding:0 13px; border:1px solid var(--line); border-radius:11px; background:#fff; font-size:12px; font-weight:800; }
+    .ghost:hover { border-color:#9ccbc4; background:#f8fffd; }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-left:auto; }
+    .stat { min-width:76px; padding:8px 11px; border:1px solid var(--line); border-radius:11px; background:rgba(255,255,255,.84); text-align:center; }
+    .stat b { display:block; font-size:17px; }
+    .stat span { color:var(--muted); font-size:9px; font-weight:850; letter-spacing:.04em; }
+    .card { border:1px solid var(--line); border-radius:22px; background:rgba(255,255,255,.95); box-shadow:0 9px 29px rgba(31,67,82,.07); }
+    .quiz { min-height:620px; padding:26px; }
+    .question-top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .kind { display:inline-flex; align-items:center; min-height:27px; padding:0 9px; border-radius:8px; color:#1e6177; background:#e5f4f5; font-size:10px; font-weight:950; }
+    .question-no { color:var(--muted); font-size:11px; font-weight:850; }
+    .visual { margin:18px 0; padding:15px; border:1px solid #dfe9eb; border-radius:17px; background:#f9fcfc; }
+    .single-graph { max-width:720px; margin:0 auto; }
+    .graph-grid { display:grid; gap:7px; }
+    .graph-row { display:grid; grid-template-columns:34px minmax(0,1fr); gap:10px; align-items:center; }
+    .graph-letter { display:grid; place-items:center; width:34px; height:34px; border:1px solid #b5cdd4; border-radius:10px; color:var(--navy); background:#fff; font-weight:950; }
+    .graph-svg { display:block; width:100%; height:auto; }
+    h2 { margin:20px 0 8px; font-size:clamp(20px,3.1vw,28px); line-height:1.42; letter-spacing:-.04em; word-break:keep-all; }
+    .hint { min-height:20px; margin:0 0 18px; color:var(--muted); font-size:12px; line-height:1.55; }
+    .choices { display:grid; gap:9px; }
+    .choice { display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; align-items:center; width:100%; padding:12px 13px; border:1px solid var(--line); border-radius:13px; background:#fff; text-align:left; transition:.14s ease; }
+    .choice:hover:not(:disabled) { transform:translateY(-1px); border-color:#8fc5bd; background:#f9fdfc; }
+    .choice:disabled { cursor:default; }
+    .num { display:grid; place-items:center; width:28px; height:28px; border-radius:8px; color:#456370; background:#edf3f4; font-size:11px; font-weight:950; }
+    .choice-label { font-size:13px; font-weight:800; line-height:1.45; }
+    .choice.correct { border-color:#75c5ad; background:var(--green-bg); }
+    .choice.correct .num { color:#fff; background:var(--green); }
+    .choice.wrong { border-color:#e0a0a7; background:var(--red-bg); }
+    .choice.wrong .num { color:#fff; background:var(--red); }
+    .feedback { display:none; margin-top:15px; padding:15px 16px; border-radius:14px; font-size:12px; line-height:1.65; }
+    .feedback.show { display:block; }
+    .feedback.ok { color:#115e4c; border:1px solid #bee3d7; background:var(--green-bg); }
+    .feedback.no { color:#84313a; border:1px solid #ecc4c8; background:var(--red-bg); }
+    .feedback strong { display:block; margin-bottom:5px; font-size:13px; }
+    .feedback p { margin:4px 0 0; color:#314953; }
+    .contrast { margin-top:9px!important; padding-top:9px; border-top:1px solid rgba(49,73,83,.14); }
+    .next { display:none; width:100%; min-height:46px; margin-top:12px; border:0; border-radius:13px; color:#fff; background:linear-gradient(110deg,var(--navy),var(--teal)); font-size:13px; font-weight:950; }
+    .next.show { display:block; }
+    .tip { margin:15px 2px 0; color:var(--muted); font-size:10px; text-align:right; }
+    dialog { width:min(1100px,calc(100% - 22px)); max-height:90vh; padding:0; border:0; border-radius:22px; box-shadow:0 28px 80px rgba(12,32,42,.3); }
+    dialog::backdrop { background:rgba(16,32,42,.58); backdrop-filter:blur(3px); }
+    .dialog-head { position:sticky; top:0; z-index:3; display:flex; justify-content:space-between; align-items:center; gap:15px; padding:18px 21px; border-bottom:1px solid var(--line); background:#fff; }
+    .dialog-head h3 { margin:0; font-size:19px; }
+    .dialog-head p { margin:4px 0 0; color:var(--muted); font-size:10px; }
+    .close { width:35px; height:35px; border:0; border-radius:10px; color:#fff; background:var(--navy); font-weight:950; }
+    .reference { padding:18px 20px 24px; overflow:auto; }
+    table { width:100%; min-width:850px; border-collapse:collapse; font-size:11px; }
+    th,td { padding:10px; border:1px solid #dbe5e8; text-align:left; vertical-align:middle; }
+    th { color:#fff; background:var(--navy); font-size:10px; }
+    td:nth-child(1) { width:190px; font-weight:900; }
+    td:nth-child(2) { width:330px; }
+    td .graph-svg { min-width:280px; }
+    .reference-note { margin:13px 2px 0; color:#607681; font-size:10px; line-height:1.6; }
+    @media (max-width:760px) {
+      .shell { width:min(100% - 18px,680px); padding-top:14px; }
+      .source { display:none; }
+      .hero { padding:28px 23px; border-radius:21px; }
+      .stats { order:3; width:100%; margin-left:0; }
+      .quiz { min-height:0; padding:20px 15px; }
+      .visual { padding:10px; }
+      .graph-row { grid-template-columns:30px minmax(0,1fr); gap:7px; }
+      .graph-letter { width:30px; height:30px; border-radius:8px; }
+      .tip { text-align:left; }
+    }
+    @media (max-width:500px) {
+      .stats { grid-template-columns:repeat(2,1fr); }
+      .choice { padding:11px 10px; }
+      .graph-grid { gap:3px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar">
+      <a class="back" href="index.html">← 미생물학 퀴즈 목록</a>
+      <span class="source">15강 강의록 · 2020/2025 족보 그래프 기반</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">Acute &amp; Persistent Infections</p>
+      <h1>바이러스 감염 양상 그래프</h1>
+      <p>그래프의 모양만 보고 급성·잠복 재발·만성·slow infection을 구분하고, 대표 바이러스와 질환을 A–F에 연결합니다.</p>
+    </header>
+
+    <section class="toolbar" aria-label="퀴즈 설정">
+      <label for="modeSelect">출제 유형</label>
+      <select id="modeSelect">
+        <option value="all">전체 혼합</option>
+        <option value="past">족보형 A–F</option>
+        <option value="pattern">그래프 → 감염 유형</option>
+        <option value="disease">바이러스·질환 연결</option>
+        <option value="concept">그래프 해석</option>
+      </select>
+      <button class="ghost" id="openReferenceBtn" type="button">학습표 보기</button>
+      <button class="ghost" id="resetBtn" type="button">기록 초기화</button>
+      <div class="stats" aria-label="학습 통계">
+        <div class="stat"><b id="correctStat">0</b><span>정답</span></div>
+        <div class="stat"><b id="accuracyStat">—</b><span>정답률</span></div>
+        <div class="stat"><b id="streakStat">0</b><span>연속 정답</span></div>
+        <div class="stat"><b id="bestStat">0</b><span>최고 기록</span></div>
+      </div>
+    </section>
+
+    <section class="card quiz" aria-live="polite">
+      <div class="question-top">
+        <span class="kind" id="kind">족보형 A–F</span>
+        <span class="question-no" id="questionNo">QUESTION 1</span>
+      </div>
+      <div class="visual" id="visual"></div>
+      <h2 id="prompt"></h2>
+      <p class="hint" id="hint"></p>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next" id="nextBtn" type="button">다음 문제 <span aria-hidden="true">→</span></button>
+      <p class="tip">숫자키 1–5로 선택 · 해설 뒤 Enter로 다음 문제</p>
+    </section>
+  </main>
+
+  <dialog id="referenceDialog">
+    <div class="dialog-head">
+      <div><h3>Acute &amp; Persistent Infections 학습표</h3><p>그래프 모양과 대표 질환을 한 묶음으로 암기하세요.</p></div>
+      <button class="close" id="closeReferenceBtn" type="button" aria-label="닫기">×</button>
+    </div>
+    <div class="reference">
+      <table>
+        <thead><tr><th>감염 유형</th><th>그래프</th><th>대표 예시</th><th>판별 기준</th></tr></thead>
+        <tbody id="referenceBody"></tbody>
+      </table>
+      <p class="reference-note">파란 영역은 감염의 지속 또는 변화, 연두색 구간은 임상적 disease episode를 나타냅니다. 실제 검사에서의 검출 가능성은 병원체·검사법에 따라 달라질 수 있으며, 여기서는 강의록 도식의 구분을 따릅니다.</p>
+    </div>
+  </dialog>
+
+  <script>
+    const PATTERNS = [
+      {id:'acute',letter:'A',name:'Acute infection: 일반적 상황',short:'급성 감염',examples:['Common cold','Influenza','Most viral infections'],answerExample:'Influenza',clue:'한 번의 급성기와 disease episode 뒤 감염이 소실됩니다.',contrast:'D와 달리 급성기 이후 바이러스가 지속되지 않습니다.'},
+      {id:'rare',letter:'B',name:'Acute infection: rare late complication',short:'급성 감염 후 드문 후기 합병증',examples:['Measles → SSPE'],answerExample:'Measles → SSPE',clue:'급성 홍역 뒤 바이러스가 쉽게 검출되지 않는 긴 간격을 거쳐 SSPE가 나타납니다.',contrast:'C처럼 같은 증상이 재발하는 것이 아니라, 원래 급성 질환과 다른 후기 합병증이 발생합니다.'},
+      {id:'latent',letter:'C',name:'Latent-recurrent infection',short:'잠복-재발 감염',examples:['VZV → zoster','HSV 재활성화'],answerExample:'Varicella-zoster virus',clue:'첫 disease episode 뒤 잠복기를 거쳐 두 번째 disease episode가 다시 나타납니다.',contrast:'D처럼 바이러스 활동이 계속 높게 유지되는 만성 감염이 아니라 잠복 후 재활성화되는 양상입니다.'},
+      {id:'chronic',letter:'D',name:'Chronic infection: 일반적 상황',short:'만성 감염',examples:['Hepatitis B','Hepatitis C'],answerExample:'Hepatitis C virus',clue:'초기 disease episode 뒤에도 감염이 장기간 지속됩니다.',contrast:'A와 달리 급성 episode가 끝난 뒤에도 파란 영역이 계속 유지됩니다.'},
+      {id:'late',letter:'E',name:'Chronic infection: late disease',short:'만성 감염 후 후기 질환',examples:['HTLV-1 → leukemia','HIV → AIDS'],answerExample:'HIV',clue:'초기 급성 episode 뒤 만성 감염이 이어지고, 수년 후 서로 다른 후기 질환이 나타납니다.',contrast:'B도 후기 질환이 있지만, E에서는 그 사이에 만성 감염 상태가 지속된다는 점이 다릅니다.'},
+      {id:'slow',letter:'F',name:'Slow infection',short:'Slow infection',examples:['JCV → PML','Prion → CJD'],answerExample:'JCV → PML',clue:'수년에 걸쳐 감염 부담 또는 병적 변화가 서서히 증가한 뒤 질환이 발현합니다.',contrast:'E의 일정한 만성 plateau와 달리 그래프가 장기간 서서히 상승합니다.'}
+    ];
+
+    const $ = selector => document.querySelector(selector);
+    const shuffle = values => {
+      const copy=[...values];
+      for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}
+      return copy;
+    };
+    const byId = id => PATTERNS.find(pattern => pattern.id===id);
+    const exampleFor = pattern => pattern.examples[Math.floor(Math.random()*pattern.examples.length)];
+    const allExamples = () => PATTERNS.flatMap(pattern => pattern.examples);
+
+    function svgFor(id,compact) {
+      const h=compact?70:92;
+      const base='<line x1="10" y1="58" x2="510" y2="58" stroke="#536874" stroke-width="2"/>';
+      const disease=(x,w)=>'<rect x="'+x+'" y="21" width="'+w+'" height="37" fill="#dff3e9" stroke="#55706f" stroke-width="1.5"/>';
+      let shape='';
+      let labels='';
+      if(id==='acute'){
+        shape='<path d="M30 58 L85 18 L128 18 L182 58 Z" fill="#8fbad2" stroke="#526b79" stroke-width="1.5"/>'+disease(94,25);
+        labels='<text x="107" y="76" text-anchor="middle">disease episode</text>';
+      } else if(id==='rare'){
+        shape='<path d="M25 58 L75 18 L118 18 L166 58 Z" fill="#8fbad2" stroke="#526b79" stroke-width="1.5"/>'+disease(83,25)+disease(472,24);
+        labels='<text x="290" y="35" text-anchor="middle">virus not readily demonstrable</text><text x="484" y="17" text-anchor="middle">SSPE</text>';
+      } else if(id==='latent'){
+        shape='<path d="M25 58 L75 18 L118 18 L166 58 Z" fill="#8fbad2" stroke="#526b79" stroke-width="1.5"/><path d="M335 58 L382 22 L425 22 L470 58 Z" fill="#8fbad2" stroke="#526b79" stroke-width="1.5"/>'+disease(83,25)+disease(390,25);
+        labels='<text x="267" y="34" text-anchor="middle">virus not readily demonstrable</text><text x="402" y="18" text-anchor="middle">recurrence</text>';
+      } else if(id==='chronic'){
+        shape='<path d="M25 58 L82 18 L510 18 L510 58 Z" fill="#8fbad2" stroke="#526b79" stroke-width="1.5"/>'+disease(84,25);
+        labels='<text x="107" y="76" text-anchor="middle">disease episode</text>';
+      } else if(id==='late'){
+        shape='<path d="M25 58 L82 18 L510 18 L510 58 Z" fill="#8fbad2" stroke="#526b79" stroke-width="1.5"/>'+disease(84,25)+disease(478,30);
+        labels='<text x="106" y="76" text-anchor="middle">different acute episode</text><text x="493" y="76" text-anchor="middle">late disease</text>';
+      } else {
+        shape='<path d="M25 58 L480 18 L510 18 L510 58 Z" fill="#8fbad2" stroke="#526b79" stroke-width="1.5"/>'+disease(480,28);
+        labels='<text x="494" y="76" text-anchor="middle">disease episode</text>';
+      }
+      return '<svg class="graph-svg" viewBox="0 0 520 '+h+'" role="img" aria-label="'+byId(id).name+' 그래프">'+base+shape+'<g fill="#415965" font-size="10" font-family="system-ui,sans-serif">'+labels+'</g></svg>';
+    }
+
+    function allGraphs() {
+      return '<div class="graph-grid">'+PATTERNS.map(pattern=>'<div class="graph-row"><span class="graph-letter">'+pattern.letter+'</span>'+svgFor(pattern.id,true)+'</div>').join('')+'</div>';
+    }
+
+    function singleGraph(pattern) {
+      return '<div class="single-graph">'+svgFor(pattern.id,false)+'</div>';
+    }
+
+    function fiveOptions(answer,pool) {
+      return shuffle([answer,...shuffle([...new Set(pool)].filter(value=>value!==answer)).slice(0,4)]);
+    }
+
+    function pastQuestion() {
+      const correct=PATTERNS[Math.floor(Math.random()*PATTERNS.length)];
+      const wrong=shuffle(PATTERNS.filter(pattern=>pattern.id!==correct.id)).slice(0,4).map((pattern,index)=>{
+        const donor=PATTERNS.filter(item=>item.id!==pattern.id)[index%5];
+        return pattern.letter+': '+exampleFor(donor);
+      });
+      const answer=correct.letter+': '+exampleFor(correct);
+      return {id:'past:'+correct.id,kind:'족보형 A–F',visual:allGraphs(),prompt:'A–F 그래프와 바이러스·질환의 연결로 옳은 것은?',hint:'그래프의 모양을 먼저 유형으로 바꾼 뒤 대표 예시를 연결하세요.',options:shuffle([answer,...wrong]),answer,pattern:correct};
+    }
+
+    function identifyQuestion() {
+      const pattern=PATTERNS[Math.floor(Math.random()*PATTERNS.length)];
+      return {id:'identify:'+pattern.id,kind:'그래프 판별',visual:singleGraph(pattern),prompt:'위 그래프에 해당하는 감염 양상은?',hint:'급성기 이후 파란 영역이 사라지는지, 지속되는지, 다시 나타나는지 확인하세요.',options:fiveOptions(pattern.name,PATTERNS.map(item=>item.name)),answer:pattern.name,pattern};
+    }
+
+    function graphExampleQuestion() {
+      const pattern=PATTERNS[Math.floor(Math.random()*PATTERNS.length)];
+      const answer=exampleFor(pattern);
+      return {id:'example:'+pattern.id+':'+answer,kind:'대표 질환 연결',visual:singleGraph(pattern),prompt:'위 감염 양상의 대표 예시로 가장 적절한 것은?',hint:'그래프를 감염 유형으로 판별한 다음 질환을 연결하세요.',options:fiveOptions(answer,allExamples()),answer,pattern};
+    }
+
+    function diseaseToGraphQuestion() {
+      const pattern=PATTERNS[Math.floor(Math.random()*PATTERNS.length)];
+      const example=exampleFor(pattern);
+      const distractors=shuffle(PATTERNS.filter(item=>item.id!==pattern.id).map(item=>item.letter)).slice(0,4);
+      return {id:'reverse:'+pattern.id+':'+example,kind:'역방향 연결',visual:allGraphs(),prompt:'“'+example+'”에 해당하는 감염 경과 그래프는?',hint:'A–F 중 하나를 고르세요.',options:shuffle([pattern.letter,...distractors]),answer:pattern.letter,pattern};
+    }
+
+    const CONCEPTS = [
+      {pattern:'acute',prompt:'한 번의 disease episode 뒤 감염 지표가 기저선으로 돌아오는 양상은?',answer:'Acute infection: 일반적 상황'},
+      {pattern:'rare',prompt:'급성 홍역 이후 긴 무증상 간격을 거쳐 SSPE가 나타나는 양상은?',answer:'Acute infection: rare late complication'},
+      {pattern:'latent',prompt:'첫 발병 뒤 바이러스가 쉽게 검출되지 않는 시기를 거쳐 재활성화·재발하는 양상은?',answer:'Latent-recurrent infection'},
+      {pattern:'chronic',prompt:'초기 disease episode 뒤에도 감염이 지속되지만 별도의 후기 disease episode가 제시되지 않은 양상은?',answer:'Chronic infection: 일반적 상황'},
+      {pattern:'late',prompt:'초기 급성 episode와 다른 후기 질환이 수년 뒤 나타나며 그 사이 만성 감염이 지속되는 양상은?',answer:'Chronic infection: late disease'},
+      {pattern:'slow',prompt:'수년 동안 병적 변화가 서서히 축적된 뒤 disease episode가 나타나는 양상은?',answer:'Slow infection'}
+    ];
+
+    function conceptQuestion() {
+      const concept=CONCEPTS[Math.floor(Math.random()*CONCEPTS.length)];
+      const pattern=byId(concept.pattern);
+      return {id:'concept:'+pattern.id,kind:'그래프 해석',visual:'',prompt:concept.prompt,hint:'시간에 따른 감염의 지속 여부와 disease episode의 위치를 기준으로 판단하세요.',options:fiveOptions(concept.answer,PATTERNS.map(item=>item.name)),answer:concept.answer,pattern};
+    }
+
+    const FACTORIES={
+      all:[pastQuestion,pastQuestion,identifyQuestion,graphExampleQuestion,diseaseToGraphQuestion,conceptQuestion],
+      past:[pastQuestion,diseaseToGraphQuestion],
+      pattern:[identifyQuestion],
+      disease:[graphExampleQuestion,diseaseToGraphQuestion],
+      concept:[conceptQuestion]
+    };
+
+    const saved=JSON.parse(localStorage.getItem('viralInfectionPatternsQuizV1')||'{}');
+    const state={correct:saved.correct||0,total:saved.total||0,streak:0,best:saved.best||0,number:1,answered:false,current:null,mode:localStorage.getItem('viralInfectionPatternsMode')||'all'};
+
+    function save(){localStorage.setItem('viralInfectionPatternsQuizV1',JSON.stringify({correct:state.correct,total:state.total,best:state.best}));}
+    function makeQuestion(){
+      const factories=FACTORIES[state.mode]||FACTORIES.all;
+      let next;
+      for(let i=0;i<12;i++){next=factories[Math.floor(Math.random()*factories.length)]();if(!state.current||next.id!==state.current.id)break;}
+      return next;
+    }
+    function renderQuestion(){
+      state.current=makeQuestion();state.answered=false;
+      $('#kind').textContent=state.current.kind;$('#questionNo').textContent='QUESTION '+state.number;
+      $('#visual').innerHTML=state.current.visual||'';$('#visual').style.display=state.current.visual?'block':'none';
+      $('#prompt').textContent=state.current.prompt;$('#hint').textContent=state.current.hint;
+      $('#feedback').className='feedback';$('#feedback').innerHTML='';$('#nextBtn').classList.remove('show');$('#choices').innerHTML='';
+      state.current.options.forEach((label,index)=>{
+        const button=document.createElement('button');button.type='button';button.className='choice';button.dataset.value=label;
+        const number=document.createElement('span');number.className='num';number.textContent=index+1;
+        const text=document.createElement('span');text.className='choice-label';text.textContent=label;
+        button.append(number,text);button.addEventListener('click',()=>answer(label,button));$('#choices').append(button);
+      });
+    }
+    function answer(value,selected){
+      if(state.answered)return;state.answered=true;state.total++;
+      const ok=value===state.current.answer;
+      if(ok){state.correct++;state.streak++;state.best=Math.max(state.best,state.streak);}else state.streak=0;
+      document.querySelectorAll('.choice').forEach(button=>{button.disabled=true;if(button.dataset.value===state.current.answer)button.classList.add('correct');});
+      if(!ok)selected.classList.add('wrong');
+      const pattern=state.current.pattern;
+      const feedback=$('#feedback');feedback.className='feedback show '+(ok?'ok':'no');
+      feedback.innerHTML='<strong>'+(ok?'정답입니다.':'정답: '+state.current.answer)+'</strong><p>'+pattern.clue+'</p><p><b>대표 예시:</b> '+pattern.examples.join(' / ')+'</p><p class="contrast"><b>구분 포인트:</b> '+pattern.contrast+'</p>';
+      $('#nextBtn').classList.add('show');save();updateStats();
+    }
+    function nextQuestion(){if(!state.answered)return;state.number++;renderQuestion();window.scrollTo({top:Math.max(0,$('.quiz').offsetTop-15),behavior:'smooth'});}
+    function updateStats(){
+      $('#correctStat').textContent=state.correct;$('#accuracyStat').textContent=state.total?Math.round(state.correct/state.total*100)+'%':'—';
+      $('#streakStat').textContent=state.streak;$('#bestStat').textContent=state.best;
+    }
+    function renderReference(){
+      $('#referenceBody').innerHTML=PATTERNS.map(pattern=>'<tr><td>'+pattern.name+'</td><td>'+svgFor(pattern.id,true)+'</td><td>'+pattern.examples.join('<br>')+'</td><td>'+pattern.clue+'</td></tr>').join('');
+    }
+
+    $('#modeSelect').value=state.mode;
+    $('#modeSelect').addEventListener('change',event=>{state.mode=event.target.value;localStorage.setItem('viralInfectionPatternsMode',state.mode);state.number++;renderQuestion();});
+    $('#nextBtn').addEventListener('click',nextQuestion);
+    $('#openReferenceBtn').addEventListener('click',()=>$('#referenceDialog').showModal());
+    $('#closeReferenceBtn').addEventListener('click',()=>$('#referenceDialog').close());
+    $('#referenceDialog').addEventListener('click',event=>{if(event.target===$('#referenceDialog'))$('#referenceDialog').close();});
+    $('#resetBtn').addEventListener('click',()=>{if(!confirm('정답 수, 정답률, 최고 연속 정답 기록을 초기화할까요?'))return;state.correct=0;state.total=0;state.streak=0;state.best=0;localStorage.removeItem('viralInfectionPatternsQuizV1');updateStats();});
+    document.addEventListener('keydown',event=>{
+      if($('#referenceDialog').open)return;
+      if(!state.answered&&/^[1-5]$/.test(event.key)){const button=document.querySelectorAll('.choice')[Number(event.key)-1];if(button){event.preventDefault();button.click();}}
+      else if(state.answered&&event.key==='Enter'){event.preventDefault();nextQuestion();}
+    });
+
+    renderReference();updateStats();renderQuestion();
+  </script>
+</body>
+</html>
