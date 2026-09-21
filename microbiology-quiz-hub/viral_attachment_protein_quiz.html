@@ -200,8 +200,7 @@
     };
     const unique = values => [...new Set(values.filter(Boolean))];
     const weightedRow = rows => {
-      const pool = rows.flatMap(row => Array(row.high ? 3 : 1).fill(row));
-      return pool[Math.floor(Math.random()*pool.length)];
+      return rows[Math.floor(Math.random()*rows.length)];
     };
     const fiveOptions = (correct, pool) => shuffle([correct,...shuffle(unique(pool).filter(value=>value!==correct)).slice(0,4)]);
     const relation = row => [row.virus,row.vap,row.receptor,row.target].filter(Boolean).join(' → ');
@@ -242,13 +241,31 @@
       target:[targetQuestion], links:[fullLinkQuestion,reverseVapQuestion,reverseReceptorQuestion]
     };
     const saved = JSON.parse(localStorage.getItem('viralAttachmentQuizV1') || '{}');
-    const state = {correct:saved.correct||0,total:saved.total||0,streak:0,best:saved.best||0,number:1,answered:false,current:null,history:[],scope:localStorage.getItem('viralAttachmentScope')||'all'};
+    const state = {correct:saved.correct||0,total:saved.total||0,streak:0,best:saved.best||0,number:1,answered:false,current:null,history:[],scope:localStorage.getItem('viralAttachmentScope')||'all',recentViruses:[],lastGroup:'',questionCounts:{}};
 
     function save() { localStorage.setItem('viralAttachmentQuizV1',JSON.stringify({correct:state.correct,total:state.total,best:state.best})); }
     function makeQuestion() {
       const factories=FACTORIES[state.scope]||FACTORIES.all;
-      let next;
-      for (let i=0;i<12;i++) { next=factories[Math.floor(Math.random()*factories.length)](); if (!state.current || next.id!==state.current.id) break; }
+      const candidates=[];
+      for(let i=0;i<48;i++) candidates.push(factories[Math.floor(Math.random()*factories.length)]());
+      const describe=question=>{
+        const parts=question.id.split(':');
+        const rawKind=parts.shift();
+        const group=rawKind.includes('receptor')?'receptor':rawKind.includes('vap')?'vap':rawKind;
+        return {question,group,virus:parts.join(':')};
+      };
+      const described=candidates.map(describe);
+      let pool=described.filter(item=>item.group!==state.lastGroup&&!state.recentViruses.includes(item.virus));
+      if(!pool.length) pool=described.filter(item=>!state.recentViruses.includes(item.virus));
+      if(!pool.length) pool=described.filter(item=>item.question.id!==state.current?.id);
+      if(!pool.length) pool=described;
+      const minimum=Math.min(...pool.map(item=>state.questionCounts[item.question.id]||0));
+      const selected=shuffle(pool.filter(item=>(state.questionCounts[item.question.id]||0)===minimum))[0];
+      const next=selected.question;
+      state.questionCounts[next.id]=(state.questionCounts[next.id]||0)+1;
+      state.recentViruses.push(selected.virus);
+      if(state.recentViruses.length>3)state.recentViruses.shift();
+      state.lastGroup=selected.group;
       return next;
     }
     function renderQuestion() {
