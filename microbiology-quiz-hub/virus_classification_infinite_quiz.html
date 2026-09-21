@@ -398,7 +398,7 @@
             <option value="all">전체 섞기</option>
             <option value="DNA">DNA virus</option>
             <option value="RNA">RNA virus</option>
-            <option value="replication">13강 복제 핵심</option>
+            <option value="replication">13강 복제·방출 핵심</option>
             <option value="herpes">Herpes 8종</option>
             <option value="hepatitis">Hepatitis A·B·C·E</option>
           </select>
@@ -597,14 +597,14 @@
       key:`${f.id}:${i}`, display:e[0], aliases:e.slice(1), family:f
     })));
     const HEPATITIS_IDS = new Set(['picorna:1','hepadna:0','flavi:1','hepe:0']);
-    const CATEGORY_NAMES = { all:'전체', DNA:'DNA', RNA:'RNA', replication:'13강 복제 핵심', herpes:'Herpes 8종', hepatitis:'Hepatitis A·B·C·E' };
+    const CATEGORY_NAMES = { all:'전체', DNA:'DNA', RNA:'RNA', replication:'13강 복제·방출 핵심', herpes:'Herpes 8종', hepatitis:'Hepatitis A·B·C·E' };
     const GENOME_LABEL = {
       'DNA':'DNA',
       '+ssRNA':'+ssRNA', '-ssRNA':'-ssRNA', 'dsRNA':'dsRNA', '+ssRNA via DNA':'RNA → DNA'
     };
     const TYPE_NAMES = {
       familyVirus:'FAMILY ↔ VIRUS', oddFamily:'소속 / 비소속', nucleic:'DNA / RNA', envelope:'ENVELOPE',
-      genome:'RNA POLARITY', strand:'가닥 수', feature:'복합 분류', pair:'연결 판단', replication:'13강 REPLICATION', herpes:'HERPES 8종', typing:'직접 입력'
+      genome:'RNA POLARITY', strand:'가닥 수', feature:'복합 분류', pair:'연결 판단', replication:'13강 REPLICATION', release:'VIRUS RELEASE', herpes:'HERPES 8종', typing:'직접 입력'
     };
 
     const REPLICATION_RULES = [
@@ -642,6 +642,27 @@
         answer:'Parvo',
         distractors:['Adeno','Herpes','Polyoma','Papilloma'],
         explanation:'Parvovirus는 세포가 DNA 합성 중일 때의 host machinery에 의존하므로, 활동적으로 분열 중인 세포에서만 효과적으로 복제합니다.'
+      },
+      {
+        id:'release-enveloped',
+        prompts:['<em>Enveloped virus</em>가 완성된 virion을 세포 밖으로 방출하는 대표 기전은?', '숙주 세포막을 이용해 외피를 획득하면서 세포 밖으로 나오는 과정은?'],
+        answer:'Budding',
+        distractors:['Cell lysis','Uncoating','Pore formation','Receptor-mediated endocytosis'],
+        explanation:'강의록의 일반 원칙은 enveloped virus → budding입니다. Budding 과정에서 nucleocapsid가 숙주 세포막을 통과하면서 envelope을 획득합니다.'
+      },
+      {
+        id:'release-naked',
+        prompts:['<em>Naked capsid virus</em>가 완성된 virion을 세포 밖으로 방출하는 대표 기전은?', 'Non-enveloped virus의 대표적인 release 방식은?'],
+        answer:'Cell lysis',
+        distractors:['Budding','Membrane fusion','Endocytosis','Uncoating'],
+        explanation:'강의록의 일반 원칙은 non-enveloped(naked capsid) virus → cell lysis입니다. 감염세포가 용해되면서 조립된 virion이 한꺼번에 방출됩니다.'
+      },
+      {
+        id:'release-pair',
+        prompts:['바이러스의 외피 유무와 대표적인 <em>release 기전</em>의 연결로 옳은 것은?', 'Maturation 후 세포 밖으로 나오는 방식의 연결로 옳은 것은?'],
+        answer:'Enveloped — budding / Naked capsid — cell lysis',
+        distractors:['Enveloped — cell lysis / Naked capsid — budding','Enveloped — uncoating / Naked capsid — fusion','Enveloped — pore formation / Naked capsid — endocytosis','Enveloped — endocytosis / Naked capsid — membrane fusion'],
+        explanation:'외피 보유 바이러스는 budding으로 방출되면서 envelope을 얻고, naked capsid virus는 주로 세포를 lysis시켜 방출됩니다.'
       }
     ];
 
@@ -865,9 +886,10 @@
       const rule = weightedFact(REPLICATION_RULES, x => `rep:${x.id}`);
       const correct = rule.answers ? pick(rule.answers) : rule.answer;
       const distractors = sample(rule.distractors, 4);
+      const isRelease = rule.id.startsWith('release-');
       return packMCQ({
-        type:'replication',
-        tag:'13강 족보 핵심',
+        type:isRelease?'release':'replication',
+        tag:isRelease?'Envelope과 방출':'13강 족보 핵심',
         prompt:pick(rule.prompts),
         correct,
         distractors,
@@ -1047,12 +1069,14 @@
       root.appendChild(hSection);
 
       const rSection = document.createElement('section'); rSection.className = 'ref-section';
-      rSection.innerHTML = `<h3>13강 족보 반복 출제: replication 핵심</h3><div class="ref-table"><table><thead><tr><th>질문 기준</th><th>정답</th><th>구분 포인트</th></tr></thead><tbody>
+      rSection.innerHTML = `<h3>13강 족보 반복 출제: replication·release 핵심</h3><div class="ref-table"><table><thead><tr><th>질문 기준</th><th>정답</th><th>구분 포인트</th></tr></thead><tbody>
         <tr><td>Genome 자체가 mRNA</td><td><b>Picorna · Toga · Flavi · Corona</b></td><td>(+)RNA. Retro는 DNA intermediate를 먼저 만듦</td></tr>
         <tr><td>Virion 유래 RdRp를 갖지 않음</td><td><b>Flavi</b></td><td>감염 후 (+)RNA를 번역해 RdRp 생성</td></tr>
         <tr><td>자체 RNA polymerase를 쓰는 DNA virus</td><td><b>Pox</b></td><td>Cytoplasm에서 복제하는 DNA virus 예외</td></tr>
         <tr><td>RNA virus지만 nucleus 이용</td><td><b>Orthomyxo</b></td><td>Transcription·replication 일부는 핵, translation은 세포질</td></tr>
         <tr><td>분열 중인 세포에서만 효과적 복제</td><td><b>Parvo</b></td><td>DNA synthesis 중인 세포의 host machinery에 의존</td></tr>
+        <tr><td>Enveloped virus의 대표 방출</td><td><b>Budding</b></td><td>숙주 세포막을 통과하며 envelope 획득</td></tr>
+        <tr><td>Naked capsid virus의 대표 방출</td><td><b>Cell lysis</b></td><td>감염세포가 용해되며 virion 방출</td></tr>
       </tbody></table></div>`;
       root.appendChild(rSection);
     }
