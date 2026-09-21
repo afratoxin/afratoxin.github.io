@@ -645,24 +645,17 @@
       },
       {
         id:'release-enveloped',
-        prompts:['<em>Enveloped virus</em>가 완성된 virion을 세포 밖으로 방출하는 대표 기전은?', '숙주 세포막을 이용해 외피를 획득하면서 세포 밖으로 나오는 과정은?'],
-        answer:'Budding',
-        distractors:['Cell lysis','Uncoating','Pore formation','Receptor-mediated endocytosis'],
-        explanation:'강의록의 일반 원칙은 enveloped virus → budding입니다. Budding 과정에서 nucleocapsid가 숙주 세포막을 통과하면서 envelope을 획득합니다.'
+        prompts:['다음 중 <em>budding</em>으로 세포 밖으로 배출되는 바이러스는?', '숙주 세포막에서 외피를 획득하며 방출되는 바이러스는?'],
+        release:'Budding',
+        coat:'Enveloped',
+        explanation:'Enveloped virus는 숙주 세포막을 통과하며 envelope을 얻는 budding으로 방출됩니다.'
       },
       {
         id:'release-naked',
-        prompts:['<em>Naked capsid virus</em>가 완성된 virion을 세포 밖으로 방출하는 대표 기전은?', 'Non-enveloped virus의 대표적인 release 방식은?'],
-        answer:'Cell lysis',
-        distractors:['Budding','Membrane fusion','Endocytosis','Uncoating'],
-        explanation:'강의록의 일반 원칙은 non-enveloped(naked capsid) virus → cell lysis입니다. 감염세포가 용해되면서 조립된 virion이 한꺼번에 방출됩니다.'
-      },
-      {
-        id:'release-pair',
-        prompts:['바이러스의 외피 유무와 대표적인 <em>release 기전</em>의 연결로 옳은 것은?', 'Maturation 후 세포 밖으로 나오는 방식의 연결로 옳은 것은?'],
-        answer:'Enveloped — budding / Naked capsid — cell lysis',
-        distractors:['Enveloped — cell lysis / Naked capsid — budding','Enveloped — uncoating / Naked capsid — fusion','Enveloped — pore formation / Naked capsid — endocytosis','Enveloped — endocytosis / Naked capsid — membrane fusion'],
-        explanation:'외피 보유 바이러스는 budding으로 방출되면서 envelope을 얻고, naked capsid virus는 주로 세포를 lysis시켜 방출됩니다.'
+        prompts:['다음 중 <em>세포 lysis</em>로 세포 밖으로 배출되는 바이러스는?', '완성된 virion이 감염세포의 용해와 함께 방출되는 바이러스는?'],
+        release:'Cell lysis',
+        coat:'Naked capsid',
+        explanation:'Naked capsid virus는 보통 envelope을 획득할 필요가 없으므로 감염세포를 lysis시켜 방출됩니다.'
       }
     ];
 
@@ -884,12 +877,21 @@
 
     function qReplicationRule() {
       const rule = weightedFact(REPLICATION_RULES, x => `rep:${x.id}`);
+      if (rule.coat) {
+        const answerPool = VIRUSES.filter(v => v.family.coat === rule.coat);
+        const distractorPool = VIRUSES.filter(v => v.family.coat !== rule.coat);
+        const target = pick(answerPool);
+        return packMCQ({
+          type:'release', tag:'Envelope과 방출', prompt:pick(rule.prompts),
+          correct:target.display, distractors:sample(distractorPool, 4).map(v => v.display),
+          explanation:`${target.display}은 ${rule.coat.toLowerCase()} virus입니다. ${rule.explanation}`,
+          factKey:`rep:${rule.id}`
+        });
+      }
       const correct = rule.answers ? pick(rule.answers) : rule.answer;
       const distractors = sample(rule.distractors, 4);
-      const isRelease = rule.id.startsWith('release-');
       return packMCQ({
-        type:isRelease?'release':'replication',
-        tag:isRelease?'Envelope과 방출':'13강 족보 핵심',
+        type:'replication', tag:'13강 족보 핵심',
         prompt:pick(rule.prompts),
         correct,
         distractors,
