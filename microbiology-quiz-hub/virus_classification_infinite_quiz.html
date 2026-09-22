@@ -465,10 +465,10 @@
           <button class="primary" id="checkSortBtn" type="button">채점하기</button>
         </div>
       </div>
-      <p class="practice-help" id="sortHelp">카드를 한 번 누른 뒤 알맞은 분류 박스를 누르세요. 박스 안의 카드도 다시 눌러 다른 곳으로 옮길 수 있습니다.</p>
+      <p class="practice-help" id="sortHelp">카드를 선택한 뒤 알맞은 분류 박스를 선택하세요. 하나 이상만 배치해도 채점할 수 있습니다.</p>
       <div class="sort-bank" id="sortBank" data-placeholder="바이러스 블록 보관함"></div>
       <div class="sort-board" id="sortBoard"></div>
-      <div class="sort-result" id="sortResult">모든 블록을 배치한 뒤 채점하세요.</div>
+      <div class="sort-result" id="sortResult">카드를 하나 이상 배치하면 채점할 수 있습니다.</div>
     </div>
   </dialog>
 
@@ -1085,7 +1085,7 @@
       root.appendChild(rSection);
     }
 
-    const sortPractice = { mode:'family', placements:{}, order:[], familyOrder:{}, selected:null, checked:false, recorded:false, message:'모든 블록을 배치한 뒤 채점하세요.', resultClass:'' };
+    const sortPractice = { mode:'family', placements:{}, order:[], familyOrder:{}, selected:null, checked:false, scored:{}, message:'카드를 하나 이상 배치하면 채점할 수 있습니다.', resultClass:'' };
 
     function sortGroupForFamily(fid) {
       return SORT_GROUPS.find(g => g.familyIds.includes(fid));
@@ -1120,21 +1120,22 @@
         const previous = sortPractice.familyOrder;
         sortPractice.familyOrder = Object.fromEntries(SORT_GROUPS.map(g => [g.id, shuffledDifferent(g.familyIds, previous[g.id])]));
       }
+      const previousOrder = sortPractice.order;
       sortPractice.placements = {};
-      sortPractice.order = shuffle(currentSortItems().map(x => x.id));
+      sortPractice.order = shuffledDifferent(currentSortItems().map(x => x.id), previousOrder);
       sortPractice.selected = null;
       sortPractice.checked = false;
-      sortPractice.recorded = false;
-      sortPractice.message = '모든 블록을 배치한 뒤 채점하세요.';
+      sortPractice.scored = {};
+      sortPractice.message = '카드를 하나 이상 배치하면 채점할 수 있습니다.';
       sortPractice.resultClass = '';
       $('#familyModeBtn').classList.toggle('active', mode === 'family');
       $('#exampleGroupModeBtn').classList.toggle('active', mode === 'exampleGroup');
       $('#exampleModeBtn').classList.toggle('active', mode === 'example');
       $('#sortHelp').innerHTML = mode === 'family'
-        ? '<b>Family 블록:</b> Pox·Herpes·Picorna 같은 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 넣으세요. 칸 안의 순서는 상관없습니다.'
+        ? '<b>Family 블록:</b> 섞여 나온 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 넣으세요. 하나 이상만 배치해도 채점할 수 있습니다.'
         : mode === 'exampleGroup'
-          ? '<b>바이러스 · 속명 숨김:</b> 속명 단서 없이 바이러스 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 직접 넣으세요.'
-          : '<b>바이러스 · 속명 표시:</b> 무작위로 섞인 속명 칸에 대표 바이러스를 넣으세요. 다시 섞을 때마다 속명 위치도 바뀝니다.';
+          ? '<b>바이러스 · 속명 숨김:</b> 섞여 나온 바이러스 블록을 DNA/RNA·envelope·polarity가 맞는 큰 칸에 넣으세요. 부분 채점도 가능합니다.'
+          : '<b>바이러스 · 속명 표시:</b> 무작위로 섞인 속명 칸에 대표 바이러스를 넣으세요. 하나 이상만 배치해도 채점할 수 있습니다.';
       renderSortPractice();
     }
 
@@ -1161,7 +1162,7 @@
       b.type = 'button'; b.className = 'virus-block';
       b.dataset.itemId = item.id; b.textContent = item.label;
       if (sortPractice.selected === item.id) b.classList.add('selected');
-      if (sortPractice.checked) b.classList.add(sortPractice.placements[item.id] === item.target ? 'sort-correct' : 'sort-wrong');
+      if (sortPractice.checked && sortPractice.placements[item.id]) b.classList.add(sortPractice.placements[item.id] === item.target ? 'sort-correct' : 'sort-wrong');
       b.addEventListener('click', e => {
         e.stopPropagation();
         sortPractice.selected = sortPractice.selected === item.id ? null : item.id;
@@ -1214,21 +1215,27 @@
 
     function checkSortPractice() {
       const items = currentSortItems(), placed = items.filter(x => sortPractice.placements[x.id]).length;
+      if (!placed) {
+        sortPractice.checked = false;
+        sortPractice.message = '카드를 하나 이상 배치한 뒤 채점하세요.';
+        sortPractice.resultClass = 'bad';
+        renderSortPractice();
+        return;
+      }
       const correct = items.filter(x => sortPractice.placements[x.id] === x.target).length;
       sortPractice.checked = true;
-      if (placed === items.length && !sortPractice.recorded) {
-        QuizMenuMetrics.recordBatch('virus-classification', correct, items.length);
-        sortPractice.recorded = true;
+      const newlyScored = items.filter(x => sortPractice.placements[x.id] && !sortPractice.scored[x.id]);
+      if (newlyScored.length) {
+        const newlyCorrect = newlyScored.filter(x => sortPractice.placements[x.id] === x.target).length;
+        QuizMenuMetrics.recordBatch('virus-classification', newlyCorrect, newlyScored.length);
+        newlyScored.forEach(x => { sortPractice.scored[x.id] = true; });
       }
-      if (placed < items.length) {
-        sortPractice.message = `${placed}/${items.length}개를 배치했습니다. 빈 블록 ${items.length-placed}개를 먼저 채워주세요.`;
-        sortPractice.resultClass = 'bad';
-      } else if (correct === items.length) {
+      if (placed === items.length && correct === items.length) {
         sortPractice.message = `완벽합니다. ${correct}/${items.length}개 모두 정확합니다.`;
         sortPractice.resultClass = 'good';
       } else {
-        sortPractice.message = `${correct}/${items.length}개 정답입니다. 빨간 블록을 다른 칸으로 옮겨보세요.`;
-        sortPractice.resultClass = 'bad';
+        sortPractice.message = `${correct}/${placed}개 정답 · 미배치 ${items.length-placed}개${correct < placed ? ' · 빨간 카드를 다른 칸으로 옮겨보세요.' : ''}`;
+        sortPractice.resultClass = correct === placed ? 'good' : 'bad';
       }
       renderSortPractice();
     }
