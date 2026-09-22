@@ -322,6 +322,7 @@
 
   <script src="past_exam_assets.js"></script>
   <script src="past_exam_explanations.js"></script>
+  <script src="quiz_menu_metrics.js"></script>
   <script>
     (() => {
       'use strict';
@@ -662,6 +663,7 @@
         if (correct) session.correct += 1;
         else session.wrong += 1;
         updateRecord(q, correct);
+        QuizMenuMetrics.record('past-exam', correct);
         $('sessionCorrect').textContent = session.correct;
         $('sessionWrong').textContent = session.wrong;
       }
