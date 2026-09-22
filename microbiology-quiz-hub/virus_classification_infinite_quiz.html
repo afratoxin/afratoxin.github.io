@@ -497,6 +497,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="quiz_menu_metrics.js"></script>
   <script>
     const FAMILIES = [
       { id:'pox', name:'Pox', short:'Pox', nucleic:'DNA', genome:'DNA', coat:'Enveloped', examples:[
@@ -980,7 +981,7 @@
     }
 
     function finalizeAnswer(correct, userAnswer) {
-      state.answered = true; state.total++;
+      state.answered = true; state.total++; QuizMenuMetrics.record('virus-classification', correct);
       if (correct) { state.correct++; state.streak++; state.best = Math.max(state.best, state.streak); }
       else { state.streak = 0; }
       const q = state.current;
@@ -1084,7 +1085,7 @@
       root.appendChild(rSection);
     }
 
-    const sortPractice = { mode:'family', placements:{}, order:[], familyOrder:{}, selected:null, checked:false, message:'모든 블록을 배치한 뒤 채점하세요.', resultClass:'' };
+    const sortPractice = { mode:'family', placements:{}, order:[], familyOrder:{}, selected:null, checked:false, recorded:false, message:'모든 블록을 배치한 뒤 채점하세요.', resultClass:'' };
 
     function sortGroupForFamily(fid) {
       return SORT_GROUPS.find(g => g.familyIds.includes(fid));
@@ -1123,6 +1124,7 @@
       sortPractice.order = shuffle(currentSortItems().map(x => x.id));
       sortPractice.selected = null;
       sortPractice.checked = false;
+      sortPractice.recorded = false;
       sortPractice.message = '모든 블록을 배치한 뒤 채점하세요.';
       sortPractice.resultClass = '';
       $('#familyModeBtn').classList.toggle('active', mode === 'family');
@@ -1214,6 +1216,10 @@
       const items = currentSortItems(), placed = items.filter(x => sortPractice.placements[x.id]).length;
       const correct = items.filter(x => sortPractice.placements[x.id] === x.target).length;
       sortPractice.checked = true;
+      if (placed === items.length && !sortPractice.recorded) {
+        QuizMenuMetrics.recordBatch('virus-classification', correct, items.length);
+        sortPractice.recorded = true;
+      }
       if (placed < items.length) {
         sortPractice.message = `${placed}/${items.length}개를 배치했습니다. 빈 블록 ${items.length-placed}개를 먼저 채워주세요.`;
         sortPractice.resultClass = 'bad';
@@ -1280,6 +1286,7 @@
     function finishHerpesTyping(correct, revealed=false) {
       if (herpesNamePractice.answered) return;
       const h = currentHerpesTyping(); herpesNamePractice.answered = true;
+      QuizMenuMetrics.record('virus-classification', correct);
       if (correct) herpesNamePractice.correct++; else herpesNamePractice.missed.push(h.n);
       $('#herpesNameInput').readOnly = true; $('#checkHerpesNameBtn').disabled = true;
       $('#herpesTypingFeedback').className = `herpes-feedback show ${correct?'good':'bad'}`;
