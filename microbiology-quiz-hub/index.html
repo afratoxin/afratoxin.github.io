@@ -54,12 +54,26 @@
     .section-head { display:flex; align-items:end; justify-content:space-between; gap:18px; margin:37px 2px 16px; }
     .section-head h2 { margin:0; font-size:24px; letter-spacing:-.045em; }
     .section-head p { margin:0; color:var(--muted); font-size:12px; }
+    .quiz-groups { display:grid; gap:24px; }
+    .quiz-group { padding:20px; border:1px solid rgba(205,220,224,.9); border-radius:25px; background:rgba(255,255,255,.48); }
+    .group-head { display:flex; align-items:end; justify-content:space-between; gap:15px; margin:0 2px 13px; }
+    .group-head h3 { margin:0; font-size:17px; letter-spacing:-.035em; }
+    .group-head p { margin:0; color:var(--muted); font-size:11px; }
     .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px; }
     .quiz-card { position:relative; display:grid; grid-template-columns:54px minmax(0,1fr) auto; gap:17px; align-items:center; min-height:142px; padding:23px; overflow:hidden; border:1px solid var(--line); border-radius:21px; background:rgba(255,255,255,.92); box-shadow:0 8px 24px rgba(29,58,73,.055); text-decoration:none; transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
     .quiz-card:hover { transform:translateY(-3px); border-color:#a7d6ce; box-shadow:0 16px 34px rgba(29,58,73,.11); }
     .quiz-card:focus-visible { outline:3px solid rgba(21,154,140,.28); outline-offset:3px; }
     .quiz-card.wide { grid-column:1/-1; }
     .quiz-card.featured { border-color:#a7d6ce; background:linear-gradient(125deg,#ffffff 0%,#effaf7 100%); }
+    .quiz-card.compact { min-height:94px; padding:15px 18px; grid-template-columns:44px minmax(0,1fr) auto; }
+    .quiz-card.compact .icon { width:44px; height:44px; border-radius:13px; font-size:14px; }
+    .quiz-card.compact .card-copy h3 { margin-bottom:3px; font-size:16px; }
+    .quiz-card.compact .card-copy p,.quiz-card.compact .tags { display:none; }
+    .quiz-card.priority { border-color:#e48b96; background:linear-gradient(125deg,#fff 0%,#fff1f3 100%); box-shadow:0 13px 32px rgba(180,55,72,.13); }
+    .priority-marker { position:absolute; top:10px; right:12px; display:flex; align-items:center; gap:4px; padding:5px 8px; border:1px solid #f0a9b2; border-radius:999px; color:#ad263b; background:#fff2f4; font-size:9px; font-weight:950; }
+    .menu-stats { display:inline-flex; margin-top:9px; padding:4px 7px; border-radius:7px; color:#4d6875; background:#edf4f5; font-size:10px; font-weight:900; }
+    .quiz-card.priority .menu-stats { color:#a52c3f; background:#ffe3e8; }
+    .balance-note { display:flex; align-items:center; gap:8px; margin:0 0 16px; padding:11px 14px; border:1px solid #e7c3c8; border-radius:13px; color:#8d3140; background:rgba(255,243,245,.86); font-size:12px; font-weight:850; }
     .icon { display:grid; place-items:center; width:54px; height:54px; border-radius:17px; color:var(--navy); background:var(--mint); font-size:17px; font-weight:950; letter-spacing:-.04em; }
     .quiz-card:nth-child(2) .icon { color:#7c4d12; background:#fff2dc; }
     .quiz-card:nth-child(3) .icon { color:#3156b5; background:#e9efff; }
@@ -67,6 +81,10 @@
     .quiz-card:nth-child(5) .icon { color:#6d4bac; background:#f0eaff; }
     .quiz-card.vap .icon { color:#1d6592; background:#e5f4ff; }
     .quiz-card.patterns .icon { color:#176c64; background:#e2f6f0; }
+    .quiz-card.scientists .icon { color:#7c4d12; background:#fff2dc; }
+    .quiz-card.pathogenesis .icon { color:#3156b5; background:#e9efff; }
+    .quiz-card.aeration .icon { color:#8b3e66; background:#fbe9f2; }
+    .quiz-card.virus-classification .icon { color:#6d4bac; background:#f0eaff; }
     .card-copy h3 { margin:0 0 7px; font-size:18px; letter-spacing:-.035em; }
     .card-copy p { margin:0; color:var(--muted); font-size:12px; line-height:1.55; word-break:keep-all; }
     .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
@@ -82,11 +100,14 @@
       .hero-main { padding:32px 25px; border-radius:23px; }
       .study-card { padding:23px; border-radius:23px; }
       .grid { grid-template-columns:1fr; }
+      .quiz-group { padding:15px; }
       .quiz-card.wide { grid-column:auto; }
       .section-head { align-items:start; flex-direction:column; gap:5px; }
     }
     @media (max-width:470px) {
       .quiz-card { grid-template-columns:46px minmax(0,1fr); padding:19px 16px; gap:13px; }
+      .quiz-card.compact { grid-template-columns:42px minmax(0,1fr); padding:14px; }
+      .priority-marker { position:static; width:max-content; margin-top:8px; }
       .icon { width:46px; height:46px; border-radius:14px; font-size:15px; }
       .arrow { display:none; }
       .hero-copy { font-size:14px; }
@@ -126,96 +147,114 @@
       <p>각 카드에서 독립적으로 학습 기록이 저장됩니다.</p>
     </div>
 
-    <section class="grid" aria-label="미생물학 퀴즈 목록">
-      <a class="quiz-card wide featured" href="past_exam_unit_review.html">
+    <div class="balance-note" id="balanceNote">학습 기록을 분석해 우선 학습 메뉴를 표시합니다.</div>
+    <section class="quiz-groups" aria-label="미생물학 퀴즈 목록">
+      <section class="quiz-group" data-quiz-group="past-exam"><div class="group-head"><h3>족보 회독</h3><p>복원 기출을 단원별로 반복</p></div><div class="grid">
+      <a class="quiz-card wide featured" href="past_exam_unit_review.html" data-menu-id="past-exam">
         <span class="icon">423</span>
         <span class="card-copy">
           <h3>족보 단원별 회독</h3>
           <p>2020~2025 복원 기출 423문항을 19개 단원으로 나누어 원본 도표와 함께 풉니다.</p>
           <span class="tags"><span class="tag">전 문항</span><span class="tag">단원별</span><span class="tag">오답 회독</span><span class="tag">주관식</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
+      </div></section>
 
-      <a class="quiz-card" href="lecture1_scientists_achievements_infinite_quiz.html">
+      <section class="quiz-group" data-quiz-group="bacteria"><div class="group-head"><h3>기초·세균·병인론</h3><p>기초 개념부터 세균의 생존 전략까지</p></div><div class="grid">
+      <a class="quiz-card scientists" href="lecture1_scientists_achievements_infinite_quiz.html" data-menu-id="scientists">
         <span class="icon">L1</span>
         <span class="card-copy">
           <h3>과학자와 성과</h3>
           <p>초기 미생물학부터 Pasteur, Koch, 주요 노벨상 성과까지 연결합니다.</p>
           <span class="tags"><span class="tag">연도 제외</span><span class="tag">직접 입력</span><span class="tag">오답 반복</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
 
-      <a class="quiz-card" href="pathogenesis_routes_evasion_infinite_quiz.html">
+      <a class="quiz-card pathogenesis" href="pathogenesis_routes_evasion_infinite_quiz.html" data-menu-id="pathogenesis">
         <span class="icon">Path</span>
         <span class="card-copy">
           <h3>진입·전파·면역회피</h3>
           <p>병원체별 entry·transmission·host-defense evasion과 lysosome 내 생존 기전을 반복합니다.</p>
           <span class="tags"><span class="tag">Entry</span><span class="tag">Evasion</span><span class="tag">Lysosome 탭</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
 
-      <a class="quiz-card" href="aeration_infinite_quiz.html">
+      <a class="quiz-card compact aeration" href="aeration_infinite_quiz.html" data-menu-id="aeration">
         <span class="icon">O₂</span>
         <span class="card-copy">
           <h3>산소 요구도</h3>
           <p>산소 요구도 5분류, 대표 균, Catalase와 SOD 조합을 학습합니다.</p>
           <span class="tags"><span class="tag">5분류</span><span class="tag">Catalase</span><span class="tag">SOD</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
+      </div></section>
 
-      <a class="quiz-card" href="virus_classification_infinite_quiz.html">
+      <section class="quiz-group" data-quiz-group="virus"><div class="group-head"><h3>바이러스</h3><p>분류·부착·감염 양상 연결</p></div><div class="grid">
+      <a class="quiz-card virus-classification" href="virus_classification_infinite_quiz.html" data-menu-id="virus-classification">
         <span class="icon">V</span>
         <span class="card-copy">
           <h3>바이러스 분류</h3>
           <p>Family·대표 바이러스·핵산·envelope와 13강 replication 예외, Herpes 8종을 종합합니다.</p>
           <span class="tags"><span class="tag">클릭 분류표</span><span class="tag">13강 복제</span><span class="tag">Herpes 쓰기</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
 
-      <a class="quiz-card vap" href="viral_attachment_protein_quiz.html">
+      <a class="quiz-card vap" href="viral_attachment_protein_quiz.html" data-menu-id="viral-attachment">
         <span class="icon">VAP</span>
         <span class="card-copy">
           <h3>Viral attachment protein</h3>
           <p>바이러스별 부착 단백질, receptor, target cell 연결을 강의록 표대로 반복합니다.</p>
           <span class="tags"><span class="tag">VAP</span><span class="tag">Receptor</span><span class="tag">Target cell</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
 
-      <a class="quiz-card patterns" href="viral_infection_patterns_quiz.html">
+      <a class="quiz-card compact patterns" href="viral_infection_patterns_quiz.html" data-menu-id="viral-patterns">
         <span class="icon">A–F</span>
         <span class="card-copy">
           <h3>바이러스 감염 양상 그래프</h3>
           <p>급성·잠복 재발·만성·slow infection 그래프와 대표 질환을 족보형 A–F 문제로 연결합니다.</p>
           <span class="tags"><span class="tag">그래프 판별</span><span class="tag">A–F 족보형</span><span class="tag">질환 연결</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
+      </div></section>
 
-      <a class="quiz-card wide" href="antibiotic_mechanism_resistance_infinite_quiz.html">
+      <section class="quiz-group" data-quiz-group="therapeutics"><div class="group-head"><h3>항균·항바이러스 치료</h3><p>약물의 표적과 작용 기전</p></div><div class="grid">
+      <a class="quiz-card" href="antibiotic_mechanism_resistance_infinite_quiz.html" data-menu-id="antibiotic">
         <span class="icon">Rx</span>
         <span class="card-copy">
           <h3>항생제 작용과 내성</h3>
           <p>5대 작용 기전, 약물별 표적·내성, 유전적 내성 획득과 persistence 계열을 연결합니다.</p>
           <span class="tags"><span class="tag">작용 표적</span><span class="tag">내성 기전</span><span class="tag">유전적 획득</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
 
-      <a class="quiz-card wide" href="antiviral_drug_mechanism_quiz.html">
+      <a class="quiz-card" href="antiviral_drug_mechanism_quiz.html" data-menu-id="antiviral">
         <span class="icon">AV</span>
         <span class="card-copy">
           <h3>항바이러스제 연결</h3>
           <p>항바이러스제–작용 단계–target 효소/기전–사용 바이러스를 5지선다와 클릭 매칭으로 연결합니다.</p>
           <span class="tags"><span class="tag">16강</span><span class="tag">약물 기전</span><span class="tag">클릭 매칭</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
+      </div></section>
     </section>
 
     <footer>
@@ -223,5 +262,21 @@
       <span>마지막 통합: 2026-09-21</span>
     </footer>
   </main>
+  <script src="quiz_menu_metrics.js"></script>
+  <script>
+    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','antibiotic','antiviral'];
+    QuizMenuMetrics.migrateLegacy();
+    const menuStats=QuizMenuMetrics.readAll();
+    const priorityMenus=new Set(QuizMenuMetrics.recommend(MENU_IDS,2));
+    document.querySelectorAll('[data-menu-id]').forEach(card=>{
+      const id=card.dataset.menuId,item=menuStats[id]||{correct:0,attempts:0},stats=card.querySelector('[data-menu-stats]');
+      stats.textContent=item.attempts?`평균 정답률 ${Math.round(item.correct/item.attempts*100)}% · ${item.attempts}회 풀이`:'아직 풀이 없음';
+      if(priorityMenus.has(id)){
+        card.classList.add('priority');
+        const marker=document.createElement('span');marker.className='priority-marker';marker.innerHTML='<span aria-hidden="true">🔥</span> 이것부터 학습하세요!';card.appendChild(marker);
+      }
+    });
+    document.querySelector('#balanceNote').textContent=priorityMenus.size?'정답률과 풀이 횟수를 함께 분석해 우선 학습 메뉴 '+priorityMenus.size+'개를 표시했습니다.':'모든 영역을 고르게 학습 중입니다.';
+  </script>
 </body>
 </html>
