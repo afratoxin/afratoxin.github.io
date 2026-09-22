@@ -237,6 +237,7 @@
     .sort-empty { width: 100%; display: grid; place-items: center; min-height: 30px; color: var(--muted); font-size: 11px; }
     .virus-block { display: inline-flex; align-items: center; justify-content: center; min-height: 27px; padding: 5px 7px; border: 1px solid #cdd7e5; border-radius: 8px; color: #2e3d58; background: #fff; box-shadow: 0 2px 6px rgba(34,52,84,.07); font-size: 10.5px; line-height: 1.15; font-weight: 820; cursor: grab; user-select: none; transition: .15s; }
     .virus-block:hover { border-color: #8fa2dc; transform: translateY(-1px); }
+    .virus-block { cursor: pointer; }
     .virus-block.selected { border-color: var(--blue); background: var(--blue-2); box-shadow: 0 0 0 3px rgba(49,87,213,.12); }
     .virus-block.sort-correct { border-color: #58ad8c; background: var(--green-bg); color: #126348; }
     .virus-block.sort-wrong { border-color: #dc7f90; background: var(--red-bg); color: #963246; }
@@ -448,7 +449,7 @@
 
   <dialog class="practice-dialog" id="sortDialog">
     <div class="modal-head">
-      <div><h2>드래그로 분류표 채우기</h2><div class="practice-progress" id="sortProgress">0 / 0 배치</div></div>
+      <div><h2>클릭으로 분류표 채우기</h2><div class="practice-progress" id="sortProgress">0 / 0 배치</div></div>
       <button class="ghost" id="closeSortBtn" type="button">문제로 돌아가기</button>
     </div>
     <div class="modal-body">
@@ -464,7 +465,7 @@
           <button class="primary" id="checkSortBtn" type="button">채점하기</button>
         </div>
       </div>
-      <p class="practice-help" id="sortHelp">블록을 잡아 알맞은 분류 칸으로 끌어놓으세요. 모바일에서는 블록을 누른 뒤 칸을 누르면 이동합니다. 칸 안의 블록도 다시 옮길 수 있습니다.</p>
+      <p class="practice-help" id="sortHelp">카드를 한 번 누른 뒤 알맞은 분류 박스를 누르세요. 박스 안의 카드도 다시 눌러 다른 곳으로 옮길 수 있습니다.</p>
       <div class="sort-bank" id="sortBank" data-placeholder="바이러스 블록 보관함"></div>
       <div class="sort-board" id="sortBoard"></div>
       <div class="sort-result" id="sortResult">모든 블록을 배치한 뒤 채점하세요.</div>
@@ -1147,13 +1148,6 @@
     }
 
     function wireSortDropZone(zone, target) {
-      zone.ondragover = e => { e.preventDefault(); zone.classList.add('drag-over'); };
-      zone.ondragleave = () => zone.classList.remove('drag-over');
-      zone.ondrop = e => {
-        e.preventDefault(); zone.classList.remove('drag-over');
-        const id = e.dataTransfer.getData('text/plain');
-        if (id) placeSortItem(id, target);
-      };
       zone.onclick = e => {
         if (e.target.closest('.virus-block')) return;
         if (sortPractice.selected) placeSortItem(sortPractice.selected, target);
@@ -1162,11 +1156,10 @@
 
     function makeSortBlock(item) {
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'virus-block'; b.draggable = true;
+      b.type = 'button'; b.className = 'virus-block';
       b.dataset.itemId = item.id; b.textContent = item.label;
       if (sortPractice.selected === item.id) b.classList.add('selected');
       if (sortPractice.checked) b.classList.add(sortPractice.placements[item.id] === item.target ? 'sort-correct' : 'sort-wrong');
-      b.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', item.id); e.dataTransfer.effectAllowed = 'move'; });
       b.addEventListener('click', e => {
         e.stopPropagation();
         sortPractice.selected = sortPractice.selected === item.id ? null : item.id;
