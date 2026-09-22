@@ -164,6 +164,7 @@
     </div>
   </dialog>
 
+  <script src="quiz_menu_metrics.js"></script>
   <script>
     const PATTERNS = [
       {id:'acute',letter:'A',name:'Acute infection: 일반적 상황',short:'급성 감염',examples:['Common cold','Influenza','Most viral infections'],answerExample:'Influenza',clue:'한 번의 급성기와 disease episode 뒤 감염이 소실됩니다.',contrast:'D와 달리 급성기 이후 바이러스가 지속되지 않습니다.'},
@@ -301,6 +302,7 @@
     function answer(value,selected){
       if(state.answered)return;state.answered=true;state.total++;
       const ok=value===state.current.answer;
+      QuizMenuMetrics.record('viral-patterns',ok);
       if(ok){state.correct++;state.streak++;state.best=Math.max(state.best,state.streak);}else state.streak=0;
       document.querySelectorAll('.choice').forEach(button=>{button.disabled=true;if(button.dataset.value===state.current.answer)button.classList.add('correct');});
       if(!ok)selected.classList.add('wrong');
