@@ -110,12 +110,45 @@
   const ANTIBIOTIC_SCIENTIST_IDS=['fleming','florey_chain','waksman'];
   const ANTIBIOTIC_NOBEL_IDS=['n1945','n1952'];
   const ANTIBIOTIC_NOBEL=NOBEL.filter(x=>ANTIBIOTIC_NOBEL_IDS.includes(x.id));
-  const TYPE_NAME={sciAchievement:'과학자 → 성과',achievementSci:'성과 → 과학자',notAchievement:'속하지 않는 성과',pair:'연결 판단',pasteur:'Pasteur 세부',kochPostulate:'Koch 4가설',kochPathogen:'Koch 병원체',nobelPerson:'노벨 성과 → 인물',nobelAchievement:'노벨 인물 → 성과',nobelPair:'노벨 연결',typing:'직접 입력'};
+  const ANTIBIOTIC_RESEARCHERS=[
+    {id:'fleming',name:'Fleming',achievement:'Penicillin 발견'},
+    {id:'chain',name:'Chain',achievement:'Penicillin 임상시험·대량생산'},
+    {id:'florey',name:'Florey',achievement:'Penicillin 임상시험·대량생산'},
+    {id:'waksman',name:'Waksman',achievement:'Streptomycin 발견'}
+  ];
+  const ANTIBIOTIC_OUTSIDERS=[
+    {id:'nicolle',name:'Nicolle',achievement:'Typhus 연구'},
+    {id:'metchnikoff',name:'Metchnikoff',achievement:'Phagocytosis 연구'},
+    {id:'blumberg',name:'Blumberg',achievement:'HBV infectious agent 발견'},
+    {id:'prusiner',name:'Prusiner',achievement:'Prion 발견'},
+    {id:'marshall',name:'Marshall',achievement:'Helicobacter pylori 연구'}
+  ];
+  const VIRUS_RESEARCHERS=[
+    {id:'delbruck',name:'Delbrück',achievement:'Viral replication·structure 연구'},
+    {id:'hershey',name:'Hershey',achievement:'Viral replication·structure 연구'},
+    {id:'luria',name:'Luria',achievement:'Viral replication·structure 연구'},
+    {id:'baltimore',name:'Baltimore',achievement:'Reverse transcriptase 발견'},
+    {id:'dulbecco',name:'Dulbecco',achievement:'Reverse transcriptase 발견'},
+    {id:'temin',name:'Temin',achievement:'Reverse transcriptase 발견'},
+    {id:'blumberg',name:'Blumberg',achievement:'HBV infectious agent 발견'},
+    {id:'hausen',name:'zur Hausen',achievement:'HPV와 cervical cancer의 관련성 발견'},
+    {id:'montagnier',name:'Montagnier',achievement:'HIV 발견'},
+    {id:'houghton',name:'Houghton',achievement:'HCV 발견'}
+  ];
+  const VIRUS_OUTSIDERS=[
+    {id:'marshall',name:'Marshall',achievement:'Helicobacter pylori 연구'},
+    {id:'warren',name:'Warren',achievement:'Helicobacter pylori 연구'},
+    {id:'waksman',name:'Waksman',achievement:'Streptomycin 발견'},
+    {id:'metchnikoff',name:'Metchnikoff',achievement:'Phagocytosis 연구'},
+    {id:'ross',name:'Ross',achievement:'Malaria 연구'},
+    {id:'prusiner',name:'Prusiner',achievement:'Prion 발견'}
+  ];
+  const TYPE_NAME={sciAchievement:'과학자 → 성과',achievementSci:'성과 → 과학자',notAchievement:'속하지 않는 성과',researchException:'연구 분야 예외',pair:'연결 판단',pasteur:'Pasteur 세부',kochPostulate:'Koch 4가설',kochPathogen:'Koch 병원체',nobelPerson:'노벨 성과 → 인물',nobelAchievement:'노벨 인물 → 성과',nobelPair:'노벨 연결',typing:'직접 입력'};
   const AXIS_LABEL={early:'초기 미생물학',pasteur:'Pasteur',koch:'Koch',postkoch:'Koch 이후',antibiotic:'항생제 개발',nobel:'노벨상'};
   const $=s=>document.querySelector(s);
   let saved={};try{saved=JSON.parse(localStorage.getItem('lecture1ScientistsQuizV1')||'{}')}catch(_){saved={}}
   const savedMistakes=(saved.mistakes||[]).filter(q=>q.type!=='nobelYear'&&!/노벨상 연도|\d{4}년/.test(q.prompt||''));
-  const state={round:1,answered:false,current:null,correct:0,total:0,streak:0,best:saved.best||0,weak:saved.weak||{},mastery:saved.mastery||{},mistakes:savedMistakes,reviewOnly:false,history:[],scope:saved.scope||'all',recent:[]};
+  const state={round:1,answered:false,current:null,correct:0,total:0,streak:0,best:saved.best||0,weak:saved.weak||{},mastery:saved.mastery||{},mistakes:savedMistakes,reviewOnly:false,history:[],scope:saved.scope||'all',recent:[],recentSubjects:[],seen:{},lastPastExam:false};
   function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
   function pick(a){return a[Math.floor(Math.random()*a.length)]}
   function sample(a,n){return shuffle(a).slice(0,n)}
@@ -123,7 +156,7 @@
   function clone(x){return JSON.parse(JSON.stringify(x))}
   function norm(s){return String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9가-힣]/g,'')}
   function weighted(items,keyFn){const out=[];for(const x of items){const k=keyFn(x),copies=1+($('#adaptive').checked?Math.min(5,state.weak[k]||0)*2:0);for(let i=0;i<copies;i++)out.push(x)}return pick(out)}
-  function pack(type,axis,prompt,correct,distractors,explanation,factKey){const ds=uniq(distractors).filter(x=>x!==correct).slice(0,4),choices=shuffle([correct,...ds]);return{mode:'mcq',type,axis,prompt,choices,answerIndex:choices.indexOf(correct),answerText:correct,explanation,factKey,source:SOURCE}}
+  function pack(type,axis,prompt,correct,distractors,explanation,factKey,meta={}){const ds=uniq(distractors).filter(x=>x!==correct).slice(0,4),choices=shuffle([correct,...ds]);return{mode:'mcq',type,axis,prompt,choices,answerIndex:choices.indexOf(correct),answerText:correct,explanation,factKey,source:SOURCE,...meta}}
   function typing(axis,prompt,answerText,accepted,explanation,factKey){return{mode:'typing',type:'typing',axis,prompt,answerText,accepted,explanation,factKey,source:SOURCE}}
   function scopedScientists(scope){if(scope==='early')return SCIENTISTS.filter(x=>x.scope==='early');if(scope==='pasteur')return SCIENTISTS.filter(x=>x.id==='pasteur');if(scope==='koch')return SCIENTISTS.filter(x=>x.id==='koch');if(scope==='postkoch')return SCIENTISTS.filter(x=>x.scope==='postkoch');if(scope==='antibiotic')return SCIENTISTS.filter(x=>ANTIBIOTIC_SCIENTIST_IDS.includes(x.id));return SCIENTISTS}
   function sciPool(except){return SCIENTISTS.filter(x=>x.id!==except).map(x=>x.name)}
@@ -131,6 +164,9 @@
   function qSciAchievement(scope){const list=scopedScientists(scope),s=weighted(list,x=>'scientist:'+x.id),correct=pick(s.achievements),axis=scope==='antibiotic'?'antibiotic':s.scope;return pack('sciAchievement',axis,'강의록에서 <em>'+s.name+'</em>의 성과로 제시된 것은?',correct,sample(achievementPool(s.id),4),s.name+': '+correct+'.','scientist:'+s.id)}
   function qAchievementSci(scope){const list=scopedScientists(scope),s=weighted(list,x=>'scientist:'+x.id),a=pick(s.achievements),axis=scope==='antibiotic'?'antibiotic':s.scope;return pack('achievementSci',axis,'<em>'+a+'</em>와 연결되는 과학자는?',s.name,sample(sciPool(s.id),4),s.name+'의 성과입니다.','scientist:'+s.id)}
   function qNotAchievement(){const eligible=SCIENTISTS.filter(x=>x.achievements.length>=4&&(state.scope==='all'||x.scope===state.scope)),s=weighted(eligible,x=>'scientist:'+x.id),own=sample(s.achievements,4),wrong=pick(achievementPool(s.id));return pack('notAchievement',s.scope,'다음 중 <em>'+s.name+'</em>의 성과에 속하지 않는 것은?',wrong,own,wrong+'은(는) '+s.name+'과 연결된 강의록 성과가 아닙니다.','scientist:'+s.id)}
+  function exceptionExplanation(outsider,related,field){return outsider.name+'은(는) '+outsider.achievement+'과 연결되므로 '+field+'와 관련 없는 인물입니다. 반면 '+related.map(x=>x.name+'–'+x.achievement).join(', ')+'은(는) 강의록에서 해당 연구와 연결됩니다.'}
+  function qNotAntibioticScientist(){const outsider=pick(ANTIBIOTIC_OUTSIDERS),related=shuffle(ANTIBIOTIC_RESEARCHERS);return pack('researchException','antibiotic','항생제 개발과 관련 없는 과학자는?',outsider.name,related.map(x=>x.name),exceptionExplanation(outsider,related,'항생제 개발'),'past:antibiotic:'+outsider.id,{pastExam:true,subjectId:'antibiotic-outsider:'+outsider.id,source:'1강 강의록 · 2026 족보 복원 문항'})}
+  function qNotVirusScientist(){const outsider=pick(VIRUS_OUTSIDERS),related=sample(VIRUS_RESEARCHERS,4);return pack('researchException','nobel','바이러스 연구와 관련 없는 과학자는?',outsider.name,related.map(x=>x.name),exceptionExplanation(outsider,related,'바이러스 연구'),'past:virus:'+outsider.id,{pastExam:true,subjectId:'virus-outsider:'+outsider.id,source:'1강 강의록 · 2026 족보 복원 문항'})}
   function qPair(scope){const list=scopedScientists(scope),axis=scope==='antibiotic'?'antibiotic':null;if(Math.random()<.5){const s=weighted(list,x=>'scientist:'+x.id),correct=s.name+' — '+pick(s.achievements),wrong=[];while(wrong.length<4){const x=pick(list),a=pick(achievementPool(x.id)),p=x.name+' — '+a;if(!wrong.includes(p)&&p!==correct)wrong.push(p)}return pack('pair',axis||s.scope,'다음 과학자–성과 연결 중 <em>옳은 것</em>은?',correct,wrong,correct+'은 강의록과 일치합니다.','scientist:'+s.id)}const validPool=list.flatMap(s=>s.achievements.map(a=>s.name+' — '+a)),x=pick(list),wrong=x.name+' — '+pick(achievementPool(x.id));return pack('pair',axis||x.scope,'다음 과학자–성과 연결 중 <em>옳지 않은 것</em>은?',wrong,sample(validPool,4),x.name+'의 강의록 성과와 일치하지 않는 연결입니다.','scientist:'+x.id)}
   function qPasteur(){const f=weighted(PASTEUR_FACTS,x=>'pasteur:'+x.id),pool=PASTEUR_FACTS.filter(x=>x!==f).map(x=>x.label);return pack('pasteur','pasteur','다음 설명에 해당하는 Pasteur의 업적은?<br><em>'+f.detail+'</em>',f.label,sample(pool,4),f.label+': '+f.detail+'.','pasteur:'+f.id)}
   function qKochPostulate(){const f=weighted(KOCH_POSTULATES,x=>'kochpost:'+x.id),pool=KOCH_POSTULATES.filter(x=>x!==f).map(x=>x.detail).concat(KOCH_LIMITS);return pack('kochPostulate','koch','Koch의 4가설 중 <em>'+f.n+'</em>에 해당하는 것은?',f.detail,sample(pool,4),f.n+': '+f.detail+'.','kochpost:'+f.id)}
@@ -149,14 +185,29 @@
       pasteur:[qPasteur,qPasteur,()=>qSciAchievement('pasteur'),qNotAchievement,qTyping],
       koch:[qKochPostulate,qKochPathogen,()=>qSciAchievement('koch'),qNotAchievement,qTyping],
       postkoch:[()=>qSciAchievement('postkoch'),()=>qAchievementSci('postkoch'),()=>qPair('postkoch'),qTyping],
-      antibiotic:[()=>qSciAchievement('antibiotic'),()=>qAchievementSci('antibiotic'),()=>qPair('antibiotic'),qAntibioticNobelPerson,qAntibioticNobelAchievement,qAntibioticNobelPair,qTyping],
-      nobel:[qNobelPerson,qNobelAchievement,qNobelPair,qTyping]
+      antibiotic:[()=>qSciAchievement('antibiotic'),()=>qAchievementSci('antibiotic'),()=>qPair('antibiotic'),qAntibioticNobelPerson,qAntibioticNobelAchievement,qAntibioticNobelPair,...copies(qNotAntibioticScientist,2),qTyping],
+      nobel:[qNobelPerson,qNobelAchievement,qNobelPair,...copies(qNotVirusScientist,2),qTyping]
     };
-    let g=state.scope==='all'?[...copies(qNobelPerson,9),...copies(qNobelAchievement,9),...copies(qNobelPair,9),()=>qSciAchievement('all'),()=>qAchievementSci('all'),()=>qPair('all'),qNotAchievement,qPasteur,qKochPostulate,qKochPathogen,...copies(qTyping,3)]:map[state.scope];
+    let g=state.scope==='all'?[...copies(qNobelPerson,9),...copies(qNobelAchievement,9),...copies(qNobelPair,9),...copies(qNotAntibioticScientist,2),...copies(qNotVirusScientist,2),()=>qSciAchievement('all'),()=>qAchievementSci('all'),()=>qPair('all'),qNotAchievement,qPasteur,qKochPostulate,qKochPathogen,...copies(qTyping,3)]:map[state.scope];
     if(!$('#typingToggle').checked)g=g.filter(x=>x!==qTyping);
     return g;
   }
-  function build(){if(state.reviewOnly){if(state.mistakes.length)return clone(pick(state.mistakes));state.reviewOnly=false;updateReviewButton();toast('오답을 모두 해결했습니다. 전체 문제로 돌아갑니다.')}let q,guard=0;do{q=pick(generators())();guard++}while(((q.choices&&q.choices.length!==5)||state.recent.includes(q.type+'|'+q.prompt))&&guard<40);state.recent.push(q.type+'|'+q.prompt);if(state.recent.length>10)state.recent.shift();return q}
+  function build(){
+    if(state.reviewOnly){if(state.mistakes.length)return clone(pick(state.mistakes));state.reviewOnly=false;updateReviewButton();toast('오답을 모두 해결했습니다. 전체 문제로 돌아갑니다.')}
+    const factories=generators(),candidates=[];
+    for(let i=0;i<48;i++){const q=pick(factories)();if((!q.choices||q.choices.length===5)&&!state.recent.includes(q.type+'|'+q.prompt))candidates.push(q)}
+    if(!candidates.length)candidates.push(pick(factories)());
+    let eligible=candidates.filter(q=>!(state.lastPastExam&&q.pastExam)&&!state.recentSubjects.includes(q.subjectId||q.factKey));
+    if(!eligible.length)eligible=candidates.filter(q=>!(state.lastPastExam&&q.pastExam));
+    if(!eligible.length)eligible=candidates;
+    const minSeen=Math.min(...eligible.map(q=>state.seen[q.subjectId||q.factKey]||0));
+    const q=pick(eligible.filter(x=>(state.seen[x.subjectId||x.factKey]||0)===minSeen)),subject=q.subjectId||q.factKey;
+    state.seen[subject]=(state.seen[subject]||0)+1;
+    state.recentSubjects.push(subject);if(state.recentSubjects.length>3)state.recentSubjects.shift();
+    state.lastPastExam=Boolean(q.pastExam);
+    state.recent.push(q.type+'|'+q.prompt);if(state.recent.length>10)state.recent.shift();
+    return q;
+  }
   function render(){state.answered=false;state.current=build();const q=state.current;$('#roundLabel').textContent='ROUND '+String(state.round).padStart(3,'0');$('#typeBadge').textContent=TYPE_NAME[q.type];$('#scopeBadge').textContent=state.reviewOnly?'오답 복습':SCOPE_NAME[state.scope];$('#scopeBadge').className='pill '+(q.axis==='nobel'?'orange':q.axis==='koch'?'blue':'');$('#question').innerHTML=q.prompt;$('#options').innerHTML='';$('#typingWrap').classList.toggle('active',q.mode==='typing');$('#typingInput').value='';$('#typingInput').disabled=false;$('#typingInput').className='';$('#submitBtn').disabled=false;$('#feedback').className='feedback';$('#nextBtn').classList.remove('show');$('#progressBar').style.width=(8+((state.round-1)%10)*10.2)+'%';if(q.mode==='mcq')q.choices.forEach((c,i)=>{const b=document.createElement('button');b.className='option';b.innerHTML='<span class="num">'+(i+1)+'</span><span class="choice"></span><span class="sign"></span>';b.querySelector('.choice').textContent=c;b.onclick=()=>answerMCQ(i);$('#options').appendChild(b)});else setTimeout(()=>$('#typingInput').focus(),80);updateStats()}
   function answerMCQ(i){if(state.answered||state.current.mode!=='mcq')return;const q=state.current,ok=i===q.answerIndex;[...document.querySelectorAll('.option')].forEach((b,j)=>{b.disabled=true;if(j===q.answerIndex){b.classList.add('correct');b.querySelector('.sign').textContent='✓'}else if(j===i){b.classList.add('wrong');b.querySelector('.sign').textContent='×'}});finish(ok,q.choices[i])}
   function answerTyping(){if(state.answered||state.current.mode!=='typing')return;const raw=$('#typingInput').value.trim();if(!raw){toast('정답을 입력하세요.');return}const ok=state.current.accepted.some(x=>norm(x)===norm(raw));$('#typingInput').disabled=true;$('#submitBtn').disabled=true;$('#typingInput').classList.add(ok?'good':'bad');finish(ok,raw)}
