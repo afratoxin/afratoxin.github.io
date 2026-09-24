@@ -85,6 +85,7 @@
     .quiz-card.pathogenesis .icon { color:#3156b5; background:#e9efff; }
     .quiz-card.aeration .icon { color:#8b3e66; background:#fbe9f2; }
     .quiz-card.virus-classification .icon { color:#6d4bac; background:#f0eaff; }
+    .quiz-card.fungi .icon { color:#74451f; background:#fff0d8; }
     .card-copy h3 { margin:0 0 7px; font-size:18px; letter-spacing:-.035em; }
     .card-copy p { margin:0; color:var(--muted); font-size:12px; line-height:1.55; word-break:keep-all; }
     .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
@@ -232,6 +233,19 @@
       </a>
       </div></section>
 
+      <section class="quiz-group" data-quiz-group="fungi"><div class="group-head"><h3>진균</h3><p>분류·포자·형태적 특징 연결</p></div><div class="grid">
+      <a class="quiz-card fungi" href="fungal_classification_quiz.html" data-menu-id="fungal-classification">
+        <span class="icon">F</span>
+        <span class="card-copy">
+          <h3>진균 분류·포자·특징</h3>
+          <p>4개 진균 분류의 일반명, 유성·무성 포자와 dolipore·Woronin body 등의 특징을 족보형으로 연결합니다.</p>
+          <span class="tags"><span class="tag">17강</span><span class="tag">포자 분류</span><span class="tag">클릭 매칭</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      </div></section>
+
       <section class="quiz-group" data-quiz-group="therapeutics"><div class="group-head"><h3>항균·항바이러스 치료</h3><p>약물의 표적과 작용 기전</p></div><div class="grid">
       <a class="quiz-card" href="antibiotic_mechanism_resistance_infinite_quiz.html" data-menu-id="antibiotic">
         <span class="icon">Rx</span>
@@ -259,12 +273,12 @@
 
     <footer>
       <span>미생물학 강의자료 기반 개인 학습용 퀴즈</span>
-      <span>마지막 통합: 2026-09-21</span>
+      <span>마지막 통합: 2026-09-24</span>
     </footer>
   </main>
   <script src="quiz_menu_metrics.js"></script>
   <script>
-    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','antibiotic','antiviral'];
+    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','fungal-classification','antibiotic','antiviral'];
     QuizMenuMetrics.migrateLegacy();
     const menuStats=QuizMenuMetrics.readAll();
     const priorityMenus=new Set(QuizMenuMetrics.recommend(MENU_IDS,2));
