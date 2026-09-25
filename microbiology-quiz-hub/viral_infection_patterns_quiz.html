@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#234e70">
-  <meta name="description" content="급성·지속성 바이러스 감염 양상 그래프와 대표 질환을 연결하는 족보형 무한회독 퀴즈">
-  <title>바이러스 감염 양상 그래프 퀴즈</title>
+  <meta name="description" content="바이러스 감염 양상 그래프, 세포 수준 감염 유형과 현미경 소견을 통합하는 퀴즈">
+  <title>바이러스 감염 양상·세포 변화 퀴즈</title>
   <style>
     :root {
       --ink:#182934; --muted:#667b87; --paper:#fff; --canvas:#f2f7f8; --line:#d9e5e8;
@@ -31,6 +31,11 @@
     h1 { position:relative; z-index:1; margin:0; font-size:clamp(30px,5vw,50px); line-height:1.1; letter-spacing:-.055em; }
     .hero p:last-child { position:relative; z-index:1; max-width:730px; margin:14px 0 0; color:rgba(255,255,255,.84); font-size:13px; line-height:1.7; word-break:keep-all; }
     .toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin:18px 0; }
+    .tabs { display:flex; gap:8px; margin:18px 0 0; }
+    .tab { min-height:42px; padding:0 15px; border:1px solid var(--line); border-radius:11px; background:#fff; font-size:12px; font-weight:900; }
+    .tab.active { color:#fff; border-color:var(--navy); background:var(--navy); }
+    .panel { display:none; }
+    .panel.active { display:block; }
     .toolbar label { color:var(--muted); font-size:12px; font-weight:900; }
     select,.ghost { min-height:41px; padding:0 13px; border:1px solid var(--line); border-radius:11px; background:#fff; font-size:12px; font-weight:800; }
     .ghost:hover { border-color:#9ccbc4; background:#f8fffd; }
@@ -71,6 +76,15 @@
     .next { display:none; width:100%; min-height:46px; margin-top:12px; border:0; border-radius:13px; color:#fff; background:linear-gradient(110deg,var(--navy),var(--teal)); font-size:13px; font-weight:950; }
     .next.show { display:block; }
     .tip { margin:15px 2px 0; color:var(--muted); font-size:10px; text-align:right; }
+    .typing-card { padding:28px; text-align:center; }
+    .typing-image { display:grid; place-items:center; min-height:310px; margin:18px 0; padding:20px; border:1px solid var(--line); border-radius:17px; background:#f8fbfc; }
+    .typing-image img { width:min(100%,430px); max-height:300px; image-rendering:auto; object-fit:contain; }
+    .typing-card h2 { margin-top:8px; }
+    .typing-form { display:flex; gap:8px; max-width:620px; margin:0 auto; }
+    .typing-input { flex:1; min-width:0; min-height:47px; padding:0 14px; border:1px solid #b9ccd2; border-radius:12px; background:#fff; font:inherit; font-size:14px; font-weight:800; }
+    .typing-submit { min-width:92px; border:0; border-radius:12px; color:#fff; background:var(--navy); font-weight:950; }
+    .typing-feedback { display:none; max-width:620px; margin:12px auto 0; padding:13px; border-radius:12px; font-size:12px; font-weight:900; }
+    .typing-feedback.show { display:block; }.typing-feedback.ok { color:#155e4c; background:var(--green-bg); }.typing-feedback.no { color:#87343c; background:var(--red-bg); }
     dialog { width:min(1100px,calc(100% - 22px)); max-height:90vh; padding:0; border:0; border-radius:22px; box-shadow:0 28px 80px rgba(12,32,42,.3); }
     dialog::backdrop { background:rgba(16,32,42,.58); backdrop-filter:blur(3px); }
     .dialog-head { position:sticky; top:0; z-index:3; display:flex; justify-content:space-between; align-items:center; gap:15px; padding:18px 21px; border-bottom:1px solid var(--line); background:#fff; }
@@ -90,7 +104,8 @@
       .source { display:none; }
       .hero { padding:28px 23px; border-radius:21px; }
       .stats { order:3; width:100%; margin-left:0; }
-      .quiz { min-height:0; padding:20px 15px; }
+      .quiz,.typing-card { min-height:0; padding:20px 15px; }
+      .typing-form { flex-direction:column; }.typing-submit { min-height:45px; }
       .visual { padding:10px; }
       .graph-row { grid-template-columns:30px minmax(0,1fr); gap:7px; }
       .graph-letter { width:30px; height:30px; border-radius:8px; }
@@ -112,10 +127,12 @@
 
     <header class="hero">
       <p class="eyebrow">Acute &amp; Persistent Infections</p>
-      <h1>바이러스 감염 양상 그래프</h1>
-      <p>그래프의 모양만 보고 급성·잠복 재발·만성·slow infection을 구분하고, 대표 바이러스와 질환을 A–F에 연결합니다.</p>
+      <h1>바이러스 감염 양상·세포 변화</h1>
+      <p>감염 경과 그래프와 세포 수준 infection type을 함께 구분하고, 현미경 사진의 syncytium과 inclusion body를 직접 입력합니다.</p>
     </header>
 
+    <div class="tabs" role="tablist"><button class="tab active" type="button" data-tab="quiz">감염 양상 통합 퀴즈</button><button class="tab" type="button" data-tab="typing">현미경 사진 타이핑</button></div>
+    <section class="panel active" id="quizPanel">
     <section class="toolbar" aria-label="퀴즈 설정">
       <label for="modeSelect">출제 유형</label>
       <select id="modeSelect">
@@ -124,6 +141,7 @@
         <option value="pattern">그래프 → 감염 유형</option>
         <option value="disease">바이러스·질환 연결</option>
         <option value="concept">그래프 해석</option>
+        <option value="type">세포 수준 infection type</option>
       </select>
       <button class="ghost" id="openReferenceBtn" type="button">학습표 보기</button>
       <button class="ghost" id="resetBtn" type="button">기록 초기화</button>
@@ -148,6 +166,16 @@
       <button class="next" id="nextBtn" type="button">다음 문제 <span aria-hidden="true">→</span></button>
       <p class="tip">숫자키 1–5로 선택 · 해설 뒤 Enter로 다음 문제</p>
     </section>
+    </section>
+
+    <section class="panel" id="typingPanel"><section class="card typing-card" aria-live="polite">
+      <div class="question-top"><span class="kind">사진 → 명칭 직접 입력</span><span class="question-no" id="typingNo">QUESTION 1</span></div>
+      <div class="typing-image"><img id="typingImage" src="" alt="바이러스 감염 세포 현미경 사진"></div>
+      <h2>사진에 나타난 세포병변의 명칭은?</h2>
+      <p class="hint">영문 또는 한글로 입력하세요.</p>
+      <form class="typing-form" id="typingForm"><input class="typing-input" id="typingInput" autocomplete="off" spellcheck="false" aria-label="세포병변 명칭"><button class="typing-submit" id="typingSubmit" type="submit">정답 확인</button></form>
+      <div class="typing-feedback" id="typingFeedback"></div>
+    </section></section>
   </main>
 
   <dialog id="referenceDialog">
@@ -173,6 +201,19 @@
       {id:'chronic',letter:'D',name:'Chronic infection: 일반적 상황',short:'만성 감염',examples:['Hepatitis B','Hepatitis C'],answerExample:'Hepatitis C virus',clue:'초기 disease episode 뒤에도 감염이 장기간 지속됩니다.',contrast:'A와 달리 급성 episode가 끝난 뒤에도 파란 영역이 계속 유지됩니다.'},
       {id:'late',letter:'E',name:'Chronic infection: late disease',short:'만성 감염 후 후기 질환',examples:['HTLV-1 → leukemia','HIV → AIDS'],answerExample:'HIV',clue:'초기 급성 episode 뒤 만성 감염이 이어지고, 수년 후 서로 다른 후기 질환이 나타납니다.',contrast:'B도 후기 질환이 있지만, E에서는 그 사이에 만성 감염 상태가 지속된다는 점이 다릅니다.'},
       {id:'slow',letter:'F',name:'Slow infection',short:'Slow infection',examples:['JCV → PML','Prion → CJD'],answerExample:'JCV → PML',clue:'수년에 걸쳐 감염 부담 또는 병적 변화가 서서히 증가한 뒤 질환이 발현합니다.',contrast:'E의 일정한 만성 plateau와 달리 그래프가 장기간 서서히 상승합니다.'}
+    ];
+
+    const INFECTION_TYPES = [
+      {id:'abortive',name:'Abortive infection (불발감염)',production:'X',cellFate:'No effect',permissive:'non-permissive',description:'바이러스 복제에 실패하여 바이러스가 생산되지 않고 세포에는 뚜렷한 영향이 없다.'},
+      {id:'cytolytic',name:'Cytolytic infection (용해감염)',production:'O',cellFate:'Death',permissive:'permissive',description:'급성으로 복제된 바이러스가 세포를 죽이면서 방출된다.'},
+      {id:'productive',name:'Persistent–productive infection (생산·만성감염)',production:'O',cellFate:'Senescence',permissive:'permissive',description:'숙주세포를 즉시 죽이지 않고 지속적으로 감염하며 세포는 노화한다.'},
+      {id:'latent',name:'Persistent–latent infection (잠복감염)',production:'X',cellFate:'No effect',permissive:'semi-permissive',description:'바이러스가 생산되지 않는 잠복 상태이며 herpes가 대표적이다.'},
+      {id:'transformingDna',name:'Transforming infection–DNA virus',production:'X',cellFate:'Immortalization',permissive:'semi-permissive',description:'바이러스를 생산하지 않으면서 숙주세포를 암세포처럼 불멸화한다.'},
+      {id:'transformingRna',name:'Transforming infection–RNA virus',production:'O',cellFate:'Immortalization',permissive:'semi-permissive',description:'바이러스를 생산하면서 장기간 염증을 거쳐 숙주세포를 불멸화할 수 있다.'}
+    ];
+    const TYPING_ITEMS = [
+      {id:'syncytium',image:'assets/syncytium.svg',label:'Syncytium (합포체)',answers:['syncytium','syncytia','합포체']},
+      {id:'inclusion-body',image:'assets/inclusion-body.svg',label:'Inclusion body (봉입체)',answers:['inclusion body','inclusion bodies','봉입체']}
     ];
 
     const $ = selector => document.querySelector(selector);
@@ -268,13 +309,29 @@
       return {id:'concept:'+pattern.id,kind:'그래프 해석',visual:'',prompt:concept.prompt,hint:'시간에 따른 감염의 지속 여부와 disease episode의 위치를 기준으로 판단하세요.',options:fiveOptions(concept.answer,PATTERNS.map(item=>item.name)),answer:concept.answer,pattern};
     }
 
+    function infectionTypeQuestion() {
+      const type=INFECTION_TYPES[Math.floor(Math.random()*INFECTION_TYPES.length)],reverse=Math.random()<.5;
+      const mapping=x=>x.name+' — Virus production '+x.production+' / Cell fate '+x.cellFate+' / '+x.permissive;
+      const pattern={clue:type.description,examples:['Virus production '+type.production,'Cell fate '+type.cellFate,type.permissive],contrast:'복제 여부와 감염된 세포의 운명을 함께 확인하세요.'};
+      if(reverse){const answer=mapping(type);return{id:'type-map:'+type.id,subject:type.id,kind:'Infection type 연결',visual:'',prompt:'다음 중 '+type.name+'의 특징으로 옳은 것은?',hint:'Virus production, cell fate, permissive 여부를 함께 비교하세요.',options:fiveOptions(answer,INFECTION_TYPES.map(mapping)),answer,pattern};}
+      return{id:'type-name:'+type.id,subject:type.id,kind:'세포 수준 감염 유형',visual:'',prompt:type.description+' 이에 해당하는 infection type은?',hint:'Virus production '+type.production+' · Cell fate '+type.cellFate+' · '+type.permissive,options:fiveOptions(type.name,INFECTION_TYPES.map(x=>x.name)),answer:type.name,pattern};
+    }
+
     const FACTORIES={
-      all:[pastQuestion,pastQuestion,identifyQuestion,graphExampleQuestion,diseaseToGraphQuestion,conceptQuestion],
+      all:[pastQuestion,pastQuestion,identifyQuestion,graphExampleQuestion,diseaseToGraphQuestion,conceptQuestion,infectionTypeQuestion,infectionTypeQuestion],
       past:[pastQuestion,diseaseToGraphQuestion],
       pattern:[identifyQuestion],
       disease:[graphExampleQuestion,diseaseToGraphQuestion],
-      concept:[conceptQuestion]
+      concept:[conceptQuestion],
+      type:[infectionTypeQuestion]
     };
+
+    function normalizeTyping(value){return value.trim().toLowerCase().replace(/[\s_-]+/g,'');}
+    function isTypingCorrect(item,value){const normalized=normalizeTyping(value);return item.answers.some(answer=>normalizeTyping(answer)===normalized);}
+    const typingState={index:0,answered:false};
+    function renderTyping(){const item=TYPING_ITEMS[typingState.index%TYPING_ITEMS.length];typingState.answered=false;$('#typingNo').textContent='QUESTION '+(typingState.index+1);$('#typingImage').src=item.image;$('#typingInput').value='';$('#typingInput').disabled=false;$('#typingSubmit').textContent='정답 확인';$('#typingFeedback').className='typing-feedback';$('#typingInput').focus();}
+    function submitTyping(){const item=TYPING_ITEMS[typingState.index%TYPING_ITEMS.length];if(typingState.answered){typingState.index++;renderTyping();return}const value=$('#typingInput').value;if(!value.trim())return;const ok=isTypingCorrect(item,value);typingState.answered=true;QuizMenuMetrics.record('viral-patterns',ok);$('#typingInput').disabled=true;$('#typingSubmit').textContent='다음 사진';const feedback=$('#typingFeedback');feedback.className='typing-feedback show '+(ok?'ok':'no');feedback.textContent=ok?'정답입니다.':'정답: '+item.label;}
+    function setTab(tab){document.querySelectorAll('.tab').forEach(button=>button.classList.toggle('active',button.dataset.tab===tab));document.querySelectorAll('.panel').forEach(panel=>panel.classList.toggle('active',panel.id===tab+'Panel'));if(tab==='typing')$('#typingInput').focus();}
 
     const saved=JSON.parse(localStorage.getItem('viralInfectionPatternsQuizV1')||'{}');
     const state={correct:saved.correct||0,total:saved.total||0,streak:0,best:saved.best||0,number:1,answered:false,current:null,mode:localStorage.getItem('viralInfectionPatternsMode')||'all'};
@@ -320,6 +377,8 @@
       $('#referenceBody').innerHTML=PATTERNS.map(pattern=>'<tr><td>'+pattern.name+'</td><td>'+svgFor(pattern.id,true)+'</td><td>'+pattern.examples.join('<br>')+'</td><td>'+pattern.clue+'</td></tr>').join('');
     }
 
+    document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>setTab(button.dataset.tab)));
+    $('#typingForm').addEventListener('submit',event=>{event.preventDefault();submitTyping();});
     $('#modeSelect').value=state.mode;
     $('#modeSelect').addEventListener('change',event=>{state.mode=event.target.value;localStorage.setItem('viralInfectionPatternsMode',state.mode);state.number++;renderQuestion();});
     $('#nextBtn').addEventListener('click',nextQuestion);
@@ -328,12 +387,12 @@
     $('#referenceDialog').addEventListener('click',event=>{if(event.target===$('#referenceDialog'))$('#referenceDialog').close();});
     $('#resetBtn').addEventListener('click',()=>{if(!confirm('정답 수, 정답률, 최고 연속 정답 기록을 초기화할까요?'))return;state.correct=0;state.total=0;state.streak=0;state.best=0;localStorage.removeItem('viralInfectionPatternsQuizV1');updateStats();});
     document.addEventListener('keydown',event=>{
-      if($('#referenceDialog').open)return;
+      if($('#referenceDialog').open||event.target===$('#typingInput')||!$('#quizPanel').classList.contains('active'))return;
       if(!state.answered&&/^[1-5]$/.test(event.key)){const button=document.querySelectorAll('.choice')[Number(event.key)-1];if(button){event.preventDefault();button.click();}}
       else if(state.answered&&event.key==='Enter'){event.preventDefault();nextQuestion();}
     });
 
-    renderReference();updateStats();renderQuestion();
+    renderReference();updateStats();renderQuestion();renderTyping();
   </script>
 </body>
 </html>
