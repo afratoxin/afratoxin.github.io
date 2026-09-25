@@ -76,8 +76,13 @@
       position:relative; min-height:142px; overflow:hidden; padding:18px; text-align:left; border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.93); box-shadow:0 7px 22px rgba(24,58,72,.045); cursor:pointer; transition:.16s ease;
     }
     .unit-card::before {
-      content:""; position:absolute; inset:0 auto 0 0; width:var(--unit-progress,0%); pointer-events:none;
+      content:""; position:absolute; inset:0 auto 0 0; width:var(--unit-correct,0%); pointer-events:none;
       background:linear-gradient(90deg,rgba(18,143,131,.17) 0%,rgba(73,184,163,.11) 76%,rgba(73,184,163,0) 100%);
+      transition:width .3s ease;
+    }
+    .unit-card::after {
+      content:""; position:absolute; inset:0 0 0 auto; width:var(--unit-wrong,0%); pointer-events:none;
+      background:linear-gradient(270deg,rgba(196,66,78,.18) 0%,rgba(224,113,123,.11) 76%,rgba(224,113,123,0) 100%);
       transition:width .3s ease;
     }
     .unit-card > * { position:relative; z-index:1; }
@@ -412,6 +417,16 @@
         return { gradable: gradable.length, mastered, wrong, unseen };
       }
 
+      function unitProgress(questions) {
+        const gradable = questions.filter(isGradable);
+        const correct = gradable.filter((q) => recordFor(q.id).attempts > 0 && !recordFor(q.id).wrong).length;
+        const wrong = gradable.filter((q) => recordFor(q.id).wrong).length;
+        const unseen = gradable.filter((q) => recordFor(q.id).attempts === 0).length;
+        const correctPct = gradable.length ? Math.round(correct / gradable.length * 100) : 0;
+        const wrongPct = gradable.length ? Math.round(wrong / gradable.length * 100) : 0;
+        return { total: gradable.length, correct, wrong, unseen, correctPct, wrongPct };
+      }
+
       function renderHome() {
         const allStats = stats();
         $('questionCount').textContent = data.questions.length;
@@ -423,13 +438,11 @@
 
         $('unitGrid').innerHTML = data.units.map((unit) => {
           const questions = data.questions.filter((q) => q.unit === unit.id);
-          const gradable = questions.filter(isGradable);
-          const mastered = gradable.filter((q) => recordFor(q.id).mastered).length;
-          const pct = gradable.length ? Math.round(mastered / gradable.length * 100) : 0;
-          return `<button class="unit-card" type="button" data-unit="${escapeHtml(unit.id)}" style="--unit-progress:${pct}%">
+          const progress = unitProgress(questions);
+          return `<button class="unit-card" type="button" data-unit="${escapeHtml(unit.id)}" style="--unit-correct:${progress.correctPct}%;--unit-wrong:${progress.wrongPct}%">
             <span class="unit-top"><span class="unit-no">${escapeHtml(unit.id)}강</span><span class="unit-count">${questions.length}문항</span></span>
             <h3>${escapeHtml(unit.title)}</h3>
-            <span class="unit-foot"><span>${mastered}/${gradable.length} 맞힘</span><span>${pct}%</span></span>
+            <span class="unit-foot"><span>${progress.correct} 맞힘 · ${progress.wrong} 오답</span><span>${progress.unseen} 미풀이</span></span>
           </button>`;
         }).join('');
 
