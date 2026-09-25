@@ -86,6 +86,7 @@
     .quiz-card.aeration .icon { color:#8b3e66; background:#fbe9f2; }
     .quiz-card.virus-classification .icon { color:#6d4bac; background:#f0eaff; }
     .quiz-card.fungi .icon { color:#74451f; background:#fff0d8; }
+    .quiz-card.disinfection .icon { color:#125c57; background:#e1f5f0; }
     .card-copy h3 { margin:0 0 7px; font-size:18px; letter-spacing:-.035em; }
     .card-copy p { margin:0; color:var(--muted); font-size:12px; line-height:1.55; word-break:keep-all; }
     .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
@@ -246,6 +247,19 @@
       </a>
       </div></section>
 
+      <section class="quiz-group" data-quiz-group="infection-control"><div class="group-head"><h3>감염관리</h3><p>소독 수준·멸균 여부·살균제 특징 판단</p></div><div class="grid">
+      <a class="quiz-card disinfection" href="disinfection_sterilization_quiz.html" data-menu-id="disinfection">
+        <span class="icon">D</span>
+        <span class="card-copy">
+          <h3>소독제·멸균제 상황 판단</h3>
+          <p>도구와 시술 상황에 맞는 소독제를 고르고, 멸균제·소독제 구분과 살균제별 특징을 족보형으로 판별합니다.</p>
+          <span class="tags"><span class="tag">18강</span><span class="tag">상황별 선택</span><span class="tag">옳은·틀린 연결</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      </div></section>
+
       <section class="quiz-group" data-quiz-group="therapeutics"><div class="group-head"><h3>항균·항바이러스 치료</h3><p>약물의 표적과 작용 기전</p></div><div class="grid">
       <a class="quiz-card" href="antibiotic_mechanism_resistance_infinite_quiz.html" data-menu-id="antibiotic">
         <span class="icon">Rx</span>
@@ -273,12 +287,12 @@
 
     <footer>
       <span>미생물학 강의자료 기반 개인 학습용 퀴즈</span>
-      <span>마지막 통합: 2026-09-24</span>
+      <span>마지막 통합: 2026-09-25</span>
     </footer>
   </main>
   <script src="quiz_menu_metrics.js"></script>
   <script>
-    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','fungal-classification','antibiotic','antiviral'];
+    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','fungal-classification','disinfection','antibiotic','antiviral'];
     QuizMenuMetrics.migrateLegacy();
     const menuStats=QuizMenuMetrics.readAll();
     const priorityMenus=new Set(QuizMenuMetrics.recommend(MENU_IDS,2));
