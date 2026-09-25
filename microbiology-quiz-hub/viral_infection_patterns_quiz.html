@@ -273,7 +273,7 @@
         return pattern.letter+': '+exampleFor(donor);
       });
       const answer=correct.letter+': '+exampleFor(correct);
-      return {id:'past:'+correct.id,kind:'족보형 A–F',visual:allGraphs(),prompt:'A–F 그래프와 바이러스·질환의 연결로 옳은 것은?',hint:'그래프의 모양을 먼저 유형으로 바꾼 뒤 대표 예시를 연결하세요.',options:shuffle([answer,...wrong]),answer,pattern:correct};
+      return {id:'past:'+correct.id,kind:'족보형 A–F',visual:allGraphs(),prompt:'A–F 그래프와 바이러스·질환의 연결로 옳은 것은?',hint:'그래프의 모양을 먼저 유형으로 바꾼 뒤 대표 예시를 연결하세요.',options:[answer,...wrong].sort((a,b)=>a.localeCompare(b)),answer,pattern:correct};
     }
 
     function identifyQuestion() {
@@ -291,7 +291,7 @@
       const pattern=PATTERNS[Math.floor(Math.random()*PATTERNS.length)];
       const example=exampleFor(pattern);
       const distractors=shuffle(PATTERNS.filter(item=>item.id!==pattern.id).map(item=>item.letter)).slice(0,4);
-      return {id:'reverse:'+pattern.id+':'+example,kind:'역방향 연결',visual:allGraphs(),prompt:'“'+example+'”에 해당하는 감염 경과 그래프는?',hint:'A–F 중 하나를 고르세요.',options:shuffle([pattern.letter,...distractors]),answer:pattern.letter,pattern};
+      return {id:'reverse:'+pattern.id+':'+example,kind:'역방향 연결',visual:allGraphs(),prompt:'“'+example+'”에 해당하는 감염 경과 그래프는?',hint:'A–F 중 하나를 고르세요.',options:[pattern.letter,...distractors].sort(),answer:pattern.letter,pattern};
     }
 
     const CONCEPTS = [
