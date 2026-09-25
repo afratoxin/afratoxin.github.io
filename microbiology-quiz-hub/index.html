@@ -258,6 +258,16 @@
         </span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
+      <a class="quiz-card vaccine" href="vaccine_classification_adverse_event_quiz.html?v=20260925-1" data-menu-id="vaccine">
+        <span class="icon">Vx</span>
+        <span class="card-copy">
+          <h3>백신 분류·이상반응 신고</h3>
+          <p>생약독화백신·사백신 대표 예시와 예방접종 이상반응별 신고 대상 기간을 반복합니다.</p>
+          <span class="tags"><span class="tag">22·23강</span><span class="tag">아닌 것</span><span class="tag">시간 매칭</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
       </div></section>
 
       <section class="quiz-group" data-quiz-group="therapeutics"><div class="group-head"><h3>항균·항바이러스 치료</h3><p>약물의 표적과 작용 기전</p></div><div class="grid">
@@ -292,7 +302,7 @@
   </main>
   <script src="quiz_menu_metrics.js"></script>
   <script>
-    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','fungal-classification','disinfection','antibiotic','antiviral'];
+    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','fungal-classification','disinfection','vaccine','antibiotic','antiviral'];
     QuizMenuMetrics.migrateLegacy();
     const menuStats=QuizMenuMetrics.readAll();
     const priorityMenus=new Set(QuizMenuMetrics.recommend(MENU_IDS,2));
