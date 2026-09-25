@@ -87,6 +87,7 @@
     .quiz-card.virus-classification .icon { color:#6d4bac; background:#f0eaff; }
     .quiz-card.fungi .icon { color:#74451f; background:#fff0d8; }
     .quiz-card.disinfection .icon { color:#125c57; background:#e1f5f0; }
+    .quiz-card.zoonosis .icon { color:#17625d; background:#def4ed; }
     .card-copy h3 { margin:0 0 7px; font-size:18px; letter-spacing:-.035em; }
     .card-copy p { margin:0; color:var(--muted); font-size:12px; line-height:1.55; word-break:keep-all; }
     .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
@@ -281,6 +282,19 @@
       </a>
       </div></section>
 
+      <section class="quiz-group" data-quiz-group="zoonosis"><div class="group-head"><h3>인수공통감염</h3><p>병원체와 전파 경로를 연결</p></div><div class="grid">
+      <a class="quiz-card zoonosis" href="zoonosis_transmission_quiz.html?v=20260925-1" data-menu-id="zoonosis">
+        <span class="icon">Z</span>
+        <span class="card-copy">
+          <h3>인수공통감염병 전파경로</h3>
+          <p>Brucella·Rabies·Plague·West Nile fever 등 병원체와 직접 접촉·벡터·환경·이종이식 전파 방식을 연결합니다.</p>
+          <span class="tags"><span class="tag">21강</span><span class="tag">전파 방식</span><span class="tag">양방향 5지선다</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      </div></section>
+
       <section class="quiz-group" data-quiz-group="therapeutics"><div class="group-head"><h3>항균·항바이러스 치료</h3><p>약물의 표적과 작용 기전</p></div><div class="grid">
       <a class="quiz-card" href="antibiotic_mechanism_resistance_infinite_quiz.html" data-menu-id="antibiotic">
         <span class="icon">Rx</span>
@@ -313,7 +327,7 @@
   </main>
   <script src="quiz_menu_metrics.js"></script>
   <script>
-    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','viral-gene-exchange','fungal-classification','disinfection','vaccine','antibiotic','antiviral'];
+    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','viral-gene-exchange','fungal-classification','disinfection','vaccine','zoonosis','antibiotic','antiviral'];
     QuizMenuMetrics.migrateLegacy();
     const menuStats=QuizMenuMetrics.readAll();
     const priorityMenus=new Set(QuizMenuMetrics.recommend(MENU_IDS,2));
