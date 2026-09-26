@@ -516,12 +516,10 @@
         "Lister"
       ],
       "answer": {
-        "kind": "choice",
-        "value": [
-          2
-        ]
+        "kind": "unknown",
+        "value": "강의록 기준 모든 선지가 germ theory 발전과 관련되어 있어 정답을 확정할 수 없음"
       },
-      "incomplete": false
+      "incomplete": true
     },
     {
       "id": "1-2020-29",
@@ -1542,7 +1540,7 @@
       "column": "L",
       "prompt": "내독소(LPS)에 대한 설명으로 옳은 것은?",
       "options": [
-        "지질 A는 긴 인지질이 연결된 이당류 구조를 가진다.",
+        "Lipid A는 긴 지방산이 연결된 인산화 이당류 구조",
         "지질 A의 항원으로 특정 혈청형을 분류할 수 있다.",
         "핵심다당류가 내독소 활성을 나타낸다.",
         "핵심다당류는 4-7개의 당을 기본단위로 하여 50-100회 반복되는 다당류이다.",
@@ -2052,7 +2050,7 @@
       "answer": {
         "kind": "choice",
         "value": [
-          5
+          1
         ]
       },
       "incomplete": false
@@ -3073,7 +3071,7 @@
         "콜레라균은 장세포에 침투해 장 상피 내부에 서식한 다.",
         "콜레라의 mucinase 활성이 장 상피 내부에 존재하 는 데 중요하다.",
         "이온펌프 억제제는 위산을 억제하여 콜레라 감염에 취약해졌을 것이다.",
-        "콜레라균은 cytolytic toxin으로 소화 기능을 저해한\n다."
+        "콜레라 독소는 enterotoxin으로 장 상피세포의 이온 이동을 교란한다."
       ],
       "answer": {
         "kind": "choice",
@@ -3583,9 +3581,8 @@
       "answer": {
         "kind": "choice",
         "value": [
-          1,
-          2,
-          4
+          3,
+          5
         ]
       },
       "incomplete": false
@@ -3899,7 +3896,7 @@
       "column": "L",
       "prompt": "병원성 세균의 면역 회피 기전을 잘못 설명한 것은?",
       "options": [
-        "C. pneumoniae의 capsule은 포식 작용을 저해한다.",
+        "S. pneumoniae의 capsule은 포식 작용을 저해한다.",
         "Coxiella burnetii는 phagosome과 lysosome의 융 합을 저해한다.",
         "Neisseria gonorrhoeae는 다양한 항원편모를 발현하 여 항체 특이 반응에 저항한다.",
         "capsule의 sialylation은 보체 활성을 저해한다.",
@@ -4315,12 +4312,10 @@
         "인터페론에 감수성이 있다."
       ],
       "answer": {
-        "kind": "choice",
-        "value": [
-          5
-        ]
+        "kind": "unknown",
+        "value": "1~5번 모두 바이러스의 세포 의존성 또는 항바이러스 반응과 연결되어 있어, 복원문만으로 단일 오답을 확정할 수 없음"
       },
-      "incomplete": false
+      "incomplete": true
     },
     {
       "id": "10-11-2021-3",
@@ -4682,6 +4677,7 @@
       "answer": {
         "kind": "choice",
         "value": [
+          1,
           5
         ]
       },
@@ -5224,7 +5220,9 @@
       "answer": {
         "kind": "choice",
         "value": [
-          1
+          1,
+          4,
+          5
         ]
       },
       "incomplete": false
@@ -5638,7 +5636,6 @@
       "answer": {
         "kind": "choice",
         "value": [
-          3,
           4
         ]
       },
@@ -6811,7 +6808,7 @@
       "number": "77",
       "page": 41,
       "column": "R",
-      "prompt": "[75-77] 다음 설명에 해당하는 항바이러스제를 <보기> 중에서 하나 고르시오 <보기>\n위의 <보기>의 항바이러스제 중 thymidine kinase 를 억제 하는 약제를 고르시오.",
+      "prompt": "[75-77] 다음 설명에 해당하는 항바이러스제를 <보기> 중에서 하나 고르시오 <보기>\n위의 <보기>의 항바이러스제 중 viral thymidine kinase에 의해 활성화되어 DNA 합성을 저해하는 약제를 고르시오.",
       "options": [
         "arildone",
         "enfuvirtide",
@@ -8683,12 +8680,10 @@
         "들쥐와 함께 인수공통 감염병의 대표적인 viral reservoir 역할을 한다."
       ],
       "answer": {
-        "kind": "choice",
-        "value": [
-          3
-        ]
+        "kind": "unknown",
+        "value": "강의록 기준 1~5번이 모두 설명과 부합하여 단일 오답을 확정할 수 없음"
       },
-      "incomplete": false
+      "incomplete": true
     },
     {
       "id": "21-2022-76",
