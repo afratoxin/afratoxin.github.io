@@ -381,10 +381,10 @@
         ['Dimorphism','환경 조건에 따라 yeast와 mold 형태를 바꾸는 성질이다.']
       ]},
       {label:'진균 분류와 특징',pairs:[
-        ['Zygomycetes','넓고 격벽이 드문 hypha와 zygospore 형성이 특징이다.'],
-        ['Ascomycetes','주머니 모양 ascus 안에 ascospore를 형성한다.'],
-        ['Basidiomycetes','basidium에서 basidiospore를 만들고 dolipore를 가질 수 있다.'],
-        ['Deuteromycetes','유성 생식 단계가 알려지지 않아 불완전균으로 분류되었다.'],
+        ['Glomeromycota (Mucormycetes)','넓고 격벽이 드문 hypha와 zygospore 형성이 특징이다.'],
+        ['Ascomycota','주머니 모양 ascus 안에 ascospore를 형성한다.'],
+        ['Basidiomycota','basidium에서 basidiospore를 만들고 dolipore를 가질 수 있다.'],
+        ['Deuteromycota','유성 생식 단계가 알려지지 않아 불완전균으로 분류되었다.'],
         ['Woronin body','Ascomycota의 격벽 구멍을 막을 수 있는 형태학적 표지이다.']
       ]},
       {label:'감염 부위에 따른 진균증',pairs:[
