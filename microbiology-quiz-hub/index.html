@@ -89,6 +89,7 @@
     .quiz-card.disinfection .icon { color:#125c57; background:#e1f5f0; }
     .quiz-card.zoonosis .icon { color:#17625d; background:#def4ed; }
     .quiz-card.diagnosis .icon { color:#4b568e; background:#e9ecfb; }
+    .quiz-card.predicted .icon { color:#8b3e22; background:#ffeadf; }
     .card-copy h3 { margin:0 0 7px; font-size:18px; letter-spacing:-.035em; }
     .card-copy p { margin:0; color:var(--muted); font-size:12px; line-height:1.55; word-break:keep-all; }
     .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
@@ -130,7 +131,7 @@
       <div class="hero-main">
         <p class="eyebrow">Infinite Recall Lab</p>
         <h1>외울 때까지,<br>계속 나오는 퀴즈</h1>
-        <p class="hero-copy">족보 423문항과 강의록의 핵심 연결을 5지선다·직접 입력·분류표 활동으로 반복합니다. 틀린 문항은 오답 목록에 남겨 다시 풀 수 있습니다.</p>
+        <p class="hero-copy">족보 423문항과 단원별 예상 문제 690문항, 강의록의 핵심 연결을 5지선다·직접 입력·분류표 활동으로 반복합니다. 틀린 문항은 오답 목록에 남겨 다시 풀 수 있습니다.</p>
       </div>
       <aside class="study-card">
         <div>
@@ -160,6 +161,19 @@
           <h3>족보 단원별 회독</h3>
           <p>2020~2025 복원 기출 423문항을 19개 단원으로 나누어 원본 도표와 함께 풉니다.</p>
           <span class="tags"><span class="tag">전 문항</span><span class="tag">단원별</span><span class="tag">오답 회독</span><span class="tag">주관식</span></span>
+          <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
+        </span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      </div></section>
+
+      <section class="quiz-group" data-quiz-group="predicted"><div class="group-head"><h3>예상 문제</h3><p>정리본 범위에서 미출제 핵심과 족보 변형을 단원별로</p></div><div class="grid">
+      <a class="quiz-card wide featured predicted" href="predicted_questions.html?v=20260926-1" data-menu-id="predicted">
+        <span class="icon">690</span>
+        <span class="card-copy">
+          <h3>단원별 예상 문제</h3>
+          <p>23개 단원 · 690문항. 아직 족보에 직접 나오지 않은 암기 사실과 기존 족보의 방향·선지를 바꾼 문제를 풉니다.</p>
+          <span class="tags"><span class="tag">단원별 30문항</span><span class="tag">5지선다</span><span class="tag">전 선지 해설</span><span class="tag">오답 기록</span></span>
           <span class="menu-stats" data-menu-stats>아직 풀이 없음</span>
         </span>
         <span class="arrow" aria-hidden="true">→</span>
@@ -336,12 +350,12 @@
 
     <footer>
       <span>미생물학 강의자료 기반 개인 학습용 퀴즈</span>
-      <span>마지막 통합: 2026-09-25</span>
+      <span>마지막 통합: 2026-09-26</span>
     </footer>
   </main>
   <script src="quiz_menu_metrics.js"></script>
   <script>
-    const MENU_IDS=['past-exam','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','viral-gene-exchange','fungal-classification','disinfection','vaccine','zoonosis','diagnosis','antibiotic','antiviral'];
+    const MENU_IDS=['past-exam','predicted','scientists','pathogenesis','aeration','virus-classification','viral-attachment','viral-patterns','viral-gene-exchange','fungal-classification','disinfection','vaccine','zoonosis','diagnosis','antibiotic','antiviral'];
     QuizMenuMetrics.migrateLegacy();
     const menuStats=QuizMenuMetrics.readAll();
     const priorityMenus=new Set(QuizMenuMetrics.recommend(MENU_IDS,2));
