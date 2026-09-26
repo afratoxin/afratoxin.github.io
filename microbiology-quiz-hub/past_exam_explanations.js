@@ -2,8 +2,8 @@
   'use strict';
 
   const explanations = {};
-  const add = (ids, why, contrast = '', caution = '') => {
-    ids.trim().split(/\s+/).forEach((id) => { explanations[id] = { why, contrast, caution }; });
+  const add = (ids, why, contrast = '', caution = '', options = {}) => {
+    ids.trim().split(/\s+/).forEach((id) => { explanations[id] = { why, contrast, caution, options }; });
   };
 
   // 1강 · 미생물학의 역사
@@ -184,6 +184,21 @@
   add('13-2022-46 13-2021-11 13-2020-13', 'DNA virus의 early gene은 genome 복제 전에 발현되어 DNA polymerase, DNA-binding protein, 전사조절인자 같은 비구조 단백질을 만든다.', 'Capsid와 envelope 단백질 같은 구조 단백질은 genome 복제 뒤 late gene에서 주로 만들어진다.');
   add('13-2021-2', 'EBV의 gp350/220이 B cell 표면의 CR2, 즉 CD21에 결합해 부착한다.', 'CD4는 HIV, sialic acid는 influenza의 대표 수용체다.');
   add('13-2021-6 13-2020-8', 'Parvovirus는 매우 작은 ssDNA genome을 가져 자체적으로 S phase를 유도할 능력이 부족하다. 숙주의 DNA 합성효소가 활성화된 분열 중 세포에서만 효율적으로 복제한다.', '그래서 골수 전구세포처럼 빠르게 분열하는 세포가 중요한 표적이 된다.');
+
+
+  // 강의록 대조로 확정한 복원·정답 교정
+  add('1-2020-28', 'Bassi·Koch·Semmelweis·Pasteur·Lister는 모두 감염 원인과 전파·예방에 관한 germ theory의 발전과 연결된다. 따라서 이 복원문에는 단일 정답이 없다.', '특히 Koch를 “가장 관련 없다”고 처리한 기존 수록 답안은 강의록의 Koch postulates와 정면으로 충돌한다.', '정답 미확정으로 채점하지 않는다.', {1:'Bassi는 누에병의 감염성 원인을 제시해 germ theory 초기 발전에 연결된다.',2:'Koch는 병원체와 질병의 인과를 검증하는 가설을 확립한 핵심 인물이다.',3:'Semmelweis는 손 위생으로 산욕열 전파를 줄여 감염 전파 개념을 뒷받침했다.',4:'Pasteur는 자연발생설을 반박하고 미생물설을 확립했다.',5:'Lister는 소독법으로 germ theory를 수술에 적용했다.'});
+  add('3-2020-40', 'LPS의 Lipid A는 긴 지방산이 결합한 인산화 이당류 부분으로, 내독소 활성의 중심이다.', '“인지질”은 지방산·글리세롤·인산으로 된 별도 지질 분류이므로 Lipid A의 결합 성분을 인지질이라고 쓰면 부정확하다.', '', {1:'Lipid A의 구조를 지방산과 인산화 이당류로 바로잡은 정답 선지다.'});
+  add('5-2023-21', '폐렴사슬알균의 협막 형질 획득은 환경의 naked DNA를 받아들이는 transformation의 대표 사례다.', 'Recombination은 들어온 DNA가 염색체에 통합되는 후속 분자 과정일 수 있지만, 세포 간 유전자 전달 기전의 이름은 transformation이다.', '', {1:'Transformation은 S. pneumoniae 협막 전달의 대표 기전이다.',2:'Conjugation은 세포 간 접촉과 plasmid 전달이 핵심이다.',3:'Transduction은 bacteriophage가 DNA를 옮긴다.',4:'Transposition은 이동성 유전요소의 자리 이동이다.',5:'Recombination은 DNA 통합 과정이지 이 사례의 전달 기전명은 아니다.'});
+  add('8-2025-25', '콜레라는 장상피에 부착한 뒤 enterotoxin으로 이온 이동과 수분 분비를 교란한다. 위산 억제는 감염 취약성을 높일 수 있다.', '콜레라균은 장 상피 안으로 침입해 사는 세균이 아니며, mucinase는 점액층 통과를 돕는 인자다.', '', {1:'이 증례에서 콜레라의 주 전파·감염 경로는 장관이므로 호흡기 감염으로 설명하지 않는다.',2:'콜레라균은 장상피에 부착하지만 세포 내부에 서식하는 침입성 세균으로 보지 않는다.',3:'Mucinase는 점액을 통과해 표적세포에 닿는 데 기여하며 장상피 내부 존재와는 다르다.',4:'위산을 줄이는 약물은 위장관 병원체의 생존 장벽을 낮춰 감염 취약성을 높일 수 있다.',5:'콜레라 독소는 enterotoxin으로 이온·수분 분비를 교란한다.'});
+  add('9-2023-34', 'Virulence factor는 부착·침입·면역회피를 돕는 인자이며, 균이 여러 개를 가질 수 있다. 틀린 선지는 3·5번이다.', '기존 수록 답안 1·2·4는 발문이 “옳지 않은 것”인 경우 정반대여서 정답 매칭을 바로잡았다.', '', {1:'면역회피는 대표적인 virulence factor 기능이므로 옳다.',2:'한 병원체는 여러 virulence factor를 함께 가질 수 있으므로 옳다.',3:'Virulence factor에는 협막·pili·독소 등 세포 외부 또는 표면 구조도 포함되므로 틀리다.',4:'부착과 침입 촉진은 대표 기능이므로 옳다.',5:'Virulence factor는 생존에 필수인 기본 대사인자가 아니며, 항생제 표적이라고 일반화할 수 없어 틀리다.'});
+  add('9-2020-48', 'S. pneumoniae의 capsule은 식균작용을 저해하는 대표적인 면역회피 인자다.', '문항의 C. pneumoniae 표기는 S. pneumoniae의 협막을 가리키는 복원 오기로 정정했다.', '', {1:'S. pneumoniae 협막은 opsonization과 식균을 방해하므로 옳다.'});
+  add('10-11-2021-1', '바이러스는 DNA 또는 RNA 중 하나의 genome을 가지며, ribosome·ATP 생성계가 없고 이분법으로 증식하지 않는다. 인터페론은 숙주세포에 항바이러스 상태를 유도한다.', '따라서 복원된 1~5번에서 단일 “옳지 않은 것”을 확정할 수 없다.', '정답 미확정으로 채점하지 않는다.', {1:'완전한 virion의 genome은 DNA 또는 RNA 중 하나다.',2:'바이러스는 자체 ATP 생성 효소계를 갖지 않는다.',3:'바이러스는 ribosome을 갖지 않는다.',4:'바이러스 증식은 숙주세포 안에서의 조립 과정이지 이분법이 아니다.',5:'인터페론은 숙주세포의 항바이러스 반응과 연결되는 표현으로 이 복원문만으로 오답 처리할 수 없다.'});
+  add('12-2025-38', '정상균무리는 부착 부위와 영양분을 선점해 colonization resistance를 만들고, 먹이 경쟁으로 병원체를 억제한다. 따라서 1·5번이 모두 맞다.', '기존 단일 정답은 정상균무리의 두 대표 방어기전을 함께 묻는 발문과 맞지 않아 복수정답으로 수정했다.', '', {1:'정상균은 병원체의 상피세포 부착을 막아 colonization resistance에 기여한다.',2:'정상균이 숙주 상피세포 안으로 침투해 방어한다는 설명은 아니다.',3:'정상균이 모든 병원체를 억제하는 것은 아니다.',4:'억제 기전은 경쟁·산성화·bacteriocin·면역자극 등 다양하다.',5:'영양분 경쟁은 정상균무리의 대표 방어기전이다.'});
+  add('13-2023-47', 'Influenza HA–sialic acid, HIV gp120–CD4, rabies G–NCAM은 모두 올바른 부착 단백질–수용체 연결이다.', '단일 정답으로 복원된 문항이지만 실제로 1·4·5번이 모두 맞으므로 복수정답으로 교정했다.', '', {1:'Influenza HA가 sialic acid에 결합하는 연결은 옳다.',2:'잘못된 바이러스 단백질 또는 수용체 연결이다.',3:'잘못된 바이러스 단백질 또는 수용체 연결이다.',4:'HIV gp120이 CD4에 결합하는 연결은 옳다.',5:'Rabies virus G가 NCAM과 결합하는 연결은 옳다.'});
+  add('14-2023-51', '고농도 인플루엔자 감염에서 DIP가 축적되는 von Magnus phenomenon은 interference와 관련된다.', 'DIP는 정상 바이러스의 복제·포장 자원을 경쟁해 infectivity를 낮추지만, 이를 일반적인 “virus의 competitive inhibition”이라고 부르는 것은 강의록의 기전명과 맞지 않는다.', '', {1:'Interference와 관련된 설명이므로 옳다.',2:'이 현상은 von Magnus phenomenon으로 불린다.',3:'DIP 형성은 이 현상의 핵심 설명이므로 옳다.',4:'일반적인 competitive inhibition이라는 명명은 강의록의 설명과 맞지 않아 오답이다.'});
+  add('16-2020-77', 'Acyclovir는 viral thymidine kinase에 의해 인산화되어 활성형이 되고, 이후 viral DNA polymerase를 억제해 사슬종결을 일으킨다.', 'Thymidine kinase를 억제하는 약이라고 쓰면 기전의 방향이 반대다.', '', {3:'Acyclovir는 viral thymidine kinase가 활성화에 관여하는 대표 약물이다.'});
+  add('21-2023-80', '강의록은 박쥐에서 coronavirus 계통이 가장 많고, 높은 interferon·낮은 염증반응, Robovirus의 설치류-호흡기 전파, 쥐·박쥐의 reservoir 역할을 함께 설명한다.', '따라서 복원된 1~5번은 모두 강의록과 부합해 단일 오답을 정할 수 없다.', '정답 미확정으로 채점하지 않는다.', {1:'강의록은 박쥐 virome에서 coronavirus 계통이 가장 많다고 설명한다.',2:'박쥐는 coronavirus·henipavirus·filovirus 등 여러 바이러스와 연결된다.',3:'높은 interferon과 억제된 염증반응은 박쥐가 많은 바이러스와 공존하는 설명이다.',4:'Robovirus는 설치류에서 주로 호흡기로 전파되는 것으로 강의록에 제시된다.',5:'쥐와 박쥐는 대표적인 viral reservoir로 제시된다.'});
 
   window.PAST_EXAM_EXPLANATIONS = explanations;
 })();
