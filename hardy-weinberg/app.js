@@ -99,6 +99,8 @@ const CARD_DATA=[
  {cat:"기본",title:"A′ 보유 개체의 A′ 빈도",condition:"A′를 가진 개체를 합쳐서 구한 A′의 빈도",formula:"(2pq+2q²)/[2(2pq+q²)] = 1/(1+p).",count:"A′ 보유 개체 AA′=y, A′A′=z라 두고 (y+2z)/[2(y+z)]를 계산한다. 예를 들어 y:z=4:1이면 6/10=3/5."},
  {cat:"기본",title:"열성 표현형의 비율",condition:"흰색 몸 개체의 비율 (A가 완전 우성일 때)",formula:"흰색 몸은 A′A′만 해당하므로 q². 흰색 몸이 4/9라면 q=2/3.",count:"전체 개체 수를 9칸으로 놓으면 AA:AA′:A′A′=1:4:4에서 흰색 몸 4칸/전체 9칸이다. 다만 열성 표현형만으로 이런 비율을 쓰려면 평형 조건이 필요하다."},
  {cat:"기본",title:"우성 표현형 안의 유전자형",condition:fracText("AA′ 개체 수","검은색 몸 개체 수")+" (A가 완전 우성)",formula:"2pq/(p²+2pq) = 2q/(1+q). 반대로 AA/검은색 몸 = p/(1+q).",count:"검은색 몸은 AA와 AA′. 예를 들어 AA:AA′=1:4라면 그 안의 AA′ 비율은 4/(1+4)=4/5."},
+ {cat:"기본",title:"개체 수와 대립유전자 수",condition:fracText("검은색 몸 개체 수","검은색 몸 대립유전자 A의 수"),formula:"(p²+2pq)/(2p²+2pq) = (1+q)/2. 분자는 개체 수, 분모는 A 사본 수라 단위가 다르다.",count:"AA=x, AA′=y이면 개체 수 x+y, A 사본 수 2x+y. 예: 1:4:4에서는 5/6. 전체 개체 수 N을 곱해도 약분된다."},
+ {cat:"기본",title:"우성 개체 수와 열성 개체 수",condition:fracText("검은색 몸 개체 수","흰색 몸 개체 수")+" (A가 완전 우성)",formula:"(p²+2pq)/q² = (1−q²)/q².",count:"AA=x, AA′=y, A′A′=z이면 (x+y)/z. 예: 1:4:4에서는 (1+4)/4=5/4."},
  {cat:"제외",title:"AA를 뺀 뒤의 A′ 빈도",condition:"AA인 개체를 제외한 개체 중 A′의 빈도",formula:"(2pq+2q²)/[2(2pq+q²)] = 1/(1+p). 제외 후의 집단에 p²:2pq:q²를 다시 적용하지 않는다.",count:"남은 AA′=y, A′A′=z이면 A′ 수는 y+2z, 전체 대립유전자는 2(y+z). 예: 원래 1:4:4 → (4+8)/[2(4+4)]=3/4."},
  {cat:"제외",title:"AA′를 뺀 뒤의 A′ 빈도",condition:"AA′인 개체를 제외한 개체 중 A′의 빈도",formula:"2q²/[2(p²+q²)] = q²/(p²+q²).",count:"AA=x, A′A′=z만 남는다. A′ 빈도 = z/(x+z). 예: 원래 1:4:4 → 4/(1+4)=4/5."},
  {cat:"제외",title:"일부 개체 수를 더 빼기",condition:"검은색 몸 개체 중 k개를 제외하고 구한 A의 빈도",formula:"제외하기 전 A의 수 S, 개체 수 M에서 빼는 k명의 유전자형별 A 수를 T라 하면 (S−T)/[2(M−k)]. k명에 AA/AA′가 몇 명인지 알아야 한다.",count:"개체 수 표에서 AA, AA′, A′A′를 먼저 적고, 해당 칸의 인원과 A 사본 수를 각각 뺀다. 제외된 집단은 보통 평형 집단이 아니다."},
@@ -120,7 +122,7 @@ function how(){
     {img:"game",title:"3. 제한 시간 안에 제출하기",text:"상단의 남은 시간을 보고 조건을 해석한 뒤, 답을 입력하고 제출하기를 누르세요. Enter 키도 사용할 수 있습니다.",bullets:["분수는 3/5, 비율은 1:4:4","시간 초과는 자동 오답이며, 이후 수정할 수 없습니다."]},
     {img:"feedback",title:"4. 풀이 확인 후 다음 문항",text:"제출하거나 시간이 끝나면 정답과 해설이 표시됩니다. 다음 문제 버튼을 누르면 새 문항이 시작됩니다.",bullets:["동치인 분수와 비율도 정답입니다.","8문항을 마치면 맞힌 개수가 점수로 나옵니다."]}
   ];
-  return '<div class="page-top"><button class="back-link" data-view="home">← 첫 화면</button><div class="eyebrow">How to play</div><h1 class="page-title">게임 진행 방법</h1><p class="lead">아래는 실제 화면을 캡처한 안내입니다. 민트색 숫자로 각 단계의 화면을 표시했습니다.</p></div><div class="how-grid">'+items.map((x,i)=>'<article class="panel how-step"><div class="shot-wrap"><img src="./assets/howto-'+x.img+'.png" alt="'+x.title+' 화면 캡처" loading="lazy"><span class="shot-label" aria-hidden="true">'+(i+1)+'</span></div><div><h2>'+x.title+'</h2><p>'+x.text+'</p><ul>'+x.bullets.map(y=>'<li>'+y+'</li>').join("")+'</ul></div></article>').join("")+'</div>';
+  return '<div class="page-top"><button class="back-link" data-view="home">← 첫 화면</button><div class="eyebrow">How to play</div><h1 class="page-title">게임 진행 방법</h1><p class="lead">아래는 실제 화면을 캡처한 안내입니다. 민트색 숫자로 각 단계의 화면을 표시했습니다.</p></div><div class="how-grid">'+items.map((x,i)=>'<article class="panel how-step"><div class="shot-wrap"><img src="./assets/howto-'+x.img+'.jpg" alt="'+x.title+' 화면 캡처" loading="lazy"><span class="shot-label" aria-hidden="true">'+(i+1)+'</span></div><div><h2>'+x.title+'</h2><p>'+x.text+'</p><ul>'+x.bullets.map(y=>'<li>'+y+'</li>').join("")+'</ul></div></article>').join("")+'</div>';
 }
 function render(){
   app.innerHTML=({home,levels,game,result,guide,how})[state.view]();
