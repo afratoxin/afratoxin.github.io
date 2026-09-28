@@ -26,7 +26,7 @@ const shuffle=a=>{let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Ma
 const PVALUES=Array.from({length:9},(_,i)=>i+2).flatMap(d=>Array.from({length:d-1},(_,i)=>i+1).filter(n=>gcd(n,d)===1).map(n=>[n,d]));
 const ALL_TYPES=[...new Set(Object.values(LEVELS).flatMap(level=>level.types))];
 const QUESTION_BANK=PVALUES.flatMap(pair=>ALL_TYPES.map(type=>makeQuestion(type,pair)));
-const nav=(name)=>{clearInterval(state.ticker);clearTimeout(state.advanceTimer);clearTimeout(state.flashTimer);state.ticker=null;state.advanceTimer=null;state.flashTimer=null;document.querySelector("#flash-layer")?.remove();state.view=name;state.feedback=false;window.scrollTo(0,0);render()};
+const nav=(name)=>{const keepFlash=name==="game"&&state.view==="game"&&state.feedback;clearInterval(state.ticker);clearTimeout(state.advanceTimer);if(!keepFlash){clearTimeout(state.flashTimer);state.flashTimer=null;document.querySelector("#flash-layer")?.remove()}state.ticker=null;state.advanceTimer=null;state.view=name;state.feedback=false;window.scrollTo(0,0);render()};
 function makeQuestion(type, pair){
   let p=F(pair[0],pair[1]),q=sub(one,p),r=div(one,add(one,q)),qCarrier=div(q,add(one,q)),qWithoutAA=div(one,add(one,p));
   let counts=[p.n*p.n,2*p.n*(p.d-p.n),(p.d-p.n)**2],gr=ratio(counts);
@@ -119,7 +119,7 @@ function makeSet(level){
   return shuffle(chosen);
 }
 function home(){
-  return '<section class="home-intro"><div class="eyebrow">HARDY–WEINBERG · FRACTION PRACTICE</div><h1 class="page-title">하디-바인베르크 법칙<br>조건 해석</h1><p class="lead">분모에 어떤 개체가 들어가는지 먼저 찾습니다.<br>조건을 읽고 정답을 입력하는 10문항 타이머 게임입니다.</p><div class="base-equation"><span>p + q = 1</span><span aria-hidden="true">·</span><span>AA : AA′ : A′A′ = p² : 2pq : q²</span></div><p class="bank-meta">기준 빈도 '+PVALUES.length+'개 × 분수 조건 '+ALL_TYPES.length+'종 = 문항 '+QUESTION_BANK.length+'개</p></section><section class="menu-grid" aria-label="메인 메뉴"><button class="menu-card" data-view="how"><span class="menu-icon">?</span><span class="menu-title">HOW TO PLAY</span><span class="menu-desc">게임 진행 방식과 조작 방법</span><span class="menu-arrow" aria-hidden="true">↗</span></button><button class="menu-card primary" data-view="levels"><span class="menu-icon">▶</span><span class="menu-title">시작하기</span><span class="menu-desc">easy · medium · hard<br>난이도 선택</span><span class="menu-arrow" aria-hidden="true">→</span></button><button class="menu-card" data-view="guide"><span class="menu-icon concept-mark">p²</span><span class="menu-title">개념 설명</span><span class="menu-desc">분수의 분모부터 살펴보고<br>수식·개체 수로 해석하기</span><span class="menu-arrow" aria-hidden="true">↗</span></button></section>';
+  return '<section class="home-intro"><div class="eyebrow">HARDY–WEINBERG · FRACTION PRACTICE</div><h1 class="page-title">하디-바인베르크 법칙<br>조건 해석</h1><div class="base-equation"><span>p + q = 1</span><span aria-hidden="true">·</span><span>AA : AA′ : A′A′ = p² : 2pq : q²</span></div></section><section class="menu-grid" aria-label="메인 메뉴"><button class="menu-card" data-view="how"><span class="menu-icon">?</span><span class="menu-title">HOW TO PLAY</span><span class="menu-desc">게임 진행 방식과 조작 방법</span><span class="menu-arrow" aria-hidden="true">↗</span></button><button class="menu-card primary" data-view="levels"><span class="menu-icon">▶</span><span class="menu-title">시작하기</span><span class="menu-desc">easy · medium · hard<br>난이도 선택</span><span class="menu-arrow" aria-hidden="true">→</span></button><button class="menu-card" data-view="guide"><span class="menu-icon concept-mark">p²</span><span class="menu-title">개념 설명</span><span class="menu-desc">분수의 분모부터 살펴보고<br>수식·개체 수로 해석하기</span><span class="menu-arrow" aria-hidden="true">↗</span></button></section>';
 }
 function levels(){
   return '<div class="page-top"><button class="back-link" data-view="home">← 첫 화면</button><div class="eyebrow">CHOOSE LEVEL</div><h1 class="page-title">난이도 선택</h1><p class="lead">한 판 10문항. 각 문항을 제한 시간 안에 풀어 보세요.<br>정오답을 확인하면 곧바로 다음 문제가 나옵니다.</p></div><section class="difficulty-grid" aria-label="난이도">'+
@@ -173,6 +173,7 @@ function how(){
   return '<div class="page-top"><button class="back-link" data-view="home">← 첫 화면</button><div class="eyebrow">How to play</div><h1 class="page-title">게임 진행 방법</h1><p class="lead">아래는 실제 화면을 캡처한 안내입니다. 민트색 숫자로 각 단계의 화면을 표시했습니다.</p></div><div class="how-grid">'+items.map((x,i)=>'<article class="panel how-step"><div class="shot-wrap"><img src="./assets/howto-'+x.img+'.jpg" alt="'+x.title+' 화면 캡처" loading="lazy"><span class="shot-label" aria-hidden="true">'+(i+1)+'</span></div><div><h2>'+x.title+'</h2><p>'+x.text+'</p><ul>'+x.bullets.map(y=>'<li>'+y+'</li>').join("")+'</ul></div></article>').join("")+'</div>';
 }
 function render(){
+  document.body.classList.toggle("is-home",state.view==="home");
   app.innerHTML=({home,levels,game,result,guide,how})[state.view]();
   if(state.view==="game"){
     state.deadline=Date.now()+LEVELS[state.level].seconds*1000;
@@ -212,11 +213,12 @@ function playSound(correct){
   }
 }
 function showFlash(correct){
+  clearTimeout(state.flashTimer);
+  document.querySelector("#flash-layer")?.remove();
   const layer=document.createElement("div");
   layer.id="flash-layer";layer.className=correct?"flash-correct":"flash-wrong";
-  layer.innerHTML='<span aria-hidden="true">'+(correct?"정답!":"오답")+'</span>';
   document.body.append(layer);
-  state.flashTimer=setTimeout(()=>layer.remove(),620);
+  state.flashTimer=setTimeout(()=>{layer.remove();state.flashTimer=null},1000);
 }
 function advance(){
   if(state.view!=="game"||!state.feedback)return;
