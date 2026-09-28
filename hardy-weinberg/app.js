@@ -165,10 +165,10 @@ function guide(){
 }
 function how(){
   const items=[
-    {img:"home-v3",title:"1. 첫 화면에서 메뉴 선택",text:"시작하기는 게임으로, 개념 설명은 분수 조건을 읽는 법으로 이동합니다.",bullets:["HOW TO PLAY → 게임 조작 안내","개념 설명 → 수식과 개체 수로 각각 풀이"]},
-    {img:"levels-v3",title:"2. 난이도 고르기",text:"easy, medium, hard 중 하나를 누르면 10문항이 시작됩니다. 한 문항의 제한 시간은 각각 25초, 20초, 15초입니다.",bullets:["문항 은행에는 31개 기약분수와 18개 조건 유형이 들어 있습니다.","한 판에는 그중 10문항을 골라 제시합니다."]},
-    {img:"game-v3",title:"3. 입력하고 Enter 누르기",text:"조건을 보고 답을 입력한 뒤 Enter를 누르면 제출됩니다. 상단에서 남은 시간을 확인하세요.",bullets:["분수는 3/5, 비율은 1:4:4처럼 입력","제한 시간이 지나면 자동 오답"]},
-    {img:"feedback-v3",title:"4. 정답 확인, 바로 다음 문제",text:"정답은 초록 화면과 짧은 벨소리, 오답은 빨간 화면과 경고음으로 알려줍니다.",bullets:["틀렸을 때에는 원래 정답만 잠깐 표시합니다.","Enter로 즉시 넘어가거나, 잠시 기다리면 자동으로 다음 문제가 나옵니다."]}
+    {img:"home-v4",title:"1. 첫 화면에서 메뉴 선택",text:"시작하기는 게임으로, 개념 설명은 분수 조건을 읽는 법으로 이동합니다.",bullets:["HOW TO PLAY → 게임 조작 안내","개념 설명 → 수식과 개체 수로 각각 풀이"]},
+    {img:"levels-v4",title:"2. 난이도 고르기",text:"easy, medium, hard 중 하나를 누르면 10문항이 시작됩니다. 한 문항의 제한 시간은 각각 25초, 20초, 15초입니다.",bullets:["문항 은행에는 31개 기약분수와 18개 조건 유형이 들어 있습니다.","한 판에는 그중 10문항을 골라 제시합니다."]},
+    {img:"game-v4",title:"3. 입력하고 Enter 누르기",text:"조건을 보고 답을 입력한 뒤 Enter를 누르면 제출됩니다. 상단에서 남은 시간을 확인하세요.",bullets:["분수는 3/5, 비율은 1:4:4처럼 입력","제한 시간이 지나면 자동 오답"]},
+    {img:"feedback-v4",title:"4. 정답 확인, 바로 다음 문제",text:"정답은 초록 화면과 짧은 벨소리, 오답은 빨간 화면과 경고음으로 알려줍니다.",bullets:["틀렸을 때에는 원래 정답만 잠깐 표시합니다.","Enter로 즉시 넘어가거나, 잠시 기다리면 자동으로 다음 문제가 나옵니다."]}
   ];
   return '<div class="page-top"><button class="back-link" data-view="home">← 첫 화면</button><div class="eyebrow">How to play</div><h1 class="page-title">게임 진행 방법</h1><p class="lead">아래는 실제 화면을 캡처한 안내입니다. 민트색 숫자로 각 단계의 화면을 표시했습니다.</p></div><div class="how-grid">'+items.map((x,i)=>'<article class="panel how-step"><div class="shot-wrap"><img src="./assets/howto-'+x.img+'.jpg" alt="'+x.title+' 화면 캡처" loading="lazy"><span class="shot-label" aria-hidden="true">'+(i+1)+'</span></div><div><h2>'+x.title+'</h2><p>'+x.text+'</p><ul>'+x.bullets.map(y=>'<li>'+y+'</li>').join("")+'</ul></div></article>').join("")+'</div>';
 }
