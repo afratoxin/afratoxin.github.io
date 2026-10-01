@@ -8,7 +8,11 @@ const ids=new Set(questions.map(q=>q.id));
 assert.equal(ids.size,questions.length,'stable IDs must be unique');
 let quiz=0,review=0;
 for(const q of questions){
-  assert.ok(!q.image,'raw source images are not part of the published quiz');
+  if(q.figure){
+    assert.ok(q.figure.startsWith('assets/figures/') && q.figure.endsWith('.png'),q.id);
+    assert.ok(fs.statSync(new URL(q.figure,import.meta.url)).size>1000,q.id);
+    assert.equal(q.status,'quiz',q.id);
+  }
   if(q.status==='review'){review++;assert.ok(q.reviewReason);continue;}
   quiz++;
   assert.equal(q.choices.length,5,q.id);
@@ -20,7 +24,8 @@ for(const q of questions){
     assert.ok(gradeSelection(shown.answer,[...shown.answer]),q.id);
   }
 }
-assert.equal(quiz,453);assert.equal(review,126);
+assert.equal(quiz,489);assert.equal(review,90);
+assert.equal(questions.filter(q=>q.figure).length,35);
 for(const unit of ['all',...data.unitOrder]){
   const pool=visibleQuestions(questions,unit,'all','quiz');
   if(!pool.length)continue;

@@ -59,6 +59,10 @@ function nextQuestion(){
   $('sourceTag').textContent=`${current.year} · ${current.page}쪽 · ${current.number}번`;
   $('sessionTag').textContent=`이번 회독 ${session}문제`;
   $('questionStem').textContent=current.stem;
+  const figure=$('questionFigure');figure.hidden=!current.figure;
+  if(current.figure){$('figureLink').href=current.figure;$('figureImage').src=current.figure;
+    $('figureImage').alt=`${current.year}년 ${current.number}번 족보 그림`;}
+  else{$('figureLink').removeAttribute('href');$('figureImage').removeAttribute('src');}
   const list=$('choiceList');list.replaceChildren();
   shown.choices.forEach((choice,i)=>{
     const button=document.createElement('button');button.type='button';button.dataset.choice=String(i+1);
