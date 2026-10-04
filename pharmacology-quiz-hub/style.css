@@ -16,3 +16,50 @@
 .wrong-empty{margin:-8px 0 16px;color:var(--muted);font-size:12px}
 .answer-note{padding-top:8px;border-top:1px solid currentColor}
 @media(max-width:550px){.wrong-button{order:2}.all-button{order:3;margin-left:auto}}
+
+/* Lecture practice hub */
+[hidden]{display:none!important}
+.hub-nav{display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 22px}
+.hub-nav button{padding:10px 15px;border:1px solid #d5e4e7;border-radius:99px;background:#fff;color:#466273;font-size:12px;font-weight:850}
+.hub-nav button.active{background:#173f5f;border-color:#173f5f;color:#fff}
+.hub-nav button:focus-visible,.hub-card:focus-visible,.drug-chip:focus-visible,.drop-zone:focus-visible{outline:3px solid #54b4cf;outline-offset:3px}
+.hub-hero{padding:42px;border-radius:28px;color:#fff;background:linear-gradient(125deg,#173f5f 0%,#155a81 57%,#168fa9 100%);box-shadow:var(--shadow)}
+.hub-hero h1{margin:0;font-size:clamp(34px,5vw,54px);line-height:1.18;letter-spacing:-.06em}
+.hub-hero p:last-child{max-width:620px;color:#e5f4fc;font-size:14px;line-height:1.85;word-break:keep-all}
+.hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}
+.hub-card{display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:15px;padding:23px;border:1px solid #dce8ec;border-radius:20px;background:#fff;text-align:left;box-shadow:var(--shadow)}
+.hub-card:hover{border-color:#79bcd4;transform:translateY(-2px)}
+.hub-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:14px;background:#e3f2fa;color:#176785;font-weight:950}
+.hub-card strong{display:block;color:#173f5f;font-size:17px;letter-spacing:-.03em}
+.hub-card small{display:block;margin-top:5px;color:var(--muted);font-size:12px;line-height:1.5}
+.hub-card b{color:#1784ab;font-size:20px}
+.archive-card{background:#f8fbfd}
+.cyp-view .section-head{margin-top:23px}
+.cyp-intro{margin:0 0 17px;color:#536d7b;font-size:13px;line-height:1.75;word-break:keep-all}
+.cyp-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:16px;align-items:start}
+.cyp-layout .question-card h2{color:#174b6b}
+.cyp-layout .side-card{background:#f7fbfd}
+.cyp-layout .side-card strong{line-height:1.6}
+.cyp-layout .options button.selected{border-color:#1689b2;background:#edf8fc}
+.cyp-layout .badge{background:#e7f4fc;color:#176688}
+.match-board{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.match-column{padding:20px;border:1px solid #dce8ec;border-radius:18px;background:#fff}
+.match-column h3{margin:0 0 15px;color:#174b6b;font-size:15px}
+.drag-cards,.drop-zones{display:grid;gap:10px}
+.drug-chip,.drop-zone{min-height:57px;width:100%;padding:12px 15px;border:1px solid #bfdbe7;border-radius:12px;background:#f5fbfd;color:#164d6c;font-size:14px;font-weight:800;text-align:left}
+.drug-chip{cursor:grab}
+.drug-chip.selected,.drop-zone.over{background:#d7f0fb;border-color:#168fba}
+.drug-chip.matched,.drop-zone.matched{background:#eaf7ef;border-color:#7bbba2;color:#176949;cursor:default}
+.drop-zone.mismatch{background:#fff0f2;border-color:#d78996}
+.match-status{min-height:42px;margin:15px 0;color:#236685;font-size:13px;font-weight:800}
+.memory-table-wrap{overflow-x:auto;border:1px solid #dbe7ee;border-radius:16px;background:#fff}
+.memory-table{width:100%;border-collapse:collapse;font-size:13px}
+.memory-table th{padding:15px;background:#e8f4fa;color:#155477;text-align:left;white-space:nowrap}
+.memory-table td{padding:13px 15px;border-top:1px solid #e4edf1;vertical-align:top;line-height:1.65}
+.memory-table td:first-child{color:#174b6b;font-weight:900;white-space:nowrap}
+.memory-table td:nth-child(2){color:#126da0;font-weight:850;white-space:nowrap}
+.memory-table td:last-child{white-space:nowrap;color:#657e88}
+.memory-table tbody tr:nth-child(even){background:#f8fbfd}
+.cyp-footnote{color:#657784;font-size:12px;line-height:1.7}
+@media(max-width:800px){.cyp-layout{grid-template-columns:1fr}.hub-grid{grid-template-columns:1fr}}
+@media(max-width:550px){.hub-hero{padding:30px 23px}.hub-nav{gap:6px}.hub-nav button{padding:8px 10px;font-size:11px}.hub-card{padding:18px;gap:10px;grid-template-columns:44px minmax(0,1fr) auto}.hub-icon{width:43px;height:43px}.hub-card strong{font-size:15px}.match-board{grid-template-columns:1fr}.match-column{padding:16px}}
