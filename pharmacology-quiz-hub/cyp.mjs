@@ -1,15 +1,15 @@
-// 강의록 약물대사: 푸른 글씨로 표시된 약물 (16, 36, 39쪽).
+// 2026년 7강 약물대사: 강의록에 제시된 CYP probe drug (16, 36, 39쪽).
 export const CYP_FACTS = [
-  {id:'theophylline', enzyme:'CYP1A2', drug:'theophylline', page:16, note:'16쪽의 CYP1A2 행에서 푸른 글씨로 표시됩니다.'},
-  {id:'bupropion', enzyme:'CYP2B6', drug:'bupropion', page:16, note:'16쪽의 CYP2B6 행에서 푸른 글씨로 표시됩니다.'},
-  {id:'omeprazole', enzyme:'CYP2C19', drug:'omeprazole', page:16, note:'CYP2C19의 대표 사례로, 37쪽에는 CYP3A4 경로도 함께 설명됩니다.'},
-  {id:'voriconazole', enzyme:'CYP2C19', drug:'voriconazole', page:36, note:'36쪽의 CYP2C19 기질 표에서 푸른 글씨로 표시됩니다.'},
+  {id:'theophylline', enzyme:'CYP1A2', drug:'theophylline', page:16, note:'CYP1A2의 probe drug으로 제시됩니다.'},
+  {id:'bupropion', enzyme:'CYP2B6', drug:'bupropion', page:16, note:'CYP2B6의 probe drug으로 제시됩니다.'},
+  {id:'omeprazole', enzyme:'CYP2C19', drug:'omeprazole', page:16, note:'CYP2C19의 대표 probe drug이며, 37쪽에는 CYP3A4를 이용하는 minor pathway도 설명됩니다.'},
+  {id:'voriconazole', enzyme:'CYP2C19', drug:'voriconazole', page:36, note:'CYP2C19의 probe drug으로 제시됩니다.'},
   {id:'clopidogrel', enzyme:'CYP2C19', drug:'clopidogrel', page:36, note:'CYP2C19가 활성 대사체 생성에 관여하는 전구약물입니다. 효소 활성이 낮으면 활성화도 줄 수 있습니다.'},
   {id:'s-warfarin', enzyme:'CYP2C9', drug:'S-warfarin', page:16, note:'16·39쪽에서 CYP2C9와 연결됩니다. R-warfarin과 구별하세요.'},
-  {id:'ibuprofen', enzyme:'CYP2C9', drug:'ibuprofen', page:39, note:'39쪽 CYP2C9 기질 표에서 푸른 글씨로 강조됩니다.'},
+  {id:'ibuprofen', enzyme:'CYP2C9', drug:'ibuprofen', page:39, note:'CYP2C9의 probe drug으로 제시됩니다.'},
   {id:'codeine', enzyme:'CYP2D6', drug:'codeine', page:16, note:'CYP2D6를 통한 morphine 활성화가 연결되는 사례입니다.'},
-  {id:'midazolam', enzyme:'CYP3A4', drug:'midazolam', page:16, note:'16쪽 CYP3A4 행에서 푸른 글씨로 표시됩니다.'},
-  {id:'alfentanil', enzyme:'CYP3A4', drug:'alfentanil', page:16, note:'16쪽 CYP3A4 행에서 푸른 글씨로 표시됩니다.'}
+  {id:'midazolam', enzyme:'CYP3A4', drug:'midazolam', page:16, note:'CYP3A4의 probe drug으로 제시됩니다.'},
+  {id:'alfentanil', enzyme:'CYP3A4', drug:'alfentanil', page:16, note:'CYP3A4의 probe drug으로 제시됩니다.'}
 ];
 export const CYP_ENZYMES = [...new Set(CYP_FACTS.map(f=>f.enzyme))];
 const SYMBOLS=['①','②','③','④','⑤'];
@@ -38,7 +38,7 @@ export function makeCypQuestion(fact,direction,random=Math.random){
   }
   const answer=reverse?fact.drug:fact.enzyme;
   return {fact,direction,choices,answer,stem:reverse
-    ? `${fact.enzyme}와 대응하는 푸른 글씨 약물은?`
+    ? `${fact.enzyme}의 probe drug은?`
     : `${fact.drug}과 대응하는 CYP 효소는?`};
 }
 
