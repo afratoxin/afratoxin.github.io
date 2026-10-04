@@ -1,10 +1,12 @@
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
 import {initCypQuiz} from './cyp.mjs';
+import {initAnsQuiz} from './ans9.mjs';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const numbers=['①','②','③','④','⑤'];
 const cyp=initCypQuiz();
+const ans=initAnsQuiz();
 const STORAGE='pharmacology-exam-2026-v1';
 let data=null,year='all',section='all',current=null,shown=null,answered=false,selected=new Set(),session=0,mode='quiz';
 let progress={seen:{},correct:{},missed:{},recent:[]};
@@ -19,17 +21,13 @@ function label(unit){
   return `${unit.startsWith('★')?'과거 편제':unit+'강'} ${data.titles[unit]||unit}${suffix}`;
 }
 function show(view){
-  for(const name of ['home','cyp','drag','table','menu','practice','review'])$(name+'View').hidden=(view!==name);
+  for(const name of ['home','cyp','drag','table','ans','menu','practice','review'])$(name+'View').hidden=(view!==name);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
   $('archiveNotice').hidden=!archive;
-  for(const button of document.querySelectorAll('[data-hub]')){
-    const active=button.dataset.hub===(archive?'menu':view);
-    button.classList.toggle('active',active);
-    if(active)button.setAttribute('aria-current','page');
-    else button.removeAttribute('aria-current');
-  }
+  $('hubBack').hidden=view==='home';
   cyp.open(view);
+  if(view==='ans')ans.open();
   window.scrollTo({top:0,behavior:'instant'});
 }
 function stats(){
@@ -177,9 +175,10 @@ $('allUnit').addEventListener('click',()=>startPractice('all'));
 $('wrongUnit').addEventListener('click',()=>startPractice('wrong'));
 $('reviewAll').addEventListener('click',()=>startReview('all'));
 $('yearFilter').addEventListener('change',e=>{year=e.target.value;menu();});
-for(const button of document.querySelectorAll('[data-hub],[data-open]')){
-  button.addEventListener('click',()=>{mode='menu';show(button.dataset.hub||button.dataset.open);});
+for(const button of document.querySelectorAll('[data-open]')){
+  button.addEventListener('click',()=>{mode='menu';show(button.dataset.open);});
 }
+$('hubBack').addEventListener('click',()=>{mode='menu';show('home');});
 
 try{
   const response=await fetch('questions.json',{cache:'no-store'});
@@ -190,6 +189,6 @@ try{
   menu();
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
-  else if(['cyp','drag','table','archive'].includes(location.hash.slice(1)))
+  else if(['cyp','drag','table','ans','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}

@@ -19,10 +19,8 @@
 
 /* Lecture practice hub */
 [hidden]{display:none!important}
-.hub-nav{display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 22px}
-.hub-nav button{padding:10px 15px;border:1px solid #d5e4e7;border-radius:99px;background:#fff;color:#466273;font-size:12px;font-weight:850}
-.hub-nav button.active{background:#173f5f;border-color:#173f5f;color:#fff}
-.hub-nav button:focus-visible,.hub-card:focus-visible,.drug-chip:focus-visible,.drop-zone:focus-visible{outline:3px solid #54b4cf;outline-offset:3px}
+.topbar-actions{display:flex;align-items:center;gap:9px}
+.hub-card:focus-visible,.drug-chip:focus-visible,.drop-zone:focus-visible,.ans-tabs button:focus-visible,.topbar-actions button:focus-visible{outline:3px solid #54b4cf;outline-offset:3px}
 .hub-hero{padding:42px;border-radius:28px;color:#fff;background:linear-gradient(125deg,#173f5f 0%,#155a81 57%,#168fa9 100%);box-shadow:var(--shadow)}
 .hub-hero h1{margin:0;font-size:clamp(34px,5vw,54px);line-height:1.18;letter-spacing:-.06em}
 .hub-hero p:last-child{max-width:620px;color:#e5f4fc;font-size:14px;line-height:1.85;word-break:keep-all}
@@ -44,6 +42,17 @@
 .archive-card .hub-icon{background:#d9efe7;color:#126a55;font-size:14px}
 .cyp-card{min-height:126px;background:#fafdff}
 .cyp-card .hub-icon{font-size:14px}
+.ans-card{min-height:126px;background:linear-gradient(125deg,#fff 0%,#f4f6fd 100%)}
+.ans-card .hub-icon{background:#e9eafd;color:#46548e;font-size:14px}
+.ans-view .section-head{margin-top:23px}
+.ans-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 15px}
+.ans-tabs button{padding:11px 17px;border:1px solid #d7e3ed;border-radius:11px;background:#fff;color:#506579;font-size:13px;font-weight:850}
+.ans-tabs button.active{background:#173f5f;border-color:#173f5f;color:#fff}
+.ans-layout{display:grid;grid-template-columns:minmax(0,1fr) 255px;gap:16px;align-items:start}
+.ans-layout .question-card h2{color:#174b6b}
+.ans-layout .side-card{background:#f7f9fd}
+.ans-explanations{padding-left:21px;margin:13px 0 0;display:grid;gap:6px;color:inherit}
+.ans-explanations li{padding-left:2px;line-height:1.65}
 .cyp-links{display:flex;flex-wrap:wrap;gap:7px}
 .cyp-view .section-head{margin-top:23px}
 .cyp-intro{margin:0 0 17px;color:#536d7b;font-size:13px;line-height:1.75;word-break:keep-all}
@@ -72,5 +81,5 @@
 .memory-table td:last-child{white-space:nowrap;color:#657e88}
 .memory-table tbody tr:nth-child(even){background:#f8fbfd}
 .cyp-footnote{color:#657784;font-size:12px;line-height:1.7}
-@media(max-width:800px){.cyp-layout{grid-template-columns:1fr}}
-@media(max-width:550px){.hub-hero{padding:30px 23px}.hub-nav{gap:6px}.hub-nav button{padding:8px 10px;font-size:11px}.hub-group{padding:13px}.hub-group-head{display:block}.hub-group-head p{margin-top:3px}.hub-card{padding:18px;gap:10px;grid-template-columns:44px minmax(0,1fr) auto}.hub-icon{width:43px;height:43px}.hub-card strong{font-size:16px}.match-board{grid-template-columns:1fr}.match-column{padding:16px}}
+@media(max-width:800px){.cyp-layout,.ans-layout{grid-template-columns:1fr}}
+@media(max-width:550px){.hub-hero{padding:30px 23px}.topbar-actions .back-button{padding:7px 9px;font-size:11px}.hub-group{padding:13px}.hub-group-head{display:block}.hub-group-head p{margin-top:3px}.hub-card{padding:18px;gap:10px;grid-template-columns:44px minmax(0,1fr) auto}.hub-icon{width:43px;height:43px}.hub-card strong{font-size:16px}.match-board{grid-template-columns:1fr}.match-column{padding:16px}.ans-tabs button{flex:1;padding:9px 7px;font-size:11px}}
