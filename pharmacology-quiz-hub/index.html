@@ -28,7 +28,7 @@
     <div class="notice"><strong>2026 편제 확인</strong> 과거 11–15강은 2026년 9–13강, 과거 9–10강은 14–15강으로 이동했습니다. 과거 29강은 올해 강의 주제가 바뀌었습니다. 이 사이트는 족보 원문 분류를 유지하며 현재 강의번호를 함께 표시합니다.</div>
 
     <section id="menuView">
-      <div class="section-head"><div><p class="eyebrow dark">PRACTICE MAP</p><h2>강의 선택</h2></div><p>단원별 진행도는 카드 안에 표시됩니다.</p></div>
+      <div class="section-head"><div><p class="eyebrow dark">PRACTICE MAP</p><h2>강의 선택</h2></div><p>단원별 정답·오답·미풀이 비율은 카드 안에 표시됩니다. 기준은 각 문항의 마지막 풀이입니다.</p></div>
       <div class="toolrow"><label for="yearFilter">출제 연도</label><select id="yearFilter"><option value="all">전체 연도</option></select><button id="allUnit" class="all-button" type="button">전체 범위 풀기 <span aria-hidden="true">→</span></button></div>
       <div id="unitGroups" class="groups"></div>
       <div class="review-entry"><div><strong>원문 확인 목록</strong><p>그림·선지·답안이 불완전한 문항은 채점하지 않습니다. 강의·연도·번호를 보고 소지한 족보와 대조하세요.</p></div><button id="reviewAll" type="button">확인 목록 열기 →</button></div>
@@ -41,6 +41,7 @@
           <div class="q-meta"><span id="sourceTag" class="badge"></span><span id="sessionTag" class="q-count"></span></div>
           <h2 id="questionStem"></h2>
           <figure class="exam-figure" id="questionFigure" hidden><a id="figureLink" target="_blank" rel="noopener" aria-label="문항 그림 크게 보기"><img id="figureImage" alt="족보 문항에 포함된 그림"></a><figcaption>족보 원본 그림 · 누르면 확대됩니다</figcaption></figure>
+          <div class="question-result" aria-label="이 문항의 내 학습 기록"><div id="questionResultBar" class="question-result-bar" role="img"></div><small id="questionResultText"></small></div>
           <div id="choiceList" class="options"></div>
           <div id="answerActions" class="answer-actions"><button id="checkButton" class="primary" type="button">정답 확인</button><span>숫자 1–5 · Enter로 채점/다음</span></div>
           <div id="feedback" class="feedback" hidden></div>
