@@ -11,6 +11,7 @@ try{const saved=JSON.parse(localStorage.getItem(STORAGE)||'null');if(saved&&save
 function save(){try{localStorage.setItem(STORAGE,JSON.stringify(progress));}catch{}}
 function label(unit){
   if(unit==='all')return '전체 범위';
+  if(unit==='wrong')return '오답 다시 풀기';
   const currentNo=data.currentNumbers[unit];
   const suffix=currentNo?` · 2026 ${currentNo}강`:'';
   return `${unit.startsWith('★')?'과거 편제':unit+'강'} ${data.titles[unit]||unit}${suffix}`;
@@ -25,6 +26,10 @@ function stats(){
   $('statQuiz').textContent=qs.filter(q=>q.status==='quiz').length;
   $('statReview').textContent=qs.filter(q=>q.status==='review').length;
   $('statDone').textContent=Object.keys(progress.seen).length;
+}
+function practicePool(unit=section){
+  const pool=visibleQuestions(data.questions,unit==='wrong'?'all':unit,year,'quiz');
+  return unit==='wrong'?pool.filter(q=>(progress.missed[q.id]||0)>0):pool;
 }
 function resultCounts(pool){
   const result={correct:0,wrong:0,unanswered:0};
@@ -58,6 +63,10 @@ function questionResult(){
 }
 function menu(){
   stats();
+  const wrong=practicePool('wrong').length;
+  $('wrongCount').textContent=wrong;
+  $('wrongUnit').disabled=!wrong;
+  $('wrongEmpty').hidden=!!wrong;
   const root=$('unitGroups');root.replaceChildren();
   for(const [title,units] of data.groups){
     const group=document.createElement('section');group.className='unit-group';
@@ -82,7 +91,7 @@ function startPractice(unit){
   show('practice');nextQuestion();
 }
 function nextQuestion(){
-  const pool=visibleQuestions(data.questions,section,year,'quiz');
+  const pool=practicePool();
   if(!pool.length){$('questionCard').innerHTML='<div class="empty">이 범위에는 채점 가능한 문제가 없습니다.</div>';return;}
   current=chooseQuestion(pool,progress.seen,progress.recent);
   shown=shuffleChoices(current);answered=false;selected=new Set();session++;
@@ -118,7 +127,7 @@ function check(){
   if(good)progress.correct[current.id]=(progress.correct[current.id]||0)+1;
   else progress.missed[current.id]=(progress.missed[current.id]||0)+1;
   (progress.lastResult??={})[current.id]=good?'correct':'wrong';
-  progress.recent=[current.id,...progress.recent.filter(id=>id!==current.id)].slice(0,Math.min(8,Math.max(1,visibleQuestions(data.questions,section,year,'quiz').length-1)));
+  progress.recent=[current.id,...progress.recent.filter(id=>id!==current.id)].slice(0,Math.min(8,Math.max(1,practicePool().length-1)));
   save();stats();questionResult();
   for(const btn of $('choiceList').querySelectorAll('button')){
     const i=Number(btn.dataset.choice);btn.disabled=true;
@@ -128,6 +137,7 @@ function check(){
   const correct=shown.answer.map(i=>`${numbers[i-1]} ${shown.choices[i-1]}`).join(' / ');
   const fb=$('feedback');fb.hidden=false;fb.className='feedback '+(good?'ok':'bad');
   fb.innerHTML=`<strong>${good?'정답입니다.':'다시 확인할 문항입니다.'}</strong><p>족보 답안표: ${esc(correct)}</p><p>학생 복원 문제와 답안이므로, 설명과 현행 강의록 내용은 직접 대조해 주세요. 출처: ${current.year}년 ${esc(data.titles[current.section])}, 족보 ${current.page}쪽.</p>`;
+  if(current.answerNote)fb.innerHTML+=`<p class="answer-note">${esc(current.answerNote)}</p>`;
   $('answerActions').hidden=true;$('nextButton').hidden=false;
 }
 function startReview(unit){
@@ -152,6 +162,7 @@ $('checkButton').addEventListener('click',check);
 $('nextButton').addEventListener('click',nextQuestion);
 for(const id of ['backButton','reviewBack'])$(id).addEventListener('click',()=>{mode='menu';menu();show('menu');});
 $('allUnit').addEventListener('click',()=>startPractice('all'));
+$('wrongUnit').addEventListener('click',()=>startPractice('wrong'));
 $('reviewAll').addEventListener('click',()=>startReview('all'));
 $('yearFilter').addEventListener('change',e=>{year=e.target.value;menu();});
 
