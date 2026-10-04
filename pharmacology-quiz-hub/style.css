@@ -62,6 +62,11 @@
 .cyp-layout .side-card strong{line-height:1.6}
 .cyp-layout .options button.selected{border-color:#1689b2;background:#edf8fc}
 .cyp-layout .badge{background:#e7f4fc;color:#176688}
+.ddi-rule-card strong{padding:10px 12px;margin:9px 0;border-radius:10px;font-size:14px}
+.ddi-rule-card strong:first-of-type{background:#fff0f1;color:#9a3744}
+.ddi-rule-card strong:nth-of-type(2){background:#edf5fc;color:#245f89}
+.ddi-explanations{display:grid;gap:5px;padding-left:20px;margin:12px 0 0}
+.ddi-explanations li{line-height:1.55}
 .match-board{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .match-column{padding:20px;border:1px solid #dce8ec;border-radius:18px;background:#fff}
 .match-column h3{margin:0 0 15px;color:#174b6b;font-size:15px}

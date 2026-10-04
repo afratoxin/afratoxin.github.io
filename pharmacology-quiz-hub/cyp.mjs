@@ -189,7 +189,7 @@ export function initCypQuiz(){
   $('cypNext').addEventListener('click',nextQuestion);
   $('dragNext').addEventListener('click',newBoard);
   document.addEventListener('keydown',event=>{
-    if($('cypView').hidden||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
+    if($('cypView').hidden||$('cypProbePanel').hidden||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answerQuestion(Number(event.key)-1);}
     if(event.key==='Enter'&&answered){event.preventDefault();nextQuestion();}
   });

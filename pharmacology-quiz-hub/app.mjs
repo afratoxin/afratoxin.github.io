@@ -1,11 +1,13 @@
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
-import {initCypQuiz} from './cyp.mjs?v=20261005-1';
+import {initCypQuiz} from './cyp.mjs?v=20261005-2';
+import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261005-2';
 import {initAnsQuiz} from './ans9.mjs';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const numbers=['①','②','③','④','⑤'];
 const cyp=initCypQuiz();
+const cyp3a45=initCyp3a45Quiz();
 const ans=initAnsQuiz();
 const STORAGE='pharmacology-exam-2026-v1';
 let data=null,year='all',section='all',current=null,shown=null,answered=false,selected=new Set(),session=0,mode='quiz';
@@ -27,6 +29,7 @@ function show(view){
   $('archiveNotice').hidden=!archive;
   $('hubBack').hidden=view==='home';
   cyp.open(view);
+  cyp3a45.open(view);
   if(view==='ans')ans.open();
   window.scrollTo({top:0,behavior:'instant'});
 }
