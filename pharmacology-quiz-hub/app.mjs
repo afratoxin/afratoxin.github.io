@@ -26,6 +26,36 @@ function stats(){
   $('statReview').textContent=qs.filter(q=>q.status==='review').length;
   $('statDone').textContent=Object.keys(progress.seen).length;
 }
+function resultCounts(pool){
+  const result={correct:0,wrong:0,unanswered:0};
+  for(const q of pool){
+    if(!progress.seen[q.id])result.unanswered++;
+    else if(progress.lastResult?.[q.id]==='wrong')result.wrong++;
+    else if(progress.lastResult?.[q.id]==='correct')result.correct++;
+    else if((progress.missed[q.id]||0)>=(progress.seen[q.id]||0))result.wrong++;
+    else result.correct++;
+  }
+  return result;
+}
+function resultLabel(counts){
+  const n=counts.correct+counts.wrong+counts.unanswered;
+  return `정답 ${counts.correct}/${n} · 오답 ${counts.wrong}/${n} · 미풀이 ${counts.unanswered}/${n}`;
+}
+function paintResult(element,counts){
+  const n=counts.correct+counts.wrong+counts.unanswered;
+  const ok=n?counts.correct/n*100:0,bad=n?counts.wrong/n*100:0;
+  element.style.setProperty('--correct-end',ok+'%');
+  element.style.setProperty('--wrong-end',(ok+bad)+'%');
+  element.setAttribute('aria-label',resultLabel(counts));
+  element.title=resultLabel(counts);
+}
+function questionResult(){
+  const counts=resultCounts([current]);
+  paintResult($('questionResultBar'),counts);
+  $('questionResultText').textContent=progress.seen[current.id]
+    ? `이 문항: 마지막 풀이 ${counts.correct?'정답':'오답'} · 누적 정답 ${progress.correct[current.id]||0}회 / 오답 ${progress.missed[current.id]||0}회`
+    : '이 문항: 아직 풀지 않음';
+}
 function menu(){
   stats();
   const root=$('unitGroups');root.replaceChildren();
@@ -37,10 +67,10 @@ function menu(){
       const pool=visibleQuestions(data.questions,u,year,'quiz');
       const flagged=visibleQuestions(data.questions,u,year,'review').length;
       if(!pool.length&&!flagged)continue;
-      const solved=pool.filter(q=>progress.correct[q.id]).length;
-      const percentage=pool.length?Math.round(solved/pool.length*100):0;
+      const counts=resultCounts(pool);
       const card=document.createElement('button');card.type='button';card.className='unit-card';
-      card.innerHTML=`<span class="fill" style="width:${percentage}%"></span><span class="icon">${esc(u.startsWith('★')?'OLD':u)}</span><span><strong>${esc(data.titles[u])}</strong><small>${pool.length}문항 · 완료 ${solved} · 확인 ${flagged}${data.currentNumbers[u]?' · 현재 '+esc(data.currentNumbers[u])+'강':''}</small></span><span class="arrow">→</span>`;
+      card.innerHTML=`<span class="result-fill" aria-hidden="true"></span><span class="icon">${esc(u.startsWith('★')?'OLD':u)}</span><span><strong>${esc(data.titles[u])}</strong><small>${pool.length}문항 · 정답 ${counts.correct} · 오답 ${counts.wrong} · 미풀이 ${counts.unanswered} · 확인 ${flagged}${data.currentNumbers[u]?' · 현재 '+esc(data.currentNumbers[u])+'강':''}</small></span><span class="arrow">→</span>`;
+      paintResult(card.querySelector('.result-fill'),counts);
       card.addEventListener('click',()=>pool.length?startPractice(u):startReview(u));grid.append(card);
     }
     if(grid.childElementCount)root.append(group);
@@ -59,6 +89,7 @@ function nextQuestion(){
   $('sourceTag').textContent=`${current.year} · ${current.page}쪽 · ${current.number}번`;
   $('sessionTag').textContent=`이번 회독 ${session}문제`;
   $('questionStem').textContent=current.stem;
+  questionResult();
   const figure=$('questionFigure');figure.hidden=!current.figure;
   if(current.figure){$('figureLink').href=current.figure;$('figureImage').src=current.figure;
     $('figureImage').alt=`${current.year}년 ${current.number}번 족보 그림`;}
@@ -86,8 +117,9 @@ function check(){
   progress.seen[current.id]=(progress.seen[current.id]||0)+1;
   if(good)progress.correct[current.id]=(progress.correct[current.id]||0)+1;
   else progress.missed[current.id]=(progress.missed[current.id]||0)+1;
+  (progress.lastResult??={})[current.id]=good?'correct':'wrong';
   progress.recent=[current.id,...progress.recent.filter(id=>id!==current.id)].slice(0,Math.min(8,Math.max(1,visibleQuestions(data.questions,section,year,'quiz').length-1)));
-  save();stats();
+  save();stats();questionResult();
   for(const btn of $('choiceList').querySelectorAll('button')){
     const i=Number(btn.dataset.choice);btn.disabled=true;
     if(shown.answer.includes(i))btn.classList.add('correct');
