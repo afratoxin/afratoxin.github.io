@@ -29,8 +29,8 @@
 
     <section id="menuView">
       <div class="section-head"><div><p class="eyebrow dark">PRACTICE MAP</p><h2>강의 선택</h2></div><p>단원별 정답·오답·미풀이 비율은 카드 안에 표시됩니다. 기준은 각 문항의 마지막 풀이입니다.</p></div>
-      <div class="toolrow"><label for="yearFilter">출제 연도</label><select id="yearFilter"><option value="all">전체 연도</option></select><button id="allUnit" class="all-button" type="button">전체 범위 풀기 <span aria-hidden="true">→</span></button></div>
-      <div id="unitGroups" class="groups"></div>
+      <div class="toolrow"><label for="yearFilter">출제 연도</label><select id="yearFilter"><option value="all">전체 연도</option></select><button id="wrongUnit" class="wrong-button" type="button">오답 다시 풀기 <span id="wrongCount">0</span></button><button id="allUnit" class="all-button" type="button">전체 범위 풀기 <span aria-hidden="true">→</span></button></div>
+      <p id="wrongEmpty" class="wrong-empty" hidden>현재 선택한 연도에 기록된 오답이 없습니다. 문제를 풀다가 틀린 문항이 이 탭에 모입니다.</p><div id="unitGroups" class="groups"></div>
       <div class="review-entry"><div><strong>원문 확인 목록</strong><p>그림·선지·답안이 불완전한 문항은 채점하지 않습니다. 강의·연도·번호를 보고 소지한 족보와 대조하세요.</p></div><button id="reviewAll" type="button">확인 목록 열기 →</button></div>
     </section>
 
