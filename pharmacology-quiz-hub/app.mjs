@@ -1,5 +1,5 @@
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
-import {initCypQuiz} from './cyp.mjs';
+import {initCypQuiz} from './cyp.mjs?v=20261005-1';
 import {initAnsQuiz} from './ans9.mjs';
 
 const $=id=>document.getElementById(id);
