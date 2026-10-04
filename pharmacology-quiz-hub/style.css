@@ -9,3 +9,10 @@
 .question-result{display:grid;gap:6px;margin:-5px 0 18px}
 .question-result-bar{height:9px;border-radius:99px;background:linear-gradient(90deg,#15946b 0 var(--correct-end),#c35360 var(--correct-end) var(--wrong-end),#c8d3d8 var(--wrong-end) 100%)}
 .question-result small{color:var(--muted);font-size:11px;font-weight:750}
+
+.wrong-button{padding:10px 16px;border:1px solid #d8a1a7;border-radius:11px;background:#fff5f4;color:#9b3b4b;font-size:12px;font-weight:850}
+.wrong-button span{display:inline-grid;place-items:center;min-width:20px;padding:0 5px;margin-left:4px;border-radius:99px;background:#fbe1e3}
+.wrong-button:disabled{opacity:.55;cursor:not-allowed}
+.wrong-empty{margin:-8px 0 16px;color:var(--muted);font-size:12px}
+.answer-note{padding-top:8px;border-top:1px solid currentColor}
+@media(max-width:550px){.wrong-button{order:2}.all-button{order:3;margin-left:auto}}
