@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#173f5f">
-  <meta name="description" content="약물의 이해 2026 족보를 강의별 오지선다로 복습하는 페이지">
-  <title>약물의 이해 · 족보 단원별 회독</title>
+  <meta name="description" content="약물대사 CYP probe drug 대응 퀴즈와 약물의 이해 족보 회독">
+  <title>약물의 이해 · 퀴즈 허브</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +14,20 @@
       <a href="./" class="brand"><span class="brand-mark">Rx</span><span>약물의 이해 <small>PHARMACOLOGY QUIZ HUB</small></span></a>
       <span class="save-note">학습 기록은 이 브라우저에 저장됩니다</span>
     </header>
-    <section class="hero">
+    <nav class="hub-nav" aria-label="학습 메뉴"><button type="button" data-hub="home">홈</button><button type="button" data-hub="cyp">CYP 대응 퀴즈</button><button type="button" data-hub="drag">드래그 매칭</button><button type="button" data-hub="table">전체 암기표</button><button type="button" data-hub="menu">족보</button></nav>
+    <section id="homeView">
+      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>외울 때까지,<br>계속 맞춰보기.</h1><p>강의록의 푸른 글씨 CYP–약물 대응을 문제로 풀고, 매칭하고, 암기표로 복습하세요. 족보는 별도 메뉴에서 이어서 풀 수 있습니다.</p></div>
+      <div class="hub-grid">
+        <button type="button" data-open="cyp" class="hub-card"><span class="hub-icon">01</span><span><strong>CYP 대응 무한 퀴즈</strong><small>효소 ↔ 약물 양방향 · 오답 우선 복습 · 5지선다</small></span><b>→</b></button>
+        <button type="button" data-open="drag" class="hub-card"><span class="hub-icon">02</span><span><strong>드래그 앤 드롭 매칭</strong><small>약물 카드를 효소 칸에 끌어놓기 · 터치 선택 가능</small></span><b>→</b></button>
+        <button type="button" data-open="table" class="hub-card"><span class="hub-icon">03</span><span><strong>전체 암기표</strong><small>강의록에서 푸른 글씨로 표시된 10가지 대응</small></span><b>→</b></button>
+        <button type="button" data-open="menu" class="hub-card archive-card"><span class="hub-icon">04</span><span><strong>족보 문제집</strong><small>강의별 풀이 · 오답 다시 풀기 · 원문 확인</small></span><b>→</b></button>
+      </div>
+    </section>
+    <section id="cypView" class="cyp-view" hidden><div class="section-head"><div><p class="eyebrow dark">DRUG METABOLISM · CYP</p><h2>Probe drug 대응 무한 퀴즈</h2></div><p>강의록의 푸른 글씨 중심 · 키보드 1–5 / Enter</p></div><p class="cyp-intro">약물을 보고 CYP를, CYP를 보고 약물을 찾습니다. 덜 풀고 틀렸던 대응이 다시 나오며, 보기는 매번 섞입니다.</p><div class="cyp-layout"><article class="question-card"><div class="q-meta"><span class="badge">2026 약물대사 강의</span><span id="cypProgress" class="q-count"></span></div><h2 id="cypStem"></h2><div id="cypChoices" class="options"></div><div id="cypFeedback" class="feedback" hidden></div><button id="cypNext" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">회독 기록</span><strong id="cypStats"></strong><p>같은 효소와 약물을 양방향으로 기억해 보세요. 강의록 16·36·39쪽 기준입니다.</p><button type="button" class="source-button" data-open="table">전체 암기표 열기 →</button></aside></div></section>
+    <section id="dragView" class="cyp-view" hidden><div class="section-head"><div><p class="eyebrow dark">MATCH & RECALL</p><h2>CYP ↔ 약물 드래그 매칭</h2></div><p>약물을 끌어 효소 칸에 놓거나, 두 항목을 차례로 누르세요.</p></div><p class="cyp-intro">한 판에 효소 5종과 약물 5개가 나옵니다. 바로 맞는지 확인하고, 틀리면 다시 시도할 수 있습니다.</p><div class="match-board"><div class="match-column"><h3>약물 카드</h3><div id="dragCards" class="drag-cards"></div></div><div class="match-column"><h3>CYP 효소</h3><div id="dropZones" class="drop-zones"></div></div></div><div id="dragStatus" class="match-status" role="status"></div><button id="dragNext" class="primary" type="button" hidden>새 조합 풀기 →</button></section>
+    <section id="tableView" class="cyp-view" hidden><div class="section-head"><div><p class="eyebrow dark">BLUE TEXT · LECTURE NOTES</p><h2>전체 CYP 암기표</h2></div><p>푸른 글씨 약물 10개 · 강의록 16·36·39쪽</p></div><p class="cyp-intro">강의록에 표시된 대응을 모두 모았습니다. CYP2E1은 표에 기질이 있지만 푸른 글씨 probe drug이 지정되어 있지 않아 문제 범위에서 제외했습니다.</p><div class="memory-table-wrap"><table class="memory-table"><thead><tr><th scope="col">CYP</th><th scope="col">푸른 글씨 약물</th><th scope="col">연결해서 기억할 점</th><th scope="col">강의록</th></tr></thead><tbody id="cypTableBody"></tbody></table></div><p class="cyp-footnote">* Clopidogrel은 CYP2C19가 활성화에 관여하는 전구약물입니다. 다른 기질과 농도 변화 방향을 똑같이 외우지 마세요.</p><button type="button" class="primary" data-open="cyp">퀴즈로 확인하기 →</button></section>
+    <section class="hero" id="archiveHero" hidden>
       <div class="hero-main">
         <p class="eyebrow">2026 ARCHIVE · ACTIVE RECALL</p>
         <h1>족보를 단원별로,<br>근거를 확인하며.</h1>
@@ -25,9 +38,9 @@
         <div><b id="statReview">–</b><span>원문 확인 필요</span></div><div><b id="statDone">–</b><span>풀이한 문항</span></div>
       </div>
     </section>
-    <div class="notice"><strong>2026 편제 확인</strong> 과거 11–15강은 2026년 9–13강, 과거 9–10강은 14–15강으로 이동했습니다. 과거 29강은 올해 강의 주제가 바뀌었습니다. 이 사이트는 족보 원문 분류를 유지하며 현재 강의번호를 함께 표시합니다.</div>
+    <div class="notice" id="archiveNotice" hidden><strong>2026 편제 확인</strong> 과거 11–15강은 2026년 9–13강, 과거 9–10강은 14–15강으로 이동했습니다. 과거 29강은 올해 강의 주제가 바뀌었습니다. 이 사이트는 족보 원문 분류를 유지하며 현재 강의번호를 함께 표시합니다.</div>
 
-    <section id="menuView">
+    <section id="menuView" hidden>
       <div class="section-head"><div><p class="eyebrow dark">PRACTICE MAP</p><h2>강의 선택</h2></div><p>단원별 정답·오답·미풀이 비율은 카드 안에 표시됩니다. 기준은 각 문항의 마지막 풀이입니다.</p></div>
       <div class="toolrow"><label for="yearFilter">출제 연도</label><select id="yearFilter"><option value="all">전체 연도</option></select><button id="wrongUnit" class="wrong-button" type="button">오답 다시 풀기 <span id="wrongCount">0</span></button><button id="allUnit" class="all-button" type="button">전체 범위 풀기 <span aria-hidden="true">→</span></button></div>
       <p id="wrongEmpty" class="wrong-empty" hidden>현재 선택한 연도에 기록된 오답이 없습니다. 문제를 풀다가 틀린 문항이 이 탭에 모입니다.</p><div id="unitGroups" class="groups"></div>
@@ -51,7 +64,7 @@
     </section>
 
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
-    <footer><span>자료: 2026 「약물의 이해」 족보 및 2025 Om 정리본 · 학습용 학생 복원 자료</span><span>마지막 확인: 2026-10-01</span></footer>
+    <footer><span>자료: 2026 약물대사 강의록 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>강의록 확인: 2026-10-04</span></footer>
   </main>
   <script type="module" src="app.mjs"></script>
 </body>
