@@ -3,6 +3,7 @@ import {initCypQuiz} from './cyp.mjs?v=20261005-4';
 import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261005-2';
 import {initAnsQuiz} from './ans9.mjs';
 import {initCholQuiz} from './chol10.mjs?v=20261005-4';
+import {initChol11Quiz} from './chol11.mjs?v=20261005-5';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -11,6 +12,7 @@ const cyp=initCypQuiz();
 const cyp3a45=initCyp3a45Quiz();
 const ans=initAnsQuiz();
 const chol=initCholQuiz();
+const chol11=initChol11Quiz();
 const STORAGE='pharmacology-exam-2026-v1';
 let data=null,year='all',section='all',current=null,shown=null,answered=false,selected=new Set(),session=0,mode='quiz';
 let progress={seen:{},correct:{},missed:{},recent:[]};
@@ -25,7 +27,7 @@ function label(unit){
   return `${unit.startsWith('★')?'과거 편제':unit+'강'} ${data.titles[unit]||unit}${suffix}`;
 }
 function show(view){
-  for(const name of ['home','cyp','drag','table','ans','chol','menu','practice','review'])$(name+'View').hidden=(view!==name);
+  for(const name of ['home','cyp','drag','table','ans','chol','chol11','menu','practice','review'])$(name+'View').hidden=(view!==name);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
   $('archiveNotice').hidden=!archive;
@@ -34,6 +36,7 @@ function show(view){
   cyp3a45.open(view);
   if(view==='ans')ans.open();
   if(view==='chol')chol.open();
+  if(view==='chol11')chol11.open();
   window.scrollTo({top:0,behavior:'instant'});
 }
 function stats(){
@@ -195,6 +198,6 @@ try{
   menu();
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
-  else if(['cyp','drag','table','ans','chol','archive'].includes(location.hash.slice(1)))
+  else if(['cyp','drag','table','ans','chol','chol11','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}
