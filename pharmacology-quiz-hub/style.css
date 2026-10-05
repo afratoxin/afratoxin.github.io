@@ -73,10 +73,12 @@
 .drag-cards,.drop-zones{display:grid;gap:10px}
 .drug-chip,.drop-zone{min-height:57px;width:100%;padding:12px 15px;border:1px solid #bfdbe7;border-radius:12px;background:#f5fbfd;color:#164d6c;font-size:14px;font-weight:800;text-align:left}
 .drug-chip{cursor:grab}
+.drug-chip.placed{background:#e8f2ff;border-color:#81abce}
 .drug-chip.selected,.drop-zone.over{background:#d7f0fb;border-color:#168fba}
 .drug-chip.matched,.drop-zone.matched{background:#eaf7ef;border-color:#7bbba2;color:#176949;cursor:default}
-.drop-zone.mismatch{background:#fff0f2;border-color:#d78996}
-.match-status{min-height:42px;margin:15px 0;color:#236685;font-size:13px;font-weight:800}
+.drop-zone.mismatch,.drug-chip.mismatch{background:#fff0f2;border-color:#d78996;color:#994659}
+.drop-zone{white-space:pre-line;line-height:1.55;cursor:pointer}
+.match-status{min-height:42px;margin:15px 0;color:#236685;font-size:13px;font-weight:800;white-space:pre-line;line-height:1.85}
 .memory-table-wrap{overflow-x:auto;border:1px solid #dbe7ee;border-radius:16px;background:#fff}
 .memory-table{width:100%;border-collapse:collapse;font-size:13px}
 .memory-table th{padding:15px;background:#e8f4fa;color:#155477;text-align:left;white-space:nowrap}

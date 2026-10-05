@@ -62,7 +62,7 @@ export function initCypQuiz(){
     if(saved&&typeof saved==='object') progress={...progress,...saved,seen:saved.seen||{},missed:saved.missed||{}};
   }catch{}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(progress));}catch{}};
-  let current=null,answered=false,quizCount=0,board=[],matched=new Set(),selectedId=null;
+  let current=null,answered=false,quizCount=0,board=[],placements=new Map(),selectedId=null,boardChecked=false;
   const factById=id=>CYP_FACTS.find(f=>f.id===id);
   const record=(fact,good)=>{
     progress.total++;
@@ -137,57 +137,68 @@ export function initCypQuiz(){
     feedback.hidden=false;$('cypNext').hidden=false;
   };
   const newBoard=()=>{
-    const enzymes=shuffle(CYP_ENZYMES).slice(0,5);
-    board=enzymes.map(enzyme=>{
-      const facts=CYP_FACTS.filter(f=>f.enzyme===enzyme);
-      const min=Math.min(...facts.map(f=>progress.seen[f.id]||0));
-      return shuffle(facts.filter(f=>(progress.seen[f.id]||0)===min))[0];
-    });
-    matched=new Set();selectedId=null;
-    $('dragNext').hidden=true;
-    $('dragStatus').textContent='약물 5개를 효소 칸에 맞춰 주세요. 터치에서는 약물을 먼저 선택하세요.';
+    board=shuffle(CYP_FACTS);placements=new Map();selectedId=null;boardChecked=false;
+    $('dragNext').hidden=true;$('dragCheck').hidden=false;$('dragCheck').disabled=true;
+    $('dragStatus').textContent='약물 10개를 모두 배치한 뒤 한 번에 채점하세요. 배치 전에는 정답이 표시되지 않습니다.';
     const cardHost=$('dragCards'),zoneHost=$('dropZones');
     cardHost.replaceChildren();zoneHost.replaceChildren();
-    for(const fact of shuffle(board)){
+    for(const fact of board){
       const button=document.createElement('button');button.type='button';button.className='drug-chip';
       button.draggable=true;button.dataset.factId=fact.id;button.textContent=fact.drug;
       button.addEventListener('dragstart',event=>{event.dataTransfer.setData('text/plain',fact.id);event.dataTransfer.effectAllowed='move';});
-      button.addEventListener('click',()=>{selectedId=fact.id;cardHost.querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b===button));$('dragStatus').textContent=`${fact.drug} 선택됨. 대응하는 효소를 누르세요.`;});
+      button.addEventListener('click',()=>{if(boardChecked)return;selectedId=fact.id;cardHost.querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b===button));$('dragStatus').textContent=`${fact.drug} 선택됨. 대응하는 효소를 누르세요.`;});
       cardHost.append(button);
     }
-    for(const fact of shuffle(board)){
+    for(const enzyme of shuffle(CYP_ENZYMES)){
       const zone=document.createElement('button');zone.type='button';zone.className='drop-zone';
-      zone.dataset.enzyme=fact.enzyme;zone.textContent=fact.enzyme;
+      zone.dataset.enzyme=enzyme;
       zone.addEventListener('dragover',event=>{event.preventDefault();zone.classList.add('over');});
       zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
-      zone.addEventListener('drop',event=>{event.preventDefault();zone.classList.remove('over');attempt(event.dataTransfer.getData('text/plain'),fact.enzyme);});
-      zone.addEventListener('click',()=>attempt(selectedId,fact.enzyme));
+      zone.addEventListener('drop',event=>{event.preventDefault();zone.classList.remove('over');place(event.dataTransfer.getData('text/plain'),enzyme);});
+      zone.addEventListener('click',()=>place(selectedId,enzyme));
       zoneHost.append(zone);
     }
+    renderBoard();
   };
-  const attempt=(id,enzyme)=>{
-    const fact=board.find(f=>f.id===id);
-    if(!fact||matched.has(id))return;
-    const zone=[...$('dropZones').children].find(z=>z.dataset.enzyme===enzyme);
-    if(zone.disabled)return;
-    if(fact.enzyme!==enzyme){
-      progress.missed[id]=(progress.missed[id]||0)+1;save();
-      $('dragStatus').textContent=`${fact.drug} ↔ ${enzyme}: 다시 시도하세요.`;
-      zone.classList.add('mismatch');setTimeout(()=>zone.classList.remove('mismatch'),650);
-      return;
+  const renderBoard=()=>{
+    for(const zone of $('dropZones').children){
+      const enzyme=zone.dataset.enzyme;
+      const drugs=board.filter(f=>placements.get(f.id)===enzyme).map(f=>f.drug);
+      zone.textContent=`${enzyme} · ${drugs.length}개${drugs.length?'\n'+drugs.join(' · '):''}`;
     }
-    matched.add(id);record(fact,true);
-    const chip=[...$('dragCards').children].find(c=>c.dataset.factId===id);
-    chip.disabled=true;chip.draggable=false;chip.classList.remove('selected');chip.classList.add('matched');
-    zone.disabled=true;zone.classList.add('matched');zone.textContent=`${enzyme} ✓ ${fact.drug}`;
-    selectedId=null;
-    $('dragStatus').textContent=matched.size===board.length
-      ?'5개 모두 정답입니다. 새 조합으로 다시 풀어보세요.'
-      :`정답: ${fact.enzyme} ↔ ${fact.drug} · ${matched.size}/${board.length}`;
-    if(matched.size===board.length){progress.boards++;save();$('dragNext').hidden=false;}
+    for(const chip of $('dragCards').children){
+      const enzyme=placements.get(chip.dataset.factId);
+      chip.classList.toggle('placed',Boolean(enzyme));
+      chip.title=enzyme?`현재 배치: ${enzyme}`:'배치되지 않음';
+    }
+    $('dragCheck').disabled=placements.size!==board.length;
+  };
+  const place=(id,enzyme)=>{
+    if(boardChecked)return;
+    const fact=board.find(f=>f.id===id);
+    if(!fact||!CYP_ENZYMES.includes(enzyme))return;
+    placements.set(id,enzyme);selectedId=null;
+    $('dragCards').querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
+    renderBoard();$('dragStatus').textContent=`${placements.size}/${board.length}개 배치했습니다. 카드를 다시 끌거나 눌러 옮길 수 있습니다.`;
+  };
+  const checkBoard=()=>{
+    if(boardChecked||placements.size!==board.length)return;
+    boardChecked=true;let correct=0;
+    const lines=[];
+    for(const fact of board){
+      const good=placements.get(fact.id)===fact.enzyme;
+      correct+=Number(good);record(fact,good);
+      const chip=[...$('dragCards').children].find(c=>c.dataset.factId===fact.id);
+      chip.classList.add(good?'matched':'mismatch');chip.draggable=false;
+      lines.push(`${good?'✓':'✗'} ${fact.drug}: ${placements.get(fact.id)} → ${fact.enzyme}`);
+    }
+    progress.boards++;save();
+    $('dragStatus').textContent=`한 번에 채점: ${correct}/${board.length}개 정답\n${lines.join('\n')}`;
+    $('dragCheck').hidden=true;$('dragNext').hidden=false;
   };
   $('cypNext').addEventListener('click',nextQuestion);
   $('dragNext').addEventListener('click',newBoard);
+  $('dragCheck').addEventListener('click',checkBoard);
   document.addEventListener('keydown',event=>{
     if($('cypView').hidden||$('cypProbePanel').hidden||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answerQuestion(Number(event.key)-1);}
