@@ -67,18 +67,32 @@
 .ddi-rule-card strong:nth-of-type(2){background:#edf5fc;color:#245f89}
 .ddi-explanations{display:grid;gap:5px;padding-left:20px;margin:12px 0 0}
 .ddi-explanations li{line-height:1.55}
-.match-board{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.match-column{padding:20px;border:1px solid #dce8ec;border-radius:18px;background:#fff}
-.match-column h3{margin:0 0 15px;color:#174b6b;font-size:15px}
-.drag-cards,.drop-zones{display:grid;gap:10px}
-.drug-chip,.drop-zone{min-height:57px;width:100%;padding:12px 15px;border:1px solid #bfdbe7;border-radius:12px;background:#f5fbfd;color:#164d6c;font-size:14px;font-weight:800;text-align:left}
-.drug-chip{cursor:grab}
+.match-board{display:flex;flex-direction:column;gap:12px}
+.match-column{padding:14px;border:1px solid #dce8ec;border-radius:18px;background:#fff}
+.match-column h3{display:flex;justify-content:space-between;gap:8px;margin:0 0 10px;color:#174b6b;font-size:15px}
+.pool-count{color:#48818f;font-size:12px}
+.match-pool{position:sticky;top:6px;z-index:4;box-shadow:0 7px 22px #163f5914}
+.match-pool.pool-over{background:#d7f0fb;border-color:#168fba}
+.match-pool small{display:block;margin-top:7px;color:#59788a;font-size:11px}
+.drag-cards{display:flex;flex-wrap:wrap;align-items:start;gap:6px;max-height:110px;overflow:auto}
+.drug-chip{min-height:32px;padding:5px 9px;border:1px solid #bfdbe7;border-radius:8px;background:#f5fbfd;color:#164d6c;font-size:12px;font-weight:750;cursor:grab;touch-action:manipulation;transition:transform .15s ease,background .15s ease}
+.drug-chip:active{transform:scale(.95)}
 .drug-chip.placed{background:#e8f2ff;border-color:#81abce}
 .drug-chip.selected,.drop-zone.over{background:#d7f0fb;border-color:#168fba}
-.drug-chip.matched,.drop-zone.matched{background:#eaf7ef;border-color:#7bbba2;color:#176949;cursor:default}
-.drop-zone.mismatch,.drug-chip.mismatch{background:#fff0f2;border-color:#d78996;color:#994659}
-.drop-zone{white-space:pre-line;line-height:1.55;cursor:pointer}
-.match-status{min-height:42px;margin:15px 0;color:#236685;font-size:13px;font-weight:800;white-space:pre-line;line-height:1.85}
+.drug-chip.matched{background:#eaf7ef;border-color:#7bbba2;color:#176949;cursor:default}
+.drug-chip.mismatch{background:#fff0f2;border-color:#d78996;color:#994659;cursor:default}
+.drop-zones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.drop-zone{min-width:0;min-height:75px;padding:9px;border:1px dashed #aacbdb;border-radius:11px;background:#f8fcfd;color:#164d6c;cursor:pointer;transition:background .15s ease,border-color .15s ease}
+.zone-label{display:block;margin-bottom:5px;color:#225a75;font-size:12px;line-height:1.3}
+.zone-chips{display:flex;flex-wrap:wrap;gap:4px;min-height:25px}
+.zone-chips:empty:before{content:'여기에 놓기';font-size:11px;color:#89a7b2}
+.match-actions{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid #dce8ec;border-radius:12px;background:#fffffff5;box-shadow:0 -6px 18px #163f5915}
+.match-status{flex:1 1 210px;margin:0;color:#236685;font-size:12px;font-weight:700;line-height:1.5}
+.match-actions .primary{min-height:36px}
+.match-details{margin-top:7px;font-weight:500;color:#265974}
+.match-details summary{cursor:pointer;font-weight:750}
+.match-details ul{max-height:180px;overflow:auto;margin:6px 0 0;padding-left:18px}
+.match-pool.graded{position:static}
 .memory-table-wrap{overflow-x:auto;border:1px solid #dbe7ee;border-radius:16px;background:#fff}
 .memory-table{width:100%;border-collapse:collapse;font-size:13px}
 .memory-table th{padding:15px;background:#e8f4fa;color:#155477;text-align:left;white-space:nowrap}
@@ -89,4 +103,4 @@
 .memory-table tbody tr:nth-child(even){background:#f8fbfd}
 .cyp-footnote{color:#657784;font-size:12px;line-height:1.7}
 @media(max-width:800px){.cyp-layout,.ans-layout{grid-template-columns:1fr}}
-@media(max-width:550px){.hub-hero{padding:30px 23px}.topbar-actions .back-button{padding:7px 9px;font-size:11px}.hub-group{padding:13px}.hub-group-head{display:block}.hub-group-head p{margin-top:3px}.hub-card{padding:18px;gap:10px;grid-template-columns:44px minmax(0,1fr) auto}.hub-icon{width:43px;height:43px}.hub-card strong{font-size:16px}.match-board{grid-template-columns:1fr}.match-column{padding:16px}.ans-tabs button{flex:1;padding:9px 7px;font-size:11px}}
+@media(max-width:550px){.hub-hero{padding:30px 23px}.topbar-actions .back-button{padding:7px 9px;font-size:11px}.hub-group{padding:13px}.hub-group-head{display:block}.hub-group-head p{margin-top:3px}.hub-card{padding:18px;gap:10px;grid-template-columns:44px minmax(0,1fr) auto}.hub-icon{width:43px;height:43px}.hub-card strong{font-size:16px}.match-column{padding:10px}.drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.drag-cards{max-height:90px}.zone-chips .drug-chip{font-size:11px}.match-pool small{display:none}.ans-tabs button{flex:1;padding:9px 7px;font-size:11px}}

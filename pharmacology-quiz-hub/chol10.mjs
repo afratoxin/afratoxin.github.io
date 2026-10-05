@@ -1,3 +1,4 @@
+import {createMatchBoard} from './match-board.mjs?v=20261005-4';
 // 2026 10강 콜린성 약리학 (1): 강의록 직접작용제·AChE 억제제 표와 사례.
 import {shuffle} from './cyp.mjs?v=20261005-3';
 const f=(id,group,correct,incorrect,note)=>({id,group,correct,incorrect,note});
@@ -67,7 +68,7 @@ export function initCholQuiz(){
   let state={seen:{},missed:{},total:0,right:0,recent:[],lastGroup:null,lastTarget:false,boards:0};
   try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.seen)state={...state,...saved};}catch{}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
-  let tab='quiz',current=null,answered=false,session=0,selected=null,placed=new Map(),checked=false,board=[];
+  let tab='quiz',current=null,answered=false,session=0;
   const stats=()=>{$('cholStats').textContent=`정답 ${state.right}/${state.total} · 복기한 연결 ${Object.keys(state.seen).length}/${CHOL_FACTS.length+CHOL_SPECIALS.length}`;};
   function next(){
     const all=[...CHOL_FACTS,...CHOL_SPECIALS];
@@ -96,37 +97,17 @@ export function initCholQuiz(){
     else current.choices.forEach((item,j)=>{const row=document.createElement('li');row.textContent=`${SYMBOLS[j]} ${item.text===item.fact.correct?'옳음':'틀림'} · ${item.fact.note}${item.text!==item.fact.correct?' 바른 설명: '+item.fact.correct:''}`;list.append(row);});
     fb.append(heading,list);fb.hidden=false;$('cholNext').hidden=false;
   }
-  function renderBoard(){
-    for(const zone of $('cholZones').children){const group=zone.dataset.category;const cards=board.filter(x=>placed.get(x.drug)===group).map(x=>x.drug);zone.textContent=`${group} · ${cards.length}개${cards.length?'\n'+cards.join(' · '):''}`;}
-    for(const card of $('cholCards').children){const category=placed.get(card.dataset.drug);card.classList.toggle('placed',!!category);card.title=category?`현재 배치: ${category}`:'배치되지 않음';}
-    $('cholCheck').disabled=placed.size!==board.length;
-  }
-  function place(drug,category){
-    if(checked||!board.some(f=>f.drug===drug))return;
-    placed.set(drug,category);selected=null;
-    $('cholCards').querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
-    renderBoard();$('cholDragStatus').textContent=`${placed.size}/${board.length}개 배치했습니다. 채점 전에 카드를 다시 옮길 수 있습니다.`;
-  }
-  function newBoard(){
-    board=shuffle(CHOL_DRUGS);placed=new Map();selected=null;checked=false;
-    $('cholCheck').hidden=false;$('cholReset').hidden=true;
-    $('cholDragStatus').textContent='20개를 모두 배치한 뒤 한 번에 채점하세요.';
-    const cards=$('cholCards'),zones=$('cholZones');cards.replaceChildren();zones.replaceChildren();
-    for(const x of board){const b=document.createElement('button');b.type='button';b.className='drug-chip';b.draggable=true;b.dataset.drug=x.drug;b.textContent=x.drug;b.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',x.drug);e.dataTransfer.effectAllowed='move';});b.addEventListener('click',()=>{if(checked)return;selected=x.drug;cards.querySelectorAll('button').forEach(c=>c.classList.toggle('selected',c===b));$('cholDragStatus').textContent=`${x.drug} 선택됨. 해당 용도·역할을 누르세요.`;});cards.append(b);}
-    for(const category of shuffle([...new Set(board.map(x=>x.category))])){const z=document.createElement('button');z.type='button';z.className='drop-zone';z.dataset.category=category;z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('over');});z.addEventListener('dragleave',()=>z.classList.remove('over'));z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('over');place(e.dataTransfer.getData('text/plain'),category);});z.addEventListener('click',()=>place(selected,category));zones.append(z);}renderBoard();
-  }
-  $('cholCheck').addEventListener('click',()=>{
-    if(checked||placed.size!==board.length)return;checked=true;
-    let count=0;const rows=[];
-    for(const x of board){const good=placed.get(x.drug)===x.category;count+=Number(good);const b=[...$('cholCards').children].find(c=>c.dataset.drug===x.drug);b.classList.add(good?'matched':'mismatch');b.draggable=false;rows.push(`${good?'✓':'✗'} ${x.drug}: ${placed.get(x.drug)} → ${x.category}`);}
-    state.boards++;save();$('cholDragStatus').textContent=`한 번에 채점: ${count}/${board.length}개 정답\n${rows.join('\n')}`;$('cholCheck').hidden=true;$('cholReset').hidden=false;
+  const match=createMatchBoard({
+    poolId:'cholPool',cardsId:'cholCards',zonesId:'cholZones',statusId:'cholDragStatus',checkId:'cholCheck',resetId:'cholReset',
+    items:CHOL_DRUGS,categoryOf:f=>f.category,keyOf:f=>f.drug,labelOf:f=>f.drug,
+    onGrade:()=>{state.boards++;save();}
   });
-  $('cholReset').addEventListener('click',newBoard);$('cholNext').addEventListener('click',next);
+  $('cholNext').addEventListener('click',next);
   for(const [id,value] of [['cholQuizTab','quiz'],['cholDragTab','drag']])$(id).addEventListener('click',()=>{
     tab=value;$('cholQuizPanel').hidden=tab!=='quiz';$('cholDragPanel').hidden=tab!=='drag';
     for(const [tabId,active] of [['cholQuizTab',tab==='quiz'],['cholDragTab',tab==='drag']]){$(tabId).classList.toggle('active',active);$(tabId).setAttribute('aria-selected',String(active));}
-    if(tab==='quiz'&&!current)next();if(tab==='drag'&&!board.length)newBoard();
+    if(tab==='quiz'&&!current)next();if(tab==='drag')match.open();
   });
   document.addEventListener('keydown',e=>{if($('cholView').hidden||tab!=='quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}if(e.key==='Enter'&&answered){e.preventDefault();next();}});
-  stats();return {open(){if(tab==='quiz'&&!current)next();if(tab==='drag'&&!board.length)newBoard();}};
+  stats();return {open(){if(tab==='quiz'&&!current)next();if(tab==='drag')match.open();}};
 }
