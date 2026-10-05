@@ -27,6 +27,8 @@ function label(unit){
   return `${unit.startsWith('★')?'과거 편제':unit+'강'} ${data.titles[unit]||unit}${suffix}`;
 }
 function show(view){
+  const jumpToChol11Match=view==='chol11match';
+  if(jumpToChol11Match)view='chol11';
   for(const name of ['home','cyp','drag','table','ans','chol','chol11','menu','practice','review'])$(name+'View').hidden=(view!==name);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
@@ -36,7 +38,10 @@ function show(view){
   cyp3a45.open(view);
   if(view==='ans')ans.open();
   if(view==='chol')chol.open();
-  if(view==='chol11')chol11.open();
+  if(view==='chol11'){
+    chol11.open();
+    if(jumpToChol11Match)$('chol11DragTab').click();
+  }
   window.scrollTo({top:0,behavior:'instant'});
 }
 function stats(){
@@ -198,6 +203,6 @@ try{
   menu();
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
-  else if(['cyp','drag','table','ans','chol','chol11','archive'].includes(location.hash.slice(1)))
+  else if(['cyp','drag','table','ans','chol','chol11','chol11match','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}

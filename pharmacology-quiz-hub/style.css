@@ -34,6 +34,8 @@
 .hub-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:14px;background:#e3f2fa;color:#176785;font-weight:950}
 .hub-card strong{display:block;color:#173f5f;font-size:21px;letter-spacing:-.04em}
 .hub-card small{display:block;margin-top:5px;color:var(--muted);font-size:12px;line-height:1.5}
+.hub-shortcut{display:inline-flex;align-items:center;margin:10px 0 0 3px;padding:7px 12px;border:1px solid #a8cad7;border-radius:9px;background:#eaf7fc;color:#165a77;font-size:12px;font-weight:850}
+.hub-shortcut:hover{background:#d9f1fa}
 .hub-card b{color:#1784ab;font-size:20px}
 .hub-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .hub-tags span{padding:4px 8px;border-radius:7px;background:#e9f3f5;color:#466b76;font-size:10px;font-weight:800}
