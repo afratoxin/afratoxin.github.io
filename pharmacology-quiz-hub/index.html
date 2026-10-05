@@ -15,7 +15,7 @@
       <div class="topbar-actions"><span class="save-note">학습 기록은 이 브라우저에 저장됩니다</span><button id="hubBack" class="back-button" type="button" hidden>← 단원 메뉴</button></div>
     </header>
     <section id="homeView">
-      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 7강 약물대사와 9–11강 자율신경계·콜린성 약리학을 단원별로 복습할 수 있습니다.</p></div>
+      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 7·8강 약동학과 9–11강 자율신경계·콜린성 약리학을 단원별로 복습할 수 있습니다.</p></div>
       <div class="hub-groups">
         <section class="hub-group" aria-labelledby="examGroupTitle"><div class="hub-group-head"><h2 id="examGroupTitle">족보 회독</h2><p>복원 기출을 강의별로 반복</p></div>
           <button type="button" data-open="menu" class="hub-card archive-card"><span class="hub-icon">족보</span><span><strong>족보 문항 풀기</strong><small>강의별 전체 문항 · 오답 다시 풀기 · 원문 확인 목록</small><span class="hub-tags"><span>단원별</span><span>오답 회독</span><span>학습 기록</span></span></span><b aria-hidden="true">→</b></button>
@@ -23,12 +23,20 @@
         <section class="hub-group" aria-labelledby="cypGroupTitle"><div class="hub-group-head"><h2 id="cypGroupTitle">7강 · 약물대사 · CYP</h2><p>Probe drug와 CYP3A4/5 상호작용</p></div>
           <button type="button" data-open="cyp" class="hub-card cyp-card"><span class="hub-icon">CYP</span><span><strong>7강 · CYP 약물 대응 퀴즈</strong><small>Probe drug 양방향 회독 · CYP3A4/5 inhibitor·inducer·substrate 분류와 병용 효과</small><span class="hub-tags"><span>7강</span><span>Probe drug</span><span>CYP3A4/5 DDI</span><span>드래그</span><span>암기표</span></span></span><b aria-hidden="true">→</b></button>
         </section>
+        <section class="hub-group" aria-labelledby="txGroupTitle"><div class="hub-group-head"><h2 id="txGroupTitle">8강 · 약물수송체</h2><p>ABC·SLC · 이동 방향 · 표적 치료제</p></div><button type="button" data-open="tx" class="hub-card cyp-card"><span class="hub-icon">Tpt</span><span><strong>8강 · 약물수송체 퀴즈</strong><small>족보형 5지선다 · Ae 계산 · 약물–수송체 전체 매칭 · 표적 치료제 암기표</small><span class="hub-tags"><span>8강</span><span>방향·기전</span><span>Ae 계산</span><span>약물 매칭</span><span>암기표</span></span></span><b aria-hidden="true">→</b></button></section>
         <section class="hub-group" aria-labelledby="ansGroupTitle"><div class="hub-group-head"><h2 id="ansGroupTitle">9강 · 자율신경계 약리 기초</h2><p>신경 회로·전달 단계·G 단백질</p></div>
           <button type="button" data-open="ans" class="hub-card ans-card"><span class="hub-icon">ANS</span><span><strong>9강 · 자율신경계 약리 퀴즈</strong><small>전달물질과 수용체 · 억제약물의 작용 단계 · 별도 Gs/Gq/Gi 탭</small><span class="hub-tags"><span>9강</span><span>5지선다</span><span>옳은·틀린 선지</span><span>G 단백질</span></span></span><b aria-hidden="true">→</b></button>
         </section>
         <section class="hub-group" aria-labelledby="cholGroupTitle"><div class="hub-group-head"><h2 id="cholGroupTitle">10강 · 콜린성 약리학 (1)</h2><p>약물·용도·기전·BBB 연결</p></div><button type="button" data-open="chol" class="hub-card ans-card"><span class="hub-icon">ACh</span><span><strong>10강 · 콜린성 약리 퀴즈</strong><small>족보형 5지선다 · 모든 약물 한 번에 배치하고 채점</small><span class="hub-tags"><span>10강</span><span>옳은·틀린 선지</span><span>전체 약물 매칭</span></span></span><b aria-hidden="true">→</b></button></section>
         <section class="hub-group" aria-labelledby="chol11GroupTitle"><div class="hub-group-head"><h2 id="chol11GroupTitle">11강 · 콜린성 약리학 (2)</h2><p>항무스카린제·중독 대응·신경근 봉쇄</p></div><button type="button" data-open="chol11" class="hub-card ans-card"><span class="hub-icon">ACh−</span><span><strong>11강 · 콜린성 약리 퀴즈</strong><small>족보형 5지선다 · 강의록 약물 30개를 실제 칸에 옮겨 한 번에 채점</small><span class="hub-tags"><span>11강</span><span>옳은·틀린 선지</span><span>전체 약물 매칭</span></span></span><b aria-hidden="true">→</b></button><button type="button" data-open="chol11match" class="hub-shortcut">11강 약물 30개 매칭 바로 풀기 →</button></section>
       </div>
+    </section>
+    <section id="txView" class="ans-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 8강 · DRUG TRANSPORTERS</p><h2>약물수송체 퀴즈</h2></div><p>계열 구분 · 이동 방향 · 임상 사례 · Ae 계산</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="8강 약물수송체 학습 방식"><button id="txQuizTab" type="button" role="tab" aria-selected="true" class="active">족보형 5지선다</button><button id="txDragTab" type="button" role="tab" aria-selected="false">약물–수송체 전체 매칭</button><button id="txTableTab" type="button" role="tab" aria-selected="false">표적 치료제 암기표</button></div>
+      <div id="txQuizPanel" role="tabpanel"><p class="cyp-intro">막의 어느 쪽에서 어느 쪽으로 운반하는지 먼저 생각하세요. 강의록의 계산 사례와 두 연습문제도 섞여 나옵니다.</p><div class="ans-layout"><article class="question-card"><div class="q-meta"><span class="badge">2026 8강 · 약물수송체</span><span id="txProgress" class="q-count"></span></div><h2 id="txStem"></h2><div id="txChoices" class="options"></div><div id="txFeedback" class="feedback" hidden></div><button id="txNext" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">회독 기록</span><strong id="txStats"></strong><p>같은 채집 구간의 관계식: <strong>Ae = CLᵣ × AUC</strong></p><p>강의록 예: 2.15 × 0.39 ≈ 0.84배. 혈중 AUC와 표적 세포 안의 농도는 구별하세요.</p><p>올해 강의록에 없는 과거 족보 수송체는 새 문항의 정답 범위에서 제외했습니다.</p></aside></div></div>
+      <div id="txDragPanel" role="tabpanel" hidden><p class="cyp-intro">강의록에 이름이 나온 약물 20개를 대표 기질·억제제·치료 표적과 연결하세요. 실제 칸 안에 넣은 뒤 한 번에 채점합니다.</p><div class="match-board"><div id="txPool" class="match-column match-pool"><h3>약물 카드 <span class="pool-count"></span></h3><div id="txCards" class="drag-cards"></div><small>칸의 카드를 누르면 목록으로 돌아갑니다. 다시 끌어 옮길 수도 있습니다.</small></div><div class="match-column match-targets"><h3>수송체와의 관계</h3><div id="txZones" class="drop-zones"></div></div></div><div class="match-actions"><div id="txDragStatus" class="match-status" role="status"></div><button id="txCheck" class="primary" type="button" disabled>20개 한 번에 채점</button><button id="txReset" class="primary" type="button" hidden>다시 배치하기 →</button></div></div>
+      <div id="txTablePanel" role="tabpanel" hidden><p class="cyp-intro">강의록 25–28쪽의 신장·중추·장·간 표적 치료제 대응입니다. 같은 약물이 다른 수송체의 기질일 수도 있으므로 표적과 이동 경로를 구별하세요.</p><div class="memory-table-wrap"><table class="memory-table"><thead><tr><th scope="col">치료 표적</th><th scope="col">대표 약물</th><th scope="col">억제 후 변화</th><th scope="col">강의록</th></tr></thead><tbody id="txTableBody"></tbody></table></div></div>
     </section>
     <section id="ansView" class="ans-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 9강 · AUTONOMIC PHARMACOLOGY</p><h2>자율신경계 약리 기초 퀴즈</h2></div><p>옳은 것·옳지 않은 것 번갈아 출제 · 키보드 1–5 / Enter</p></div>
@@ -94,8 +102,8 @@
     </section>
 
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
-    <footer><span>자료: 2026 약물대사 강의록 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>강의록 확인: 2026-10-04</span></footer>
+    <footer><span>자료: 2026 약물대사·약물수송체·자율신경계·콜린성 약리 강의록 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>강의록 확인: 2026-10-05</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261005-6"></script>
+  <script type="module" src="app.mjs?v=20261005-7"></script>
 </body>
 </html>

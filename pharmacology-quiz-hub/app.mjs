@@ -4,6 +4,7 @@ import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261005-2';
 import {initAnsQuiz} from './ans9.mjs';
 import {initCholQuiz} from './chol10.mjs?v=20261005-4';
 import {initChol11Quiz} from './chol11.mjs?v=20261005-5';
+import {initTransportQuiz} from './transport8.mjs?v=20261005-7';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -13,6 +14,7 @@ const cyp3a45=initCyp3a45Quiz();
 const ans=initAnsQuiz();
 const chol=initCholQuiz();
 const chol11=initChol11Quiz();
+const tx=initTransportQuiz();
 const STORAGE='pharmacology-exam-2026-v1';
 let data=null,year='all',section='all',current=null,shown=null,answered=false,selected=new Set(),session=0,mode='quiz';
 let progress={seen:{},correct:{},missed:{},recent:[]};
@@ -29,13 +31,14 @@ function label(unit){
 function show(view){
   const jumpToChol11Match=view==='chol11match';
   if(jumpToChol11Match)view='chol11';
-  for(const name of ['home','cyp','drag','table','ans','chol','chol11','menu','practice','review'])$(name+'View').hidden=(view!==name);
+  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','menu','practice','review'])$(name+'View').hidden=(view!==name);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
   $('archiveNotice').hidden=!archive;
   $('hubBack').hidden=view==='home';
   cyp.open(view);
   cyp3a45.open(view);
+  if(view==='tx')tx.open();
   if(view==='ans')ans.open();
   if(view==='chol')chol.open();
   if(view==='chol11'){
@@ -203,6 +206,6 @@ try{
   menu();
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
-  else if(['cyp','drag','table','ans','chol','chol11','chol11match','archive'].includes(location.hash.slice(1)))
+  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}
