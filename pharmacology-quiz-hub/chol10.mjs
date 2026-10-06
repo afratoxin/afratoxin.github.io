@@ -1,4 +1,4 @@
-import {createMatchBoard} from './match-board.mjs?v=20261005-4';
+import {createMatchBoard} from './match-board.mjs?v=20261006-1';
 // 2026 10강 콜린성 약리학 (1): 강의록 직접작용제·AChE 억제제 표와 사례.
 import {shuffle} from './cyp.mjs?v=20261005-3';
 const f=(id,group,correct,incorrect,note)=>({id,group,correct,incorrect,note});

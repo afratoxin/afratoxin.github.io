@@ -1,4 +1,4 @@
-import {createMatchBoard} from './match-board.mjs?v=20261005-4';
+import {createMatchBoard} from './match-board.mjs?v=20261006-1';
 // 2026년 7강 약물대사: 강의록에 제시된 CYP probe drug (16, 36, 39쪽).
 export const CYP_FACTS = [
   {id:'theophylline', enzyme:'CYP1A2', drug:'theophylline', page:16, note:'CYP1A2의 probe drug으로 제시됩니다.'},

@@ -1,6 +1,6 @@
 // 2026 11강 콜린성 약리학 (2): 강의록 11–22쪽과 족보 임상 발문.
 import {shuffle} from './cyp.mjs?v=20261005-4';
-import {createMatchBoard} from './match-board.mjs?v=20261005-4';
+import {createMatchBoard} from './match-board.mjs?v=20261006-1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const CHOL11_FACTS=[
   f('block-m','effects','Atropine은 무스카린 수용체를 차단해 부교감 작용을 억제한다.','Atropine은 니코틴 수용체를 차단해 부교감 작용을 억제한다.','Atropine은 항무스카린제이며 신경절의 니코틴 수용체 차단제가 아니다.',11),

@@ -1,6 +1,6 @@
 // 2026 8강 약물수송체: 현 강의록의 표, 사례, 마지막 두 연습문제.
 import {shuffle} from './cyp.mjs?v=20261005-4';
-import {createMatchBoard} from './match-board.mjs?v=20261005-4';
+import {createMatchBoard} from './match-board.mjs?v=20261006-1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const TRANSPORT_FACTS=[
   f('abc-atp','family','ABC 수송체는 ATP 가수분해 에너지로 기질을 이동시킨다.','ABC 수송체는 Na⁺ 농도구배 에너지로 기질을 이동시킨다.','P-gp·BCRP·BSEP는 ABC 계열이다.',5),
