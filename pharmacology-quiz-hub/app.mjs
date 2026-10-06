@@ -1,10 +1,10 @@
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
-import {initCypQuiz} from './cyp.mjs?v=20261006-1';
-import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261005-2';
-import {initAnsQuiz} from './ans9.mjs';
-import {initCholQuiz} from './chol10.mjs?v=20261006-1';
-import {initChol11Quiz} from './chol11.mjs?v=20261006-1';
-import {initTransportQuiz} from './transport8.mjs?v=20261006-1';
+import {initCypQuiz} from './cyp.mjs?v=20261007-1';
+import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261007-1';
+import {initAnsQuiz} from './ans9.mjs?v=20261007-1';
+import {initCholQuiz} from './chol10.mjs?v=20261007-1';
+import {initChol11Quiz} from './chol11.mjs?v=20261007-1';
+import {initTransportQuiz} from './transport8.mjs?v=20261007-1';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

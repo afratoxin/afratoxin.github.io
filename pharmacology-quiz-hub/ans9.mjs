@@ -53,6 +53,16 @@ export const ANS_FACTS=[
   f('gi','gpcr','신호 방향','Gi는 adenylyl cyclase를 억제해 cAMP를 줄인다.','Gi는 adenylyl cyclase를 활성화해 cAMP를 늘린다.','Gi는 inhibitory 단백질이다.',24),
   f('gq','gpcr','신호 방향','Gq는 PLC를 활성화해 IP₃·DAG 신호를 늘린다.','Gq는 PLC를 억제해 IP₃·DAG 신호를 줄인다.','Gq → PLC → IP₃·DAG와 Ca²⁺ 신호.',24)
 ];
+export const ANS_CASES=[
+  {id:'case-cht-inhibitor',group:'case',answer:'Hemicholinium',
+    stem:'ACh 합성에 필요한 choline이 신경말단으로 들어오는 ChT 단계를 막는 약물은?',
+    options:['Hemicholinium','Vesamicol','Botulinum toxin','Metyrosine','Reserpine'],
+    note:'Hemicholinium은 ChT 억제제다. Vesamicol은 VAChT를 통한 ACh 소포 저장, botulinum toxin은 SNARE를 통한 유리, metyrosine은 catecholamine 합성, reserpine은 VMAT 소포 저장을 막는다. (강의록 12–18쪽)'},
+  {id:'case-vmat-inhibitor',group:'case',answer:'Reserpine',
+    stem:'Catecholamine이 VMAT를 통해 소포 안에 저장되는 과정을 막는 약물은?',
+    options:['Reserpine','Hemicholinium','Vesamicol','Metyrosine','Guanethidine'],
+    note:'Reserpine은 VMAT 억제제다. Hemicholinium은 ChT, vesamicol은 VAChT, metyrosine은 tyrosine hydroxylase를 억제하며 guanethidine은 catecholamine 유리 단계에 작용한다. (강의록 16–20쪽)'}
+];
 
 export function shuffleAns(items,random=Math.random){
   const a=[...items];
@@ -70,14 +80,19 @@ export function makeAnsQuestion(fact,isCorrectTarget,random=Math.random){
   const topic=fact.group==='gpcr'?'G 단백질 연결':fact.group==='circuit'?'신경 회로·수용체':'신경전달 단계와 억제약물';
   return {fact,group:fact.group,isCorrectTarget,stem:`다음 중 ${topic}에 관한 설명으로 ${isCorrectTarget?'옳은':'옳지 않은'} 것은?`,answers,answerIndex:answers.findIndex(a=>a.trueAnswer)};
 }
+export function makeAnsSpecialQuestion(fact,random=Math.random){
+  const answers=shuffleAns(fact.options.map(text=>({text,trueAnswer:text===fact.answer})),random);
+  return {fact,group:'case',special:true,stem:fact.stem,answers,answerIndex:answers.findIndex(a=>a.trueAnswer)};
+}
 export function pickAnsFact(tab,progress={},random=Math.random){
-  let pool=ANS_FACTS.filter(f=>tab==='gpcr'?f.group==='gpcr':f.group!=='gpcr');
+  let pool=[...ANS_FACTS,...(tab==='gpcr'?[]:ANS_CASES)].filter(f=>tab==='gpcr'?f.group==='gpcr':f.group!=='gpcr');
   if(tab!=='gpcr'&&progress.lastGroup){
     const alternative=pool.filter(f=>f.group!==progress.lastGroup);
     if(alternative.length)pool=alternative;
   }
   const fresh=pool.filter(f=>!(progress.recent||[]).includes(f.id));
   if(fresh.length)pool=fresh;
+  if(tab!=='gpcr'&&(progress.attempted||0)%5===0){const cases=pool.filter(f=>ANS_CASES.includes(f));if(cases.length)pool=cases;}
   const score=f=>(progress.seen?.[f.id]||0)-0.35*(progress.missed?.[f.id]||0);
   const min=Math.min(...pool.map(score));
   const candidates=pool.filter(f=>score(f)===min);
@@ -92,7 +107,7 @@ export function initAnsQuiz(){
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
   let tab='main',current=null,answered=false,session={main:0,gpcr:0};
   function renderStats(){
-    const s=state[tab],total=tab==='gpcr'?ANS_FACTS.filter(f=>f.group==='gpcr').length:ANS_FACTS.filter(f=>f.group!=='gpcr').length;
+    const s=state[tab],total=tab==='gpcr'?ANS_FACTS.filter(f=>f.group==='gpcr').length:ANS_FACTS.filter(f=>f.group!=='gpcr').length+ANS_CASES.length;
     $('ansStats').textContent=`정답 ${s.correct} / ${s.attempted} · 복기한 연결 ${Object.keys(s.seen).length}/${total}`;
     $('ansTopic').textContent=tab==='gpcr'?'M1–M5 · α1 · α2 · β · Gs/Gq/Gi':'회로·전달 단계·작용 종결';
     for(const [id,active] of [['ansMainTab',tab==='main'],['ansGpcrTab',tab==='gpcr']]){
@@ -102,7 +117,7 @@ export function initAnsQuiz(){
   function next(){
     const s=state[tab],fact=pickAnsFact(tab,s);
     const target=s.lastTarget!==true;
-    current=makeAnsQuestion(fact,target);
+    current=ANS_CASES.includes(fact)?makeAnsSpecialQuestion(fact):makeAnsQuestion(fact,target);
     s.lastTarget=target;s.lastGroup=fact.group;
     s.recent=[fact.id,...(s.recent||[]).filter(id=>id!==fact.id)].slice(0,3);save();
     answered=false;session[tab]++;
@@ -135,7 +150,8 @@ export function initAnsQuiz(){
     const strong=document.createElement('strong');strong.textContent=good?'정답입니다.':'정답과 바뀐 부분을 확인하세요.';
     const answer=document.createElement('p');answer.textContent=`정답 ${SYMBOLS[current.answerIndex]} · ${current.answers[current.answerIndex].text}`;
     const list=document.createElement('ol');list.className='ans-explanations';
-    current.answers.forEach((item,j)=>{
+    if(current.special){const li=document.createElement('li');li.textContent=`${f.answer} · ${f.note}`;list.append(li);}
+    else current.answers.forEach((item,j)=>{
       const li=document.createElement('li');
       li.textContent=`${SYMBOLS[j]} ${item.text===item.fact.correct?'옳음':'틀림'} · ${item.fact.note} ${item.text!==item.fact.correct?'바른 설명: '+item.fact.correct:''} (강의록 ${item.fact.page}쪽)`;
       list.append(li);

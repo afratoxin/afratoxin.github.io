@@ -1,6 +1,6 @@
 import {createMatchBoard} from './match-board.mjs?v=20261006-1';
 // 2026 10강 콜린성 약리학 (1): 강의록 직접작용제·AChE 억제제 표와 사례.
-import {shuffle} from './cyp.mjs?v=20261005-3';
+import {shuffle} from './cyp.mjs?v=20261007-1';
 const f=(id,group,correct,incorrect,note)=>({id,group,correct,incorrect,note});
 export const CHOL_FACTS=[
   f('car-glaucoma','clinical','Carbachol은 녹내장 치료에 쓰이는 직접작용 콜린 효현제이다.','Carbachol은 녹내장 치료에 쓰이는 간접작용 콜린 효현제이다.','Carbachol은 수용체에 직접 결합하며 방수 배출을 돕는다.'),
@@ -50,6 +50,16 @@ export const CHOL_SPECIALS=[
   {id:'pick-duration',group:'properties',stem:'다음 중 AChE 억제 작용 시간이 가장 긴 약물은?',answer:'Echothiophate',options:['Echothiophate','Edrophonium','Neostigmine','Physostigmine','Pyridostigmine'],note:'Echothiophate는 AChE를 인산화하는 불가역성 유기인제제이며 작용이 장시간 지속된다.'},
   {id:'pick-resistant-nicotinic',group:'mechanism',stem:'다음 중 cholinesterase에 의한 분해가 매우 느리면서 니코틴 작용도 있는 약물은?',answer:'Carbachol',options:['Carbachol','Bethanechol','Methacholine','Acetylcholine','Pilocarpine'],note:'Carbachol의 carbamoyl기는 분해를 늦추며 니코틴 작용도 유지한다. Bethanechol과 methacholine은 β-methyl기로 니코틴 작용이 감소한다.'}
 ];
+export const CHOL_CASES=[
+  {id:'case-postoperative-urinary-retention',group:'clinical',
+    stem:'수술 후 소변 정체와 장운동 저하가 생겼다. 방광근·장 평활근 수축을 돕는 약물은?',answer:'Bethanechol',
+    options:['Bethanechol','Carbachol','Pilocarpine','Malathion','Donepezil'],
+    note:'Bethanechol은 방광근 수축과 수술 후 창자운동 저하에 연결된다. Carbachol은 녹내장, pilocarpine은 침 분비, malathion은 살충제, donepezil은 알츠하이머 치료와 연결된다. Neostigmine도 장·방광에 쓰일 수 있으므로 보기에서 제외했다. 기계적 장폐쇄와는 구별한다. (강의록 8–9, 15쪽)'},
+  {id:'case-sjogren-pilocarpine',group:'clinical',
+    stem:'쇼그렌증후군으로 침 분비가 줄고 구강건조가 생겼다. 침 분비제로 사용할 약물은?',answer:'Pilocarpine',
+    options:['Pilocarpine','Bethanechol','Carbachol','Neostigmine','Donepezil'],
+    note:'Pilocarpine은 침 분비를 늘리는 직접작용 무스카린 효현제다. Cevimeline도 유효하지만 이 보기에는 없다. Bethanechol은 방광·장, carbachol은 녹내장, neostigmine·donepezil은 간접작용 AChE 억제제다. (강의록 9–10쪽)'}
+];
 const SYMBOLS=['①','②','③','④','⑤'];
 export function makeCholQuestion(fact,targetCorrect,random=Math.random){
   const pool=shuffle(CHOL_FACTS.filter(x=>x.group===fact.group&&x.id!==fact.id),random);
@@ -69,16 +79,17 @@ export function initCholQuiz(){
   try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.seen)state={...state,...saved};}catch{}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
   let tab='quiz',current=null,answered=false,session=0;
-  const stats=()=>{$('cholStats').textContent=`정답 ${state.right}/${state.total} · 복기한 연결 ${Object.keys(state.seen).length}/${CHOL_FACTS.length+CHOL_SPECIALS.length}`;};
+  const stats=()=>{$('cholStats').textContent=`정답 ${state.right}/${state.total} · 복기한 연결 ${Object.keys(state.seen).length}/${CHOL_FACTS.length+CHOL_SPECIALS.length+CHOL_CASES.length}`;};
   function next(){
-    const all=[...CHOL_FACTS,...CHOL_SPECIALS];
+    const all=[...CHOL_FACTS,...CHOL_SPECIALS,...CHOL_CASES];
     let pool=all.filter(f=>!state.recent.includes(f.id)&&f.group!==state.lastGroup);
     if(!pool.length)pool=all.filter(f=>!state.recent.includes(f.id));
+    if(session%4===0){const short=pool.filter(f=>CHOL_SPECIALS.includes(f)||CHOL_CASES.includes(f));if(short.length)pool=short;}
     const min=Math.min(...pool.map(f=>(state.seen[f.id]||0)-0.3*(state.missed[f.id]||0)));
     const fact=shuffle(pool.filter(f=>(state.seen[f.id]||0)-0.3*(state.missed[f.id]||0)===min))[0];
     const target=!state.lastTarget;state.lastTarget=target;state.lastGroup=fact.group;
     state.recent=[fact.id,...state.recent.filter(id=>id!==fact.id)].slice(0,3);
-    current=CHOL_SPECIALS.includes(fact)?makeCholSpecialQuestion(fact):makeCholQuestion(fact,target);save();answered=false;session++;
+    current=CHOL_SPECIALS.includes(fact)||CHOL_CASES.includes(fact)?makeCholSpecialQuestion(fact):makeCholQuestion(fact,target);save();answered=false;session++;
     $('cholProgress').textContent=`이번 회독 ${session}문제`;$('cholStem').textContent=current.stem;
     $('cholFeedback').hidden=true;$('cholNext').hidden=true;
     const host=$('cholChoices');host.replaceChildren();

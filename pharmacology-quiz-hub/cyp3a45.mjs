@@ -12,6 +12,12 @@ export const CYP3A45_FACTS=[
   {id:'tacrolimus',drug:'tacrolimus',category:'substrate'},
   {id:'terfenadine',drug:'terfenadine',category:'substrate'}
 ];
+export const CYP3A45_CASES=[
+  {id:'class:ritonavir-case',answer:'ritonavir',
+    stem:'Midazolam과 병용 시 CYP3A4/5 대사를 억제해 노출을 높일 수 있는 약물은?',
+    options:['ritonavir','rifampin','midazolam','tacrolimus',"St. John's wort"],
+    note:'Ritonavir는 CYP3A4/5 억제제이므로 midazolam의 대사를 줄여 노출을 늘릴 수 있다. Rifampin·St. John’s wort는 유도제, midazolam·tacrolimus는 기질이다.'}
+];
 
 export const CYP3A45_LABELS={
   inhibitor:'inhibitor(억제제)',
@@ -40,6 +46,13 @@ export function makeDdiClassificationQuestion(fact,random=Math.random){
     choices:choices.map(f=>({text:f.drug,fact:f,correct:f.id===fact.id})),
     answerIndex:choices.findIndex(f=>f.id===fact.id)
   };
+}
+export function makeDdiCaseQuestion(fact,random=Math.random){
+  const choices=shuffleDdi(fact.options.map(drug=>CYP3A45_FACTS.find(f=>f.drug===drug)),random);
+  if(choices.some(x=>!x))throw new Error(`CYP3A4/5 사례 선지에 없는 약물이 있습니다: ${fact.id}`);
+  return {id:fact.id,kind:'classification',case:true,fact,stem:fact.stem,
+    choices:choices.map(f=>({text:f.drug,fact:f,correct:f.drug===fact.answer})),
+    answerIndex:choices.findIndex(f=>f.drug===fact.answer)};
 }
 
 export function makeDdiEffectQuestion(modifier,substrate,random=Math.random){
@@ -76,7 +89,7 @@ export function ddiCandidates(){
   const effects=modifiers.flatMap(modifier=>substrates.map(substrate=>({
     id:`effect:${modifier.id}:${substrate.id}`,kind:'effect',modifier,substrate
   })));
-  return [...classification,...effects];
+  return [...classification,...CYP3A45_CASES.map(f=>({id:f.id,kind:'classification',case:f})),...effects];
 }
 
 export function pickDdiCandidate(progress={},random=Math.random){
@@ -116,13 +129,13 @@ export function initCyp3a45Quiz(){
   function renderStats(){
     const seenClass=Object.keys(progress.seen).filter(id=>id.startsWith('class:')).length;
     const seenEffect=Object.keys(progress.seen).filter(id=>id.startsWith('effect:')).length;
-    $('cypDdiStats').textContent=`정답 ${progress.correct} / ${progress.total} · 분류 ${seenClass}/11 · 병용 조합 ${seenEffect}/28`;
+    $('cypDdiStats').textContent=`정답 ${progress.correct} / ${progress.total} · 약물 선택·분류 ${seenClass}/12 · 병용 조합 ${seenEffect}/28`;
   }
 
   function next(){
     const candidate=pickDdiCandidate(progress);
     current=candidate.kind==='classification'
-      ?makeDdiClassificationQuestion(candidate.fact)
+      ?candidate.case?makeDdiCaseQuestion(candidate.case):makeDdiClassificationQuestion(candidate.fact)
       :makeDdiEffectQuestion(candidate.modifier,candidate.substrate);
     progress.lastKind=candidate.kind;
     progress.recent=[candidate.id,...(progress.recent||[]).filter(id=>id!==candidate.id)].slice(0,4);
@@ -157,7 +170,7 @@ export function initCyp3a45Quiz(){
     const title=document.createElement('strong');title.textContent=good?'정답입니다.':'분류와 변화 방향을 다시 확인하세요.';
     const main=document.createElement('p');
     if(current.kind==='classification'){
-      main.textContent=`${current.fact.drug}은(는) CYP3A4/5 ${CYP3A45_LABELS[current.fact.category]}입니다. (강의록 54쪽)`;
+      main.textContent=current.case?`${current.fact.note} (강의록 54쪽)`:`${current.fact.drug}은(는) CYP3A4/5 ${CYP3A45_LABELS[current.fact.category]}입니다. (강의록 54쪽)`;
       const list=document.createElement('ul');list.className='ddi-explanations';
       current.choices.forEach((choice,i)=>{
         const li=document.createElement('li');

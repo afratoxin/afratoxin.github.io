@@ -1,5 +1,5 @@
 // 2026 8강 약물수송체: 현 강의록의 표, 사례, 마지막 두 연습문제.
-import {shuffle} from './cyp.mjs?v=20261005-4';
+import {shuffle} from './cyp.mjs?v=20261007-1';
 import {createMatchBoard} from './match-board.mjs?v=20261006-1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const TRANSPORT_FACTS=[
@@ -58,6 +58,14 @@ export const TRANSPORT_SPECIALS=[
   {id:'pick-pd','group':'hepatic',stem:'혈중 약물 노출은 그대로인데 간세포의 표적 억제율이 감소했다. 두 가설을 구분할 추가 측정값은?',answer:'간세포 내 약물농도',options:['간세포 내 약물농도','혈중 약물 최고농도','혈중 약물 AUC','투여한 약물 총량','혈장 단백결합률'],note:'강의록 연습문제 1: 혈중 곡선만으로 간세포 유입 감소와 세포 내 감수성 감소를 구별할 수 없다.'},
   {id:'pick-pgp','group':'direction',stem:'장 P-gp를 억제했을 때 직접 예상되는 변화는?',answer:'장 내강 유출 감소',options:['장 내강 유출 감소','장 내강 유출 증가','장 상피 유입 감소','간세포 유입 증가','담즙산 유출 증가'],note:'장세포에서 내강으로 되돌리는 유출이 억제된다. 약물별 전체 AUC 변화는 다른 경로도 고려해야 한다.'}
 ];
+export const TRANSPORT_CASES=[
+  {id:'case-hdv-ntcp-drug',group:'hepatic',stem:'만성 HDV 환자에서 바이러스가 NTCP를 통해 간세포에 들어오는 단계를 차단할 약물은?',answer:'Bulevirtide',
+    options:['Bulevirtide','Ezetimibe','Maralixibat','Dotinurad','Tenapanor'],
+    note:'Bulevirtide는 NTCP를 표적으로 HDV 진입을 차단한다. 나머지는 각각 NPC1L1, IBAT, URAT1, NHE3를 표적으로 한다. (강의록 27–28쪽)'},
+  {id:'case-oat-probenecid',group:'renal',stem:'신장 근위세뇨관의 OAT1·OAT3를 억제해 유기음이온 약물의 분비를 줄일 약물은?',answer:'Probenecid',
+    options:['Probenecid','Pyrimethamine','Amiodarone','Tariquidar','Cyclosporine'],
+    note:'Probenecid는 OAT1·OAT3 억제제다. Pyrimethamine은 MATE, amiodarone·tariquidar는 P-gp, cyclosporine은 BCRP·OATP1B1 억제와 연결된다. (강의록 23–24쪽)'}
+];
 export const AE_CASES=[
   {id:'ae-lecture',auc:2.15,cl:0.39},
   {id:'ae-a',auc:1.5,cl:0.4},
@@ -104,17 +112,18 @@ export function initTransportQuiz(){
   try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.seen)state={...state,...saved};}catch{}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
   let tab='quiz',current=null,answered=false,session=0;
-  const totalFacts=TRANSPORT_FACTS.length+TRANSPORT_SPECIALS.length+AE_CASES.length;
+  const totalFacts=TRANSPORT_FACTS.length+TRANSPORT_SPECIALS.length+TRANSPORT_CASES.length+AE_CASES.length;
   function stats(){$('txStats').textContent=`정답 ${state.right}/${state.total} · 복기한 연결 ${Object.keys(state.seen).length}/${totalFacts}`;}
   function next(){
-    const all=[...TRANSPORT_FACTS,...TRANSPORT_SPECIALS,...AE_CASES.map(c=>({...c,group:'calculation'}))];
+    const all=[...TRANSPORT_FACTS,...TRANSPORT_SPECIALS,...TRANSPORT_CASES,...AE_CASES.map(c=>({...c,group:'calculation'}))];
     let pool=all.filter(f=>!(state.recent||[]).includes(f.id)&&f.group!==state.lastGroup);
     if(!pool.length)pool=all.filter(f=>!(state.recent||[]).includes(f.id));
+    if(session%4===0){const short=pool.filter(f=>TRANSPORT_CASES.includes(f)||f.id==='pick-inhibitor');if(short.length)pool=short;}
     const weight=f=>(state.seen[f.id]||0)-0.3*(state.missed[f.id]||0);
     const min=Math.min(...pool.map(weight));const fact=shuffle(pool.filter(f=>weight(f)===min))[0];
     const target=!state.lastTarget;state.lastTarget=target;state.lastGroup=fact.group;
     state.recent=[fact.id,...(state.recent||[]).filter(id=>id!==fact.id)].slice(0,3);
-    current=fact.group==='calculation'?makeAeQuestion(fact):TRANSPORT_SPECIALS.includes(fact)?makeTransportSpecial(fact):makeTransportQuestion(fact,target);
+    current=fact.group==='calculation'?makeAeQuestion(fact):TRANSPORT_SPECIALS.includes(fact)||TRANSPORT_CASES.includes(fact)?makeTransportSpecial(fact):makeTransportQuestion(fact,target);
     answered=false;session++;save();stats();$('txProgress').textContent=`이번 회독 ${session}문제`;$('txStem').textContent=current.stem;
     $('txFeedback').hidden=true;$('txNext').hidden=true;
     const host=$('txChoices');host.replaceChildren();current.choices.forEach((entry,i)=>{const button=document.createElement('button');button.type='button';const no=document.createElement('span');no.className='option-no';no.textContent=SYMBOLS[i];const label=document.createElement('span');label.textContent=entry.text;button.append(no,label);button.addEventListener('click',()=>answer(i));host.append(button);});

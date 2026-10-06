@@ -1,5 +1,5 @@
 // 2026 11강 콜린성 약리학 (2): 강의록 11–22쪽과 족보 임상 발문.
-import {shuffle} from './cyp.mjs?v=20261005-4';
+import {shuffle} from './cyp.mjs?v=20261007-1';
 import {createMatchBoard} from './match-board.mjs?v=20261006-1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const CHOL11_FACTS=[
@@ -52,6 +52,16 @@ export const CHOL11_SPECIALS=[
   {id:'case-neuromuscular',group:'mechanism',stem:'신경근 봉쇄와 고칼륨혈증이 함께 연결되는 약물은?',answer:'Succinylcholine',options:['Succinylcholine','Rocuronium','Vecuronium','Tubocurarine','Mivacurium'],note:'Succinylcholine은 탈분극성 신경근 봉쇄제이다. 다른 네 약물은 강의록의 비탈분극성 목록이다.'},
   {id:'case-oab-exception',group:'mechanism',stem:'다음 중 족보의 과민성 방광 치료제 선지에서 작용 기전이 다른 약물은?',answer:'Mirabegron',options:['Mirabegron','Oxybutynin','Tolterodine','Solifenacin','Trospium'],note:'족보의 비교 선지: 나머지 네 약물은 항무스카린제이고 mirabegron은 β3 아드레날린 수용체 효현제다.'}
 ];
+export const CHOL11_CASES=[
+  {id:'case-parkinson-benztropine',group:'clinical',
+    stem:'파킨슨병 환자의 떨림에서 중추 콜린성 과활성을 낮추는 항무스카린 약물은?',answer:'Benztropine',
+    options:['Benztropine','Tropicamide','Oxybutynin','Tiotropium','Scopolamine'],
+    note:'Benztropine은 파킨슨병의 떨림 완화에 연결된다. Tropicamide는 산동, oxybutynin은 과민성 방광, tiotropium은 기관지 확장, scopolamine은 멀미 예방에 쓰인다. (강의록 13쪽)'},
+  {id:'case-copd-tiotropium',group:'clinical',
+    stem:'COPD 환자의 기관지 평활근에서 무스카린 작용을 차단해 확장을 돕는 흡입 약물은?',answer:'Tiotropium',
+    options:['Tiotropium','Tropicamide','Oxybutynin','Benztropine','Bethanechol'],
+    note:'Tiotropium은 4차 아민 흡입 항무스카린제로 기관지 확장에 쓰인다. Ipratropium도 같은 용도로 쓰지만 이 보기에는 없다. Tropicamide는 안과, oxybutynin은 방광, benztropine은 떨림에 쓰고 bethanechol은 무스카린 효현제다. (강의록 16쪽)'}
+];
 // A canonical role is assigned when a medicine has several possible applications.
 export const CHOL11_DRUGS=[
   ['atropine','유기인 중독 대응'],['pralidoxime','유기인 중독 대응'],
@@ -84,16 +94,17 @@ export function initChol11Quiz(){
   try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.seen)state={...state,...saved};}catch{}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
   let tab='quiz',current=null,answered=false,session=0;
-  function stats(){$('chol11Stats').textContent=`정답 ${state.right}/${state.total} · 복기한 연결 ${Object.keys(state.seen).length}/${CHOL11_FACTS.length+CHOL11_SPECIALS.length}`;}
+  function stats(){$('chol11Stats').textContent=`정답 ${state.right}/${state.total} · 복기한 연결 ${Object.keys(state.seen).length}/${CHOL11_FACTS.length+CHOL11_SPECIALS.length+CHOL11_CASES.length}`;}
   function next(){
-    const all=[...CHOL11_FACTS,...CHOL11_SPECIALS];
+    const all=[...CHOL11_FACTS,...CHOL11_SPECIALS,...CHOL11_CASES];
     let pool=all.filter(f=>!(state.recent||[]).includes(f.id)&&f.group!==state.lastGroup);
     if(!pool.length)pool=all.filter(f=>!(state.recent||[]).includes(f.id));
+    if(session%4===0){const short=pool.filter(f=>CHOL11_SPECIALS.includes(f)||CHOL11_CASES.includes(f));if(short.length)pool=short;}
     const weight=f=>(state.seen[f.id]||0)-0.3*(state.missed[f.id]||0);
     const low=Math.min(...pool.map(weight));const fact=shuffle(pool.filter(f=>weight(f)===low))[0];
     const target=!state.lastTarget;state.lastTarget=target;state.lastGroup=fact.group;
     state.recent=[fact.id,...(state.recent||[]).filter(id=>id!==fact.id)].slice(0,3);
-    current=CHOL11_SPECIALS.includes(fact)?makeChol11Special(fact):makeChol11Question(fact,target);
+    current=CHOL11_SPECIALS.includes(fact)||CHOL11_CASES.includes(fact)?makeChol11Special(fact):makeChol11Question(fact,target);
     answered=false;session++;save();stats();
     $('chol11Progress').textContent=`이번 회독 ${session}문제`;$('chol11Stem').textContent=current.stem;
     $('chol11Feedback').hidden=true;$('chol11Next').hidden=true;
