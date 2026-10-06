@@ -29,6 +29,7 @@
 .hub-group-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 3px 13px}
 .hub-group-head h2{margin:0;font-size:19px;letter-spacing:-.035em}
 .hub-group-head p{margin:0;color:var(--muted);font-size:12px}
+.hub-card-stack{display:grid;gap:10px}
 .hub-card{display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:15px;padding:23px;border:1px solid #dce8ec;border-radius:20px;background:#fff;text-align:left;box-shadow:var(--shadow)}
 .hub-card:hover{border-color:#79bcd4;transform:translateY(-2px)}
 .hub-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:14px;background:#e3f2fa;color:#176785;font-weight:950}
