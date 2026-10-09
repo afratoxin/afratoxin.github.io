@@ -1,10 +1,14 @@
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
 import {initCypQuiz} from './cyp.mjs?v=20261007-1';
 import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261007-1';
-import {initAnsQuiz} from './ans9.mjs?v=20261007-1';
+import {initAnsQuiz} from './ans9.mjs?v=20261009-1';
 import {initCholQuiz} from './chol10.mjs?v=20261007-1';
 import {initChol11Quiz} from './chol11.mjs?v=20261007-1';
 import {initTransportQuiz} from './transport8.mjs?v=20261007-1';
+import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261009-1';
+import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261009-1';
+import {buildMixedPool,nextMixedQuestion} from './autonomic-mixed.mjs?v=20261009-1';
+import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261009-1';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -15,6 +19,10 @@ const ans=initAnsQuiz();
 const chol=initCholQuiz();
 const chol11=initChol11Quiz();
 const tx=initTransportQuiz();
+const adr12=initAutonomicQuiz({prefix:'adr12',viewId:'adr12View',bank:ADR12_QUESTIONS,matchItems:ADR12_MATCH,storageKey:'pharmacology-adrenergic-12-v1'});
+const adr13=initAutonomicQuiz({prefix:'adr13',viewId:'adr13View',bank:ADR13_QUESTIONS,matchItems:ADR13_MATCH,storageKey:'pharmacology-adrenergic-13-v1'});
+const mixedPool=buildMixedPool();
+const mixed=initAutonomicQuiz({prefix:'mixed',viewId:'mixedView',bank:mixedPool,draw:state=>nextMixedQuestion(mixedPool,state),storageKey:'pharmacology-autonomic-mixed-v1'});
 const STORAGE='pharmacology-exam-2026-v1';
 let data=null,year='all',section='all',current=null,shown=null,answered=false,selected=new Set(),session=0,mode='quiz';
 let progress={seen:{},correct:{},missed:{},recent:[]};
@@ -31,7 +39,7 @@ function label(unit){
 function show(view){
   const jumpToChol11Match=view==='chol11match';
   if(jumpToChol11Match)view='chol11';
-  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','menu','practice','review'])$(name+'View').hidden=(view!==name);
+  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','menu','practice','review'])$(name+'View').hidden=(view!==name);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
   $('archiveNotice').hidden=!archive;
@@ -45,6 +53,9 @@ function show(view){
     chol11.open();
     if(jumpToChol11Match)$('chol11DragTab').click();
   }
+  if(view==='adr12')adr12.open();
+  if(view==='adr13')adr13.open();
+  if(view==='mixed')mixed.open();
   window.scrollTo({top:0,behavior:'instant'});
 }
 function stats(){
@@ -206,6 +217,6 @@ try{
   menu();
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
-  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','archive'].includes(location.hash.slice(1)))
+  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}

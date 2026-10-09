@@ -29,9 +29,9 @@
 .hub-group-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 3px 13px}
 .hub-group-head h2{margin:0;font-size:19px;letter-spacing:-.035em}
 .hub-group-head p{margin:0;color:var(--muted);font-size:12px}
-.chol-group{grid-column:1/-1}
-.hub-card-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.hub-card-stack .hub-card{width:100%}
+.chol-group,.adr-group{grid-column:1/-1}
+.hub-card-stack{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}
+.hub-card-stack .hub-card{width:fit-content;flex:0 1 auto;max-width:min(100%,475px)}
 .hub-card{display:grid;grid-template-columns:56px minmax(0,auto) auto;align-items:center;gap:15px;width:fit-content;max-width:100%;padding:23px;border:1px solid #dce8ec;border-radius:20px;background:#fff;text-align:left;box-shadow:var(--shadow)}
 .hub-card>span:nth-child(2){min-width:0;max-width:52ch}
 .hub-card:hover{border-color:#79bcd4;transform:translateY(-2px)}
@@ -111,5 +111,5 @@
 .memory-table tbody tr:nth-child(even){background:#f8fbfd}
 .cyp-footnote{color:#657784;font-size:12px;line-height:1.7}
 @media(max-width:800px){.cyp-layout,.ans-layout{grid-template-columns:1fr}.drop-zones{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:850px){.hub-groups{grid-template-columns:minmax(0,1fr);max-width:620px}.chol-group{grid-column:auto}.hub-card-stack{grid-template-columns:minmax(0,1fr)}.hub-group:nth-child(2) .hub-card{min-height:126px}}
-@media(max-width:550px){.hub-hero{padding:30px 23px}.topbar-actions .back-button{padding:7px 9px}.hub-group{width:100%;max-width:100%;padding:13px}.hub-group-head{display:block}.hub-group-head p{margin-top:3px}.hub-card{width:100%;padding:18px;gap:10px;grid-template-columns:44px minmax(0,1fr) auto}.hub-icon{width:43px;height:43px}.hub-card strong{font-size:16px}.match-column{padding:10px}.drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.zone-chips .drug-chip{font-size:11px}.match-pool small{display:none}.ans-tabs button{flex:1;padding:9px 7px;font-size:11px}}
+@media(max-width:850px){.hub-groups{grid-template-columns:minmax(0,1fr);max-width:620px}.chol-group,.adr-group{grid-column:auto}.hub-group:nth-child(2) .hub-card{min-height:126px}}
+@media(max-width:550px){.hub-hero{padding:30px 23px}.topbar-actions .back-button{padding:7px 9px}.hub-group{width:100%;max-width:100%;padding:13px}.hub-group-head{display:block}.hub-group-head p{margin-top:3px}.hub-card{width:100%;padding:18px;gap:10px;grid-template-columns:44px minmax(0,1fr) auto}.hub-card-stack .hub-card{width:100%;max-width:100%}.hub-icon{width:43px;height:43px}.hub-card strong{font-size:16px}.match-column{padding:10px}.drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.zone-chips .drug-chip{font-size:11px}.match-pool small{display:none}.ans-tabs button{flex:1;padding:9px 7px;font-size:11px}}

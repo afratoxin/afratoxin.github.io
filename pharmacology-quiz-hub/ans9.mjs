@@ -1,6 +1,15 @@
 // 2026년 9강 자율신경계 약리 기초. 강의록 10·12–20·24–25쪽.
 // Each incorrect statement changes one transporter, receptor, substrate, direction, or location.
+import {createMatchBoard} from './match-board.mjs?v=20261009-1';
 const f=(id,group,stage,correct,incorrect,note,page)=>({id,group,stage,correct,incorrect,note,page});
+export const ANS_MATCH=[
+  ['hemicholinium','ChT · choline 유입 억제'],['vesamicol','VAChT · ACh 소포 저장 억제'],['botulinum toxin','SNARE · ACh 유리 억제'],
+  ['metyrosine','Tyrosine hydroxylase 억제'],['reserpine','VMAT · 카테콜아민 저장 억제'],
+  ['bretylium','카테콜아민 유리 억제'],['guanethidine','카테콜아민 유리 억제'],
+  ['cocaine','NET · NE 재흡수 억제'],['tricyclic antidepressants','NET · NE 재흡수 억제'],
+  ['acetylcholine','콜린성 전달물질'],['norepinephrine','아드레날린성 전달물질'],['epinephrine','아드레날린성 전달물질'],
+  ['nicotine','신경절 Nn 효현'],['atropine','무스카린 수용체 차단']
+].map(([drug,category])=>({drug,category}));
 export const ANS_FACTS=[
   f('somatic','circuit','회로','체성 운동신경의 ACh는 골격근의 Nm 수용체에 결합한다.','체성 운동신경의 ACh는 골격근의 Nn 수용체에 결합한다.','골격근 신경근 접합부는 Nm이다.',10),
   f('ganglion-sym','circuit','회로','교감신경 절전섬유의 ACh는 신경절 Nn 수용체에 결합한다.','교감신경 절전섬유의 ACh는 신경절 Nm 수용체에 결합한다.','자율신경절의 니코틴 수용체는 Nn이다.',10),
@@ -106,11 +115,12 @@ export function initAnsQuiz(){
   try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.main&&saved?.gpcr)state=saved;}catch{}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
   let tab='main',current=null,answered=false,session={main:0,gpcr:0};
+  const match=createMatchBoard({poolId:'ansPool',cardsId:'ansCards',zonesId:'ansZones',statusId:'ansDragStatus',checkId:'ansCheck',resetId:'ansReset',items:ANS_MATCH,categoryOf:x=>x.category,keyOf:x=>x.drug,labelOf:x=>x.drug,onGrade:()=>{}});
   function renderStats(){
-    const s=state[tab],total=tab==='gpcr'?ANS_FACTS.filter(f=>f.group==='gpcr').length:ANS_FACTS.filter(f=>f.group!=='gpcr').length+ANS_CASES.length;
+    const s=state[tab==='gpcr'?'gpcr':'main'],total=tab==='gpcr'?ANS_FACTS.filter(f=>f.group==='gpcr').length:ANS_FACTS.filter(f=>f.group!=='gpcr').length+ANS_CASES.length;
     $('ansStats').textContent=`정답 ${s.correct} / ${s.attempted} · 복기한 연결 ${Object.keys(s.seen).length}/${total}`;
     $('ansTopic').textContent=tab==='gpcr'?'M1–M5 · α1 · α2 · β · Gs/Gq/Gi':'회로·전달 단계·작용 종결';
-    for(const [id,active] of [['ansMainTab',tab==='main'],['ansGpcrTab',tab==='gpcr']]){
+    for(const [id,active] of [['ansMainTab',tab==='main'],['ansGpcrTab',tab==='gpcr'],['ansDragTab',tab==='match']]){
       $(id).classList.toggle('active',active);$(id).setAttribute('aria-selected',String(active));
     }
   }
@@ -158,14 +168,17 @@ export function initAnsQuiz(){
     });
     fb.append(strong,answer,list);fb.hidden=false;$('ansNext').hidden=false;
   }
-  for(const [id,choice] of [['ansMainTab','main'],['ansGpcrTab','gpcr']])$(id).addEventListener('click',()=>{
-    if(tab===choice)return;tab=choice;current=null;next();
+  for(const [id,choice] of [['ansMainTab','main'],['ansGpcrTab','gpcr'],['ansDragTab','match']])$(id).addEventListener('click',()=>{
+    if(tab===choice)return;tab=choice;
+    $('ansQuizPanel').hidden=tab==='match';$('ansDragPanel').hidden=tab!=='match';
+    if(tab==='match'){match.open();renderStats();return;}
+    current=null;next();
   });
   $('ansNext').addEventListener('click',next);
   document.addEventListener('keydown',event=>{
-    if($('ansView').hidden||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
+    if($('ansView').hidden||tab==='match'||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answer(Number(event.key)-1);}
     if(event.key==='Enter'&&answered){event.preventDefault();next();}
   });
-  return {open(){if(!current)next();}};
+  return {open(){if(tab==='match')match.open();else if(!current)next();}};
 }

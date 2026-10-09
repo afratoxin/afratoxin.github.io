@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물대사 CYP probe drug 대응 퀴즈와 약물의 이해 족보 회독">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261007-2">
+  <link rel="stylesheet" href="style.css?v=20261009-1">
 </head>
 <body>
   <main class="shell">
@@ -15,7 +15,7 @@
       <div class="topbar-actions"><span class="save-note">학습 기록은 이 브라우저에 저장됩니다</span><button id="hubBack" class="back-button" type="button" hidden>← 단원 메뉴</button></div>
     </header>
     <section id="homeView">
-      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 7·8강 약동학과 9–11강 자율신경계·콜린성 약리학을 단원별로 복습할 수 있습니다.</p></div>
+      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 7·8강 약동학과 9–13강 자율신경계 약리학을 개별·종합 퀴즈로 복습할 수 있습니다.</p></div>
       <div class="hub-groups">
         <section class="hub-group" aria-labelledby="examGroupTitle"><div class="hub-group-head"><h2 id="examGroupTitle">족보 회독</h2><p>복원 기출을 강의별로 반복</p></div>
           <button type="button" data-open="menu" class="hub-card archive-card"><span class="hub-icon">족보</span><span><strong>족보 문항 풀기</strong><small>강의별 전체 문항 · 오답 다시 풀기 · 원문 확인 목록</small><span class="hub-tags"><span>단원별</span><span>오답 회독</span><span>학습 기록</span></span></span><b aria-hidden="true">→</b></button>
@@ -25,13 +25,22 @@
         </section>
         <section class="hub-group" aria-labelledby="txGroupTitle"><div class="hub-group-head"><h2 id="txGroupTitle">8강 · 약물수송체</h2><p>ABC·SLC · 이동 방향 · 표적 치료제</p></div><button type="button" data-open="tx" class="hub-card cyp-card"><span class="hub-icon">Tpt</span><span><strong>8강 · 약물수송체 퀴즈</strong><small>족보형 5지선다 · Ae 계산 · 약물–수송체 전체 매칭 · 표적 치료제 암기표</small><span class="hub-tags"><span>8강</span><span>방향·기전</span><span>Ae 계산</span><span>약물 매칭</span><span>암기표</span></span></span><b aria-hidden="true">→</b></button></section>
         <section class="hub-group" aria-labelledby="ansGroupTitle"><div class="hub-group-head"><h2 id="ansGroupTitle">9강 · 자율신경계 약리 기초</h2><p>신경 회로·전달 단계·G 단백질</p></div>
-          <button type="button" data-open="ans" class="hub-card ans-card"><span class="hub-icon">ANS</span><span><strong>9강 · 자율신경계 약리 퀴즈</strong><small>전달물질과 수용체 · 억제약물의 작용 단계 · 별도 Gs/Gq/Gi 탭</small><span class="hub-tags"><span>9강</span><span>5지선다</span><span>옳은·틀린 선지</span><span>G 단백질</span></span></span><b aria-hidden="true">→</b></button>
+          <button type="button" data-open="ans" class="hub-card ans-card"><span class="hub-icon">ANS</span><span><strong>9강 · 자율신경계 약리 퀴즈</strong><small>신경 회로 · 억제 약물 · G 단백질</small><span class="hub-tags"><span>9강</span><span>5지선다</span><span>전체 약물 매칭</span></span></span><b aria-hidden="true">→</b></button>
         </section>
         <section class="hub-group chol-group" aria-labelledby="cholGroupTitle"><div class="hub-group-head"><h2 id="cholGroupTitle">10–11강 · 콜린성 약리학</h2><p>약물 작용과 임상 응용을 이어서 복습</p></div>
           <div class="hub-card-stack">
             <button type="button" data-open="chol" class="hub-card ans-card"><span class="hub-icon">ACh</span><span><strong>10강 · 콜린성 약리학 (1)</strong><small>직접작용제 · AChE 억제제 · 용도와 BBB 통과</small><span class="hub-tags"><span>10강</span><span>5지선다</span><span>전체 약물 매칭</span></span></span><b aria-hidden="true">→</b></button>
             <button type="button" data-open="chol11" class="hub-card ans-card"><span class="hub-icon">ACh−</span><span><strong>11강 · 콜린성 약리학 (2)</strong><small>항무스카린제 · 중독 대응 · 신경근 봉쇄</small><span class="hub-tags"><span>11강</span><span>5지선다</span><span>전체 약물 매칭</span></span></span><b aria-hidden="true">→</b></button>
           </div><button type="button" data-open="chol11match" class="hub-shortcut">11강 약물 30개 매칭 바로 풀기 →</button>
+        </section>
+        <section class="hub-group adr-group" aria-labelledby="adrGroupTitle"><div class="hub-group-head"><h2 id="adrGroupTitle">12–13강 · 아드레날린성 약리학</h2><p>효현제와 차단제 비교</p></div>
+          <div class="hub-card-stack">
+            <button type="button" data-open="adr12" class="hub-card ans-card"><span class="hub-icon">αβ+</span><span><strong>12강 · 아드레날린성 (1)</strong><small>α·β 효현제와 임상 용도</small><span class="hub-tags"><span>5지선다</span><span>전체 약물 매칭</span></span></span><b aria-hidden="true">→</b></button>
+            <button type="button" data-open="adr13" class="hub-card ans-card"><span class="hub-icon">αβ−</span><span><strong>13강 · 아드레날린성 (2)</strong><small>α·β 차단제와 임상 주의</small><span class="hub-tags"><span>5지선다</span><span>전체 약물 매칭</span></span></span><b aria-hidden="true">→</b></button>
+          </div>
+        </section>
+        <section class="hub-group" aria-labelledby="mixedGroupTitle"><div class="hub-group-head"><h2 id="mixedGroupTitle">9–13강 · 종합 회독</h2><p>다섯 강의 연결</p></div>
+          <button type="button" data-open="mixed" class="hub-card ans-card"><span class="hub-icon">Σ</span><span><strong>자율신경계 5강 종합 퀴즈</strong><small>기전 · 약물 선택 · 교차 사례</small><span class="hub-tags"><span>5지선다</span><span>강의별 균형</span></span></span><b aria-hidden="true">→</b></button>
         </section>
       </div>
     </section>
@@ -44,9 +53,11 @@
     </section>
     <section id="ansView" class="ans-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 9강 · AUTONOMIC PHARMACOLOGY</p><h2>자율신경계 약리 기초 퀴즈</h2></div><p>옳은 것·옳지 않은 것 번갈아 출제 · 키보드 1–5 / Enter</p></div>
-      <div class="ans-tabs" role="tablist" aria-label="9강 퀴즈 주제"><button id="ansMainTab" type="button" role="tab" aria-selected="true" class="active">신경 회로·전달 단계</button><button id="ansGpcrTab" type="button" role="tab" aria-selected="false">Gs · Gq · Gi 수용체 분류</button></div>
-      <p class="cyp-intro">전달 단계의 약물을 고르는 짧은 사례와, 작용 방향을 한 단계씩 바꾼 설명형 문항을 함께 복습하세요.</p>
-      <div class="ans-layout"><article class="question-card"><div class="q-meta"><span class="badge">2026 9강 · 자율신경계 약리 기초</span><span id="ansProgress" class="q-count"></span></div><h2 id="ansStem"></h2><div id="ansChoices" class="options"></div><div id="ansFeedback" class="feedback" hidden></div><button id="ansNext" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">현재 범위</span><strong id="ansTopic"></strong><p id="ansStats"></p><p>강의록 10·12–20·24–25쪽의 회로도와 요약표를 기준으로 합니다.</p><p>Reserpine의 epinephrine 소포 유입 차단은 강의록상 참인 설명입니다.</p></aside></div>
+      <div class="ans-tabs" role="tablist" aria-label="9강 퀴즈 주제"><button id="ansMainTab" type="button" role="tab" aria-selected="true" class="active">신경 회로·전달 단계</button><button id="ansGpcrTab" type="button" role="tab" aria-selected="false">Gs · Gq · Gi 수용체 분류</button><button id="ansDragTab" type="button" role="tab" aria-selected="false">전체 약물 드래그 매칭</button></div>
+      <div id="ansQuizPanel" role="tabpanel"><p class="cyp-intro">전달 단계의 약물을 고르는 짧은 사례와, 작용 방향을 한 단계씩 바꾼 설명형 문항을 함께 복습하세요.</p>
+        <div class="ans-layout"><article class="question-card"><div class="q-meta"><span class="badge">2026 9강 · 자율신경계 약리 기초</span><span id="ansProgress" class="q-count"></span></div><h2 id="ansStem"></h2><div id="ansChoices" class="options"></div><div id="ansFeedback" class="feedback" hidden></div><button id="ansNext" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">현재 범위</span><strong id="ansTopic"></strong><p id="ansStats"></p><p>강의록 10·12–20·24–25쪽의 회로도와 요약표를 기준으로 합니다.</p></aside></div>
+      </div>
+      <div id="ansDragPanel" role="tabpanel" hidden><p class="cyp-intro">신경전달 단계·수용체 약물을 옮기고 원하는 때 채점하세요. 카드는 놓은 칸에서 다시 선택해 다른 칸으로 이동할 수 있습니다.</p><div class="match-board"><div id="ansPool" class="match-column match-pool"><h3>약물 카드 <span class="pool-count"></span></h3><div id="ansCards" class="drag-cards"></div></div><div class="match-column match-targets"><h3>작용 단계·수용체</h3><div id="ansZones" class="drop-zones"></div></div></div><div class="match-actions"><div id="ansDragStatus" class="match-status" role="status"></div><button id="ansCheck" class="primary" type="button">지금 채점하기</button><button id="ansReset" class="primary" type="button" hidden>이 배치에서 계속하기 →</button></div></div>
     </section>
     <section id="cypView" class="cyp-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 7강 · DRUG METABOLISM · CYP</p><h2>CYP 약물 대응 퀴즈</h2></div><p>분류와 약동학적 변화 방향을 함께 회상 · 키보드 1–5 / Enter</p></div>
@@ -67,6 +78,23 @@
       <div class="ans-tabs" role="tablist" aria-label="11강 퀴즈 방식"><button id="chol11QuizTab" type="button" role="tab" aria-selected="true" class="active">족보형 5지선다</button><button id="chol11DragTab" type="button" role="tab" aria-selected="false">전체 약물 드래그 매칭</button></div>
       <div id="chol11QuizPanel" role="tabpanel"><p class="cyp-intro">작용 방향을 바꾼 설명형 선지와 증상·용도에서 약물을 고르는 짧은 선지를 함께 풉니다.</p><div class="ans-layout"><article class="question-card"><div class="q-meta"><span class="badge">2026 11강 · 콜린성 약리학 (2)</span><span id="chol11Progress" class="q-count"></span></div><h2 id="chol11Stem"></h2><div id="chol11Choices" class="options"></div><div id="chol11Feedback" class="feedback" hidden></div><button id="chol11Next" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">회독 기록</span><strong id="chol11Stats"></strong><p>강의록 11–22쪽의 장기별 항무스카린 작용과 신경근 봉쇄를 기준으로 합니다.</p><p>과민성 방광 치료제 중 mirabegron의 다른 기전은 족보의 비교 발문으로만 다룹니다.</p></aside></div></div>
       <div id="chol11DragPanel" role="tabpanel" hidden><p class="cyp-intro">약물 30개를 강의록의 대표 용도·역할에 옮기고 원하는 때에 채점하세요. 카드가 여러 용도로 쓰일 때는 이 표의 대표 연결을 기준으로 합니다.</p><div class="match-board"><div id="chol11Pool" class="match-column match-pool"><h3>약물 카드 <span class="pool-count"></span></h3><div id="chol11Cards" class="drag-cards"></div><small>칸 속 카드를 누른 뒤 다른 칸이나 목록의 빈 곳을 누르면 옮길 수 있습니다.</small></div><div class="match-column match-targets"><h3>대표 용도·역할</h3><div id="chol11Zones" class="drop-zones"></div></div></div><div class="match-actions"><div id="chol11DragStatus" class="match-status" role="status"></div><button id="chol11Check" class="primary" type="button" >지금 채점하기</button><button id="chol11Reset" class="primary" type="button" hidden>이 배치에서 계속하기 →</button></div></div>
+    </section>
+    <section id="adr12View" class="ans-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 12강 · ADRENERGIC AGONISTS</p><h2>아드레날린성 약리학 (1)</h2></div><p>수용체 선택성 · 직접·간접작용 · 임상 사례</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="12강 퀴즈 방식"><button id="adr12QuizTab" type="button" role="tab" aria-selected="true" class="active">족보형 5지선다</button><button id="adr12DragTab" type="button" role="tab" aria-selected="false">전체 약물 드래그 매칭</button></div>
+      <div id="adr12QuizPanel" role="tabpanel"><p class="cyp-intro">임상 상황과 수용체 조건을 발문에서 판단하고, 다섯 약물 중 하나를 고르세요. 기전·효과 선지도 함께 나옵니다.</p><div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="adr12Source" class="badge">2026 12강</span><span id="adr12Progress" class="q-count"></span></div><h2 id="adr12Stem"></h2><div id="adr12Choices" class="options"></div><div id="adr12Feedback" class="feedback" hidden></div><button id="adr12Next" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">회독 기록</span><strong id="adr12Stats"></strong><p>α1 → Gq · α2 → Gi · β → Gs</p><p>Epinephrine은 α·β에 작용하고 norepinephrine은 β2 작용이 미미합니다.</p></aside></div></div>
+      <div id="adr12DragPanel" role="tabpanel" hidden><p class="cyp-intro">강의록의 대표 약물 25개를 수용체·작용 기전별로 배치하세요. 일부만 놓고도 채점하고, 같은 배치에서 이어 풀 수 있습니다.</p><div class="match-board"><div id="adr12Pool" class="match-column match-pool"><h3>약물 카드 <span class="pool-count"></span></h3><div id="adr12Cards" class="drag-cards"></div></div><div class="match-column match-targets"><h3>대표 수용체·작용</h3><div id="adr12Zones" class="drop-zones"></div></div></div><div class="match-actions"><div id="adr12DragStatus" class="match-status" role="status"></div><button id="adr12Check" class="primary" type="button">지금 채점하기</button><button id="adr12Reset" class="primary" type="button" hidden>이 배치에서 계속하기 →</button></div></div>
+    </section>
+    <section id="adr13View" class="ans-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 13강 · ADRENERGIC ANTAGONISTS</p><h2>아드레날린성 약리학 (2)</h2></div><p>α·β 차단제 · 갈색세포종 · 전립선비대증</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="13강 퀴즈 방식"><button id="adr13QuizTab" type="button" role="tab" aria-selected="true" class="active">족보형 5지선다</button><button id="adr13DragTab" type="button" role="tab" aria-selected="false">전체 약물 드래그 매칭</button></div>
+      <div id="adr13QuizPanel" role="tabpanel"><p class="cyp-intro">선택성·가역성·부작용을 먼저 읽고 약물을 고르세요. 비슷한 α·β 차단제 사이의 차이를 해설에서 확인합니다.</p><div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="adr13Source" class="badge">2026 13강</span><span id="adr13Progress" class="q-count"></span></div><h2 id="adr13Stem"></h2><div id="adr13Choices" class="options"></div><div id="adr13Feedback" class="feedback" hidden></div><button id="adr13Next" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">회독 기록</span><strong id="adr13Stats"></strong><p>Phenoxybenzamine은 비가역적 α 차단, phentolamine은 가역적 α 차단입니다.</p><p>천식·저혈당 상황에서 β2 차단 여부를 함께 판단하세요.</p></aside></div></div>
+      <div id="adr13DragPanel" role="tabpanel" hidden><p class="cyp-intro">α·β 차단제 등 대표 약물 24개를 한 번에 배치하세요. 놓은 카드를 다시 눌러 칸에서 칸으로 옮길 수 있습니다.</p><div class="match-board"><div id="adr13Pool" class="match-column match-pool"><h3>약물 카드 <span class="pool-count"></span></h3><div id="adr13Cards" class="drag-cards"></div></div><div class="match-column match-targets"><h3>대표 차단 작용</h3><div id="adr13Zones" class="drop-zones"></div></div></div><div class="match-actions"><div id="adr13DragStatus" class="match-status" role="status"></div><button id="adr13Check" class="primary" type="button">지금 채점하기</button><button id="adr13Reset" class="primary" type="button" hidden>이 배치에서 계속하기 →</button></div></div>
+    </section>
+    <section id="mixedView" class="ans-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 9–13강 · INTEGRATED RECALL</p><h2>자율신경계 약리 5강 종합</h2></div><p>각 강의 균형 순환 · 기전과 임상 사례 연결</p></div>
+      <p class="cyp-intro">다섯 강의와 교차 사례가 고르게 나옵니다. 방광·기도·녹내장처럼 같은 장기에서 수용체와 약물이 어떻게 다른지 연결해 보세요.</p>
+      <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="mixedSource" class="badge">9–13강</span><span id="mixedProgress" class="q-count"></span></div><h2 id="mixedStem"></h2><div id="mixedChoices" class="options"></div><div id="mixedFeedback" class="feedback" hidden></div><button id="mixedNext" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">종합 회독</span><strong id="mixedStats"></strong><p>9강 회로·전달 → 10강 콜린 효현 → 11강 콜린 차단 → 12강 아드레날린 효현 → 13강 아드레날린 차단.</p><p>채점 후 해당 강의와 선택지의 핵심 차이를 확인할 수 있습니다.</p></aside></div>
     </section>
     <section id="tableView" class="cyp-view" hidden><div class="section-head"><div><p class="eyebrow dark">2026 7강 · PROBE DRUG · LECTURE NOTES</p><h2>CYP–probe drug 전체 암기표</h2></div><p>Probe drug 10개 · 강의록 16·36·39쪽</p></div><p class="cyp-intro">강의록에서 probe drug으로 제시된 CYP–약물 대응을 모았습니다. CYP2E1은 기질은 제시되지만 이 범위에서 별도의 probe drug이 지정되지 않아 퀴즈에서 제외했습니다.</p><div class="memory-table-wrap"><table class="memory-table"><thead><tr><th scope="col">CYP</th><th scope="col">Probe drug</th><th scope="col">연결해서 기억할 점</th><th scope="col">강의록</th></tr></thead><tbody id="cypTableBody"></tbody></table></div><p class="cyp-footnote">* Clopidogrel은 CYP2C19가 활성화에 관여하는 전구약물입니다. 다른 기질과 농도 변화 방향을 똑같이 외우지 마세요.</p><button type="button" class="primary" data-open="cyp">퀴즈로 확인하기 →</button></section>
     <section class="hero" id="archiveHero" hidden>
@@ -108,6 +136,6 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약물대사·약물수송체·자율신경계·콜린성 약리 강의록 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>강의록 확인: 2026-10-05</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261007-1"></script>
+  <script type="module" src="app.mjs?v=20261009-1"></script>
 </body>
 </html>
