@@ -16,7 +16,7 @@
     h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.1;letter-spacing:-.06em;margin:5px 0 6px}
     .subtitle{margin:0;color:#aab8cf;font-size:.93rem;line-height:1.5}
     .top-actions,.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-    .pill,.ghost,.primary{border:1px solid #43546b;border-radius:12px;padding:11px 15px;color:#e9f4ff;background:#172338;font-weight:750}
+    .pill,.ghost,.primary{border:1px solid #43546b;border-radius:12px;padding:11px 15px;color:#e9f4ff;background:#172338;font-weight:750;text-decoration:none}
     .pill:hover,.ghost:hover{background:#253653}.primary{border-color:#86ecd9;background:#80ecd7;color:#09212b;box-shadow:0 8px 28px #54dfc32e}.primary:hover{background:#a1f6e4}
     .layout{display:grid;grid-template-columns:minmax(0,1.23fr) minmax(330px,.77fr);gap:20px;align-items:start}
     .panel{background:linear-gradient(150deg,#19263a,#111c2e);border:1px solid #2d4058;border-radius:22px;box-shadow:0 16px 40px #0003}
@@ -53,7 +53,7 @@
 <div class="shell">
   <header>
     <div><div class="eyebrow">Brain arena · 01</div><h1>수식 양궁</h1><p class="subtitle">네 숫자로 식을 만들고, 더 높은 점수의 표적을 먼저 맞혀 보세요.</p></div>
-    <div class="top-actions"><button id="share" class="pill" type="button">같은 카드로 도전 공유</button><button id="reset" class="pill" type="button">새 경기</button></div>
+    <div class="top-actions"><a href="../brain-arena/" class="pill">게임 허브</a><button id="reset" class="pill" type="button">새 경기</button></div>
   </header>
   <main class="layout">
     <section class="panel arena" aria-label="수식 양궁 과녁">
@@ -70,7 +70,7 @@
         <div class="four-cards" id="card-display" aria-live="polite"></div>
         <div class="mode" role="group" aria-label="경기 방식"><button type="button" data-mode="timed" class="active">3분 도전</button><button type="button" data-mode="practice">자유 연습</button></div>
         <button id="start" type="button" class="primary">경기 시작</button>
-        <p class="help" id="setup-note">공유받은 링크에서는 같은 첫 카드와 같은 과녁으로 시작합니다. 적중할 때마다 새 카드를 고릅니다. 점수는 각자 기기에서 기록됩니다.</p>
+        <p class="help" id="setup-note">혼자서 목표 점수에 도전하세요. 내가 두 장을 고르면 추가 카드 두 장이 자동으로 지급됩니다.</p>
       </section>
       <section class="panel card">
         <h2>02 · 표적을 선택하고 수식 입력</h2>
@@ -79,10 +79,9 @@
         <div class="keypad" id="keypad" aria-label="수식 기호 입력"></div>
         <div class="feedback" id="feedback" role="status">두 숫자를 고르고 경기를 시작하세요.</div>
         <div class="stat-row"><div class="stat"><span>맞힌 표적</span><strong id="hits">0</strong></div><div class="stat"><span>제출</span><strong id="attempts">0</strong></div><div class="stat"><span>최고 점수</span><strong id="best">0</strong></div></div>
-        <p class="help" id="rival-record" hidden></p>
         <ol class="history" id="history" aria-label="맞힌 표적 기록"></ol>
       </section>
-      <section class="panel card rules"><details><summary>규칙과 수식 입력 도움말</summary><ul><li>매 발사마다 내가 고른 카드 두 장과 상대가 고른 카드 두 장, 총 네 장에 적힌 숫자만 씁니다. 표적 하나를 맞히면 다음 발사에 사용할 카드 두 장을 다시 고릅니다. 같은 숫자와 연산 기호를 여러 번 써도 됩니다.</li><li>숫자는 한 자리씩 사용합니다. 1과 5를 붙여 15로 쓰는 방식은 허용하지 않습니다.</li><li>+ − × ÷, 거듭제곱 ^, 제곱근 √, 팩토리얼 !, 괄호를 쓸 수 있습니다. <strong>√(4)</strong>, <strong>3!</strong>처럼 입력하세요. 소수 목표는 계산 결과로 만듭니다.</li><li>표적을 클릭하고 식을 제출하세요. 맞히면 해당 원의 점수를 얻습니다. 같은 색 원에서 순서상 이어진 목표 세 개를 맞힐 때마다 추가 2점을 받습니다.</li><li>먼저 25점을 얻으면 승리합니다. 3분 도전은 카드 선택 중에도 시간이 흘러가며, 자유 연습은 시간 제한이 없습니다.</li></ul></details></section>
+      <section class="panel card rules"><details><summary>규칙과 수식 입력 도움말</summary><ul><li>매 발사마다 내가 고른 카드 두 장과 자동으로 지급된 두 장, 총 네 장에 적힌 숫자만 씁니다. 표적 하나를 맞히면 다음 발사에 사용할 카드 두 장을 다시 고릅니다. 같은 숫자와 연산 기호를 여러 번 써도 됩니다.</li><li>숫자는 한 자리씩 사용합니다. 1과 5를 붙여 15로 쓰는 방식은 허용하지 않습니다.</li><li>+ − × ÷, 거듭제곱 ^, 제곱근 √, 팩토리얼 !, 괄호를 쓸 수 있습니다. <strong>√(4)</strong>, <strong>3!</strong>처럼 입력하세요. 소수 목표는 계산 결과로 만듭니다.</li><li>표적을 클릭하고 식을 제출하세요. 맞히면 해당 원의 점수를 얻습니다. 같은 색 원에서 순서상 이어진 목표 세 개를 맞힐 때마다 추가 2점을 받습니다.</li><li>25점을 모으면 성공합니다. 3분 도전은 카드 선택 중에도 시간이 흘러가며, 자유 연습은 시간 제한이 없습니다.</li></ul></details></section>
     </div>
   </main>
   <footer>방송 규칙을 바탕으로 새로 제작한 비공식 연습 게임 · 두뇌게임</footer>
@@ -94,45 +93,31 @@
   const {RINGS, calculate, matches, scoreClaim} = window.ArcheryEngine;
   const $ = id => document.getElementById(id);
   const deck = Array.from({length:12},(_,i)=>({value:i%6+1,id:i}));
-  let chosen = [0,3], opponent = [1,4], lockedCards = false, selected = null, rivalScore = null, initialCards = null;
+  let chosen = [0,3], bonusCards = [1,4], selected = null;
   let mode = 'timed', phase = 'setup', claimed = new Set(), score = 0, hits = 0, attempts = 0, seconds = 180, interval = null;
 
-  function readLink() {
-    const values = new URLSearchParams(location.search).get('cards');
-    if (!values || !/^([1-6]-){3}[1-6]$/.test(values)) return;
-    const [a,b,c,d] = values.split('-').map(Number);
-    const first=deck.findIndex(x=>x.value===a);
-    chosen = [first,deck.findIndex((x,i)=>i!==first&&x.value===b)];
-    if (chosen.includes(-1)) {chosen=[0,3];return;}
-    opponent=[c,d];lockedCards=true;
-    const rival=new URLSearchParams(location.search).get('rival');
-    if(rival!==null&&/^\d{1,3}$/.test(rival)){rivalScore=Number(rival);$('rival-record').hidden=false;$('rival-record').textContent=`도전장을 보낸 사람의 기록: ${rivalScore}점 · 같은 카드와 3분 조건으로 도전해 보세요.`;document.querySelector('[data-mode="practice"]').disabled=true}
-  }
   function playerCards(){return chosen.map(index=>deck[index].value)}
-  function allCards(){return [...playerCards(),...opponent]}
-  function nextOpponent(round){
-    let seed=initialCards.reduce((sum,value)=>sum*7+value,0)+round*104729;
+  function allCards(){return [...playerCards(),...bonusCards]}
+  function drawBonusCards(){
     const pool=[1,2,3,4,5,6,1,2,3,4,5,6];
-    const first=pool.splice(seed%pool.length,1)[0];
-    seed=(Math.imul(seed,1664525)+1013904223)>>>0;
-    return [first,pool.splice(seed%pool.length,1)[0]];
+    return [0,1].map(()=>pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
   }
   function updateCards(){
     $('deck').innerHTML='';
     deck.forEach(item=>{
       const b=document.createElement('button');b.type='button';b.className='number-card'+(chosen.includes(item.id)?' chosen':'');b.textContent=item.value;
       b.setAttribute('aria-label',`${item.value} 카드 ${Math.floor(item.id/6)+1}번`);b.setAttribute('aria-pressed',String(chosen.includes(item.id)));
-      b.disabled=phase!=='choosing'&&(phase!=='setup'||lockedCards);
+      b.disabled=phase!=='choosing'&&phase!=='setup';
       b.onclick=()=>{if(chosen.includes(item.id)) chosen=chosen.filter(x=>x!==item.id);else if(chosen.length<2) chosen.push(item.id);updateCards()};
       $('deck').append(b);
     });
     $('card-display').innerHTML='';
     const add=(value,cls='')=>{const s=document.createElement('span');s.className='mini '+cls;s.textContent=value;$('card-display').append(s)};
     playerCards().forEach(v=>add(v));
-    const vs=document.createElement('span');vs.className='versus';vs.textContent='내 선택  /  상대 선택';$('card-display').append(vs);
-    if(phase==='playing'||phase==='finished'||lockedCards&&phase==='setup')opponent.forEach(v=>add(v,'bot'));else add('?','bot'),add('?','bot');
+    const vs=document.createElement('span');vs.className='versus';vs.textContent='내 선택  /  자동 지급';$('card-display').append(vs);
+    if(phase==='playing'||phase==='finished')bonusCards.forEach(v=>add(v,'bot'));else add('?','bot'),add('?','bot');
     $('start').disabled=!['setup','choosing'].includes(phase)||chosen.length!==2;
-    $('setup-help').textContent=phase==='choosing'?'적중했습니다! 다음 발사에 사용할 숫자 카드 두 장을 새로 고르세요.':lockedCards?'공유된 첫 카드 네 장입니다. 바로 경기를 시작하세요.':'아래 카드 두 장을 고르세요. 같은 숫자도 두 장까지 선택할 수 있습니다.';
+    $('setup-help').textContent=phase==='choosing'?'적중했습니다! 다음 발사에 사용할 숫자 카드 두 장을 새로 고르세요.':'아래 카드 두 장을 고르세요. 같은 숫자도 두 장까지 선택할 수 있습니다.';
   }
   function makeBoard(){
     $('shots').innerHTML='';
@@ -159,28 +144,25 @@
     phase='finished';clearInterval(interval);interval=null;document.body.classList.remove('choosing','playing');document.body.classList.add('finished');$('formula').disabled=true;$('submit').disabled=true;
     updateCards();
     try{const previous=Number(localStorage.getItem('expression-archery-best')||0);if(score>previous)localStorage.setItem('expression-archery-best',String(score))}catch{}
-    updateStats();const comparison=rivalScore===null?'':score>rivalScore?' · 도전장 기록을 넘었습니다!':score===rivalScore?' · 도전장 기록과 동점입니다.':' · 도전장 기록에 다시 도전해 보세요.';
-    show((won?`승리! ${hits}개 표적을 맞혀 ${score}점을 획득했습니다.`:`시간 종료! ${hits}개 표적, ${score}점입니다.`)+comparison,won?'good':'');
+    updateStats();show(won?`성공! ${hits}개 표적을 맞혀 ${score}점을 획득했습니다.`:`시간 종료! ${hits}개 표적, ${score}점입니다.`,won?'good':'');
   }
   function start(){
     if(chosen.length!==2)return;
     if(phase==='choosing'){
-      opponent=nextOpponent(hits);phase='playing';document.body.classList.remove('choosing');document.body.classList.add('playing');
+      bonusCards=drawBonusCards();phase='playing';document.body.classList.remove('choosing');document.body.classList.add('playing');
       $('formula').disabled=false;$('submit').disabled=false;$('selected-label').textContent='과녁에서 목표 숫자를 선택하세요.';updateCards();show('새 카드로 표적을 고르고 수식을 제출하세요.');return;
     }
     if(phase!=='setup')return;
-    if(!lockedCards){const pool=[1,2,3,4,5,6,1,2,3,4,5,6];opponent=[pool.splice(Math.floor(Math.random()*pool.length),1)[0],pool.splice(Math.floor(Math.random()*pool.length),1)[0]]}
-    initialCards=allCards();phase='playing';claimed=new Set();selected=null;score=0;hits=0;attempts=0;seconds=180;
+    bonusCards=drawBonusCards();phase='playing';claimed=new Set();selected=null;score=0;hits=0;attempts=0;seconds=180;
     document.body.classList.add('playing');
     $('history').innerHTML='';$('selected-label').textContent='과녁에서 목표 숫자를 선택하세요.';$('formula').value='';$('formula').disabled=false;$('submit').disabled=false;
     document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=true);
     updateCards();makeBoard();updateStats();show('표적을 고른 뒤 수식을 제출하세요.');
     if(mode==='timed')interval=setInterval(()=>{seconds--;updateStats();if(seconds<=0)finish(false)},1000);
   }
-  function reset(){clearInterval(interval);interval=null;phase='setup';lockedCards=false;chosen=[0,3];opponent=[1,5];selected=null;rivalScore=null;initialCards=null;claimed=new Set();score=hits=attempts=0;seconds=180;
+  function reset(){clearInterval(interval);interval=null;phase='setup';chosen=[0,3];bonusCards=[1,5];selected=null;claimed=new Set();score=hits=attempts=0;seconds=180;
     document.body.classList.remove('playing','choosing','finished');$('start').textContent='경기 시작';
-    history.replaceState(null,'',location.pathname);document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=false);
-    $('rival-record').hidden=true;
+    document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=false);
     $('formula').disabled=true;$('submit').disabled=true;$('formula').value='';$('history').innerHTML='';$('selected-label').textContent='과녁에서 목표 숫자를 선택하세요.';
     updateCards();makeBoard();updateStats();show('두 숫자를 고르고 경기를 시작하세요.');
   }
@@ -205,15 +187,7 @@
     b.onclick=()=>{const input=$('formula');if(input.disabled)return;const a=input.selectionStart,z=input.selectionEnd;if(key==='⌫'){const from=a===z?Math.max(0,a-1):a;input.setRangeText('',from,z,'end')}else input.setRangeText(key,a,z,'end');input.focus()};$('keypad').append(b)});
   document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(phase!=='setup')return;mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));updateStats()});
   $('start').onclick=start;$('reset').onclick=reset;
-  $('share').onclick=async()=>{
-    if(phase==='setup'&&chosen.length!==2){show('먼저 숫자 카드 두 장을 골라 주세요.','bad');return}
-    if(phase==='setup'&&!lockedCards){const pool=[1,2,3,4,5,6,1,2,3,4,5,6];opponent=[pool.splice(Math.floor(Math.random()*pool.length),1)[0],pool.splice(Math.floor(Math.random()*pool.length),1)[0]];lockedCards=true;updateCards()}
-    const cards=(initialCards||allCards()).join('-');const url=new URL(location.href);url.searchParams.set('cards',cards);
-    if(phase==='finished'&&mode==='timed')url.searchParams.set('rival',score);else url.searchParams.delete('rival');
-    try{await navigator.clipboard.writeText(url.href);show(phase==='finished'&&mode==='timed'?'내 점수를 포함한 도전 링크를 복사했습니다.':'같은 첫 카드로 시작하는 도전 링크를 복사했습니다.','good')}
-    catch{window.prompt('도전 링크를 복사하세요',url.href)}
-  };
-  readLink();updateCards();makeBoard();updateStats();
+  updateCards();makeBoard();updateStats();
 })();
 </script>
 </body>
