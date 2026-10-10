@@ -41,6 +41,7 @@
     .keypad button:hover{background:#3c5570}.feedback{min-height:48px;border-radius:11px;background:#152337;color:#b3c3d7;padding:11px 13px;font-size:.88rem;line-height:1.45}.feedback.good{background:#174038;color:#a7f3db}.feedback.bad{background:#462b34;color:#ffd0d1}
     .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:13px 0}.stat{border:1px solid #2d4059;border-radius:10px;padding:9px;background:#111d30}.stat span{display:block;color:#93a6bf;font-size:.72rem}.stat strong{display:block;font-size:1.18rem;margin-top:3px}
     .history{max-height:130px;overflow:auto;margin:0;padding-left:20px;color:#b9c8da;font-size:.83rem;line-height:1.75}.history li:first-child{color:#92ead5}
+    .playing #deck,.playing .mode,.playing #start,.playing #setup-help,.playing #setup-note{display:none}.playing .four-cards{margin-bottom:0}
     details{color:#b5c3d7;font-size:.86rem;line-height:1.65}summary{cursor:pointer;color:#e6effb;font-weight:800}details ul{padding-left:20px;margin:9px 0 0}
     footer{text-align:center;color:#73849b;font-size:.78rem;margin:24px 0}
     @media(max-width:950px){.layout{grid-template-columns:1fr}.side{grid-template-columns:repeat(2,minmax(0,1fr))}.side .rules{grid-column:1/-1}.target-wrap{width:min(100%,650px)}}
@@ -68,7 +69,7 @@
         <div class="four-cards" id="card-display" aria-live="polite"></div>
         <div class="mode" role="group" aria-label="경기 방식"><button type="button" data-mode="timed" class="active">3분 도전</button><button type="button" data-mode="practice">자유 연습</button></div>
         <button id="start" type="button" class="primary">경기 시작</button>
-        <p class="help">공유받은 링크에서는 같은 네 장의 카드와 같은 과녁으로 도전합니다. 점수는 각자 기기에서 기록됩니다.</p>
+        <p class="help" id="setup-note">공유받은 링크에서는 같은 네 장의 카드와 같은 과녁으로 도전합니다. 점수는 각자 기기에서 기록됩니다.</p>
       </section>
       <section class="panel card">
         <h2>02 · 표적을 선택하고 수식 입력</h2>
@@ -156,12 +157,14 @@
     if(chosen.length!==2)return;
     if(!lockedCards){const pool=[1,2,3,4,5,6,1,2,3,4,5,6];opponent=[pool.splice(Math.floor(Math.random()*pool.length),1)[0],pool.splice(Math.floor(Math.random()*pool.length),1)[0]]}
     phase='playing';claimed=new Set();selected=null;score=0;hits=0;attempts=0;seconds=180;
+    document.body.classList.add('playing');
     $('history').innerHTML='';$('selected-label').textContent='과녁에서 목표 숫자를 선택하세요.';$('formula').value='';$('formula').disabled=false;$('submit').disabled=false;
     document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=true);
     updateCards();makeBoard();updateStats();show('표적을 고른 뒤 수식을 제출하세요.');
     if(mode==='timed')interval=setInterval(()=>{seconds--;updateStats();if(seconds<=0)finish(false)},1000);
   }
   function reset(){clearInterval(interval);interval=null;phase='setup';lockedCards=false;chosen=[0,3];opponent=[1,5];selected=null;rivalScore=null;claimed=new Set();score=hits=attempts=0;seconds=180;
+    document.body.classList.remove('playing');
     history.replaceState(null,'',location.pathname);document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=false);
     $('rival-record').hidden=true;
     $('formula').disabled=true;$('submit').disabled=true;$('formula').value='';$('history').innerHTML='';$('selected-label').textContent='과녁에서 목표 숫자를 선택하세요.';
