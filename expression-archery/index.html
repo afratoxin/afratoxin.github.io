@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="숫자 카드로 수식을 만들어 과녁의 목표 숫자를 맞히는 두뇌 게임">
+  <title>수식 양궁 | 두뇌게임</title>
+  <style>
+    :root{font-family:Pretendard,"Noto Sans KR",system-ui,-apple-system,sans-serif;color:#eff4ff;background:#0b1120;font-synthesis:none}
+    *{box-sizing:border-box}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.48}
+    body{margin:0;min-height:100vh;background:radial-gradient(circle at 54% -12%,#233854 0,transparent 45%),#0b1120}
+    .shell{max-width:1420px;margin:auto;padding:28px clamp(16px,3vw,42px) 48px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+    .eyebrow{color:#68e3d2;font-size:.75rem;font-weight:850;letter-spacing:.18em;text-transform:uppercase}
+    h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.1;letter-spacing:-.06em;margin:5px 0 6px}
+    .subtitle{margin:0;color:#aab8cf;font-size:.93rem;line-height:1.5}
+    .top-actions,.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+    .pill,.ghost,.primary{border:1px solid #43546b;border-radius:12px;padding:11px 15px;color:#e9f4ff;background:#172338;font-weight:750}
+    .pill:hover,.ghost:hover{background:#253653}.primary{border-color:#86ecd9;background:#80ecd7;color:#09212b;box-shadow:0 8px 28px #54dfc32e}.primary:hover{background:#a1f6e4}
+    .layout{display:grid;grid-template-columns:minmax(0,1.23fr) minmax(330px,.77fr);gap:20px;align-items:start}
+    .panel{background:linear-gradient(150deg,#19263a,#111c2e);border:1px solid #2d4058;border-radius:22px;box-shadow:0 16px 40px #0003}
+    .arena{padding:20px;min-width:0}.arena-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .label{font-size:.75rem;font-weight:800;color:#8f9eb6;letter-spacing:.12em}.score{font-size:1.5rem;font-weight:900;letter-spacing:-.04em}.score small{font-size:.8rem;color:#9dafc3}
+    .meter{height:8px;background:#27374f;border-radius:20px;overflow:hidden;margin:15px 0 5px}.meter>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#56cbbb,#f7d175);transition:width .35s}
+    .target-wrap{width:min(100%,690px);aspect-ratio:1;margin:12px auto 4px;position:relative}
+    .target{position:absolute;inset:0;border-radius:50%;border:8px solid #3a4d60;box-shadow:inset 0 0 55px #07102070,0 14px 50px #0005;background:radial-gradient(circle,#f7da89 0 11%,#bd4c5c 11.3% 23%,#668fd6 23.3% 36%,#34465c 36.3% 52%,#dae4ec 52.3% 69%,#152238 69.3% 100%)}
+    .target::after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from 0deg,#ffffff0b 0deg 1deg,transparent 1deg 30deg);pointer-events:none}
+    .shot{position:absolute;transform:translate(-50%,-50%);border:2px solid #ffffff5c;border-radius:50%;height:clamp(38px,4vw,58px);min-width:clamp(43px,4.4vw,66px);padding:0 5px;z-index:2;color:#122134;background:#e9f1f4;font-weight:900;font-size:clamp(.68rem,1vw,.88rem);box-shadow:0 3px 8px #0008;white-space:nowrap}
+    .shot[data-ring="1"]{background:#34465b;color:white}.shot[data-ring="2"]{background:#6f9bdb;color:#081b36}.shot[data-ring="3"]{background:#d65b69;color:white}.shot[data-ring="4"]{background:#ffe097;color:#392313}.shot[data-ring="0"]{background:#e8edf1;color:#263241}
+    .shot:hover:not(:disabled),.shot.selected{outline:3px solid #67edda;outline-offset:3px;z-index:3;scale:1.055}.shot.claimed{background:#64dfbd;color:#062a29;border-color:#e5fff7}.shot:disabled{opacity:.78}
+    .ring-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 12px;color:#a9b8cc;font-size:.78rem}.ring-legend b{color:white}
+    .side{display:grid;gap:16px}.card{padding:20px}.card h2{font-size:1.12rem;letter-spacing:-.035em;margin:0 0 14px}.cards{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+    .number-card{width:47px;height:60px;border-radius:10px;border:1px solid #66819a;background:#eff4f4;color:#132239;font-size:1.42rem;font-weight:900;box-shadow:0 4px 0 #556b82}
+    .number-card.chosen{background:#88e8d4;box-shadow:0 0 0 3px #75e8d5a0,0 4px 0 #286d70}
+    .number-card:hover{transform:translateY(-2px)}.help{color:#a7b5c9;font-size:.83rem;line-height:1.55;margin:8px 0}.four-cards{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0}
+    .mini{display:inline-grid;place-items:center;width:38px;height:46px;border-radius:8px;background:#eaf2f5;color:#17243b;font-size:1.25rem;font-weight:900}.mini.bot{background:#b9c7dd}.versus{color:#8b9bb3;font-size:.75rem;font-weight:850;margin:0 5px}
+    .mode{display:flex;gap:7px;margin:15px 0}.mode button{padding:9px 12px;border:1px solid #455872;border-radius:10px;background:#152236;color:#bfcce0;font-weight:750}.mode button.active{border-color:#81e7d1;color:#80ebd3;background:#183b42}
+    .form-row{display:flex;gap:8px;align-items:stretch}.formula{min-width:0;flex:1;border:1px solid #506480;border-radius:11px;background:#0d182a;color:#fff;padding:12px 14px;font-size:1.1rem;outline:none}.formula:focus{border-color:#80e9d5;box-shadow:0 0 0 3px #5cddc935}
+    .keypad{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0}.keypad button{min-width:36px;height:35px;padding:0 7px;border:1px solid #465b74;border-radius:8px;background:#23344c;color:#f2f7ff;font-weight:800}
+    .keypad button:hover{background:#3c5570}.feedback{min-height:48px;border-radius:11px;background:#152337;color:#b3c3d7;padding:11px 13px;font-size:.88rem;line-height:1.45}.feedback.good{background:#174038;color:#a7f3db}.feedback.bad{background:#462b34;color:#ffd0d1}
+    .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:13px 0}.stat{border:1px solid #2d4059;border-radius:10px;padding:9px;background:#111d30}.stat span{display:block;color:#93a6bf;font-size:.72rem}.stat strong{display:block;font-size:1.18rem;margin-top:3px}
+    .history{max-height:130px;overflow:auto;margin:0;padding-left:20px;color:#b9c8da;font-size:.83rem;line-height:1.75}.history li:first-child{color:#92ead5}
+    details{color:#b5c3d7;font-size:.86rem;line-height:1.65}summary{cursor:pointer;color:#e6effb;font-weight:800}details ul{padding-left:20px;margin:9px 0 0}
+    footer{text-align:center;color:#73849b;font-size:.78rem;margin:24px 0}
+    @media(max-width:950px){.layout{grid-template-columns:1fr}.side{grid-template-columns:repeat(2,minmax(0,1fr))}.side .rules{grid-column:1/-1}.target-wrap{width:min(100%,650px)}}
+    @media(max-width:660px){.shell{padding:17px 11px 35px}header{align-items:flex-start;flex-direction:column}.top-actions{width:100%}.pill{flex:1}.arena{padding:12px}.side{grid-template-columns:1fr}.target-wrap{width:min(100%,510px)}.shot{height:clamp(30px,8vw,45px);min-width:clamp(35px,9vw,52px);font-size:clamp(.58rem,2.45vw,.78rem);border-width:1px}.card{padding:16px}.number-card{width:43px;height:54px}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div><div class="eyebrow">Brain arena · 01</div><h1>수식 양궁</h1><p class="subtitle">네 숫자로 식을 만들고, 더 높은 점수의 표적을 먼저 맞혀 보세요.</p></div>
+    <div class="top-actions"><button id="share" class="pill" type="button">같은 카드로 도전 공유</button><button id="reset" class="pill" type="button">새 경기</button></div>
+  </header>
+  <main class="layout">
+    <section class="panel arena" aria-label="수식 양궁 과녁">
+      <div class="arena-head"><div><div class="label">TARGET BOARD</div><div class="score"><span id="score">0</span> <small>/ 25점 승리</small></div></div><div id="clock" class="score" aria-live="off">03:00</div></div>
+      <div class="meter" aria-hidden="true"><span id="progress"></span></div>
+      <div class="target-wrap"><div class="target" aria-hidden="true"></div><div id="shots"></div></div>
+      <div class="ring-legend"><span>⚪ <b>1</b>점</span><span>⚫ <b>2</b>점</span><span>🔵 <b>3</b>점</span><span>🔴 <b>4</b>점</span><span>🟡 <b>5</b>점</span><span>인접한 세 목표 +2점</span></div>
+    </section>
+    <div class="side">
+      <section class="panel card">
+        <h2>01 · 숫자 카드</h2>
+        <p class="help" id="setup-help">아래 카드 두 장을 고르세요. 같은 숫자도 두 장까지 선택할 수 있습니다.</p>
+        <div class="cards" id="deck" aria-label="선택할 숫자 카드"></div>
+        <div class="four-cards" id="card-display" aria-live="polite"></div>
+        <div class="mode" role="group" aria-label="경기 방식"><button type="button" data-mode="timed" class="active">3분 도전</button><button type="button" data-mode="practice">자유 연습</button></div>
+        <button id="start" type="button" class="primary">경기 시작</button>
+        <p class="help">공유받은 링크에서는 같은 네 장의 카드와 같은 과녁으로 도전합니다. 점수는 각자 기기에서 기록됩니다.</p>
+      </section>
+      <section class="panel card">
+        <h2>02 · 표적을 선택하고 수식 입력</h2>
+        <p class="help" id="selected-label">과녁에서 목표 숫자를 선택하세요.</p>
+        <form id="formula-form"><div class="form-row"><input id="formula" class="formula" type="text" maxlength="120" spellcheck="false" autocomplete="off" aria-label="수식 입력" placeholder="예: 6²+6−5" disabled><button class="primary" type="submit" id="submit" disabled>제출</button></div></form>
+        <div class="keypad" id="keypad" aria-label="수식 기호 입력"></div>
+        <div class="feedback" id="feedback" role="status">두 숫자를 고르고 경기를 시작하세요.</div>
+        <div class="stat-row"><div class="stat"><span>맞힌 표적</span><strong id="hits">0</strong></div><div class="stat"><span>제출</span><strong id="attempts">0</strong></div><div class="stat"><span>최고 점수</span><strong id="best">0</strong></div></div>
+        <p class="help" id="rival-record" hidden></p>
+        <ol class="history" id="history" aria-label="맞힌 표적 기록"></ol>
+      </section>
+      <section class="panel card rules"><details><summary>규칙과 수식 입력 도움말</summary><ul><li>내가 고른 카드 두 장과 상대가 고른 카드 두 장, 총 네 장에 적힌 숫자만 씁니다. 같은 숫자와 연산 기호를 여러 번 써도 됩니다.</li><li>숫자는 한 자리씩 사용합니다. 1과 5를 붙여 15로 쓰는 방식은 허용하지 않습니다.</li><li>+ − × ÷, 거듭제곱 ^, 제곱근 √, 팩토리얼 !, 괄호를 쓸 수 있습니다. <strong>√(4)</strong>, <strong>3!</strong>처럼 입력하세요. 소수 목표는 계산 결과로 만듭니다.</li><li>표적을 클릭하고 식을 제출하세요. 맞히면 해당 원의 점수를 얻습니다. 같은 색 원에서 순서상 이어진 목표 세 개를 맞힐 때마다 추가 2점을 받습니다.</li><li>먼저 25점을 얻으면 승리합니다. 3분 도전은 시간 종료 시 점수를 기록하며, 자유 연습은 시간 제한이 없습니다.</li></ul></details></section>
+    </div>
+  </main>
+  <footer>방송 규칙을 바탕으로 새로 제작한 비공식 연습 게임 · 두뇌게임</footer>
+</div>
+<script src="./engine.js"></script>
+<script>
+(() => {
+  'use strict';
+  const {RINGS, calculate, matches, scoreClaim} = window.ArcheryEngine;
+  const $ = id => document.getElementById(id);
+  const deck = Array.from({length:12},(_,i)=>({value:i%6+1,id:i}));
+  let chosen = [0,3], opponent = [1,4], lockedCards = false, selected = null, rivalScore = null;
+  let mode = 'timed', phase = 'setup', claimed = new Set(), score = 0, hits = 0, attempts = 0, seconds = 180, interval = null;
+
+  function readLink() {
+    const values = new URLSearchParams(location.search).get('cards');
+    if (!values || !/^([1-6]-){3}[1-6]$/.test(values)) return;
+    const [a,b,c,d] = values.split('-').map(Number);
+    const first=deck.findIndex(x=>x.value===a);
+    chosen = [first,deck.findIndex((x,i)=>i!==first&&x.value===b)];
+    if (chosen.includes(-1)) {chosen=[0,3];return;}
+    opponent=[c,d];lockedCards=true;
+    const rival=new URLSearchParams(location.search).get('rival');
+    if(rival!==null&&/^\d{1,3}$/.test(rival)){rivalScore=Number(rival);$('rival-record').hidden=false;$('rival-record').textContent=`도전장을 보낸 사람의 기록: ${rivalScore}점 · 같은 카드와 3분 조건으로 도전해 보세요.`;document.querySelector('[data-mode="practice"]').disabled=true}
+  }
+  function playerCards(){return chosen.map(index=>deck[index].value)}
+  function allCards(){return [...playerCards(),...opponent]}
+  function updateCards(){
+    $('deck').innerHTML='';
+    deck.forEach(item=>{
+      const b=document.createElement('button');b.type='button';b.className='number-card'+(chosen.includes(item.id)?' chosen':'');b.textContent=item.value;
+      b.setAttribute('aria-label',`${item.value} 카드 ${Math.floor(item.id/6)+1}번`);b.setAttribute('aria-pressed',String(chosen.includes(item.id)));
+      b.disabled=phase!=='setup'||lockedCards;
+      b.onclick=()=>{if(chosen.includes(item.id)) chosen=chosen.filter(x=>x!==item.id);else if(chosen.length<2) chosen.push(item.id);updateCards()};
+      $('deck').append(b);
+    });
+    $('card-display').innerHTML='';
+    const add=(value,cls='')=>{const s=document.createElement('span');s.className='mini '+cls;s.textContent=value;$('card-display').append(s)};
+    playerCards().forEach(v=>add(v));
+    const vs=document.createElement('span');vs.className='versus';vs.textContent='내 선택  /  상대 선택';$('card-display').append(vs);
+    if(phase!=='setup'||lockedCards)opponent.forEach(v=>add(v,'bot'));else add('?','bot'),add('?','bot');
+    $('start').disabled=phase!=='setup'||chosen.length!==2;
+    $('setup-help').textContent=lockedCards?'공유된 네 장의 카드입니다. 바로 경기를 시작하세요.':'아래 카드 두 장을 고르세요. 같은 숫자도 두 장까지 선택할 수 있습니다.';
+  }
+  function makeBoard(){
+    $('shots').innerHTML='';
+    const radii=[43.5,33.5,24.3,15.5,0];
+    RINGS.forEach((ring,r)=>ring.values.forEach((value,i)=>{
+      const angle=(-90+360*i/ring.values.length)*Math.PI/180;
+      const b=document.createElement('button');b.type='button';b.className='shot';b.dataset.ring=r;b.dataset.index=i;
+      b.style.left=`${50+radii[r]*Math.cos(angle)}%`;b.style.top=`${50+radii[r]*Math.sin(angle)}%`;
+      b.textContent=String(value);b.setAttribute('aria-label',`${value}, ${ring.points}점 목표`);
+      if(claimed.has(`${r}:${i}`)){b.classList.add('claimed');b.disabled=true}
+      if(selected&&selected.r===r&&selected.i===i)b.classList.add('selected');
+      b.onclick=()=>{if(phase!=='playing'){$('feedback').textContent='경기를 시작한 뒤 목표를 고르세요.';return}selected={r,i};makeBoard();$('selected-label').textContent=`선택한 목표 ${value} · 성공 시 ${ring.points}점`;$('formula').focus()};
+      $('shots').append(b);
+    }));
+  }
+  function show(message,kind=''){$('feedback').textContent=message;$('feedback').className='feedback '+kind}
+  function updateStats(){
+    $('score').textContent=score;$('hits').textContent=hits;$('attempts').textContent=attempts;
+    $('progress').style.width=`${Math.min(score/25,1)*100}%`;
+    $('clock').textContent=mode==='practice'?'∞':`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;
+    try{$('best').textContent=localStorage.getItem('expression-archery-best')||'0'}catch{$('best').textContent='0'}
+  }
+  function finish(won){
+    phase='finished';clearInterval(interval);interval=null;$('formula').disabled=true;$('submit').disabled=true;
+    try{const previous=Number(localStorage.getItem('expression-archery-best')||0);if(score>previous)localStorage.setItem('expression-archery-best',String(score))}catch{}
+    updateStats();const comparison=rivalScore===null?'':score>rivalScore?' · 도전장 기록을 넘었습니다!':score===rivalScore?' · 도전장 기록과 동점입니다.':' · 도전장 기록에 다시 도전해 보세요.';
+    show((won?`승리! ${hits}개 표적을 맞혀 ${score}점을 획득했습니다.`:`시간 종료! ${hits}개 표적, ${score}점입니다.`)+comparison,won?'good':'');
+  }
+  function start(){
+    if(chosen.length!==2)return;
+    if(!lockedCards){const pool=[1,2,3,4,5,6,1,2,3,4,5,6];opponent=[pool.splice(Math.floor(Math.random()*pool.length),1)[0],pool.splice(Math.floor(Math.random()*pool.length),1)[0]]}
+    phase='playing';claimed=new Set();selected=null;score=0;hits=0;attempts=0;seconds=180;
+    $('history').innerHTML='';$('selected-label').textContent='과녁에서 목표 숫자를 선택하세요.';$('formula').value='';$('formula').disabled=false;$('submit').disabled=false;
+    document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=true);
+    updateCards();makeBoard();updateStats();show('표적을 고른 뒤 수식을 제출하세요.');
+    if(mode==='timed')interval=setInterval(()=>{seconds--;updateStats();if(seconds<=0)finish(false)},1000);
+  }
+  function reset(){clearInterval(interval);interval=null;phase='setup';lockedCards=false;chosen=[0,3];opponent=[1,5];selected=null;rivalScore=null;claimed=new Set();score=hits=attempts=0;seconds=180;
+    history.replaceState(null,'',location.pathname);document.querySelectorAll('[data-mode]').forEach(b=>b.disabled=false);
+    $('rival-record').hidden=true;
+    $('formula').disabled=true;$('submit').disabled=true;$('formula').value='';$('history').innerHTML='';$('selected-label').textContent='과녁에서 목표 숫자를 선택하세요.';
+    updateCards();makeBoard();updateStats();show('두 숫자를 고르고 경기를 시작하세요.');
+  }
+  $('formula-form').addEventListener('submit',event=>{
+    event.preventDefault();if(phase!=='playing')return;if(!selected){show('먼저 과녁에서 목표 숫자를 선택하세요.','bad');return}
+    const expression=$('formula').value.trim();if(!expression){show('수식을 입력해 주세요.','bad');return}
+    attempts++;updateStats();
+    try{
+      const value=calculate(expression,allCards()),target=RINGS[selected.r].values[selected.i];
+      if(!matches(value,target)){show(`계산 결과는 ${Number(value.toPrecision(12))}입니다. 목표 ${target}을 다시 노려 보세요.`,'bad');return}
+      const result=scoreClaim(claimed,selected.r,selected.i);claimed=result.next;score+=result.points;hits++;
+      const li=document.createElement('li');li.textContent=`${target} ← ${expression}  +${result.points}점${result.bonus?` (연속 보너스 +${result.bonus})`:''}`;$('history').prepend(li);
+      show(`${target} 적중! +${result.points}점${result.bonus?` · 연속 보너스 +${result.bonus}점`:''}`,'good');selected=null;$('formula').value='';$('selected-label').textContent='다음 목표 숫자를 선택하세요.';
+      makeBoard();updateStats();if(score>=25)finish(true);
+    }catch(error){show(error.message,'bad')}
+  });
+  const keys=['+','−','×','÷','^','√','!','(',')','⌫'];
+  keys.forEach(key=>{const b=document.createElement('button');b.type='button';b.textContent=key;b.setAttribute('aria-label',key==='⌫'?'한 글자 지우기':key);
+    b.onclick=()=>{const input=$('formula');if(input.disabled)return;const a=input.selectionStart,z=input.selectionEnd;if(key==='⌫'){const from=a===z?Math.max(0,a-1):a;input.setRangeText('',from,z,'end')}else input.setRangeText(key,a,z,'end');input.focus()};$('keypad').append(b)});
+  document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(phase!=='setup')return;mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));updateStats()});
+  $('start').onclick=start;$('reset').onclick=reset;
+  $('share').onclick=async()=>{
+    if(chosen.length!==2){show('먼저 숫자 카드 두 장을 골라 주세요.','bad');return}
+    if(phase==='setup'&&!lockedCards){const pool=[1,2,3,4,5,6,1,2,3,4,5,6];opponent=[pool.splice(Math.floor(Math.random()*pool.length),1)[0],pool.splice(Math.floor(Math.random()*pool.length),1)[0]];lockedCards=true;updateCards()}
+    const cards=allCards().join('-');const url=new URL(location.href);url.searchParams.set('cards',cards);
+    if(phase==='finished'&&mode==='timed')url.searchParams.set('rival',score);else url.searchParams.delete('rival');
+    try{await navigator.clipboard.writeText(url.href);show(phase==='finished'&&mode==='timed'?'내 점수를 포함한 도전 링크를 복사했습니다.':'같은 네 장의 카드로 도전할 링크를 복사했습니다.','good')}
+    catch{window.prompt('도전 링크를 복사하세요',url.href)}
+  };
+  readLink();updateCards();makeBoard();updateStats();
+})();
+</script>
+</body>
+</html>
