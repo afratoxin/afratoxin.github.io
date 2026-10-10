@@ -8,6 +8,7 @@
   }
   function codes(){const result=[];for(let a=1;a<=6;a++)for(let b=a;b<=6;b++)for(let c=b;c<=6;c++){if(a===b&&b===c)continue;result.push([a,b,c])}return result}
   const ALL_CODES=codes();
+  const CHALLENGE_CODES=ALL_CODES.filter(code=>ALL_CODES.filter(other=>other[0]+other[1]+other[2]===code[0]+code[1]+code[2]).length>=3);
   function buildClues(code){
     const [a,b,c]=code;
     const pool=[{label:`세 숫자의 합은 ${a+b+c}`,test:x=>x[0]+x[1]+x[2]===a+b+c},
@@ -20,25 +21,24 @@
     return clues;
   }
   function generatePuzzle(rng=Math.random){
-    for(let tries=0;tries<100;tries++){
-      const code=ALL_CODES[Math.floor(rng()*ALL_CODES.length)];
+    const factorial=n=>{let result=1;for(let i=2;i<=n;i++)result*=i;return result};
+    for(let tries=0;tries<1000;tries++){
+      const code=CHALLENGE_CODES[Math.floor(rng()*CHALLENGE_CODES.length)];
       const available=removeCards(STOCK,code),draw=[];
-      const template=Math.floor(rng()*5),count=template===4?4:3;
-      for(let i=0;i<count;i++)draw.push(available.splice(Math.floor(rng()*available.length),1)[0]);
-      const [a,b,c,d]=draw;
+      for(let i=0;i<8;i++)draw.push(available.splice(Math.floor(rng()*available.length),1)[0]);
+      const [a,b,c,d,e,f,g,h]=draw,template=Math.floor(rng()*4);
       let solution,target;
-      if(template===0){solution=`(${a}+${b})×${c}`;target=(a+b)*c}
-      if(template===1){solution=`${a}×${b}+${c}`;target=a*b+c}
-      if(template===2){solution=`${a}^${Math.min(b,4)}+${c}`;target=a**Math.min(b,4)+c;if(b>4)continue}
-      if(template===3){solution=`(${a}×${b})−${c}`;target=a*b-c}
-      if(template===4){solution=`(${a}+${b})×(${c}−${d})`;target=(a+b)*(c-d)}
-      if(target>9&&target<=500&&Number.isInteger(target))return {target,code,clues:buildClues(code),solution,used:draw};
+      if(template===0){solution=`(${a}!+${b}^${c})×(${d}+${e})+${f}×${g}+${h}`;target=(factorial(a)+b**c)*(d+e)+f*g+h}
+      if(template===1){solution=`${a}!×${b}×${c}+${d}^${e}×(${f}+${g})+${h}`;target=factorial(a)*b*c+d**e*(f+g)+h}
+      if(template===2){solution=`${a}!^${b}+(${c}+${d})×(${e}×${f}+${g})+${h}`;target=factorial(a)**b+(c+d)*(e*f+g)+h}
+      if(template===3){solution=`${a}^${b}×(${c}+${d})+${e}!×${f}×${g}+${h}`;target=a**b*(c+d)+factorial(e)*f*g+h}
+      if(target>=10000&&target<=99999&&Number.isSafeInteger(target))return {target,code,clues:buildClues(code),solution,used:draw,pattern:['(! + ^) × (+) + × +','! × × + ^ × (+) +','! ^ + (+) × (× +) +','^ × (+) + ! × × +'][template]};
     }
     throw new Error('문제를 생성하지 못했습니다.');
   }
   function evaluateFormula(expression,calculate){
     const used=(expression.match(/[1-9]/g)||[]).map(Number);
-    if(!used.length)throw new Error('숫자 카드를 포함한 수식을 입력해 주세요.');
+    if(used.length<7||used.length>8)throw new Error('숫자 카드를 7~8장 사용해 수식을 만드세요. 코드를 위해 최소 4장을 남겨야 합니다.');
     const remaining=removeCards(STOCK,used);
     const value=calculate(expression,STOCK);
     return {value,used,remaining};
