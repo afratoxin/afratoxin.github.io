@@ -1,4 +1,4 @@
-import {PK_TOPICS,PK_VARIANTS,makePkQuestion,pickPkTopic,shuffle} from './pk-calculations.mjs?v=20261015-1';
+import {PK_TOPICS,PK_VARIANTS,makePkQuestion,pickPkTopic,shuffle} from './pk-calculations.mjs?v=20261015-3';
 const SYMBOLS=['①','②','③','④','⑤'];
 const KEY='pharmacology-pk-calculations-v1';
 

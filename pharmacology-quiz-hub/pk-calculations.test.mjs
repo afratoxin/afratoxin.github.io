@@ -12,7 +12,7 @@ function reference(q){
     case 'volume':return p.weight*p.mgPerKg/p.c0;
     case 'clearance':return q.variant==='oral'?p.f*p.dose/p.auc:p.dose/p.auc;
     case 'bio':return p.aucOral*p.doseIv/(p.aucIv*p.doseOral)*100;
-    case 'auc':return p.times.slice(1).reduce((sum,t,i)=>sum+(p.concentrations[i]+p.concentrations[i+1])/2*(t-p.times[i]),0);
+    case 'auc':return q.variant==='tail'?p.clast/p.ke:q.variant==='total'?p.aucObserved+p.clast/p.ke:p.times.slice(1).reduce((sum,t,i)=>sum+(p.concentrations[i]+p.concentrations[i+1])/2*(t-p.times[i]),0);
     case 'infusion':return q.variant==='concentration'?p.rate/p.clearance:p.target*p.clearance;
     case 'loading':return p.target*p.volume;
     case 'accumulation':return (q.variant==='peak'?p.c0:1)/(1-p.r);
@@ -61,4 +61,13 @@ test('전체 혼합은 인접 주제를 피하며 10개 주제를 고르게 출�
   }
   assert.deepEqual(Object.values(state.seenTopics),Array(10).fill(100));
   assert.equal(pickPkTopic(state,'renal',random),'renal');
+});
+test('마지막 채혈 이후 넓이와 전체 AUC를 구별하고 필요한 식을 제공',()=>{
+  const tail=makePkQuestion('auc',()=>0,'tail'),total=makePkQuestion('auc',()=>0,'total');
+  assert.equal(tail.answer,20);
+  assert.equal(total.answer,60);
+  assert.match(tail.formula,/C_last\/kₑ/);
+  assert.match(total.formula,/AUC₀–last/);
+  assert.ok(tail.stem.includes('1차 소실'));
+  assert.ok(PK_VARIANTS.auc.includes('tail')&&PK_VARIANTS.auc.includes('total'));
 });
