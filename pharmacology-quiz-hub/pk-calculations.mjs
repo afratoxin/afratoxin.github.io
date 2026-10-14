@@ -1,6 +1,6 @@
 // Expected exam drills constrained to the 2026 lectures, not patient dosing advice.
 export const PK_TOPICS=[
-  {id:'ke',title:'소실속도상수',formula:'kₑ = (ln C₁ − ln C₂) / (t₂ − t₁)',unit:'h⁻¹',note:'로그 소실기의 기울기는 −kₑ입니다.'},
+  {id:'ke',title:'소실속도상수',formula:'kₑ = CL/V = (ln C₁ − ln C₂) / (t₂ − t₁)',unit:'h⁻¹',note:'CL(L/h)을 V(L)로 나누므로 단위는 h⁻¹입니다. 로그 소실기의 기울기는 −kₑ입니다.'},
   {id:'half',title:'반감기·도달 시간',formula:'t½ = 0.693 / kₑ = 0.693 × V / CL',unit:'h',note:'주입만 할 때 항정상태에 거의 도달하려면 약 4~5반감기가 필요합니다.'},
   {id:'volume',title:'분포용적',formula:'V = Dose / C₀ = CL / kₑ',unit:'L',note:'Dose/C₀는 정맥 일시주사·1구획 모델에서 적용합니다.'},
   {id:'clearance',title:'청소율·AUC',formula:'IV: CL = Dose / AUC₀–∞ · 경구: CL/F = Dose / AUC₀–∞',unit:'L/h',note:'경구투여에서 F를 알면 CL = F × Dose / AUC₀–∞입니다.'},

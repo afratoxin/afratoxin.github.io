@@ -9,7 +9,7 @@ import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261009-1';
 import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261009-1';
 import {buildMixedPool,nextMixedQuestion} from './autonomic-mixed.mjs?v=20261009-1';
 import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261009-1';
-import {initPkQuiz} from './pk-quiz.mjs?v=20261015-3';
+import {initPkQuiz} from './pk-quiz.mjs?v=20261015-4';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
