@@ -8,7 +8,7 @@ test('약동학 계산 메뉴와 탭, 직접 주소, 기존 단원 메뉴 연결
   assert.ok(html.includes('data-open="pk"'));
   assert.match(app,/import \{initPkQuiz\} from/);
   assert.match(app,/if\(view==='pk'\)pk.open\(\)/);
-  assert.ok(app.includes("'pk','archive'"));
+  assert.match(app,/\[[^\]]*'pk'[^\]]*\]\.includes\(location\.hash\.slice\(1\)\)/);
   for(const name of ['cyp','tx','ans','chol','chol11','adr12','adr13','mixed'])assert.ok(html.includes(`data-open="${name}"`),name);
   const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
   assert.equal(new Set(ids).size,ids.length,'DOM ID 중복');

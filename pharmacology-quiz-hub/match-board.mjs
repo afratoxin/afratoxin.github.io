@@ -1,9 +1,10 @@
 // Shared interactive board for the lecture matching exercises.
-export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetId,items,categoryOf,keyOf,labelOf,onGrade}){
+export function isMatchPlacement(item,chosen,categoriesOf){return Boolean(chosen)&&categoriesOf(item).includes(chosen);}
+export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetId,items,categoryOf,categoriesOf= item=>[categoryOf(item)],keyOf,labelOf,onGrade}){
   const $=id=>document.getElementById(id);
   const pool=$(poolId),cards=$(cardsId),zones=$(zonesId),status=$(statusId),check=$(checkId),reset=$(resetId);
   let board=[],chips=new Map(),placements=new Map(),selected=null,graded=false;
-  const categories=[...new Set(items.map(categoryOf))];
+  const categories=[...new Set(items.flatMap(categoriesOf))];
   const shuffle=a=>{const copy=[...a];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;};
   const message=s=>{status.textContent=s;};
   function render(){
@@ -68,18 +69,19 @@ export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetI
   pool.addEventListener('click',e=>{if(graded||e.target.closest('.drug-chip')||!selected)return;if(placements.has(selected))remove(selected);else{selected=null;render();message('선택을 해제했습니다.');}});
   check.addEventListener('click',()=>{
     if(graded)return;graded=true;selected=null;render();pool.classList.add('graded');
-    const results=board.map(item=>({item,chosen:placements.get(keyOf(item)),correct:placements.has(keyOf(item))&&placements.get(keyOf(item))===categoryOf(item)}));
+    const results=board.map(item=>({item,chosen:placements.get(keyOf(item)),correct:isMatchPlacement(item,placements.get(keyOf(item)),categoriesOf)}));
     const good=results.filter(r=>r.correct).length;
     for(const r of results){const chip=chips.get(keyOf(r.item));if(r.chosen)chip.classList.add(r.correct?'matched':'mismatch');chip.draggable=false;}
     onGrade(results);
     message(`배치한 ${placements.size}개 중 ${good}개 정답 · 미배치 ${board.length-placements.size}개. 이 배치에서 계속할 수 있습니다.`);
     const details=document.createElement('details');details.className='match-details';
-    const summary=document.createElement('summary');summary.textContent='배치한 약물의 정답과 내가 놓은 칸 보기';details.append(summary);
+    const summary=document.createElement('summary');summary.textContent='배치한 카드의 정답과 내가 놓은 칸 보기';details.append(summary);
     const list=document.createElement('ul');
-    results.filter(r=>r.chosen).forEach(r=>{const li=document.createElement('li');li.textContent=`${r.correct?'✓':'✗'} ${labelOf(r.item)} · ${r.correct?categoryOf(r.item):`${r.chosen} → ${categoryOf(r.item)}`}`;list.append(li);});
+    results.filter(r=>r.chosen).forEach(r=>{const li=document.createElement('li');li.textContent=`${r.correct?'✓':'✗'} ${labelOf(r.item)} · ${r.chosen} · 정답: ${categoriesOf(r.item).join(' / ')}${r.item.note?' · '+r.item.note:''}`;list.append(li);});
     if(placements.size){details.append(list);status.append(details);}
     check.hidden=true;reset.hidden=false;
   });
   reset.addEventListener('click',resume);
   return {open(){if(!board.length)setup();},reset:setup};
 }
+

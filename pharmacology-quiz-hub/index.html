@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물대사 CYP probe drug 대응 퀴즈와 약물의 이해 족보 회독">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261015-2">
+  <link rel="stylesheet" href="style.css?v=20261015-cns1">
 </head>
 <body>
   <main class="shell">
@@ -15,7 +15,7 @@
       <div class="topbar-actions"><span class="save-note">학습 기록은 이 브라우저에 저장됩니다</span><button id="hubBack" class="back-button" type="button" hidden>← 단원 메뉴</button></div>
     </header>
     <section id="homeView">
-      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 약동학 계산, CYP·수송체와 9–13강 자율신경계 약리학을 함께 복습할 수 있습니다.</p></div>
+      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 약동학 계산, CYP·수송체, 자율신경계와 중추신경계 약리학을 함께 복습할 수 있습니다.</p></div>
       <div class="hub-groups">
         <section class="hub-group" aria-labelledby="examGroupTitle"><div class="hub-group-head"><h2 id="examGroupTitle">족보 회독</h2><p>복원 기출을 강의별로 반복</p></div>
           <button type="button" data-open="menu" class="hub-card archive-card"><span class="hub-icon">족보</span><span><strong>족보 문항 풀기</strong><small>단원별 기출 · 오답 회독 · 원문 확인</small><span class="hub-tags"><span>단원별</span><span>오답 회독</span><span>학습 기록</span></span></span><b aria-hidden="true">→</b></button>
@@ -39,7 +39,27 @@
           </div>
           <button type="button" data-open="chol11match" class="hub-shortcut">11강 약물 30개 매칭 바로 풀기 →</button>
         </section>
+        <section class="hub-group" aria-labelledby="cnsGroupTitle"><div class="hub-group-head"><h2 id="cnsGroupTitle">14–15강 · 중추신경계 약리</h2><p>수용체 분류부터 질환·약물까지</p></div>
+          <button id="cnsEntry" type="button" data-open="cns" class="hub-card cns-entry"><span class="hub-icon">CNS</span><span><strong>중추신경계 퀴즈</strong><small>족보형 5지선다 · 드래그 3종</small><span class="hub-tags"><span>수용체 구조</span><span>흥분·억제</span><span>질환–약물</span></span></span></button>
+        </section>
       </div>
+    </section>
+    <section id="cnsView" class="ans-view cns-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 14–15강 · CENTRAL NERVOUS SYSTEM</p><h2>중추신경계 약리 퀴즈</h2></div><p>키보드 1–5 / Enter · 강의록 기준</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="중추신경계 학습 방식">
+        <button id="cnsQuizTab" type="button" role="tab" aria-selected="true" aria-controls="cnsQuizPanel" class="active">족보형 5지선다</button>
+        <button id="cnsStructureTab" type="button" role="tab" aria-selected="false" aria-controls="cnsStructurePanel">구조 분류 드래그</button>
+        <button id="cnsEffectTab" type="button" role="tab" aria-selected="false" aria-controls="cnsEffectPanel">흥분·억제 드래그</button>
+        <button id="cnsDiseaseTab" type="button" role="tab" aria-selected="false" aria-controls="cnsDiseasePanel">질환–약물 드래그</button>
+      </div>
+      <div id="cnsQuizPanel" role="tabpanel" aria-labelledby="cnsQuizTab">
+        <div class="cns-toolbar"><label for="cnsArea">출제 영역</label><select id="cnsArea"><option value="all">전체 종합</option><option value="structure">1. 수용체 구조</option><option value="effect">2. 흥분성·억제성</option><option value="disease">3. 질환–약물</option><option value="features">4. 약물 세부 특징</option></select><button id="cnsSkip" type="button" class="back-button">다른 문제</button></div>
+        <p class="cyp-intro">분류형·기전형·예외형·짧은 사례형으로 복습하세요. 흥분성·억제성은 14강 요약표의 분류이며, glycine 수용체와 NMDA의 glycine 결합부위는 구별합니다.</p>
+        <div class="ans-layout"><article class="question-card"><div class="q-meta"><span class="badge">14–15강 · 중추신경계</span><span id="cnsProgress" class="q-count"></span></div><h2 id="cnsStem"></h2><div id="cnsChoices" class="options"></div><div id="cnsFeedback" class="feedback" aria-live="polite" hidden></div><button id="cnsNext" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">회독 기록</span><strong id="cnsStats"></strong><p>같은 연결과 주제가 연속해서 반복되지 않도록 출제합니다.</p><p>알츠하이머병 · 파킨슨병 · 불안·수면 · 마취 · 우울증 · 조현병 · 뇌전증 · 아편유사제</p><span class="side-label">현재 문제의 근거</span><p id="cnsSource"></p></aside></div>
+      </div>
+      <div id="cnsStructurePanel" role="tabpanel" aria-labelledby="cnsStructureTab" hidden><div class="cns-toolbar"><label for="cnsStructureFilter">연습 범위</label><select id="cnsStructureFilter"><option value="all">수용체 전체</option></select></div><p class="cyp-intro">45개 수용체를 ionotropic / metabotropic으로 분류하세요. NMDA의 glycine 결합부위는 별개의 수용체가 아니므로 구조 분류 카드에서 제외했습니다.</p><div id="cnsStructureBoard" class="cns-binary-board"></div></div>
+      <div id="cnsEffectPanel" role="tabpanel" aria-labelledby="cnsEffectTab" hidden><div class="cns-toolbar"><label for="cnsEffectFilter">연습 범위</label><select id="cnsEffectFilter"><option value="all">수용체·결합부위 전체</option></select></div><p class="cyp-intro">14강 표에 따라 흥분성 / 억제성으로 분류하세요. 같은 전달물질도 수용체 아형에 따라 반대로 작용합니다. Glycine의 두 역할을 포함한 46개 카드입니다.</p><div id="cnsEffectBoard" class="cns-binary-board"></div></div>
+      <div id="cnsDiseasePanel" role="tabpanel" aria-labelledby="cnsDiseaseTab" hidden><div class="cns-toolbar"><label for="cnsDiseaseFilter">약물 범위</label><select id="cnsDiseaseFilter"><option value="all">약물 전체</option></select></div><p class="cyp-intro">84개 약물을 강의록의 질환·치료 목적과 연결하세요. 여러 용도가 있는 약물은 강의록에 제시된 칸 중 하나에 놓으면 정답입니다. 채점 후 가능한 칸과 기전을 함께 확인할 수 있습니다.</p><div id="cnsDiseaseBoard"></div></div>
     </section>
     <section id="pkView" class="ans-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 2–4강 · PHARMACOKINETICS</p><h2>약동학 계산 예상문제</h2></div><p>키보드 1–5 / Enter</p></div>
@@ -141,9 +161,9 @@
     </section>
 
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
-    <footer><span>자료: 2026 약물대사·약물수송체·자율신경계·콜린성 약리 강의록 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>강의록 확인: 2026-10-05</span></footer>
+    <footer><span>자료: 2026 약동학·약물대사·수송체·자율신경계·중추신경계 약리 강의록 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>중추신경계 강의록 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261015-4"></script>
+  <script type="module" src="app.mjs?v=20261015-cns1"></script>
 </body>
 </html>
 
