@@ -63,6 +63,7 @@
 .hub-groups>.hub-group:not(.ans-series) .hub-card strong{font-size:16px;line-height:1.35}
 .hub-groups>.hub-group:not(.ans-series) .hub-card small{margin-top:3px;font-size:11px;line-height:1.4}
 .hub-groups>.hub-group:not(.ans-series) .hub-card b,.hub-groups>.hub-group:not(.ans-series) .hub-tags{display:none}
+.hub-groups>.hub-group:not(.ans-series) .hub-card.pk-entry{width:fit-content;max-width:100%}
 .ans-view .section-head{margin-top:23px}
 .ans-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 15px}
 .ans-tabs button{padding:11px 17px;border:1px solid #d7e3ed;border-radius:11px;background:#fff;color:#506579;font-size:13px;font-weight:850}
