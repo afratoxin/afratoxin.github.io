@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물대사 CYP probe drug 대응 퀴즈와 약물의 이해 족보 회독">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261010-1">
+  <link rel="stylesheet" href="style.css?v=20261015-1">
 </head>
 <body>
   <main class="shell">
@@ -15,10 +15,13 @@
       <div class="topbar-actions"><span class="save-note">학습 기록은 이 브라우저에 저장됩니다</span><button id="hubBack" class="back-button" type="button" hidden>← 단원 메뉴</button></div>
     </header>
     <section id="homeView">
-      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 7·8강 약동학과 9–13강 자율신경계 약리학을 개별·종합 퀴즈로 복습할 수 있습니다.</p></div>
+      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 약동학 계산, CYP·수송체와 9–13강 자율신경계 약리학을 함께 복습할 수 있습니다.</p></div>
       <div class="hub-groups">
         <section class="hub-group" aria-labelledby="examGroupTitle"><div class="hub-group-head"><h2 id="examGroupTitle">족보 회독</h2><p>복원 기출을 강의별로 반복</p></div>
           <button type="button" data-open="menu" class="hub-card archive-card"><span class="hub-icon">족보</span><span><strong>족보 문항 풀기</strong><small>단원별 기출 · 오답 회독 · 원문 확인</small><span class="hub-tags"><span>단원별</span><span>오답 회독</span><span>학습 기록</span></span></span><b aria-hidden="true">→</b></button>
+        </section>
+        <section class="hub-group" aria-labelledby="pkGroupTitle"><div class="hub-group-head"><h2 id="pkGroupTitle">2–4강 · 약동학</h2><p>강의록·족보형 계산 연습</p></div>
+          <button type="button" data-open="pk" class="hub-card cyp-card"><span class="hub-icon">PK</span><span><strong>약동학 계산 예상문제</strong><small>반감기 · CL·V · AUC · 투여량</small></span></button>
         </section>
         <section class="hub-group" aria-labelledby="cypGroupTitle"><div class="hub-group-head"><h2 id="cypGroupTitle">7강 · 약물대사 · CYP</h2><p>Probe drug와 CYP3A4/5 상호작용</p></div>
           <button type="button" data-open="cyp" class="hub-card cyp-card"><span class="hub-icon">CYP</span><span><strong>7강 · CYP 약물 대응 퀴즈</strong><small>Probe drug · CYP3A4/5 상호작용 · 매칭</small><span class="hub-tags"><span>7강</span><span>Probe drug</span><span>CYP3A4/5 DDI</span><span>드래그</span><span>암기표</span></span></span><b aria-hidden="true">→</b></button>
@@ -37,6 +40,16 @@
           <button type="button" data-open="chol11match" class="hub-shortcut">11강 약물 30개 매칭 바로 풀기 →</button>
         </section>
       </div>
+    </section>
+    <section id="pkView" class="ans-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 2–4강 · PHARMACOKINETICS</p><h2>약동학 계산 예상문제</h2></div><p>키보드 1–5 / Enter</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="약동학 학습 방식"><button id="pkQuizTab" role="tab" aria-selected="true" aria-controls="pkQuizPanel" class="active" type="button">계산 예상문제</button><button id="pkFormulaTab" role="tab" aria-selected="false" aria-controls="pkFormulaPanel" type="button">공식·단위 정리</button></div>
+      <div id="pkQuizPanel" role="tabpanel" aria-labelledby="pkQuizTab">
+        <p class="cyp-intro">강의록의 강조 부분과 족보 발문을 바탕으로 10개 주제·19가지 계산 형태를 연습합니다. 별도 조건이 없으면 선형·1구획·1차 소실을 가정합니다.</p>
+        <div class="pk-tools"><label for="pkTopic">계산 유형</label><select id="pkTopic"><option value="all">전체 혼합</option></select><span>풀이 뒤 다음 문제에서 수치가 바뀝니다.</span></div>
+        <div class="ans-layout"><article class="question-card"><div class="q-meta"><span class="badge">강의록·족보형 계산</span><span id="pkProgress" class="q-count"></span></div><h2 id="pkStem"></h2><div id="pkVisual" class="pk-visual" hidden></div><div class="pk-hint-row"><button id="pkHintButton" type="button" class="back-button" aria-controls="pkHint">공식 힌트 보기</button><p id="pkHint" class="pk-hint" hidden></p></div><div id="pkChoices" class="options pk-options"></div><div id="pkFeedback" class="feedback" aria-live="polite" hidden></div><button id="pkNext" class="primary next" type="button" hidden>다음 계산 문제 →</button></article><aside class="side-card"><span class="side-label">회독 기록</span><strong id="pkStats"></strong><p>식 선택 → 수치 대입 → 단위 확인</p><p>정맥 부하용량은 V, 항정상태 유지 주입속도는 CL에 연결하세요.</p><p>축적비처럼 암기 불필요로 표시된 식은 문제에 제공합니다.</p><span class="side-label">현재 문제의 근거</span><p id="pkSource"></p></aside></div>
+      </div>
+      <div id="pkFormulaPanel" role="tabpanel" aria-labelledby="pkFormulaTab" hidden><p class="cyp-intro">Dose: 투여량 · C₀: 정맥 일시주사 직후 외삽 농도 · V: 분포용적 · CL: 청소율 · kₑ: 소실속도상수 · F: 생체이용률 · R₀: 주입속도 · r: 투여 간격 뒤 남은 분율</p><div class="memory-table-wrap"><table class="memory-table pk-formulas"><thead><tr><th scope="col">계산 주제</th><th scope="col">관계식</th><th scope="col">결과 단위</th><th scope="col">구별할 점</th></tr></thead><tbody id="pkFormulaRows"></tbody></table></div></div>
     </section>
     <section id="txView" class="ans-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 8강 · DRUG TRANSPORTERS</p><h2>약물수송체 퀴즈</h2></div><p>계열 구분 · 이동 방향 · 임상 사례 · Ae 계산</p></div>
@@ -130,6 +143,7 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약물대사·약물수송체·자율신경계·콜린성 약리 강의록 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>강의록 확인: 2026-10-05</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261009-1"></script>
+  <script type="module" src="app.mjs?v=20261015-1"></script>
 </body>
 </html>
+
