@@ -7,7 +7,7 @@ import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,CHOL_DRUGS,makeCholQuestion,makeChol
 import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,CHOL11_DRUGS,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261015-review1';
 import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261009-1';
 import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261009-1';
-import {buildMixedPool} from './autonomic-mixed.mjs?v=20261015-review1';
+import {buildMixedPool} from './autonomic-mixed.mjs?v=20261015-adr13tab1';
 import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261015-4';
 import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261015-cns1';
 import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261015-imm1';

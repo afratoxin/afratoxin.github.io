@@ -204,3 +204,9 @@
 .match-wrong-toggle{margin:6px 0;font-size:11px}.match-wrong-toggle[aria-pressed=true]{border-color:#c35360;background:#fff0f2;color:#923744}
 button.study-progress-fill:focus-visible,.study-wrong-tab:focus-visible{outline:3px solid #54b4cf;outline-offset:3px}
 @media(max-width:650px){.study-review-view .drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.study-review-view .ans-tabs button{padding:9px 11px;font-size:12px}.hub-review-link{align-items:flex-start}.study-counts{font-size:10px!important}.study-live-summary{font-size:11px!important}}
+
+#adr13TablePanel h3{margin:22px 0 10px;color:var(--navy);font-size:16px}
+#adr13TableSearch{max-width:100%;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:13px}
+.adr13-extra-table td:not(:first-child){text-align:center}.adr13-extra-table tbody th{padding:12px 15px;border-top:1px solid #e4edf1;color:#174b6b;text-align:left;white-space:nowrap}.adr13-extra-table .adr13-extra-yes{background:#fff1ac;color:#725716;font-weight:900}
+.adr13-drug-table td:nth-child(3),.adr13-drug-table td:nth-child(4),.adr13-drug-table td:last-child{white-space:normal}.adr13-drug-table td:nth-child(5){min-width:230px}.adr13-drug-table td:last-child{min-width:130px}
+@media(max-width:550px){#adr13TableSearch{width:100%;font-size:12px}}

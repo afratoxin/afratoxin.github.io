@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물의 이해 족보 회독과 약동학·자율신경계·중추신경계·면역억제 약리 퀴즈">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261015-review1">
+  <link rel="stylesheet" href="style.css?v=20261015-adr13tab1">
 </head>
 <body>
   <main class="shell">
@@ -157,9 +157,16 @@
     </section>
     <section id="adr13View" class="ans-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 13강 · ADRENERGIC ANTAGONISTS</p><h2>아드레날린성 약리학 (2)</h2></div><p>α·β 차단제 · 갈색세포종 · 전립선비대증</p></div>
-      <div class="ans-tabs" role="tablist" aria-label="13강 퀴즈 방식"><button id="adr13QuizTab" type="button" role="tab" aria-selected="true" class="active">족보형 5지선다</button><button id="adr13DragTab" type="button" role="tab" aria-selected="false">전체 약물 드래그 매칭</button></div>
+      <div class="ans-tabs" role="tablist" aria-label="13강 퀴즈 방식"><button id="adr13QuizTab" type="button" role="tab" aria-selected="true" class="active">족보형 5지선다</button><button id="adr13DragTab" type="button" role="tab" aria-selected="false">전체 약물 드래그 매칭</button><button id="adr13TableTab" type="button" role="tab" aria-controls="adr13TablePanel" aria-selected="false">약물 정리</button></div>
       <div id="adr13QuizPanel" role="tabpanel"><p class="cyp-intro">선택성·가역성·부작용을 먼저 읽고 약물을 고르세요. 비슷한 α·β 차단제 사이의 차이를 해설에서 확인합니다.</p><div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="adr13Source" class="badge">2026 13강</span><span id="adr13Progress" class="q-count"></span></div><h2 id="adr13Stem"></h2><div id="adr13Choices" class="options"></div><div id="adr13Feedback" class="feedback" hidden></div><button id="adr13Next" class="primary next" type="button" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">회독 기록</span><strong id="adr13Stats"></strong><p>Phenoxybenzamine은 비가역적 α 차단, phentolamine은 가역적 α 차단입니다.</p><p>천식·저혈당 상황에서 β2 차단 여부를 함께 판단하세요.</p></aside></div></div>
       <div id="adr13DragPanel" role="tabpanel" hidden><p class="cyp-intro">α·β 차단제 등 대표 약물 24개를 한 번에 배치하세요. 놓은 카드를 다시 눌러 칸에서 칸으로 옮길 수 있습니다.</p><div class="match-board"><div id="adr13Pool" class="match-column match-pool"><h3>약물 카드 <span class="pool-count"></span></h3><div id="adr13Cards" class="drag-cards"></div></div><div class="match-column match-targets"><h3>대표 차단 작용</h3><div id="adr13Zones" class="drop-zones"></div></div></div><div class="match-actions"><div id="adr13DragStatus" class="match-status" role="status"></div><button id="adr13Check" class="primary" type="button">지금 채점하기</button><button id="adr13Reset" class="primary" type="button" hidden>이 배치에서 계속하기 →</button></div></div>
+    <section id="adr13TablePanel" role="tabpanel" aria-labelledby="adr13TableTab" hidden>
+      <div class="imm-toolbar"><label for="adr13TableFilter">계열</label><select id="adr13TableFilter"><option value="all">전체 약물</option><option value="beta">β 차단제 · 세대별</option><option value="alpha">α 차단제</option><option value="extra">합성·저장·유리 억제</option></select><label for="adr13TableSearch">약물·기전 검색</label><input id="adr13TableSearch" type="search" placeholder="예: carvedilol, NO, α1"><span id="adr13TableCount" class="q-count"></span></div>
+      <h3>3세대 β 차단제 · 부가기전 비교</h3><p class="cyp-intro">첨부 표와 13강 PDF 20쪽의 분류입니다. ●는 강의표에 표시된 기전, —는 해당 표에 표시되지 않은 항목입니다. —가 그 작용의 완전한 부재를 뜻하지는 않습니다.</p>
+      <div class="memory-table-wrap"><table class="memory-table adr13-extra-table"><thead><tr><th scope="col">약물</th><th scope="col">β 봉쇄 선택성</th><th scope="col">NO 생성</th><th scope="col">β2 효현</th><th scope="col">α1 봉쇄</th><th scope="col">Ca²⁺ 유입 봉쇄</th><th scope="col">항산화</th></tr></thead><tbody id="adr13ExtraBody"></tbody></table></div>
+      <h3>전체 약물 · 분류와 구별점</h3><p class="cyp-intro">첨부 표의 약물과 강의록의 추가 약물을 함께 정리했습니다. β1 차단은 심박수·수축력 및 renin 유리 감소와 연결하고, 비선택적 β 차단은 β2 차단에 따른 기관지 수축·저혈당 회복 지연을 구별하세요.</p>
+      <div class="memory-table-wrap"><table class="memory-table adr13-drug-table"><thead><tr><th scope="col">약물</th><th scope="col">계열·세대</th><th scope="col">주요 표적·선택성</th><th scope="col">부가기전 · 강의표</th><th scope="col">용도·구별할 점</th><th scope="col">근거</th></tr></thead><tbody id="adr13TableBody"></tbody></table></div><p id="adr13TableEmpty" class="empty" hidden>검색 조건에 맞는 약물이 없습니다.</p>
+    </section>
     </section>
     <section id="mixedView" class="ans-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 9–13강 · INTEGRATED RECALL</p><h2>자율신경계 약리 5강 종합</h2></div><p>각 강의 균형 순환 · 기전과 임상 사례 연결</p></div>
@@ -206,7 +213,7 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약리 강의록 · 면역 억제 약리학 v3·첨부 요약표 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>면역억제 자료 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261015-review1"></script>
+  <script type="module" src="app.mjs?v=20261015-adr13tab1"></script>
 </body>
 </html>
 

@@ -23,7 +23,7 @@ export function pickQuestion(bank,state,random=Math.random){
   return prepareQuestion(shuffle(pool.filter(x=>value(x)===min),random)[0],random);
 }
 
-export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw}){
+export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw,table=null}){
   const $=id=>document.getElementById(id), state={seen:{},missed:{},recent:[],lastGroup:null,lastLecture:null,total:0,right:0};
   try{Object.assign(state,JSON.parse(localStorage.getItem(storageKey)||'{}'));}catch{}
   state.seen||={};state.missed||={};state.recent||=[];
@@ -69,12 +69,11 @@ export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw
     fb.hidden=false;$(prefix+'Next').hidden=false;
   }
   $(prefix+'Next').addEventListener('click',next);
-  if(match){
-    for(const [id,name] of [[prefix+'QuizTab','quiz'],[prefix+'DragTab','drag']])$(id).addEventListener('click',()=>{
-      tab=name;
-      $(prefix+'QuizPanel').hidden=tab!=='quiz';$(prefix+'DragPanel').hidden=tab!=='drag';
-      for(const [key,active] of [[prefix+'QuizTab',tab==='quiz'],[prefix+'DragTab',tab==='drag']]){$(key).classList.toggle('active',active);$(key).setAttribute('aria-selected',String(active));}
-      if(tab==='drag')match.open();else if(!current)next();
+  if(match||table){
+    const tabs=[['Quiz','quiz'],...(match?[['Drag','drag']]:[]),...(table?[['Table','table']]:[])];
+    for(const [suffix,name]of tabs)$(prefix+suffix+'Tab').addEventListener('click',()=>{
+      tab=name;for(const [suffix,value]of tabs){$(prefix+suffix+'Panel').hidden=value!==name;$(prefix+suffix+'Tab').classList.toggle('active',value===name);$(prefix+suffix+'Tab').setAttribute('aria-selected',String(value===name));}
+      if(tab==='drag')match.open();else if(tab==='table')table.open();else if(!current)next();
     });
   }
   document.addEventListener('keydown',event=>{
@@ -82,5 +81,5 @@ export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answer(Number(event.key)-1);}
     if(event.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(event.target.tagName)){event.preventDefault();next();}
   });
-  stats();return {open(){if(tab==='drag')match.open();else if(!current)next();}};
+  stats();return {open(){if(tab==='drag')match.open();else if(tab==='table')table.open();else if(!current)next();}};
 }
