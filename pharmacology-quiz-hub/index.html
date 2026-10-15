@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#173f5f">
-  <meta name="description" content="약물대사 CYP probe drug 대응 퀴즈와 약물의 이해 족보 회독">
+  <meta name="description" content="약물의 이해 족보 회독과 약동학·자율신경계·중추신경계·면역억제 약리 퀴즈">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261015-cns1">
+  <link rel="stylesheet" href="style.css?v=20261015-imm1">
 </head>
 <body>
   <main class="shell">
@@ -42,7 +42,21 @@
         <section class="hub-group" aria-labelledby="cnsGroupTitle"><div class="hub-group-head"><h2 id="cnsGroupTitle">14–15강 · 중추신경계 약리</h2><p>수용체 분류부터 질환·약물까지</p></div>
           <button id="cnsEntry" type="button" data-open="cns" class="hub-card cns-entry"><span class="hub-icon">CNS</span><span><strong>중추신경계 퀴즈</strong><small>족보형 5지선다 · 드래그 3종</small><span class="hub-tags"><span>수용체 구조</span><span>흥분·억제</span><span>질환–약물</span></span></span></button>
         </section>
+        <section class="hub-group immune-group" aria-labelledby="immuneGroupTitle"><div class="hub-group-head"><h2 id="immuneGroupTitle">28강 · 면역억제·면역조절</h2><p>족보 빈출 약물–표적 우선</p></div>
+          <button id="immEntry" type="button" data-open="immune" class="hub-card immune-entry"><span class="hub-icon">IM</span><span><strong>면역억제제 퀴즈</strong><small>표적 매칭 80% · 기전·부작용 20%</small><span class="hub-tags"><span>족보 빈출</span><span>약물–표적 드래그</span><span>암기표</span></span></span></button>
+        </section>
       </div>
+    </section>
+    <section id="immuneView" class="ans-view immune-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 28강 · IMMUNOPHARMACOLOGY</p><h2>면역억제제 · 약물–표적 퀴즈</h2></div><p>빈출 연결 우선 · 키보드 1–5 / Enter</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="면역억제제 학습 방식"><button id="immQuizTab" type="button" role="tab" aria-selected="true" aria-controls="immQuizPanel" class="active">족보형 5지선다</button><button id="immDragTab" type="button" role="tab" aria-selected="false" aria-controls="immDragPanel">약물–표적 드래그</button><button id="immTableTab" type="button" role="tab" aria-selected="false" aria-controls="immTablePanel">전체 암기표</button></div>
+      <div id="immQuizPanel" role="tabpanel" aria-labelledby="immQuizTab">
+        <div class="imm-toolbar"><label for="immScope">출제 범위</label><select id="immScope"><option value="core">족보 빈출·강의 강조 우선</option><option value="all">전체 범위</option></select><label for="immMode">출제 방식</label><select id="immMode"><option value="mixed">표적 4문제 + 기전·부작용 1문제</option><option value="target">약물–표적 매칭만</option><option value="support">기전·부작용·사례만</option></select><button id="immSkip" type="button" class="back-button">다른 문제</button></div>
+        <p class="cyp-intro">Cyclosporine·tacrolimus·sirolimus, CD 항원, B7 공동자극과 TNF 억제제를 먼저 연결하세요. 같은 표적을 공유하는 약물은 오답으로 섞지 않습니다. 전체 범위에는 조혈성 cytokine·IFN·HPV 백신도 포함됩니다.</p>
+        <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="immExam" class="badge"></span><span id="immProgress" class="q-count"></span></div><h2 id="immStem"></h2><div id="immChoices" class="options"></div><div id="immFeedback" class="feedback" aria-live="polite" hidden></div><button id="immNext" type="button" class="primary next" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">빈출부터 연결</span><strong id="immStats"></strong><p>결합 단백질 → 효과 표적 → 작용 단계 → 구별 부작용</p><p>Cyclophilin / FKBP12와 calcineurin / mTOR를 구별하세요. Abatacept의 결합 대상은 B7입니다.</p><p>족보 반복 관계에 출제 비중을 더 두고, 최근 약물·방향의 반복을 줄입니다.</p><span class="side-label">현재 문제의 근거</span><p id="immSource"></p></aside></div>
+      </div>
+      <div id="immDragPanel" role="tabpanel" aria-labelledby="immDragTab" hidden><div class="imm-toolbar"><label for="immMatchFilter">매칭 범위</label><select id="immMatchFilter"><option value="core">족보 빈출·강의 강조</option><option value="all">약물 전체</option></select></div><p class="cyp-intro">CNI·mTOR 약물의 칸은 ‘결합 단백질 → 효과 표적’입니다. 다른 약물은 표적·작용축에 놓으세요. 일부만 배치해도 채점하고 이어서 수정할 수 있습니다.</p><div id="immBoard"></div></div>
+      <div id="immTablePanel" role="tabpanel" aria-labelledby="immTableTab" hidden><div class="imm-toolbar"><label for="immTableFilter">암기표 범위</label><select id="immTableFilter"><option value="core">족보 빈출·강의 강조</option><option value="all">약물 전체</option></select></div><p class="cyp-intro">족보 반복 약물을 먼저 표시했습니다. 표적과 기전 중심으로 읽고, 자료의 표기 차이는 아래 ‘자료 대조’에서 확인하세요. 과거 약물이 포함된 강의·족보 분류를 따르며 현재 처방 여부는 출제하지 않습니다.</p><div class="memory-table-wrap"><table class="memory-table immune-table"><thead><tr><th scope="col">약물·빈출 근거</th><th scope="col">결합 단백질·표적</th><th scope="col">기전·구별할 점</th><th scope="col">용도·부작용 단서</th><th scope="col">강의록</th></tr></thead><tbody id="immTableBody"></tbody></table></div><details class="imm-corrections"><summary>자료 대조 · 확인된 오기와 출제 기준</summary><div id="immCorrections"></div></details></div>
     </section>
     <section id="cnsView" class="ans-view cns-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 14–15강 · CENTRAL NERVOUS SYSTEM</p><h2>중추신경계 약리 퀴즈</h2></div><p>키보드 1–5 / Enter · 강의록 기준</p></div>
@@ -161,9 +175,9 @@
     </section>
 
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
-    <footer><span>자료: 2026 약동학·약물대사·수송체·자율신경계·중추신경계 약리 강의록 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>중추신경계 강의록 확인: 2026-10-15</span></footer>
+    <footer><span>자료: 2026 약리 강의록 · 면역 억제 약리학 v3·첨부 요약표 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>면역억제 자료 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261015-cns1"></script>
+  <script type="module" src="app.mjs?v=20261015-imm1"></script>
 </body>
 </html>
 

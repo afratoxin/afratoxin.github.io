@@ -146,6 +146,21 @@
 .cns-choice-notes summary{cursor:pointer;font-weight:800}
 .cns-choice-notes ul{margin:8px 0;padding-left:20px;line-height:1.7}
 .cns-source{font-size:11px;opacity:.8}
+.immune-entry{background:linear-gradient(90deg,#e3f4ec 0 var(--correct-end,0%),#fbe8ec var(--correct-end,0%) var(--wrong-end,0%),#fff var(--wrong-end,0%) 100%)}
+.immune-view .ans-tabs button{flex:0 1 auto;width:fit-content}
+.imm-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0}
+.imm-toolbar label{font-size:12px;font-weight:800;color:var(--muted)}
+.imm-toolbar select{max-width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:13px}
+.immune-view .drop-zones{grid-template-columns:repeat(3,minmax(0,1fr))}
+.immune-view .drug-chip{overflow-wrap:anywhere}
+.immune-table td:nth-child(2),.immune-table td:last-child{white-space:normal}
+.immune-table td:nth-child(3){min-width:230px}
+.imm-row-exam,.imm-binding{display:block;margin-top:5px;color:var(--teal);font-size:11px;white-space:normal}
+.imm-binding{margin:0 0 5px;color:var(--muted)}
+.imm-corrections{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:12px;line-height:1.8}
+.imm-corrections summary{cursor:pointer;font-weight:800;color:var(--navy)}
+.imm-corrections .source-button{padding:2px 6px}
+@media(max-width:650px){.immune-view .drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.immune-view .ans-tabs button{padding:9px 11px;font-size:12px}.imm-toolbar select{font-size:12px}}
 @media(max-width:550px){.cns-binary-board .drop-zones{grid-template-columns:1fr}.cns-view .ans-tabs{gap:6px}.cns-view .ans-tabs button{padding:9px 11px;font-size:12px}}
 .memory-table-wrap{overflow-x:auto;border:1px solid #dbe7ee;border-radius:16px;background:#fff}
 .memory-table{width:100%;border-collapse:collapse;font-size:13px}
