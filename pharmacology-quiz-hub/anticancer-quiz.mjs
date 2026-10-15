@@ -1,5 +1,6 @@
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {ANTI_SECTIONS,ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY,ANTI_NOTES,pickAntiQuestion} from './anticancer-data.mjs?v=20261015-anti1';
-import {createMatchBoard} from './match-board.mjs?v=20261015-cns1';
+import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initAnticancerQuiz(){
   const $=id=>document.getElementById(id),symbols=['①','②','③','④','⑤'],storage='pharmacology-anticancer-30-v1';
@@ -25,6 +26,7 @@ export function initAnticancerQuiz(){
   function answer(index){
     if(!current||answered)return;answered=true;const good=index===current.answerIndex;
     state.total++;state.right+=Number(good);state.seen[current.id]=(state.seen[current.id]||0)+1;state.lastResult[current.id]=good;save();stats();
+    recordStudyResult('anticancer',current,good);
     [...$('antiChoices').children].forEach((b,i)=>{b.disabled=true;if(i===current.answerIndex)b.classList.add('correct');else if(i===index)b.classList.add('wrong');});
     const feedback=$('antiFeedback');feedback.className=`feedback ${good?'ok':'bad'}`;feedback.replaceChildren(node('strong','',`${good?'정답입니다.':'다시 연결해 보세요.'} 정답 ${symbols[current.answerIndex]} · ${current.answer}`),node('p','',current.note));
     if(current.details?.length){const details=node('details','cns-choice-notes');details.append(node('summary','','선지별 연결 보기'));const list=node('ul');for(const c of current.choices){const text=current.details.find(x=>x.startsWith(c.text+':'));if(text)list.append(node('li','',text));}details.append(list);feedback.append(details);}
@@ -44,7 +46,7 @@ export function initAnticancerQuiz(){
     const resume=node('button','primary','이 배치에서 계속하기 →');resume.id='antiReset';resume.type='button';resume.hidden=true;
     const fresh=node('button','back-button','처음부터 섞기');fresh.type='button';
     actions.append(status,check,resume,fresh);host.append(wrap,actions);
-    board=createMatchBoard({poolId:pool.id,cardsId:cards.id,zonesId:zones.id,statusId:status.id,checkId:check.id,resetId:resume.id,items,categoryOf:d=>d.categories[0],categoriesOf:d=>d.categories,keyOf:d=>d.id,labelOf:d=>d.name,onGrade:()=>{}});
+    board=createMatchBoard({studyId:toxicity?'anti-toxicity':'anti-target',poolId:pool.id,cardsId:cards.id,zonesId:zones.id,statusId:status.id,checkId:check.id,resetId:resume.id,items,categoryOf:d=>d.categories[0],categoriesOf:d=>d.categories,keyOf:d=>d.id,labelOf:d=>d.name,onGrade:()=>{}});
     const currentBoard=board;fresh.addEventListener('click',()=>currentBoard.reset());board.open();
   }
   for(const section of ANTI_SECTIONS){const option=node('option','',section);option.value=section;$('antiMatchFilter').append(option);}
@@ -52,7 +54,7 @@ export function initAnticancerQuiz(){
   for(const id of ['antiMatchFilter','antiMatchKind'])$(id).addEventListener('change',buildBoard);
   for(const name of ['Quiz','Drag'])$('anti'+name+'Tab').addEventListener('click',()=>{
     tab=name;for(const n of ['Quiz','Drag']){$('anti'+n+'Panel').hidden=n!==name;const b=$('anti'+n+'Tab');b.classList.toggle('active',n===name);b.setAttribute('aria-selected',String(n===name));}
-    if(name==='Quiz'){if(!current)next();}else if(!board)buildBoard();
+    if(name==='Quiz'){if(!current)next();}else if(!board)buildBoard();else board.open();
   });
   for(const id of ['antiScope','antiMode'])$(id).addEventListener('change',next);
   $('antiNext').addEventListener('click',next);$('antiSkip').addEventListener('click',next);
@@ -61,5 +63,5 @@ export function initAnticancerQuiz(){
     if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}
     if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}
   });
-  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(!board)buildBoard();}};
+  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(!board)buildBoard();else board.open();}};
 }

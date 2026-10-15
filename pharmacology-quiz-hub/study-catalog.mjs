@@ -1,0 +1,47 @@
+import {studyStore} from './study-records.mjs?v=20261015-review1';
+import {CYP_FACTS,CYP_CASES,makeCypQuestion,makeCypCaseQuestion} from './cyp.mjs?v=20261015-review1';
+import {ddiCandidates,makeDdiClassificationQuestion,makeDdiCaseQuestion,makeDdiEffectQuestion,CYP3A45_LABELS} from './cyp3a45.mjs?v=20261015-review1';
+import {TRANSPORT_FACTS,TRANSPORT_SPECIALS,TRANSPORT_CASES,AE_CASES,TRANSPORT_DRUGS,makeTransportQuestion,makeTransportSpecial,makeAeQuestion} from './transport8.mjs?v=20261015-review1';
+import {ANS_FACTS,ANS_CASES,ANS_MATCH,makeAnsQuestion,makeAnsSpecialQuestion} from './ans9.mjs?v=20261015-review1';
+import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,CHOL_DRUGS,makeCholQuestion,makeCholSpecialQuestion} from './chol10.mjs?v=20261015-review1';
+import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,CHOL11_DRUGS,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261015-review1';
+import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261009-1';
+import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261009-1';
+import {buildMixedPool} from './autonomic-mixed.mjs?v=20261015-review1';
+import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261015-4';
+import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261015-cns1';
+import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261015-imm1';
+import {ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY} from './anticancer-data.mjs?v=20261015-anti1';
+const read=key=>{try{return JSON.parse(globalThis.localStorage?.getItem(key)||'{}')||{};}catch{return {};}};
+export function ddiStudyNote(q){return q.kind==='classification'?q.case?q.fact.note:`${q.fact.drug}: CYP3A4/5 ${CYP3A45_LABELS[q.fact.category]}`:`${q.modifier.drug}: ${CYP3A45_LABELS[q.modifier.category]} → ${q.substrate.drug} 대사 ${q.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소'}`;}
+export function registerLectureStudies(store=studyStore){
+  const add=(id,title,route,bank,build,key,extra={})=>store.register({id,title,route,type:'quiz',items:bank.map(x=>x.id),build:id=>({...build(bank.find(x=>x.id===id)),id}),legacy:read(key),...extra});
+  const staticBank=(id,title,route,bank,key,extra={})=>add(id,title,route,bank,q=>q,key,extra);
+  const cyp=[...CYP_FACTS,...CYP_CASES];add('cyp','7강 · CYP probe','cyp',cyp,f=>CYP_CASES.includes(f)?makeCypCaseQuestion(f):makeCypQuestion(f,'drug-to-enzyme'),'pharmacology-cyp-probes-v1',{tabId:'cypProbeTab'});
+  add('ddi','7강 · CYP3A4/5 상호작용','cyp',ddiCandidates(),c=>{const q=c.case?makeDdiCaseQuestion(c.case):c.kind==='classification'?makeDdiClassificationQuestion(c.fact):makeDdiEffectQuestion(c.modifier,c.substrate);return {...q,note:ddiStudyNote(q),source:'7강 강의록 54쪽'};},'pharmacology-cyp3a45-ddi-v1',{tabId:'cypDdiTab'});
+  add('tx','8강 · 약물수송체','tx',[...TRANSPORT_FACTS,...TRANSPORT_SPECIALS,...TRANSPORT_CASES,...AE_CASES],f=>AE_CASES.includes(f)?makeAeQuestion(f):TRANSPORT_FACTS.includes(f)?makeTransportQuestion(f,true):makeTransportSpecial(f),'pharmacology-transporter-lecture8-v1',{tabId:'txQuizTab'});
+  const ansLegacy=read('pharmacology-autonomic-lecture9-v1');
+  for(const [id,tab,title]of [['ans','main','9강 · 회로·전달'],['ans-gpcr','gpcr','9강 · G 단백질']])add(id,title,'ans',[...ANS_FACTS.filter(f=>tab==='gpcr'?f.group==='gpcr':f.group!=='gpcr'),...(tab==='main'?ANS_CASES:[])],f=>ANS_CASES.includes(f)?makeAnsSpecialQuestion(f):makeAnsQuestion(f,true),'',{legacy:ansLegacy[tab]||{},tabId:tab==='main'?'ansMainTab':'ansGpcrTab'});
+  add('chol','10강 · 콜린성 (1)','chol',[...CHOL_FACTS,...CHOL_SPECIALS,...CHOL_CASES],f=>CHOL_FACTS.includes(f)?makeCholQuestion(f,true):makeCholSpecialQuestion(f),'pharmacology-cholinergic-lecture10-v1',{tabId:'cholQuizTab'});
+  add('chol11','11강 · 콜린성 (2)','chol11',[...CHOL11_FACTS,...CHOL11_SPECIALS,...CHOL11_CASES],f=>CHOL11_FACTS.includes(f)?makeChol11Question(f,true):makeChol11Special(f),'pharmacology-cholinergic-lecture11-v1',{tabId:'chol11QuizTab'});
+  staticBank('adr12','12강 · 아드레날린성 (1)','adr12',ADR12_QUESTIONS,'pharmacology-adrenergic-12-v1',{tabId:'adr12QuizTab'});
+  staticBank('adr13','13강 · 아드레날린성 (2)','adr13',ADR13_QUESTIONS,'pharmacology-adrenergic-13-v1',{tabId:'adr13QuizTab'});
+  add('mixed','9–13강 · 종합','mixed',buildMixedPool(),f=>f.render(0),'pharmacology-autonomic-mixed-v1');
+  const variants=Object.entries(PK_VARIANTS).flatMap(([topic,vs])=>vs.map(variant=>({id:topic+':'+variant,topic,variant})));
+  add('pk','2–4강 · 약동학 계산','pk',variants,f=>makePkQuestion(f.topic,Math.random,f.variant),'pharmacology-pk-calculations-v1',{unknownLegacy:true,tabId:'pkQuizTab',unitLabel:'문제 형태'});
+  staticBank('cns','14–15강 · 중추신경계','cns',CNS_QUESTIONS,'pharmacology-cns-14-15-v1',{tabId:'cnsQuizTab'});
+  staticBank('immune','28강 · 면역억제제','immune',IMM_QUESTIONS,'pharmacology-immune-28-v1',{tabId:'immQuizTab'});
+  staticBank('anticancer','30강 · 항암제','anticancer',ANTI_QUESTIONS,'pharmacology-anticancer-30-v1',{tabId:'antiQuizTab'});
+  const match=(id,title,route,items,boardIds)=>store.register({id,title,route,type:'match',items,boardIds});
+  const rows=items=>items.map(x=>({id:x.drug,name:x.drug,categories:[x.category],note:x.note||''}));
+  match('cyp-match','7강 · CYP 드래그','drag',CYP_FACTS.map(x=>({id:x.id,name:x.drug,categories:[x.enzyme],note:x.note})),['dragCards']);
+  for(const [id,title,route,items,board]of [['tx-match','8강 · 수송체 드래그','tx',TRANSPORT_DRUGS,'txCards'],['ans-match','9강 · 드래그','ans',ANS_MATCH,'ansCards'],['chol-match','10강 · 드래그','chol',CHOL_DRUGS,'cholCards'],['chol11-match','11강 · 드래그','chol11',CHOL11_DRUGS,'chol11Cards'],['adr12-match','12강 · 드래그','adr12',ADR12_MATCH,'adr12Cards'],['adr13-match','13강 · 드래그','adr13',ADR13_MATCH,'adr13Cards']])match(id,title,route,rows(items),[board]);
+  for(const [kind,title]of [['structure','수용체 구조'],['effect','흥분·억제'],['disease','질환·약물']])match('cns-'+kind,'14–15강 · '+title,'cns',CNS_MATCH[kind].map(x=>({...x,note:x.why||x.note})),['cns'+kind[0].toUpperCase()+kind.slice(1)+'Cards']);
+  match('immune-match','28강 · 표적 드래그','immune',IMM_DRUGS.map(d=>({id:d.id,name:d.name,categories:[d.binding==='—'?d.target:`${d.binding} → ${d.target}`],note:d.note})),['immCards']);
+  match('anti-target','30강 · 표적 드래그','anticancer',ANTI_TARGETS,[]);match('anti-toxicity','30강 · 독성 드래그','anticancer',ANTI_TOXICITY,[]);
+  return store;
+}
+export function registerArchiveStudy(data,store=studyStore,legacy=read('pharmacology-exam-2026-v1')){
+  const bank=data.questions.filter(q=>q.status==='quiz');
+  store.register({id:'archive',title:'족보 문항',route:'menu',type:'quiz',items:bank.map(q=>q.id),legacy,build:id=>{const q=bank.find(q=>q.id===id);return {...q,note:'학생 복원 족보의 답안표 기준입니다.',source:`${q.year}년 · 족보 ${q.page}쪽 · ${q.number||''}번`};}});
+}

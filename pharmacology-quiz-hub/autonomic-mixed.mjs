@@ -1,9 +1,9 @@
-import {ANS_FACTS,ANS_CASES,makeAnsQuestion,makeAnsSpecialQuestion} from './ans9.mjs?v=20261009-1';
-import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,makeCholQuestion,makeCholSpecialQuestion} from './chol10.mjs?v=20261007-1';
-import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261007-1';
+import {ANS_FACTS,ANS_CASES,makeAnsQuestion,makeAnsSpecialQuestion} from './ans9.mjs?v=20261015-review1';
+import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,makeCholQuestion,makeCholSpecialQuestion} from './chol10.mjs?v=20261015-review1';
+import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261015-review1';
 import {ADR12_QUESTIONS} from './adr12.mjs?v=20261009-1';
 import {ADR13_QUESTIONS} from './adr13.mjs?v=20261009-1';
-import {shuffle,prepareQuestion} from './autonomic-quiz.mjs?v=20261009-1';
+import {shuffle,prepareQuestion} from './autonomic-quiz.mjs?v=20261015-review1';
 
 const q=(id,stem,answer,distractors,note)=>({id,group:'cross',lecture:'cross',stem,answer,options:[answer,...distractors],note});
 export const MIXED_QUESTIONS=[

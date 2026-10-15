@@ -1,3 +1,4 @@
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 // 2026년 7강 약물대사, 강의록 54쪽: CYP3A4/5 substrates, inhibitors, inducers.
 export const CYP3A45_FACTS=[
   {id:'ritonavir',drug:'ritonavir',category:'inhibitor'},
@@ -161,6 +162,7 @@ export function initCyp3a45Quiz(){
     progress.seen[current.id]=(progress.seen[current.id]||0)+1;
     if(!good)progress.missed[current.id]=(progress.missed[current.id]||0)+1;
     save();renderStats();
+    recordStudyResult('ddi',current,good,{source:'7강 강의록 54쪽',note:current.kind==='classification'?(current.case?current.fact.note:current.fact.drug+' · '+CYP3A45_LABELS[current.fact.category]):current.modifier.drug+' · '+CYP3A45_LABELS[current.modifier.category]+' → '+current.substrate.drug+' 대사 '+(current.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소')});
     [...$('cypDdiChoices').children].forEach((button,i)=>{
       button.disabled=true;
       if(i===current.answerIndex)button.classList.add('correct');
@@ -194,7 +196,7 @@ export function initCyp3a45Quiz(){
   document.addEventListener('keydown',event=>{
     if($('cypView').hidden||$('cypDdiPanel').hidden||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answer(Number(event.key)-1);}
-    if(event.key==='Enter'&&answered){event.preventDefault();next();}
+    if(event.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(event.target.tagName)){event.preventDefault();next();}
   });
   renderStats();
   return {open(view){if(view==='cyp'&&activeTab==='ddi'&&!current)next();}};

@@ -1,4 +1,5 @@
-import {createMatchBoard} from './match-board.mjs?v=20261009-1';
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
+import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 const symbols=['①','②','③','④','⑤'];
 export function shuffle(items,random=Math.random){
@@ -58,6 +59,7 @@ export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw
     state.total++;state.right+=Number(good);state.seen[current.id]=(state.seen[current.id]||0)+1;
     if(!good)state.missed[current.id]=(state.missed[current.id]||0)+1;
     save();stats();
+    recordStudyResult(prefix,current,good);
     [...$(prefix+'Choices').children].forEach((button,j)=>{button.disabled=true;if(j===current.answerIndex)button.classList.add('correct');else if(j===i)button.classList.add('wrong');});
     const fb=$(prefix+'Feedback');fb.className=`feedback ${good?'ok':'bad'}`;fb.replaceChildren();
     const heading=document.createElement('strong');heading.textContent=`${good?'정답입니다.':'다시 연결해 보세요.'} 정답 ${symbols[current.answerIndex]} · ${current.choices[current.answerIndex].text}`;
@@ -78,7 +80,7 @@ export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw
   document.addEventListener('keydown',event=>{
     if($(viewId).hidden||tab!=='quiz'||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answer(Number(event.key)-1);}
-    if(event.key==='Enter'&&answered){event.preventDefault();next();}
+    if(event.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(event.target.tagName)){event.preventDefault();next();}
   });
   stats();return {open(){if(tab==='drag')match.open();else if(!current)next();}};
 }

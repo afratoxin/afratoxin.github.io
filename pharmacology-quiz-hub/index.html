@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물의 이해 족보 회독과 약동학·자율신경계·중추신경계·면역억제 약리 퀴즈">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261015-anti1">
+  <link rel="stylesheet" href="style.css?v=20261015-review1">
 </head>
 <body>
   <main class="shell">
@@ -15,6 +15,7 @@
       <div class="topbar-actions"><span class="save-note">학습 기록은 이 브라우저에 저장됩니다</span><button id="hubBack" class="back-button" type="button" hidden>← 단원 메뉴</button></div>
     </header>
     <section id="homeView">
+      <div class="hub-review-link"><button type="button" data-open="mistakes" class="wrong-button">전체 퀴즈 · 오답 모아 풀기 →</button><span class="study-legend"><i class="legend-correct"></i> 정답 <i class="legend-wrong"></i> 오답 <i class="legend-unanswered"></i> 미풀이 · 문항별 최신 결과</span></div>
       <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 약동학 계산, CYP·수송체, 자율신경계와 중추신경계 약리학을 함께 복습할 수 있습니다.</p></div>
       <div class="hub-groups">
         <section class="hub-group" aria-labelledby="examGroupTitle"><div class="hub-group-head"><h2 id="examGroupTitle">족보 회독</h2><p>복원 기출을 강의별로 반복</p></div>
@@ -47,6 +48,18 @@
           <button id="antiEntry" type="button" data-open="anticancer" class="hub-card anti-entry"><span class="hub-icon">30</span><span><strong>30강 · 항암제</strong><small>족보형 표적·기전 · 대표 독성 사례</small><span class="hub-tags"><span>표적 드래그</span><span>독성 드래그</span><span>호르몬 항암제</span></span></span></button></div>
         </section>
       </div>
+    </section>
+    <section id="mistakesView" class="ans-view study-review-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">WRONG ANSWERS · RETRY</p><h2 id="studyReviewTitle">전체 퀴즈 · 오답 다시 풀기</h2></div><button id="studyReviewBack" class="back-button" type="button">← 원래 퀴즈로</button></div>
+      <div class="imm-toolbar"><label for="studyReviewScope">복습 범위</label><select id="studyReviewScope"><option value="all">모든 퀴즈의 오답</option></select></div>
+      <p id="studyReviewSummary" class="study-live-summary" aria-live="polite"></p>
+      <p class="cyp-intro">다시 맞히면 오답 목록에서 빠집니다. 초록색은 정답, 붉은색은 오답, 빈 영역은 미풀이입니다. 계산 퀴즈의 전체 범위는 문제 형태 수로 셉니다.</p>
+      <div class="ans-tabs" role="tablist" aria-label="오답 학습 방식"><button id="studyWrongQuizTab" type="button" role="tab" aria-controls="studyWrongQuizPanel" aria-selected="true" class="active">객관식 오답</button><button id="studyWrongMatchTab" type="button" role="tab" aria-controls="studyWrongMatchPanel" aria-selected="false">드래그 오답</button></div>
+      <div id="studyWrongQuizPanel" role="tabpanel" aria-labelledby="studyWrongQuizTab">
+        <div id="studyWrongEmpty" class="empty" hidden>남은 객관식 오답이 없습니다.</div>
+        <article id="studyWrongCard" class="question-card" hidden><div class="q-meta"><span id="studyWrongMeta" class="badge"></span><span class="q-count">1–5 선택 · Enter 채점 / 다음</span></div><h2 id="studyWrongStem"></h2><div id="studyWrongVisual" class="pk-visual" hidden></div><div id="studyWrongChoices" class="options"></div><div class="study-review-actions"><button id="studyWrongCheck" type="button" class="primary" disabled>정답 확인</button><button id="studyWrongNext" type="button" class="back-button" hidden>다음 오답 →</button></div><div id="studyWrongFeedback" class="feedback" aria-live="polite" hidden></div></article>
+      </div>
+      <div id="studyWrongMatchPanel" role="tabpanel" aria-labelledby="studyWrongMatchTab" hidden><div class="imm-toolbar"><label for="studyMatchScope">드래그 세트</label><select id="studyMatchScope"></select><button id="studyMatchRefresh" class="back-button" type="button">남은 오답 다시 배치</button></div><p class="cyp-intro">틀렸던 카드만 가져옵니다. 분류 칸은 전체 세트를 유지하며, 배치하지 않은 카드는 오답에 새로 추가하지 않습니다.</p><div id="studyWrongBoard"></div></div>
     </section>
     <section id="oncoView" hidden>
       <div class="section-head"><div><p class="eyebrow dark">IMMUNE &amp; CANCER PHARMACOLOGY</p><h2>면역·항암 약리</h2></div><p>강의를 선택해 이어서 풀어보세요.</p></div>
@@ -174,7 +187,7 @@
       <div class="review-entry"><div><strong>원문 확인 목록</strong><p>그림·선지·답안이 불완전한 문항은 채점하지 않습니다. 강의·연도·번호를 보고 소지한 족보와 대조하세요.</p></div><button id="reviewAll" type="button">확인 목록 열기 →</button></div>
     </section>
 
-    <section id="practiceView" hidden>
+    <section id="practiceView" hidden><div id="archivePracticeEmpty" class="empty" hidden></div>
       <div class="practice-top"><button type="button" id="backButton" class="back-button">← 단원 목록</button><span id="practiceHeading"></span></div>
       <div class="practice-layout"><div>
         <div class="question-card" id="questionCard">
@@ -193,7 +206,7 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약리 강의록 · 면역 억제 약리학 v3·첨부 요약표 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>면역억제 자료 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261015-anti1"></script>
+  <script type="module" src="app.mjs?v=20261015-review1"></script>
 </body>
 </html>
 

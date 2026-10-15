@@ -1,3 +1,4 @@
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {PK_TOPICS,PK_VARIANTS,makePkQuestion,pickPkTopic,shuffle} from './pk-calculations.mjs?v=20261015-4';
 const SYMBOLS=['①','②','③','④','⑤'];
 const KEY='pharmacology-pk-calculations-v1';
@@ -75,6 +76,7 @@ export function initPkQuiz(){
     state.total++;state.right+=Number(good);state.attemptedVariants[current.id]=(state.attemptedVariants[current.id]||0)+1;
     if(!good)state.missedTopics[current.topic]=(state.missedTopics[current.topic]||0)+1;
     save();stats();
+    recordStudyResult('pk',current,good);
     [...$('pkChoices').children].forEach((button,j)=>{button.disabled=true;if(j===current.answerIndex)button.classList.add('correct');else if(j===i)button.classList.add('wrong');});
     const fb=$('pkFeedback');fb.replaceChildren();fb.className=`feedback ${good?'ok':'bad'}`;
     const title=document.createElement('strong');title.textContent=`${good?'정답입니다.':'공식과 단위를 다시 확인하세요.'} 정답 ${SYMBOLS[current.answerIndex]} · ${current.choices[current.answerIndex].text}`;
@@ -93,7 +95,7 @@ export function initPkQuiz(){
   document.addEventListener('keydown',e=>{
     if($('pkView').hidden||tab!=='quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
     if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}
-    if(e.key==='Enter'&&answered){e.preventDefault();next();}
+    if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}
   });
   stats();return {open(){if(tab==='quiz'&&!current)next();}};
 }

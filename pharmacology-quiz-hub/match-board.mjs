@@ -1,10 +1,14 @@
+import {studyStore,studyCountLabel,paintStudyProgress} from './study-records.mjs?v=20261015-review1';
 // Shared interactive board for the lecture matching exercises.
 export function isMatchPlacement(item,chosen,categoriesOf){return Boolean(chosen)&&categoriesOf(item).includes(chosen);}
-export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetId,items,categoryOf,categoriesOf= item=>[categoryOf(item)],keyOf,labelOf,onGrade}){
+export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetId,items,categoryOf,categoriesOf= item=>[categoryOf(item)],keyOf,labelOf,onGrade,studyId,categoryOptions,store=studyStore}){
   const $=id=>document.getElementById(id);
   const pool=$(poolId),cards=$(cardsId),zones=$(zonesId),status=$(statusId),check=$(checkId),reset=$(resetId);
+  const scope=studyId||store.boardScope(cardsId);
+  let wrongOnly=false,toggle=null,summary=null;
+  function progress(){if(!scope)return;const n=store.counts(scope);if(summary){summary.textContent=studyCountLabel(n);paintStudyProgress(summary,n);}if(toggle){toggle.textContent=wrongOnly?'전체 카드로 돌아가기':`오답 카드만 · ${store.wrong(scope).length}`;toggle.setAttribute('aria-pressed',String(wrongOnly));}}
   let board=[],chips=new Map(),placements=new Map(),selected=null,graded=false;
-  const categories=[...new Set(items.flatMap(categoriesOf))];
+  const categories=[...new Set(categoryOptions||items.flatMap(categoriesOf))];
   const shuffle=a=>{const copy=[...a];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;};
   const message=s=>{status.textContent=s;};
   function render(){
@@ -20,7 +24,7 @@ export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetI
     }
     for(const category of categories){zones.querySelector(`[data-category="${CSS.escape(category)}"] .zone-chips`).replaceChildren(fragments.get(category));}
     pool.classList.toggle('pool-over',false);
-    check.disabled=false;
+    check.disabled=!board.length;
     check.textContent=`지금 채점하기 · ${placements.size}/${board.length}개 배치`;
     const count=pool.querySelector('.pool-count');if(count)count.textContent=`남은 카드 ${board.length-placements.size}개`;
   }
@@ -35,7 +39,8 @@ export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetI
     message(`${labelOf(board.find(x=>keyOf(x)===key))} 카드를 꺼냈습니다 · ${placements.size}/${board.length}개 배치`);
   }
   function setup(){
-    board=shuffle(items);placements=new Map();chips=new Map();selected=null;graded=false;
+    const wrongIds=wrongOnly?new Set(store.wrong(scope).map(x=>x.id)):null;
+    board=shuffle(wrongIds?items.filter(x=>wrongIds.has(String(keyOf(x)))):items);placements=new Map();chips=new Map();selected=null;graded=false;
     cards.replaceChildren();zones.replaceChildren();check.hidden=false;reset.hidden=true;
     pool.classList.remove('graded');
     for(const category of shuffle(categories)){
@@ -54,7 +59,7 @@ export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetI
       chip.addEventListener('dragstart',e=>{if(graded){e.preventDefault();return;}e.dataTransfer.setData('text/plain',key);e.dataTransfer.effectAllowed='move';});
       chip.addEventListener('click',e=>{e.stopPropagation();if(graded)return;selected=selected===key?null:key;render();message(selected?`${labelOf(item)} 선택됨 · 옮길 칸을 누르세요. 목록의 빈 곳을 누르면 카드를 꺼낼 수 있습니다.`:'선택을 해제했습니다.');});
     }
-    render();message('카드를 끌거나 누른 뒤 칸을 선택하세요. 일부만 놓아도 채점할 수 있습니다.');
+    render();progress();message(board.length?'카드를 끌거나 누른 뒤 칸을 선택하세요. 일부만 놓아도 채점할 수 있습니다.':'이 범위에 남은 오답 카드가 없습니다. 전체 카드로 돌아가 새로 연습할 수 있습니다.');
   }
   function resume(){
     if(!graded)return;
@@ -72,7 +77,8 @@ export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetI
     const results=board.map(item=>({item,chosen:placements.get(keyOf(item)),correct:isMatchPlacement(item,placements.get(keyOf(item)),categoriesOf)}));
     const good=results.filter(r=>r.correct).length;
     for(const r of results){const chip=chips.get(keyOf(r.item));if(r.chosen)chip.classList.add(r.correct?'matched':'mismatch');chip.draggable=false;}
-    onGrade(results);
+    if(scope)store.recordMatch(scope,results,keyOf);
+    onGrade(results);progress();
     message(`배치한 ${placements.size}개 중 ${good}개 정답 · 미배치 ${board.length-placements.size}개. 이 배치에서 계속할 수 있습니다.`);
     const details=document.createElement('details');details.className='match-details';
     const summary=document.createElement('summary');summary.textContent='배치한 카드의 정답과 내가 놓은 칸 보기';details.append(summary);
@@ -82,6 +88,10 @@ export function createMatchBoard({poolId,cardsId,zonesId,statusId,checkId,resetI
     check.hidden=true;reset.hidden=false;
   });
   reset.addEventListener('click',resume);
-  return {open(){if(!board.length)setup();},reset:setup};
+  if(scope&&store.definitions.has(scope)){
+    toggle=document.createElement('button');toggle.type='button';toggle.className='back-button match-wrong-toggle';toggle.addEventListener('click',()=>{wrongOnly=!wrongOnly;setup();});
+    summary=document.createElement('p');summary.className='study-board-summary';pool.append(toggle,summary);progress();
+  }
+  return {open(){if(!board.length)setup();else progress();},reset:setup};
 }
 

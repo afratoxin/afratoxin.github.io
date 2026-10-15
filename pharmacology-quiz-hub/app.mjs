@@ -1,23 +1,27 @@
+import {studyStore,recordStudyResult} from './study-records.mjs?v=20261015-review1';
+import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261015-review1';
+import {initStudyReview} from './study-review.mjs?v=20261015-review1';
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
-import {initCypQuiz} from './cyp.mjs?v=20261007-1';
-import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261007-1';
-import {initAnsQuiz} from './ans9.mjs?v=20261009-1';
-import {initCholQuiz} from './chol10.mjs?v=20261007-1';
-import {initChol11Quiz} from './chol11.mjs?v=20261007-1';
-import {initTransportQuiz} from './transport8.mjs?v=20261007-1';
+import {initCypQuiz} from './cyp.mjs?v=20261015-review1';
+import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261015-review1';
+import {initAnsQuiz} from './ans9.mjs?v=20261015-review1';
+import {initCholQuiz} from './chol10.mjs?v=20261015-review1';
+import {initChol11Quiz} from './chol11.mjs?v=20261015-review1';
+import {initTransportQuiz} from './transport8.mjs?v=20261015-review1';
 import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261009-1';
 import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261009-1';
-import {buildMixedPool,nextMixedQuestion} from './autonomic-mixed.mjs?v=20261009-1';
-import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261009-1';
-import {initPkQuiz} from './pk-quiz.mjs?v=20261015-4';
-import {initCnsQuiz} from './cns-quiz.mjs?v=20261015-cns1';
-import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261015-anti1';
+import {buildMixedPool,nextMixedQuestion} from './autonomic-mixed.mjs?v=20261015-review1';
+import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261015-review1';
+import {initPkQuiz} from './pk-quiz.mjs?v=20261015-review1';
+import {initCnsQuiz} from './cns-quiz.mjs?v=20261015-review1';
+import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261015-review1';
 import {syncStudyFolder} from './study-folder.mjs?v=20261015-anti1';
-import {initImmuneQuiz} from './immune-quiz.mjs?v=20261015-imm1';
+import {initImmuneQuiz} from './immune-quiz.mjs?v=20261015-review1';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const numbers=['①','②','③','④','⑤'];
+registerLectureStudies();
 const cyp=initCypQuiz();
 const cyp3a45=initCyp3a45Quiz();
 const ans=initAnsQuiz();
@@ -37,6 +41,8 @@ let data=null,year='all',section='all',current=null,shown=null,answered=false,se
 let progress={seen:{},correct:{},missed:{},recent:[]};
 try{const saved=JSON.parse(localStorage.getItem(STORAGE)||'null');if(saved&&saved.seen)progress={...progress,...saved};}catch{}
 
+const studyReview=initStudyReview({navigate:view=>{if(view==='menu'&&data)menu();show(view);}});
+
 function save(){try{localStorage.setItem(STORAGE,JSON.stringify(progress));}catch{}}
 function label(unit){
   if(unit==='all')return '전체 범위';
@@ -48,7 +54,7 @@ function label(unit){
 function show(view){
   const jumpToChol11Match=view==='chol11match';
   if(jumpToChol11Match)view='chol11';
-  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','pk','cns','menu','practice','review'])$(name+'View').hidden=(view!==name);
+  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','pk','cns','menu','practice','review','mistakes'])$(name+'View').hidden=(view!==name);
   syncStudyFolder(view);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
@@ -81,17 +87,11 @@ function stats(){
 }
 function practicePool(unit=section){
   const pool=visibleQuestions(data.questions,unit==='wrong'?'all':unit,year,'quiz');
-  return unit==='wrong'?pool.filter(q=>(progress.missed[q.id]||0)>0):pool;
+  return unit==='wrong'?pool.filter(q=>studyStore.status('archive',q.id)==='wrong'):pool;
 }
 function resultCounts(pool){
   const result={correct:0,wrong:0,unanswered:0};
-  for(const q of pool){
-    if(!progress.seen[q.id])result.unanswered++;
-    else if(progress.lastResult?.[q.id]==='wrong')result.wrong++;
-    else if(progress.lastResult?.[q.id]==='correct')result.correct++;
-    else if((progress.missed[q.id]||0)>=(progress.seen[q.id]||0))result.wrong++;
-    else result.correct++;
-  }
+  for(const q of pool){const status=studyStore.status('archive',q.id);if(status==='correct')result.correct++;else if(status==='wrong')result.wrong++;else result.unanswered++;}
   return result;
 }
 function resultLabel(counts){
@@ -110,7 +110,7 @@ function questionResult(){
   const counts=resultCounts([current]);
   paintResult($('questionResultBar'),counts);
   $('questionResultText').textContent=progress.seen[current.id]
-    ? `이 문항: 마지막 풀이 ${counts.correct?'정답':'오답'} · 누적 정답 ${progress.correct[current.id]||0}회 / 오답 ${progress.missed[current.id]||0}회`
+    ? `이 문항: 마지막 풀이 ${counts.correct?'정답':'오답'}`
     : '이 문항: 아직 풀지 않음';
 }
 function menu(){
@@ -144,7 +144,8 @@ function startPractice(unit){
 }
 function nextQuestion(){
   const pool=practicePool();
-  if(!pool.length){$('questionCard').innerHTML='<div class="empty">이 범위에는 채점 가능한 문제가 없습니다.</div>';return;}
+  $('questionCard').hidden=!pool.length;$('archivePracticeEmpty').hidden=Boolean(pool.length);
+  if(!pool.length){$('archivePracticeEmpty').textContent=section==='wrong'?'남은 오답이 없습니다. 단원 메뉴에서 다른 문제를 풀 수 있습니다.':'이 범위에는 채점 가능한 문제가 없습니다.';return;}
   current=chooseQuestion(pool,progress.seen,progress.recent);
   shown=shuffleChoices(current);answered=false;selected=new Set();session++;
   $('sourceTag').textContent=`${current.year} · ${current.page}쪽 · ${current.number}번`;
@@ -180,6 +181,7 @@ function check(){
   else progress.missed[current.id]=(progress.missed[current.id]||0)+1;
   (progress.lastResult??={})[current.id]=good?'correct':'wrong';
   progress.recent=[current.id,...progress.recent.filter(id=>id!==current.id)].slice(0,Math.min(8,Math.max(1,practicePool().length-1)));
+  recordStudyResult('archive',shown,good,{note:'학생 복원 족보의 답안표 기준입니다.',source:`${current.year}년 · 족보 ${current.page}쪽 · ${current.number}번`});
   save();stats();questionResult();
   for(const btn of $('choiceList').querySelectorAll('button')){
     const i=Number(btn.dataset.choice);btn.disabled=true;
@@ -218,7 +220,7 @@ $('wrongUnit').addEventListener('click',()=>startPractice('wrong'));
 $('reviewAll').addEventListener('click',()=>startReview('all'));
 $('yearFilter').addEventListener('change',e=>{year=e.target.value;menu();});
 for(const button of document.querySelectorAll('[data-open]')){
-  button.addEventListener('click',()=>{mode='menu';show(button.dataset.open);});
+  button.addEventListener('click',()=>{mode='menu';if(button.dataset.open==='mistakes')studyReview.open();else show(button.dataset.open);});
 }
 $('hubBack').addEventListener('click',()=>{mode='menu';show('home');});
 
@@ -226,11 +228,13 @@ try{
   const response=await fetch('questions.json',{cache:'no-store'});
   if(!response.ok)throw new Error(`HTTP ${response.status}`);
   data=await response.json();
+  registerArchiveStudy(data);
   const years=[...new Set(data.questions.map(q=>q.year))].sort((a,b)=>b-a);
   for(const y of years){const option=document.createElement('option');option.value=y;option.textContent=`${y}년`;$('yearFilter').append(option);}
   menu();
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
+  else if(location.hash==='#mistakes')studyReview.open();
   else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','anticancer','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}

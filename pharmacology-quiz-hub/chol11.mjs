@@ -1,6 +1,7 @@
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 // 2026 11강 콜린성 약리학 (2): 강의록 11–22쪽과 족보 임상 발문.
 import {shuffle} from './cyp.mjs?v=20261007-1';
-import {createMatchBoard} from './match-board.mjs?v=20261006-1';
+import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const CHOL11_FACTS=[
   f('block-m','effects','Atropine은 무스카린 수용체를 차단해 부교감 작용을 억제한다.','Atropine은 니코틴 수용체를 차단해 부교감 작용을 억제한다.','Atropine은 항무스카린제이며 신경절의 니코틴 수용체 차단제가 아니다.',11),
@@ -116,6 +117,7 @@ export function initChol11Quiz(){
     const good=i===current.answerIndex,f=current.fact;
     state.total++;state.right+=Number(good);state.seen[f.id]=(state.seen[f.id]||0)+1;
     if(!good)state.missed[f.id]=(state.missed[f.id]||0)+1;save();stats();
+    recordStudyResult('chol11',current,good,{id:f.id});
     [...$('chol11Choices').children].forEach((button,j)=>{button.disabled=true;if(j===current.answerIndex)button.classList.add('correct');else if(j===i)button.classList.add('wrong');});
     const fb=$('chol11Feedback');fb.className=`feedback ${good?'ok':'bad'}`;fb.replaceChildren();
     const heading=document.createElement('strong');heading.textContent=`${good?'정답입니다.':'바뀐 부분을 확인하세요.'} 정답 ${SYMBOLS[current.answerIndex]}`;
@@ -131,6 +133,6 @@ export function initChol11Quiz(){
     for(const [tabId,active] of [['chol11QuizTab',tab==='quiz'],['chol11DragTab',tab==='drag']]){$(tabId).classList.toggle('active',active);$(tabId).setAttribute('aria-selected',String(active));}
     if(tab==='quiz'&&!current)next();if(tab==='drag')match.open();
   });
-  document.addEventListener('keydown',e=>{if($('chol11View').hidden||tab!=='quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}if(e.key==='Enter'&&answered){e.preventDefault();next();}});
+  document.addEventListener('keydown',e=>{if($('chol11View').hidden||tab!=='quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}});
   stats();return {open(){if(tab==='quiz'&&!current)next();if(tab==='drag')match.open();}};
 }

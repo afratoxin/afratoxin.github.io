@@ -1,6 +1,7 @@
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 // 2026 8강 약물수송체: 현 강의록의 표, 사례, 마지막 두 연습문제.
 import {shuffle} from './cyp.mjs?v=20261007-1';
-import {createMatchBoard} from './match-board.mjs?v=20261006-1';
+import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const TRANSPORT_FACTS=[
   f('abc-atp','family','ABC 수송체는 ATP 가수분해 에너지로 기질을 이동시킨다.','ABC 수송체는 Na⁺ 농도구배 에너지로 기질을 이동시킨다.','P-gp·BCRP·BSEP는 ABC 계열이다.',5),
@@ -132,6 +133,7 @@ export function initTransportQuiz(){
     if(answered||!current)return;answered=true;const good=i===current.answerIndex,f=current.fact;
     state.total++;state.right+=Number(good);state.seen[f.id]=(state.seen[f.id]||0)+1;
     if(!good)state.missed[f.id]=(state.missed[f.id]||0)+1;save();stats();
+    recordStudyResult('tx',current,good,{id:f.id});
     [...$('txChoices').children].forEach((button,j)=>{button.disabled=true;if(j===current.answerIndex)button.classList.add('correct');else if(j===i)button.classList.add('wrong');});
     const fb=$('txFeedback');fb.className=`feedback ${good?'ok':'bad'}`;fb.replaceChildren();
     const heading=document.createElement('strong');heading.textContent=`${good?'정답입니다.':'바뀐 부분을 확인하세요.'} 정답 ${SYMBOLS[current.answerIndex]}`;
@@ -148,6 +150,6 @@ export function initTransportQuiz(){
     for(const [tabId,choice] of [['txQuizTab','quiz'],['txDragTab','drag'],['txTableTab','table']]){$(tabId).classList.toggle('active',tab===choice);$(tabId).setAttribute('aria-selected',String(tab===choice));}
     if(tab==='quiz'&&!current)next();if(tab==='drag')match.open();
   });
-  document.addEventListener('keydown',e=>{if($('txView').hidden||tab!=='quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}if(e.key==='Enter'&&answered){e.preventDefault();next();}});
+  document.addEventListener('keydown',e=>{if($('txView').hidden||tab!=='quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}});
   buildTable();stats();return{open(){if(tab==='quiz'&&!current)next();if(tab==='drag')match.open();}};
 }

@@ -1,4 +1,5 @@
-import {createMatchBoard} from './match-board.mjs?v=20261006-1';
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
+import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 // 2026 10강 콜린성 약리학 (1): 강의록 직접작용제·AChE 억제제 표와 사례.
 import {shuffle} from './cyp.mjs?v=20261007-1';
 const f=(id,group,correct,incorrect,note)=>({id,group,correct,incorrect,note});
@@ -100,6 +101,7 @@ export function initCholQuiz(){
     const good=i===current.answerIndex,f=current.fact;
     state.total++;state.right+=Number(good);state.seen[f.id]=(state.seen[f.id]||0)+1;
     if(!good)state.missed[f.id]=(state.missed[f.id]||0)+1;save();stats();
+    recordStudyResult('chol',current,good,{id:f.id});
     [...$('cholChoices').children].forEach((button,j)=>{button.disabled=true;if(j===current.answerIndex)button.classList.add('correct');else if(j===i)button.classList.add('wrong');});
     const fb=$('cholFeedback');fb.replaceChildren();fb.className=`feedback ${good?'ok':'bad'}`;
     const heading=document.createElement('strong');heading.textContent=`${good?'정답입니다.':'바뀐 부분을 확인하세요.'} 정답 ${SYMBOLS[current.answerIndex]}`;
@@ -119,6 +121,6 @@ export function initCholQuiz(){
     for(const [tabId,active] of [['cholQuizTab',tab==='quiz'],['cholDragTab',tab==='drag']]){$(tabId).classList.toggle('active',active);$(tabId).setAttribute('aria-selected',String(active));}
     if(tab==='quiz'&&!current)next();if(tab==='drag')match.open();
   });
-  document.addEventListener('keydown',e=>{if($('cholView').hidden||tab!=='quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}if(e.key==='Enter'&&answered){e.preventDefault();next();}});
+  document.addEventListener('keydown',e=>{if($('cholView').hidden||tab!=='quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}});
   stats();return {open(){if(tab==='quiz'&&!current)next();if(tab==='drag')match.open();}};
 }

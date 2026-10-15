@@ -1,4 +1,5 @@
-import {createMatchBoard} from './match-board.mjs?v=20261006-1';
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
+import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 // 2026년 7강 약물대사: 강의록에 제시된 CYP probe drug (16, 36, 39쪽).
 export const CYP_FACTS = [
   {id:'theophylline', enzyme:'CYP1A2', drug:'theophylline', page:16, note:'CYP1A2의 probe drug으로 제시됩니다.'},
@@ -123,6 +124,7 @@ export function initCypQuiz(){
     answered=true;
     const selected=current.choices[index],good=selected===current.answer;
     record(current.fact,good);
+    recordStudyResult('cyp',current,good,{id:current.fact.id});
     const buttons=[...$('cypChoices').children];
     buttons.forEach((button,i)=>{
       button.disabled=true;
@@ -151,13 +153,13 @@ export function initCypQuiz(){
   const match=createMatchBoard({
     poolId:'dragPool',cardsId:'dragCards',zonesId:'dropZones',statusId:'dragStatus',checkId:'dragCheck',resetId:'dragNext',
     items:CYP_FACTS,categoryOf:f=>f.enzyme,keyOf:f=>f.id,labelOf:f=>f.drug,
-    onGrade:results=>{for(const r of results)record(r.item,r.correct);progress.boards++;save();}
+    onGrade:results=>{for(const r of results)if(r.chosen)record(r.item,r.correct);progress.boards++;save();}
   });
   $('cypNext').addEventListener('click',nextQuestion);
   document.addEventListener('keydown',event=>{
     if($('cypView').hidden||$('cypProbePanel').hidden||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answerQuestion(Number(event.key)-1);}
-    if(event.key==='Enter'&&answered){event.preventDefault();nextQuestion();}
+    if(event.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(event.target.tagName)){event.preventDefault();nextQuestion();}
   });
   buildTable();
   $('cypStats').textContent=`정답 ${progress.right} / 시도 ${progress.total} · 복기한 연결 ${Object.keys(progress.seen).length}/${CYP_FACTS.length+CYP_CASES.length}`;

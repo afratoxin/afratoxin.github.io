@@ -1,5 +1,6 @@
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {IMM_DRUGS,IMM_SECTIONS,IMM_QUESTIONS,IMM_CORRECTIONS,pickImmQuestion} from './immune-data.mjs?v=20261015-imm1';
-import {createMatchBoard} from './match-board.mjs?v=20261015-cns1';
+import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initImmuneQuiz(){
   const $=id=>document.getElementById(id),symbols=['①','②','③','④','⑤'],storage='pharmacology-immune-28-v1';
@@ -25,6 +26,7 @@ export function initImmuneQuiz(){
   function answer(index){
     if(!current||answered)return;answered=true;const good=index===current.answerIndex;
     state.total++;state.right+=Number(good);state.seen[current.id]=(state.seen[current.id]||0)+1;state.lastResult[current.id]=good;save();stats();
+    recordStudyResult('immune',current,good);
     [...$('immChoices').children].forEach((b,i)=>{b.disabled=true;if(i===current.answerIndex)b.classList.add('correct');else if(i===index)b.classList.add('wrong');});
     const feedback=$('immFeedback');feedback.className=`feedback ${good?'ok':'bad'}`;feedback.replaceChildren(node('strong','',`${good?'정답입니다.':'다시 연결해 보세요.'} 정답 ${symbols[current.answerIndex]} · ${current.answer}`),node('p','',current.note));
     if(current.details?.length){const details=node('details','cns-choice-notes');details.append(node('summary','','선지별 연결 보기'));const list=node('ul');for(const c of current.choices){const text=current.details.find(x=>x.startsWith(c.text+':'));if(text)list.append(node('li','',text));}details.append(list);feedback.append(details);}
@@ -61,7 +63,7 @@ export function initImmuneQuiz(){
   $('immMatchFilter').addEventListener('change',buildBoard);$('immTableFilter').addEventListener('change',table);
   for(const name of ['Quiz','Drag','Table'])$('imm'+name+'Tab').addEventListener('click',()=>{
     tab=name;for(const n of ['Quiz','Drag','Table']){$('imm'+n+'Panel').hidden=n!==name;const b=$('imm'+n+'Tab');b.classList.toggle('active',n===name);b.setAttribute('aria-selected',String(n===name));}
-    if(name==='Quiz'){if(!current)next();}else if(name==='Drag'){if(!board)buildBoard();}else table();
+    if(name==='Quiz'){if(!current)next();}else if(name==='Drag'){if(!board)buildBoard();else board.open();}else table();
   });
   for(const id of ['immScope','immMode'])$(id).addEventListener('change',next);
   $('immNext').addEventListener('click',next);$('immSkip').addEventListener('click',next);
@@ -70,5 +72,5 @@ export function initImmuneQuiz(){
     if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}
     if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}
   });
-  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(tab==='Drag'){if(!board)buildBoard();}else table();}};
+  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(tab==='Drag'){if(!board)buildBoard();else board.open();}else table();}};
 }

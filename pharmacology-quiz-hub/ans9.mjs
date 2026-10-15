@@ -1,6 +1,7 @@
+import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 // 2026년 9강 자율신경계 약리 기초. 강의록 10·12–20·24–25쪽.
 // Each incorrect statement changes one transporter, receptor, substrate, direction, or location.
-import {createMatchBoard} from './match-board.mjs?v=20261009-1';
+import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 const f=(id,group,stage,correct,incorrect,note,page)=>({id,group,stage,correct,incorrect,note,page});
 export const ANS_MATCH=[
   ['hemicholinium','ChT · choline 유입 억제'],['vesamicol','VAChT · ACh 소포 저장 억제'],['botulinum toxin','SNARE · ACh 유리 억제'],
@@ -151,6 +152,7 @@ export function initAnsQuiz(){
     s.seen[f.id]=(s.seen[f.id]||0)+1;
     if(!good)s.missed[f.id]=(s.missed[f.id]||0)+1;
     save();renderStats();
+    recordStudyResult(tab==='gpcr'?'ans-gpcr':'ans',current,good,{id:f.id});
     [...$('ansChoices').children].forEach((b,j)=>{
       b.disabled=true;
       if(j===current.answerIndex)b.classList.add('correct');
@@ -178,7 +180,7 @@ export function initAnsQuiz(){
   document.addEventListener('keydown',event=>{
     if($('ansView').hidden||tab==='match'||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answer(Number(event.key)-1);}
-    if(event.key==='Enter'&&answered){event.preventDefault();next();}
+    if(event.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(event.target.tagName)){event.preventDefault();next();}
   });
   return {open(){if(tab==='match')match.open();else if(!current)next();}};
 }
