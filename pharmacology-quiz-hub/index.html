@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물의 이해 족보 회독과 약동학·자율신경계·중추신경계·면역억제 약리 퀴즈">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261015-imm1">
+  <link rel="stylesheet" href="style.css?v=20261015-anti1">
 </head>
 <body>
   <main class="shell">
@@ -42,12 +42,16 @@
         <section class="hub-group" aria-labelledby="cnsGroupTitle"><div class="hub-group-head"><h2 id="cnsGroupTitle">14–15강 · 중추신경계 약리</h2><p>수용체 분류부터 질환·약물까지</p></div>
           <button id="cnsEntry" type="button" data-open="cns" class="hub-card cns-entry"><span class="hub-icon">CNS</span><span><strong>중추신경계 퀴즈</strong><small>족보형 5지선다 · 드래그 3종</small><span class="hub-tags"><span>수용체 구조</span><span>흥분·억제</span><span>질환–약물</span></span></span></button>
         </section>
-        <section class="hub-group immune-group" aria-labelledby="immuneGroupTitle"><div class="hub-group-head"><h2 id="immuneGroupTitle">28강 · 면역억제·면역조절</h2><p>족보 빈출 약물–표적 우선</p></div>
-          <button id="immEntry" type="button" data-open="immune" class="hub-card immune-entry"><span class="hub-icon">IM</span><span><strong>면역억제제 퀴즈</strong><small>표적 매칭 80% · 기전·부작용 20%</small><span class="hub-tags"><span>족보 빈출</span><span>약물–표적 드래그</span><span>암기표</span></span></span></button>
+        <section class="hub-group immune-group" aria-labelledby="immuneGroupTitle"><div class="hub-group-head"><h2 id="immuneGroupTitle">면역·항암 약리</h2><p>28강 · 30강</p></div>
+          <div class="study-menu"><button id="immEntry" type="button" data-open="immune" class="hub-card immune-entry"><span class="hub-icon">IM</span><span><strong>28강 · 면역억제제</strong><small>표적 매칭 80% · 기전·부작용 20%</small><span class="hub-tags"><span>족보 빈출</span><span>약물–표적 드래그</span><span>암기표</span></span></span></button>
+          <button id="antiEntry" type="button" data-open="anticancer" class="hub-card anti-entry"><span class="hub-icon">30</span><span><strong>30강 · 항암제</strong><small>족보형 표적·기전 · 대표 독성 사례</small><span class="hub-tags"><span>표적 드래그</span><span>독성 드래그</span><span>호르몬 항암제</span></span></span></button></div>
         </section>
       </div>
     </section>
-    <section id="immuneView" class="ans-view immune-view" hidden>
+    <section id="oncoView" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">IMMUNE &amp; CANCER PHARMACOLOGY</p><h2>면역·항암 약리</h2></div><p>강의를 선택해 이어서 풀어보세요.</p></div>
+      <div class="study-unit-tabs" role="tablist" aria-label="면역·항암 강의"><button id="immuneUnitTab" type="button" role="tab" data-open="immune" aria-controls="immuneView" aria-selected="true" class="active">28강 · 면역억제제</button><button id="anticancerUnitTab" type="button" role="tab" data-open="anticancer" aria-controls="anticancerView" aria-selected="false">30강 · 항암제</button></div>
+    <section id="immuneView" class="ans-view immune-view" role="tabpanel" aria-labelledby="immuneUnitTab" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 28강 · IMMUNOPHARMACOLOGY</p><h2>면역억제제 · 약물–표적 퀴즈</h2></div><p>빈출 연결 우선 · 키보드 1–5 / Enter</p></div>
       <div class="ans-tabs" role="tablist" aria-label="면역억제제 학습 방식"><button id="immQuizTab" type="button" role="tab" aria-selected="true" aria-controls="immQuizPanel" class="active">족보형 5지선다</button><button id="immDragTab" type="button" role="tab" aria-selected="false" aria-controls="immDragPanel">약물–표적 드래그</button><button id="immTableTab" type="button" role="tab" aria-selected="false" aria-controls="immTablePanel">전체 암기표</button></div>
       <div id="immQuizPanel" role="tabpanel" aria-labelledby="immQuizTab">
@@ -57,6 +61,18 @@
       </div>
       <div id="immDragPanel" role="tabpanel" aria-labelledby="immDragTab" hidden><div class="imm-toolbar"><label for="immMatchFilter">매칭 범위</label><select id="immMatchFilter"><option value="core">족보 빈출·강의 강조</option><option value="all">약물 전체</option></select></div><p class="cyp-intro">CNI·mTOR 약물의 칸은 ‘결합 단백질 → 효과 표적’입니다. 다른 약물은 표적·작용축에 놓으세요. 일부만 배치해도 채점하고 이어서 수정할 수 있습니다.</p><div id="immBoard"></div></div>
       <div id="immTablePanel" role="tabpanel" aria-labelledby="immTableTab" hidden><div class="imm-toolbar"><label for="immTableFilter">암기표 범위</label><select id="immTableFilter"><option value="core">족보 빈출·강의 강조</option><option value="all">약물 전체</option></select></div><p class="cyp-intro">족보 반복 약물을 먼저 표시했습니다. 표적과 기전 중심으로 읽고, 자료의 표기 차이는 아래 ‘자료 대조’에서 확인하세요. 과거 약물이 포함된 강의·족보 분류를 따르며 현재 처방 여부는 출제하지 않습니다.</p><div class="memory-table-wrap"><table class="memory-table immune-table"><thead><tr><th scope="col">약물·빈출 근거</th><th scope="col">결합 단백질·표적</th><th scope="col">기전·구별할 점</th><th scope="col">용도·부작용 단서</th><th scope="col">강의록</th></tr></thead><tbody id="immTableBody"></tbody></table></div><details class="imm-corrections"><summary>자료 대조 · 확인된 오기와 출제 기준</summary><div id="immCorrections"></div></details></div>
+    </section>
+    <section id="anticancerView" class="ans-view anticancer-view" role="tabpanel" aria-labelledby="anticancerUnitTab" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 30강 · ANTICANCER PHARMACOLOGY</p><h2>항암제 · 표적과 대표 독성</h2></div><p>강의록·78–79 요약표 · 키보드 1–5 / Enter</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="항암제 학습 방식"><button id="antiQuizTab" type="button" role="tab" aria-selected="true" aria-controls="antiQuizPanel" class="active">족보형 5지선다</button><button id="antiDragTab" type="button" role="tab" aria-selected="false" aria-controls="antiDragPanel">드래그 연습 2종</button></div>
+      <div id="antiQuizPanel" role="tabpanel" aria-labelledby="antiQuizTab">
+        <div class="imm-toolbar"><label for="antiScope">출제 범위</label><select id="antiScope"><option value="core">족보 빈출·강의 강조 우선</option><option value="all">전체 범위</option></select><label for="antiMode">출제 방식</label><select id="antiMode"><option value="mixed">표적 4문제 + 기전·독성 1문제</option><option value="target">약물–표적 매칭만</option><option value="support">기전·독성·사례만</option></select><button id="antiSkip" type="button" class="back-button">다른 문제</button></div>
+        <p class="cyp-intro">Vinca·taxane의 작용 방향, Topo I·II, anthracycline 심장독성, 호르몬 약물의 표적을 먼저 연결하세요. 족보의 약물–기전 연결형과 독성 사례형을 반영한 예상문제입니다.</p>
+        <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="antiExam" class="badge"></span><span id="antiProgress" class="q-count"></span></div><h2 id="antiStem"></h2><div id="antiChoices" class="options"></div><div id="antiFeedback" class="feedback" aria-live="polite" hidden></div><button id="antiNext" type="button" class="primary next" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">빈출부터 연결</span><strong id="antiStats"></strong><p>약물 → 표적 → 작용 방향 → 대표 독성</p><p>Vincristine의 신경독성·변비, doxorubicin의 심장독성, irinotecan의 지연성 설사를 연결하세요.</p><p>기본 출제는 표적 80%입니다. 덜 복습한 관계와 족보 반복 약물을 우선하고 최근 약물·방향의 반복을 줄입니다.</p><span class="side-label">현재 문제의 근거</span><p id="antiSource"></p></aside></div>
+      </div>
+      <div id="antiDragPanel" role="tabpanel" aria-labelledby="antiDragTab" hidden><div class="imm-toolbar"><label for="antiMatchKind">드래그 세트</label><select id="antiMatchKind"><option value="target">약물–표적·작용기전</option><option value="toxicity">약물–대표 독성·구별 단서</option></select><label for="antiMatchFilter">범위</label><select id="antiMatchFilter"><option value="core">족보 빈출·강의 강조</option><option value="all">약물 전체</option></select></div><p class="cyp-intro">같은 표적의 약물은 한 칸에 함께 놓습니다. Anthracycline은 DNA 삽입·Topo II·ROS의 개별 기전 칸도 정답입니다. 독성 세트에는 강의에서 비교한 대표 단서와 보조약물의 역할도 포함됩니다. 일부만 배치해도 채점하고 이어서 수정할 수 있습니다.</p><div id="antiBoard"></div></div>
+      <details class="imm-corrections"><summary>강의 근거·자료 대조</summary><div id="antiNotes"></div></details>
+    </section>
     </section>
     <section id="cnsView" class="ans-view cns-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 14–15강 · CENTRAL NERVOUS SYSTEM</p><h2>중추신경계 약리 퀴즈</h2></div><p>키보드 1–5 / Enter · 강의록 기준</p></div>
@@ -177,7 +193,7 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약리 강의록 · 면역 억제 약리학 v3·첨부 요약표 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>면역억제 자료 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261015-imm1"></script>
+  <script type="module" src="app.mjs?v=20261015-anti1"></script>
 </body>
 </html>
 

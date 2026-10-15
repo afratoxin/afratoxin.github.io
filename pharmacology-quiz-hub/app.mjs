@@ -11,6 +11,8 @@ import {buildMixedPool,nextMixedQuestion} from './autonomic-mixed.mjs?v=20261009
 import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261009-1';
 import {initPkQuiz} from './pk-quiz.mjs?v=20261015-4';
 import {initCnsQuiz} from './cns-quiz.mjs?v=20261015-cns1';
+import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261015-anti1';
+import {syncStudyFolder} from './study-folder.mjs?v=20261015-anti1';
 import {initImmuneQuiz} from './immune-quiz.mjs?v=20261015-imm1';
 
 const $=id=>document.getElementById(id);
@@ -29,6 +31,7 @@ const mixed=initAutonomicQuiz({prefix:'mixed',viewId:'mixedView',bank:mixedPool,
 const pk=initPkQuiz();
 const cns=initCnsQuiz();
 const immune=initImmuneQuiz();
+const anticancer=initAnticancerQuiz();
 const STORAGE='pharmacology-exam-2026-v1';
 let data=null,year='all',section='all',current=null,shown=null,answered=false,selected=new Set(),session=0,mode='quiz';
 let progress={seen:{},correct:{},missed:{},recent:[]};
@@ -45,7 +48,8 @@ function label(unit){
 function show(view){
   const jumpToChol11Match=view==='chol11match';
   if(jumpToChol11Match)view='chol11';
-  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','pk','cns','immune','menu','practice','review'])$(name+'View').hidden=(view!==name);
+  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','pk','cns','menu','practice','review'])$(name+'View').hidden=(view!==name);
+  syncStudyFolder(view);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
   $('archiveNotice').hidden=!archive;
@@ -65,6 +69,7 @@ function show(view){
   if(view==='pk')pk.open();
   if(view==='cns')cns.open();
   if(view==='immune')immune.open();
+  if(view==='anticancer')anticancer.open();
   window.scrollTo({top:0,behavior:'instant'});
 }
 function stats(){
@@ -226,7 +231,7 @@ try{
   menu();
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
-  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','archive'].includes(location.hash.slice(1)))
+  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','anticancer','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}
 
