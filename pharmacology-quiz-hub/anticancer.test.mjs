@@ -37,13 +37,14 @@ test('1000회 출제에서 빈출 우선·표적 80%·최근 약물과 방향 �
 
 test('면역억제제와 항암제는 같은 묶음의 탭으로 열리고 다른 메뉴로 가면 함께 숨긴다',async()=>{
   const mod=await import('./study-folder.mjs').catch(()=>({}));assert.equal(typeof mod.syncStudyFolder,'function');
-  const ids=['oncoView','immuneView','anticancerView','immuneUnitTab','anticancerUnitTab','signalView','signalUnitTab'];
+  const ids=['oncoView','immuneView','anticancerView','immuneUnitTab','anticancerUnitTab','signalView','signalUnitTab','checkpoint32View','checkpoint32UnitTab'];
   const elements=Object.fromEntries(ids.map(id=>[id,{hidden:true,attributes:{},classList:{toggle(){}},setAttribute(k,v){this.attributes[k]=v;}}]));
   const doc={getElementById:id=>elements[id]};
   mod.syncStudyFolder('anticancer',doc);assert.equal(elements.oncoView.hidden,false);assert.equal(elements.anticancerView.hidden,false);assert.equal(elements.immuneView.hidden,true);assert.equal(elements.anticancerUnitTab.attributes['aria-selected'],'true');
   mod.syncStudyFolder('immune',doc);assert.equal(elements.immuneView.hidden,false);assert.equal(elements.anticancerView.hidden,true);
   mod.syncStudyFolder('signal',doc);assert.equal(elements.signalView.hidden,false);assert.equal(elements.oncoView.hidden,false);assert.equal(elements.immuneView.hidden,true);assert.equal(elements.anticancerView.hidden,true);
-  mod.syncStudyFolder('home',doc);for(const id of ['oncoView','immuneView','anticancerView','signalView'])assert.equal(elements[id].hidden,true);
+  mod.syncStudyFolder('checkpoint32',doc);assert.equal(elements.checkpoint32View.hidden,false);assert.equal(elements.signalView.hidden,true);assert.equal(elements.oncoView.hidden,false);
+  mod.syncStudyFolder('home',doc);for(const id of ['oncoView','immuneView','anticancerView','signalView','checkpoint32View'])assert.equal(elements[id].hidden,true);
   const [html,app]=await Promise.all(['index.html','app.mjs'].map(f=>readFile(new URL(f,import.meta.url),'utf8')));
   assert.match(html,/data-open="anticancer"/);assert.match(app,/if\(view==='anticancer'\)anticancer.open\(\)/);
   assert.match(app,/\[[^\]]*'anticancer'[^\]]*\]\.includes\(location\.hash\.slice\(1\)\)/);
