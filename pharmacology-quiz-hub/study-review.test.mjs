@@ -50,6 +50,12 @@ test('오답 재풀이 탭에서 복수 정답을 채점하고 정답 시 빈 �
  studyStore.register({id:'label-ui',title:'이전 약물명',route:'test',items:['old-label'],build:()=>old});studyStore.record('label-ui',old,false);review.open(['label-ui']);
  assert.equal(el('studyWrongStem').textContent,'Filgrastim의 연결은?');assert.deepEqual(new Set(el('studyWrongChoices').children.map(b=>b.children[1].textContent)),new Set(['Filgrastim','Sargramostim','Abatacept','Alefacept','Etanercept']));
  el('studyWrongChoices').children.find(b=>b.children[1].textContent==='Filgrastim').click();el('studyWrongCheck').click();assert.equal(studyStore.status('label-ui','old-label'),'correct');
+ const legacy={id:'old-style',stem:'다음 수용체 중 이온통로형은?',choices:['Nicotinic','M1','M2','D1','D2'],answerIndex:0,note:'이전 설명'};
+ const revised={id:'old-style',stem:'다음 수용체–특징 연결 중 옳은 것은?',choices:['Nicotinic — Ionotropic','M1 — Ionotropic','M2 — Ionotropic','D1 — Ionotropic','D2 — Ionotropic'],answers:[0],note:'개편된 설명'};
+ studyStore.register({id:'refresh-ui',title:'연결형 개편',route:'test',items:['old-style'],build:()=>legacy,reviewQuestion:()=>revised});studyStore.record('refresh-ui',legacy,false);review.open(['refresh-ui']);
+ assert.equal(el('studyWrongStem').textContent,revised.stem);assert.ok(el('studyWrongChoices').children.every(b=>b.children[1].textContent.includes(' — ')));assert.equal(studyStore.counts('refresh-ui').wrong,1);
+ el('studyWrongChoices').children.find(b=>b.children[1].textContent==='Nicotinic — Ionotropic').click();el('studyWrongCheck').click();assert.equal(studyStore.status('refresh-ui','old-style'),'correct');
+
 
 
 });

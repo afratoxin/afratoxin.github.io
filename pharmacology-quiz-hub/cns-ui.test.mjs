@@ -34,7 +34,7 @@ test('객관식 영역 선택·채점·키보드와 드래그 3개 탭이 함께
   const quiz=api.initCnsQuiz();quiz.open();
   assert.equal(el('cnsChoices').children.length,5);
   el('cnsArea').value='effect';el('cnsArea').dispatch('change');
-  assert.match(el('cnsStem').textContent,/흥분성|억제성/);
+  assert.match(el('cnsStem').textContent,/연결.*옳/);assert.match(el('cnsChoices').textContent,/흥분성|억제성/);
   el('cnsChoices').children[0].click();assert.equal(el('cnsFeedback').hidden,false);
   assert.ok(el('cnsChoices').children.every(b=>b.disabled));assert.equal(el('cnsNext').hidden,false);
   const firstTotal=JSON.parse([...saved.values()][0]).total;

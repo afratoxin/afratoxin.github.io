@@ -218,3 +218,5 @@ button.study-progress-fill:focus-visible,.study-wrong-tab:focus-visible{outline:
 
 .abx-entry .hub-icon{background:#e3f3ee;color:#237365}.abx-summary{margin-bottom:14px}.abx-summary .study-live-summary{margin:0}.abx-view .imm-corrections{margin-top:20px}.abx-view .ans-tabs button{padding:10px 13px;font-size:13px}
 @media(max-width:650px){.abx-view .ans-tabs button{padding:9px 11px;font-size:12px}.abx-view .imm-toolbar select{max-width:100%}}
+
+#cnsPolarity.cns-negative{background:#fff0ed;color:#a33e36;border-color:#edb7ae}

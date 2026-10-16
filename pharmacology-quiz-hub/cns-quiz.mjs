@@ -1,5 +1,5 @@
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {CNS_AREAS,CNS_QUESTIONS,CNS_MATCH,pickCnsQuestion} from './cns-data.mjs?v=20261015-cns1';
+import {CNS_AREAS,CNS_QUESTIONS,CNS_MATCH,pickCnsQuestion} from './cns-data.mjs?v=20261016-cnspairs1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initCnsQuiz(){
@@ -14,13 +14,13 @@ export function initCnsQuiz(){
   const node=(tag,className,text)=>{const e=document.createElement(tag);if(className)e.className=className;if(text!==undefined)e.textContent=text;return e;};
   function stats(){
     $('cnsStats').textContent=`정답 ${state.right}/${state.total} · 복습 ${Object.keys(state.seen).length}/${CNS_QUESTIONS.length}문항`;
-    const entry=$('cnsEntry'),done=Object.keys(state.lastResult).length,correct=Object.values(state.lastResult).filter(x=>x).length;
-    if(entry){entry.style.setProperty('--correct-end',`${100*correct/CNS_QUESTIONS.length}%`);entry.style.setProperty('--wrong-end',`${100*done/CNS_QUESTIONS.length}%`);entry.setAttribute('aria-label',`14–15강 중추신경계 약리 · ${done}/${CNS_QUESTIONS.length}문항 복습`);}
+
   }
   function next(){
     current=pickCnsQuestion(state,$('cnsArea').value);answered=false;session++;
     state.recent=[current.id,...state.recent].slice(0,3);state.recentSubjects=[current.subject,...state.recentSubjects].slice(0,3);state.lastGroup=current.group;state.lastSubject=current.subject;save();
     $('cnsProgress').textContent=`${CNS_AREAS[current.area]} · 이번 회독 ${session}문제`;
+    $('cnsPolarity').textContent=current.polarity==='incorrect'?'옳지 않은 연결 1개':'옳은 연결 1개';$('cnsPolarity').classList.toggle('cns-negative',current.polarity==='incorrect');
     $('cnsStem').textContent=current.stem;$('cnsSource').textContent=current.source;
     $('cnsFeedback').hidden=true;$('cnsNext').hidden=true;
     const host=$('cnsChoices');host.replaceChildren();

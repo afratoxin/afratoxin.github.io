@@ -54,7 +54,7 @@ export function initStudyReview({navigate}){
     const score=x=>reviewSeen[x.scope+':'+x.id]||0,min=Math.min(...available.map(score));current=available.find(x=>score(x)===min)||null;answered=false;selected=new Set();$('studyWrongFeedback').hidden=true;$('studyWrongNext').hidden=true;$('studyWrongCheck').disabled=true;
     $('studyWrongCard').hidden=!current;$('studyWrongEmpty').hidden=Boolean(current);
     if(!current){$('studyWrongEmpty').textContent='이 범위에 남은 객관식 오답이 없습니다. 전체 문제에서 계속 연습할 수 있습니다.';paint();return;}
-    previous=current.scope+':'+current.id;reviewSeen[previous]=(reviewSeen[previous]||0)+1;shown=shuffleStudyQuestion(cleanStudyDrugLabels(current.question));
+    previous=current.scope+':'+current.id;reviewSeen[previous]=(reviewSeen[previous]||0)+1;shown=shuffleStudyQuestion(cleanStudyDrugLabels(current.definition.reviewQuestion?.(current.question)||current.question));
     $('studyWrongMeta').textContent=current.definition.title+' · '+(shown.source||'오답 재풀이');$('studyWrongStem').textContent=shown.stem;renderVisual(shown);
     const host=$('studyWrongChoices');host.replaceChildren();shown.choices.forEach((text,i)=>{const b=node('button');b.type='button';b.append(node('span','option-no',symbols[i]||String(i+1)),node('span','',text));b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>choose(i));host.append(b);});
     $('studyWrongCheck').textContent=shown.answers.length>1?'선택한 답 확인 (복수 정답)':'정답 확인';paint();

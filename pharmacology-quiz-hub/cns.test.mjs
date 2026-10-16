@@ -22,9 +22,9 @@ test('네 영역의 모든 문항에 다섯 개의 서로 다른 선지와 한 �
     assert.ok(q.note.length>15&&q.source,q.id);
     if(q.area==='structure'||q.area==='effect'){
       const property=q.area==='structure'?'type':'effect';
-      const pool=q.options.map(name=>api.RECEPTORS.find(x=>x.name===name));
+      const pool=q.pairs.map(p=>api.RECEPTORS.find(x=>x.id===p.entity));
       assert.ok(pool.every(Boolean),q.id);
-      assert.equal(pool.filter(x=>x[property]===q.target).length,1,q.id);
+      assert.equal(q.pairs.filter(p=>p.valid===(q.polarity==='correct')).length,1,q.id);
     }
   }
   assert.deepEqual([...new Set(api.CNS_QUESTIONS.map(x=>x.area))].sort(),['disease','effect','features','structure']);
@@ -50,10 +50,10 @@ test('표적이 겹치는 약물이 잘못된 오답으로 들어가지 않는�
   const truths={na:['Carbamazepine','Phenytoin','Lamotrigine','Valproic acid','Zonisamide'],ttype:['Ethosuximide','Valproic acid','Zonisamide'],nmda:['Memantine','Amantadine','Felbamate','Ketamine'],opioid:['Morphine','Fentanyl']};
   for(const [key,names] of Object.entries(truths))for(const d of api.DRUGS.filter(d=>d.mechanism===key)){
     const q=api.CNS_QUESTIONS.find(q=>q.id==='mechanism-'+d.id);
-    assert.equal(q.options.filter(x=>names.includes(x)).length,1,q.id);
+    for(const p of q.pairs.filter(p=>p.dimension==='mechanism'&&p.value===key))assert.equal(p.valid,names.includes(p.left),q.id+' '+p.left);
   }
   for(const drug of ['Duloxetine','Venlafaxine']){
-    const q=api.CNS_QUESTIONS.find(q=>q.id==='mechanism-'+drug.toLowerCase());assert.match(q.stem,/SNRI/);
+    const q=api.CNS_QUESTIONS.find(q=>q.id==='mechanism-'+drug.toLowerCase());assert.ok(q.pairs.some(p=>p.left===drug&&p.correctRight==='대표 분류: SNRI'));assert.match(q.stem,/ 연결/);
   }
 });
 

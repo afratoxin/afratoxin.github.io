@@ -1,4 +1,4 @@
-import {studyStore} from './study-records.mjs?v=20261015-review1';
+import {studyStore,normalizeStudyQuestion} from './study-records.mjs?v=20261015-review1';
 import {CYP_FACTS,CYP_CASES,makeCypQuestion,makeCypCaseQuestion} from './cyp.mjs?v=20261015-review1';
 import {ddiCandidates,makeDdiClassificationQuestion,makeDdiCaseQuestion,makeDdiEffectQuestion,CYP3A45_LABELS} from './cyp3a45.mjs?v=20261015-review1';
 import {TRANSPORT_FACTS,TRANSPORT_SPECIALS,TRANSPORT_CASES,AE_CASES,TRANSPORT_DRUGS,makeTransportQuestion,makeTransportSpecial,makeAeQuestion} from './transport8.mjs?v=20261015-review1';
@@ -9,7 +9,7 @@ import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261009-1';
 import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261009-1';
 import {buildMixedPool} from './autonomic-mixed.mjs?v=20261015-adr13tab1';
 import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261015-4';
-import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261015-cns1';
+import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261016-cnspairs1';
 import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261016-abx1';
 import {ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY} from './anticancer-data.mjs?v=20261015-anti1';
 import {SIGNAL_QUESTIONS,SIGNAL_TARGETS} from './signal31-data.mjs?v=20261016-signal1';
@@ -32,7 +32,7 @@ export function registerLectureStudies(store=studyStore){
   add('mixed','9–13강 · 종합','mixed',buildMixedPool(),f=>f.render(0),'pharmacology-autonomic-mixed-v1');
   const variants=Object.entries(PK_VARIANTS).flatMap(([topic,vs])=>vs.map(variant=>({id:topic+':'+variant,topic,variant})));
   add('pk','2–4강 · 약동학 계산','pk',variants,f=>makePkQuestion(f.topic,Math.random,f.variant),'pharmacology-pk-calculations-v1',{unknownLegacy:true,tabId:'pkQuizTab',unitLabel:'문제 형태'});
-  staticBank('cns','14–15강 · 중추신경계','cns',CNS_QUESTIONS,'pharmacology-cns-14-15-v1',{tabId:'cnsQuizTab'});
+  staticBank('cns','14–15강 · 중추신경계','cns',CNS_QUESTIONS,'pharmacology-cns-14-15-v1',{tabId:'cnsQuizTab',reviewQuestion:saved=>normalizeStudyQuestion(CNS_QUESTIONS.find(q=>q.id===saved.id)||saved)});
   staticBank('immune','28강 · 면역억제제','immune',IMM_QUESTIONS,'pharmacology-immune-28-v1',{tabId:'immQuizTab'});
   staticBank('anticancer','30강 · 항암제','anticancer',ANTI_QUESTIONS,'pharmacology-anticancer-30-v1',{tabId:'antiQuizTab'});
   staticBank('signal','31강 · 신호전달 표적항암제','signal',SIGNAL_QUESTIONS,'pharmacology-signal-31-v1',{tabId:'sigQuizTab'});

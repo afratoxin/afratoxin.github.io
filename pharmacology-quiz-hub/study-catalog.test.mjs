@@ -16,3 +16,11 @@ test('족보 중 채점 가능한 문항만 추가하고 복수 정답·그림·
  catalog.registerArchiveStudy({questions:[{id:'a',status:'quiz',stem:'질문',choices:['x','y','z'],answer:[1,3],figure:'assets/a.svg',year:2025,page:2},{id:'b',status:'review',stem:'복원대기'}]},s,{seen:{a:2},lastResult:{a:'wrong'}});
  assert.equal(s.counts('archive').total,1);assert.equal(s.counts('archive').wrong,1);assert.deepEqual(s.wrong('archive')[0].question.answers,[0,2]);assert.equal(s.wrong('archive')[0].question.figure,'assets/a.svg');
 });
+test('중추신경계의 기존 오답은 같은 ID의 개편 문항으로 표시하고 다른 강의의 저장 문항은 유지한다',()=>{
+ const s=createStudyStore({getItem(){},setItem(){}});catalog.registerLectureStudies(s);
+ const cns=s.definitions.get('cns'),old={id:'structure-gabaa',stem:'기존 단순 발문',choices:['A','B','C','D','E'],answerIndex:0,note:'기존 해설'};
+ s.record('cns',old,false);const saved=s.wrong('cns')[0].question,revised=cns.reviewQuestion(saved);
+ assert.equal(revised.id,old.id);assert.match(revised.stem,/연결.*옳/);assert.equal(revised.choices.length,5);assert.ok(revised.choices.every(c=>c.includes(' — ')));assert.equal(revised.answers.length,1);
+ assert.equal(s.counts('cns').wrong,1);assert.equal(s.counts('cns').total,300);assert.equal(s.wrong('cns')[0].question.stem,old.stem);
+ for(const d of s.definitions.values())if(d.id!=='cns')assert.equal(d.reviewQuestion,undefined,d.id);
+});
