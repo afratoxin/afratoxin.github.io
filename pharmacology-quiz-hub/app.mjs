@@ -1,6 +1,6 @@
 import {initAdr13Table} from './adr13-table.mjs?v=20261015-adr13tab1';
 import {studyStore,recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261015-adr13tab1';
+import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261016-signal1';
 import {initStudyReview} from './study-review.mjs?v=20261015-review1';
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
 import {initCypQuiz} from './cyp.mjs?v=20261015-review1';
@@ -16,8 +16,10 @@ import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261015-adr13tab1';
 import {initPkQuiz} from './pk-quiz.mjs?v=20261015-review1';
 import {initCnsQuiz} from './cns-quiz.mjs?v=20261015-review1';
 import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261015-review1';
-import {syncStudyFolder} from './study-folder.mjs?v=20261015-anti1';
+import {syncStudyFolder} from './study-folder.mjs?v=20261016-signal1';
 import {initImmuneQuiz} from './immune-quiz.mjs?v=20261015-review1';
+
+import {initSignalQuiz} from './signal31-quiz.mjs?v=20261016-signal1';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -37,6 +39,7 @@ const pk=initPkQuiz();
 const cns=initCnsQuiz();
 const immune=initImmuneQuiz();
 const anticancer=initAnticancerQuiz();
+const signal=initSignalQuiz();
 const STORAGE='pharmacology-exam-2026-v1';
 let data=null,year='all',section='all',current=null,shown=null,answered=false,selected=new Set(),session=0,mode='quiz';
 let progress={seen:{},correct:{},missed:{},recent:[]};
@@ -77,6 +80,7 @@ function show(view){
   if(view==='cns')cns.open();
   if(view==='immune')immune.open();
   if(view==='anticancer')anticancer.open();
+  if(view==='signal')signal.open();
   window.scrollTo({top:0,behavior:'instant'});
 }
 function stats(){
@@ -236,7 +240,7 @@ try{
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
   else if(location.hash==='#mistakes')studyReview.open();
-  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','anticancer','archive'].includes(location.hash.slice(1)))
+  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','anticancer','signal','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}
 

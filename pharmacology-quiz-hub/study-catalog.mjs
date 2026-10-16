@@ -12,6 +12,7 @@ import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261015-4';
 import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261015-cns1';
 import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261015-imm1';
 import {ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY} from './anticancer-data.mjs?v=20261015-anti1';
+import {SIGNAL_QUESTIONS,SIGNAL_TARGETS} from './signal31-data.mjs?v=20261016-signal1';
 const read=key=>{try{return JSON.parse(globalThis.localStorage?.getItem(key)||'{}')||{};}catch{return {};}};
 export function ddiStudyNote(q){return q.kind==='classification'?q.case?q.fact.note:`${q.fact.drug}: CYP3A4/5 ${CYP3A45_LABELS[q.fact.category]}`:`${q.modifier.drug}: ${CYP3A45_LABELS[q.modifier.category]} → ${q.substrate.drug} 대사 ${q.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소'}`;}
 export function registerLectureStudies(store=studyStore){
@@ -32,6 +33,7 @@ export function registerLectureStudies(store=studyStore){
   staticBank('cns','14–15강 · 중추신경계','cns',CNS_QUESTIONS,'pharmacology-cns-14-15-v1',{tabId:'cnsQuizTab'});
   staticBank('immune','28강 · 면역억제제','immune',IMM_QUESTIONS,'pharmacology-immune-28-v1',{tabId:'immQuizTab'});
   staticBank('anticancer','30강 · 항암제','anticancer',ANTI_QUESTIONS,'pharmacology-anticancer-30-v1',{tabId:'antiQuizTab'});
+  staticBank('signal','31강 · 신호전달 표적항암제','signal',SIGNAL_QUESTIONS,'pharmacology-signal-31-v1',{tabId:'sigQuizTab'});
   const match=(id,title,route,items,boardIds)=>store.register({id,title,route,type:'match',items,boardIds});
   const rows=items=>items.map(x=>({id:x.drug,name:x.drug,categories:[x.category],note:x.note||''}));
   match('cyp-match','7강 · CYP 드래그','drag',CYP_FACTS.map(x=>({id:x.id,name:x.drug,categories:[x.enzyme],note:x.note})),['dragCards']);
@@ -39,6 +41,7 @@ export function registerLectureStudies(store=studyStore){
   for(const [kind,title]of [['structure','수용체 구조'],['effect','흥분·억제'],['disease','질환·약물']])match('cns-'+kind,'14–15강 · '+title,'cns',CNS_MATCH[kind].map(x=>({...x,note:x.why||x.note})),['cns'+kind[0].toUpperCase()+kind.slice(1)+'Cards']);
   match('immune-match','28강 · 표적 드래그','immune',IMM_DRUGS.map(d=>({id:d.id,name:d.name,categories:[d.binding==='—'?d.target:`${d.binding} → ${d.target}`],note:d.note})),['immCards']);
   match('anti-target','30강 · 표적 드래그','anticancer',ANTI_TARGETS,[]);match('anti-toxicity','30강 · 독성 드래그','anticancer',ANTI_TOXICITY,[]);
+  match('signal-target','31강 · 표적 드래그','signal',SIGNAL_TARGETS,['sigCards']);
   return store;
 }
 export function registerArchiveStudy(data,store=studyStore,legacy=read('pharmacology-exam-2026-v1')){

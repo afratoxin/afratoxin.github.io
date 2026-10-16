@@ -1,0 +1,28 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
+import {createTestDocument} from './test-dom.mjs';
+import {SIGNAL_QUESTIONS,SIGNAL_TARGETS,SIGNAL_DRUGS} from './signal31-data.mjs';
+import {studyStore} from './study-records.mjs?v=20261015-review1';
+const api=await import('./signal31-quiz.mjs').catch(()=>({}));
+test('31강 채점·키보드·다중표적 드래그·검색 암기표가 공통 기록과 함께 동작한다',async()=>{
+ assert.equal(typeof api.initSignalQuiz,'function');
+ const doc=createTestDocument(await readFile(new URL('index.html',import.meta.url),'utf8')),disk=new Map();globalThis.document=doc;globalThis.localStorage={getItem:k=>disk.get(k),setItem:(k,v)=>disk.set(k,v)};globalThis.CSS={escape:x=>x};const el=id=>doc.getElementById(id);
+ studyStore.register({id:'signal',items:SIGNAL_QUESTIONS.map(x=>x.id),build:id=>SIGNAL_QUESTIONS.find(x=>x.id===id)});studyStore.register({id:'signal-target',type:'match',items:SIGNAL_TARGETS});
+ el('signalView').hidden=false;const quiz=api.initSignalQuiz();quiz.open();assert.equal(el('sigChoices').children.length,5);
+ el('sigChoices').children[0].click();assert.equal(el('sigFeedback').hidden,false);const solved=studyStore.counts('signal').solved;el('sigChoices').children[1].click();assert.equal(studyStore.counts('signal').solved,solved);
+ const button=doc.createElement('button');const e=doc.dispatch('keydown',{key:'Enter',target:button});assert.ok(!e.defaultPrevented,'native Enter on navigation is preserved');
+ doc.dispatch('keydown',{key:'Enter',target:doc.createElement('div')});assert.equal(el('sigFeedback').hidden,true);
+ el('sigMode').value='target';el('sigMode').dispatch('change');assert.match(el('sigProgress').textContent,/표적/);
+ el('sigTableTab').click();assert.equal(el('sigQuizPanel').hidden,true);assert.equal(el('sigTableBody').children.length,SIGNAL_DRUGS.filter(x=>x.core).length);
+ const before=studyStore.counts('signal').solved;doc.dispatch('keydown',{key:'1',target:doc.createElement('div')});assert.equal(studyStore.counts('signal').solved,before);
+ el('sigTableFilter').value='all';el('sigTableFilter').dispatch('change');assert.equal(el('sigTableBody').children.length,28);
+ el('sigTableSearch').value='vorinostat';el('sigTableSearch').dispatch('input');assert.equal(el('sigTableBody').children.length,1);assert.match(el('sigTableBody').textContent,/보충/);
+ el('sigDragTab').click();const core=el('sigCards').children.length;assert.equal(core,26);
+ const place=(name,category)=>{const card=el('sigPool').querySelectorAll('.drug-chip').concat(el('sigZones').querySelectorAll('.drug-chip')).find(c=>c.textContent===name);assert.ok(card);card.click();el('sigZones').children.find(z=>z.dataset.category===category).click();};
+ place('Dasatinib (Sprycel)','SRC');el('sigCheck').click();assert.equal(studyStore.counts('signal-target').correct,1);assert.equal(studyStore.counts('signal-target').solved,1);
+ el('sigReset').click();place('Dasatinib (Sprycel)','KIT');el('sigCheck').click();assert.match(el('sigDragStatus').textContent,/1개 정답/);
+ el('sigReset').click();place('Dasatinib (Sprycel)','EGFR');el('sigCheck').click();assert.equal(studyStore.wrong('signal-target').length,1);
+ el('sigPool').querySelector('.match-wrong-toggle').click();assert.equal(el('sigCards').children.length,1);place('Dasatinib (Sprycel)','BCR-ABL');el('sigCheck').click();assert.equal(studyStore.wrong('signal-target').length,0);
+ el('sigMatchFilter').value='all';el('sigMatchFilter').dispatch('change');assert.equal(el('sigCards').children.length,28);
+ el('sigQuizTab').click();el('signalView').hidden=true;doc.dispatch('keydown',{key:'1',target:doc.createElement('div')});assert.equal(studyStore.counts('signal').solved,before);
+ assert.ok(el('sigCorrections').children.length>=4);assert.ok(disk.has('pharmacology-study-results-v1'));
+});

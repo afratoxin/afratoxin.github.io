@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물의 이해 족보 회독과 약동학·자율신경계·중추신경계·면역억제 약리 퀴즈">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261015-adr13tab1">
+  <link rel="stylesheet" href="style.css?v=20261016-signal1">
 </head>
 <body>
   <main class="shell">
@@ -43,9 +43,9 @@
         <section class="hub-group" aria-labelledby="cnsGroupTitle"><div class="hub-group-head"><h2 id="cnsGroupTitle">14–15강 · 중추신경계 약리</h2><p>수용체 분류부터 질환·약물까지</p></div>
           <button id="cnsEntry" type="button" data-open="cns" class="hub-card cns-entry"><span class="hub-icon">CNS</span><span><strong>중추신경계 퀴즈</strong><small>족보형 5지선다 · 드래그 3종</small><span class="hub-tags"><span>수용체 구조</span><span>흥분·억제</span><span>질환–약물</span></span></span></button>
         </section>
-        <section class="hub-group immune-group" aria-labelledby="immuneGroupTitle"><div class="hub-group-head"><h2 id="immuneGroupTitle">면역·항암 약리</h2><p>28강 · 30강</p></div>
+        <section class="hub-group immune-group" aria-labelledby="immuneGroupTitle"><div class="hub-group-head"><h2 id="immuneGroupTitle">면역·항암 약리</h2><p>28강 · 30–31강</p></div>
           <div class="study-menu"><button id="immEntry" type="button" data-open="immune" class="hub-card immune-entry"><span class="hub-icon">IM</span><span><strong>28강 · 면역억제제</strong><small>표적 매칭 80% · 기전·부작용 20%</small><span class="hub-tags"><span>족보 빈출</span><span>약물–표적 드래그</span><span>암기표</span></span></span></button>
-          <button id="antiEntry" type="button" data-open="anticancer" class="hub-card anti-entry"><span class="hub-icon">30</span><span><strong>30강 · 항암제</strong><small>족보형 표적·기전 · 대표 독성 사례</small><span class="hub-tags"><span>표적 드래그</span><span>독성 드래그</span><span>호르몬 항암제</span></span></span></button></div>
+          <button id="antiEntry" type="button" data-open="anticancer" class="hub-card anti-entry"><span class="hub-icon">30</span><span><strong>30강 · 항암제</strong><small>족보형 표적·기전 · 대표 독성 사례</small><span class="hub-tags"><span>표적 드래그</span><span>독성 드래그</span><span>호르몬 항암제</span></span></span></button><button id="signalEntry" type="button" data-open="signal" class="hub-card signal-entry"><span class="hub-icon">31</span><span><strong>31강 · 신호전달 표적항암제</strong><small>약물–표적 80% · 족보 연결·사례형</small><span class="hub-tags"><span>표적 드래그</span><span>약물 정리</span><span>오답 복습</span></span></span></button></div>
         </section>
       </div>
     </section>
@@ -63,7 +63,7 @@
     </section>
     <section id="oncoView" hidden>
       <div class="section-head"><div><p class="eyebrow dark">IMMUNE &amp; CANCER PHARMACOLOGY</p><h2>면역·항암 약리</h2></div><p>강의를 선택해 이어서 풀어보세요.</p></div>
-      <div class="study-unit-tabs" role="tablist" aria-label="면역·항암 강의"><button id="immuneUnitTab" type="button" role="tab" data-open="immune" aria-controls="immuneView" aria-selected="true" class="active">28강 · 면역억제제</button><button id="anticancerUnitTab" type="button" role="tab" data-open="anticancer" aria-controls="anticancerView" aria-selected="false">30강 · 항암제</button></div>
+      <div class="study-unit-tabs" role="tablist" aria-label="면역·항암 강의"><button id="immuneUnitTab" type="button" role="tab" data-open="immune" aria-controls="immuneView" aria-selected="true" class="active">28강 · 면역억제제</button><button id="anticancerUnitTab" type="button" role="tab" data-open="anticancer" aria-controls="anticancerView" aria-selected="false">30강 · 항암제</button><button id="signalUnitTab" type="button" role="tab" data-open="signal" aria-controls="signalView" aria-selected="false">31강 · 신호전달 표적항암제</button></div>
     <section id="immuneView" class="ans-view immune-view" role="tabpanel" aria-labelledby="immuneUnitTab" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 28강 · IMMUNOPHARMACOLOGY</p><h2>면역억제제 · 약물–표적 퀴즈</h2></div><p>빈출 연결 우선 · 키보드 1–5 / Enter</p></div>
       <div class="ans-tabs" role="tablist" aria-label="면역억제제 학습 방식"><button id="immQuizTab" type="button" role="tab" aria-selected="true" aria-controls="immQuizPanel" class="active">족보형 5지선다</button><button id="immDragTab" type="button" role="tab" aria-selected="false" aria-controls="immDragPanel">약물–표적 드래그</button><button id="immTableTab" type="button" role="tab" aria-selected="false" aria-controls="immTablePanel">전체 암기표</button></div>
@@ -85,6 +85,17 @@
       </div>
       <div id="antiDragPanel" role="tabpanel" aria-labelledby="antiDragTab" hidden><div class="imm-toolbar"><label for="antiMatchKind">드래그 세트</label><select id="antiMatchKind"><option value="target">약물–표적·작용기전</option><option value="toxicity">약물–대표 독성·구별 단서</option></select><label for="antiMatchFilter">범위</label><select id="antiMatchFilter"><option value="core">족보 빈출·강의 강조</option><option value="all">약물 전체</option></select></div><p class="cyp-intro">같은 표적의 약물은 한 칸에 함께 놓습니다. Anthracycline은 DNA 삽입·Topo II·ROS의 개별 기전 칸도 정답입니다. 독성 세트에는 강의에서 비교한 대표 단서와 보조약물의 역할도 포함됩니다. 일부만 배치해도 채점하고 이어서 수정할 수 있습니다.</p><div id="antiBoard"></div></div>
       <details class="imm-corrections"><summary>강의 근거·자료 대조</summary><div id="antiNotes"></div></details>
+    </section>
+    <section id="signalView" class="ans-view signal-view" role="tabpanel" aria-labelledby="signalUnitTab" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 31강 · TARGETED ANTICANCER THERAPY</p><h2>신호전달 표적항암제 · 약물–표적 퀴즈</h2></div><p>강의록·요약표 대조 · 키보드 1–5 / Enter</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="신호전달 표적항암제 학습 방식"><button id="sigQuizTab" type="button" role="tab" aria-selected="true" aria-controls="sigQuizPanel" class="active">족보형 5지선다</button><button id="sigDragTab" type="button" role="tab" aria-selected="false" aria-controls="sigDragPanel">약물–표적 드래그</button><button id="sigTableTab" type="button" role="tab" aria-selected="false" aria-controls="sigTablePanel">약물 정리</button></div>
+      <div id="sigQuizPanel" role="tabpanel" aria-labelledby="sigQuizTab">
+        <div class="imm-toolbar"><label for="sigScope">출제 범위</label><select id="sigScope"><option value="core">족보 빈출·강의 강조 우선</option><option value="all">전체 범위 · 보충 포함</option></select><label for="sigMode">출제 방식</label><select id="sigMode"><option value="mixed">표적 4문제 + 기전·사례 1문제</option><option value="target">약물–표적 매칭만</option><option value="support">기전·사례만</option></select><button id="sigSkip" type="button" class="back-button">다른 문제</button></div>
+        <p class="cyp-intro">EGFR·HER2, CD 항원, PD-1·PD-L1과 BCR-ABL을 먼저 연결하세요. 약물→표적·표적→약물·바뀐 연결·짧은 사례를 섞은 예상문제입니다.</p>
+        <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="sigExam" class="badge"></span><span id="sigProgress" class="q-count"></span></div><h2 id="sigStem"></h2><div id="sigChoices" class="options"></div><div id="sigFeedback" class="feedback" aria-live="polite" hidden></div><button id="sigNext" type="button" class="primary next" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">빈출 연결</span><strong id="signalStats"></strong><p>약물 → 인식 표적 → 작용 단계 → 질환 단서</p><p>VEGF와 VEGFR, 항체와 TKI, ADC의 인식 표적과 payload를 구별하세요.</p><p>기본 출제는 표적 80%입니다. Vorinostat·ibritumomab은 전체 범위에서 보충 복습합니다.</p><span class="side-label">현재 문제의 근거</span><p id="sigSource"></p></aside></div>
+      </div>
+      <div id="sigDragPanel" role="tabpanel" aria-labelledby="sigDragTab" hidden><div class="imm-toolbar"><label for="sigMatchFilter">매칭 범위</label><select id="sigMatchFilter"><option value="core">족보 빈출·강의 강조</option><option value="all">약물 전체 · 보충 포함</option></select></div><p class="cyp-intro">다중 표적 약물은 강의에 명시된 올바른 표적 중 한 칸에 놓으면 정답입니다. 예: dasatinib은 BCR-ABL·SRC·KIT·PDGFR. ADC는 항체가 인식하는 표적에 놓으세요. 일부만 배치해도 채점하고 이어서 수정할 수 있습니다.</p><div id="sigBoard"></div></div>
+      <div id="sigTablePanel" role="tabpanel" aria-labelledby="sigTableTab" hidden><div class="imm-toolbar"><label for="sigTableFilter">정리 범위</label><select id="sigTableFilter"><option value="core">족보 빈출·강의 강조</option><option value="all">약물 전체 · 보충 포함</option></select><label for="sigTableSearch">약물·표적 검색</label><input id="sigTableSearch" type="search" placeholder="예: HER2, CD33, imatinib"></div><p class="cyp-intro">강의에 명시된 표적을 기준으로 정리했습니다. ADC의 인식 표적과 payload, 다중 kinase 표적을 함께 비교하세요.</p><div class="memory-table-wrap"><table class="memory-table signal-table"><thead><tr><th scope="col">약물·빈출 근거</th><th scope="col">유형</th><th scope="col">강의 표적</th><th scope="col">기전·구별점</th><th scope="col">질환·용도 단서</th><th scope="col">강의록</th></tr></thead><tbody id="sigTableBody"></tbody></table></div><p id="sigTableEmpty" role="status" hidden>검색 결과가 없습니다. 범위와 검색어를 바꿔보세요.</p><details class="imm-corrections"><summary>자료 대조 · 확인된 오기와 출제 기준</summary><div id="sigCorrections"></div></details></div>
     </section>
     </section>
     <section id="cnsView" class="ans-view cns-view" hidden>
@@ -213,7 +224,7 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약리 강의록 · 면역 억제 약리학 v3·첨부 요약표 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>면역억제 자료 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261015-adr13tab1"></script>
+  <script type="module" src="app.mjs?v=20261016-signal1"></script>
 </body>
 </html>
 
