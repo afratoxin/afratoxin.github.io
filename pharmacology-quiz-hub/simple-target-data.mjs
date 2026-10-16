@@ -2,7 +2,7 @@ import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // Short recognition practice, derived from the already verified lecture banks.
 import {IMM_DRUGS} from './immune-data.mjs?v=20261017-clinical1';
 import {ANTI_DRUGS} from './anticancer-data.mjs?v=20261017-clinical1';
-import {SIGNAL_DRUGS} from './signal31-data.mjs?v=20261017-clinical1';
+import {SIGNAL_DRUGS} from './signal31-data.mjs?v=20261017-sigimage1';
 const immuneTargets={calcineurin:'Calcineurin',mtor:'mTOR',jak:'JAK',gr:'GR',purine:'Purine 합성',impdh:'IMPDH',dhfr:'DHFR',polyt:'T세포 표면항원',cd3:'CD3',cd25:'CD25 (IL-2Rα)',cd52:'CD52',cd20:'CD20',b7:'B7 (CD80·CD86)',cd2:'CD2',cd11a:'CD11a (LFA-1)',a4:'α4 integrin',tnf:'TNF',il6r:'IL-6R',il1r:'IL-1R',il17:'IL-17A'};
 const antiTargets={vinca:'미세소관 중합',taxane:'미세소관 탈중합',topo1:'Topoisomerase I',topo2:'Topoisomerase II',anthra:'Topoisomerase II',ros:'DNA',crosslink:'DNA',intercalation:'DNA',asparagine:'Asparagine',gr:'GR',aromatase:'Aromatase',serm:'ER',serd:'ER',gnrhagonist:'GnRH 수용체',gnrhantagonist:'GnRH 수용체',ar:'AR',cyp17:'CYP17'};
 const receptorKeys=new Set(['gr','serm','serd','gnrhagonist','gnrhantagonist','ar']);

@@ -9,7 +9,8 @@ test('31강의 표적과 이미지 오기를 독립 근거표대로 구분한다
  const by=id=>api.SIGNAL_DRUGS.find(d=>d.id===id);
  assert.match(by('bortezomib').note,/IκBα/);assert.match(by('bortezomib').note,/분해.*억제|분해.*막/);assert.match(by('enhertu').note,/Topo I|topoisomerase I/);
  assert.equal(by('vorinostat').core,false);
- const match=api.SIGNAL_TARGETS.find(d=>d.id==='dasatinib');for(const target of ['BCR-ABL','SRC','KIT','PDGFR'])assert.ok(match.categories.includes(target));
+ const match=api.SIGNAL_TARGETS.find(d=>d.id==='dasatinib');for(const target of ['BCR-ABL','KIT','PDGFR'])assert.ok(match.categories.includes(target));
+ assert.ok(!match.categories.includes('SRC'),'이미지 밖의 세부 kinase 분류는 드래그에 추가하지 않는다');
  assert.ok(!api.SIGNAL_TARGETS.find(d=>d.id==='bevacizumab').categories.includes('VEGFR'));
 });
 test('중첩 표적을 단일 정답으로 오인하지 않고 모두 5지선다와 근거를 제공한다',()=>{

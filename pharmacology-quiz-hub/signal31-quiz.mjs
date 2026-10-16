@@ -1,6 +1,6 @@
-import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-clinical1';
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-sigimage1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {SIGNAL_DRUGS,SIGNAL_SECTIONS,SIGNAL_QUESTIONS,SIGNAL_CORRECTIONS,pickSignalQuestion} from './signal31-data.mjs?v=20261017-clinical1';
+import {SIGNAL_DRUGS,SIGNAL_TARGETS,SIGNAL_SECTIONS,SIGNAL_QUESTIONS,SIGNAL_CORRECTIONS,pickSignalQuestion} from './signal31-data.mjs?v=20261017-sigimage1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initSignalQuiz(){
@@ -46,7 +46,8 @@ export function initSignalQuiz(){
     const resume=node('button','primary','이 배치에서 계속하기 →');resume.id='sigReset';resume.type='button';resume.hidden=true;
     const fresh=node('button','back-button','처음부터 섞기');fresh.type='button';
     actions.append(status,check,resume,fresh);host.append(wrap,actions);
-    board=createMatchBoard({poolId:pool.id,cardsId:cards.id,zonesId:zones.id,statusId:status.id,checkId:check.id,resetId:resume.id,items:selected($('sigMatchFilter').value),studyId:'signal-target',categoryOf:d=>d.targets[0],categoriesOf:d=>d.targets,keyOf:d=>d.id,labelOf:d=>d.name,onGrade:()=>{}});
+    const filter=$('sigMatchFilter').value,items=SIGNAL_TARGETS.filter(d=>filter==='image'||filter==='all'||d.section===filter);
+    board=createMatchBoard({poolId:pool.id,cardsId:cards.id,zonesId:zones.id,statusId:status.id,checkId:check.id,resetId:resume.id,items,studyId:'signal-target',categoryOf:d=>d.categories[0],categoriesOf:d=>d.categories,keyOf:d=>d.id,labelOf:d=>d.name,onGrade:()=>{}});
     const currentBoard=board;fresh.addEventListener('click',()=>currentBoard.reset());board.open();
   }
   function table(){

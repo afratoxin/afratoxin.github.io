@@ -30,7 +30,17 @@ drug('crizotinib','Crizotinib','분화·기타 표적',['ALK','c-MET'],'TKI','�
 drug('vorinostat','Vorinostat','분화·기타 표적',['HDAC'],'HDAC 억제제','Histone deacetylase 억제제입니다. 올해 강의는 HDAC 억제제 계열을 언급하고 약물명은 강조하지 않아 전체 범위에서만 보충 복습합니다.','HDAC 계열 보충','2·25–26','보충: 올해 약물명 강조 없음',1,false);
 export const SIGNAL_DRUGS=rows;
 export const SIGNAL_SECTIONS=[...new Set(rows.map(d=>d.section))];
-export const SIGNAL_TARGETS=rows.map(d=>({...d,categories:[...d.targets]}));
+// The drag exercise follows only the user's supplied image. Other lecture
+// banks retain their full facts. Use the image's target vocabulary, correcting
+// ligand/receptor labels without adding kinase targets outside this exercise.
+const imageIds=new Set(['tretinoin','cetuximab','panitumumab','gefitinib','erlotinib','lapatinib','afatinib','trastuzumab','enhertu','rituximab','alemtuzumab','denileukin','gemtuzumab','brentuximab','nivolumab','pembrolizumab','durvalumab','atezolizumab','imatinib','nilotinib','dasatinib','bevacizumab','sorafenib','sunitinib','bortezomib','crizotinib','vorinostat']);
+const imageTargets=new Set(['RARα','EGFR','HER2','CD20','CD52','IL-2R','CD33','CD30','PD-1','PD-L1','BCR-ABL','KIT','PDGFR','VEGF-A','VEGFR','26S proteasome','ALK','c-MET','HDAC']);
+const imageNames={enhertu:'Enhertu',gemtuzumab:'Gemtuzumab',brentuximab:'Brentuximab'};
+export const SIGNAL_TARGETS=rows.filter(d=>imageIds.has(d.id)).map(d=>{
+ const categories=d.targets.filter(t=>imageTargets.has(t)),name=imageNames[d.id]||d.name.split(' (')[0];
+ const clarification=d.id==='bevacizumab'?' VEGF-A 리간드에 결합하며 VEGFR 수용체 자체가 표적은 아닙니다.':d.id==='sunitinib'?' RAF는 이 약물의 분류 표적으로 사용하지 않습니다.':'';
+ return {...d,name,categories,note:`이미지 범위: ${name} → ${categories.join(' · ')}.${clarification}`};
+});
 export const SIGNAL_CORRECTIONS=[
  {title:'VEGF와 VEGFR',text:'Bevacizumab의 직접 결합 대상은 VEGF-A 리간드입니다. Sunitinib·sorafenib의 VEGFR kinase 표적과 구별합니다.',url:'https://www.cancer.gov/about-cancer/treatment/drugs/bevacizumab'},
  {title:'ADC를 나누는 두 단계',text:'항체의 인식 표적과 payload의 작용을 따로 봅니다. Enhertu는 HER2–Topo I payload, gemtuzumab은 CD33–calicheamicin이며 brentuximab vedotin도 ADC입니다.',url:'https://www.cancer.gov/about-cancer/treatment/drugs/famtrastuzumabderuxtecan-nxki'},

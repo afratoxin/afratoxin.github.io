@@ -213,6 +213,10 @@ button.study-progress-fill:focus-visible,.study-wrong-tab:focus-visible{outline:
 
 .signal-view .drop-zones{grid-template-columns:repeat(3,minmax(0,1fr))}.signal-view .drug-chip{font-size:12px}.signal-table td{white-space:normal;vertical-align:top}.signal-table td:first-child{min-width:190px}.signal-table td:nth-child(3){min-width:140px}.signal-table td:nth-child(4){min-width:300px}.signal-table td:nth-child(5){min-width:180px}.signal-table td:last-child{min-width:130px}#sigTableSearch{max-width:100%;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:13px}
 @media(max-width:650px){.signal-view .drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.signal-view .ans-tabs button{padding:9px 11px;font-size:12px}#sigTableSearch{width:100%}}
+#sigBoard .drop-zones{grid-template-columns:repeat(auto-fit,minmax(140px,180px));justify-content:start;align-items:start;gap:8px}
+#sigBoard .drop-zone{min-height:74px;padding:8px;border-radius:10px;overflow-wrap:anywhere}
+#sigBoard .drug-chip{white-space:normal;overflow-wrap:anywhere;width:auto;max-width:100%;padding:4px 7px}
+@media(max-width:550px){#sigBoard .drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .simple-target-options button{min-height:48px}.simple-target-options .option-no{flex-shrink:0}
 
