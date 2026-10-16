@@ -10,10 +10,11 @@ import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261009-1';
 import {buildMixedPool} from './autonomic-mixed.mjs?v=20261015-adr13tab1';
 import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261015-4';
 import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261015-cns1';
-import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261015-imm1';
+import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261016-abx1';
 import {ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY} from './anticancer-data.mjs?v=20261015-anti1';
 import {SIGNAL_QUESTIONS,SIGNAL_TARGETS} from './signal31-data.mjs?v=20261016-signal1';
-import {SIMPLE_BANKS} from './simple-target-data.mjs?v=20261016-simple1';
+import {SIMPLE_BANKS} from './simple-target-data.mjs?v=20261016-abx1';
+import {ABX_SIMPLE,ABX_QUESTIONS} from './abx-data.mjs?v=20261016-abx1';
 const read=key=>{try{return JSON.parse(globalThis.localStorage?.getItem(key)||'{}')||{};}catch{return {};}};
 export function ddiStudyNote(q){return q.kind==='classification'?q.case?q.fact.note:`${q.fact.drug}: CYP3A4/5 ${CYP3A45_LABELS[q.fact.category]}`:`${q.modifier.drug}: ${CYP3A45_LABELS[q.modifier.category]} → ${q.substrate.drug} 대사 ${q.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소'}`;}
 export function registerLectureStudies(store=studyStore){
@@ -36,6 +37,8 @@ export function registerLectureStudies(store=studyStore){
   staticBank('anticancer','30강 · 항암제','anticancer',ANTI_QUESTIONS,'pharmacology-anticancer-30-v1',{tabId:'antiQuizTab'});
   staticBank('signal','31강 · 신호전달 표적항암제','signal',SIGNAL_QUESTIONS,'pharmacology-signal-31-v1',{tabId:'sigQuizTab'});
   for(const [id,title,route,prefix]of [['immune-simple','28강 · 단순 표적 매칭','immune','imm'],['anticancer-simple','30강 · 단순 표적 매칭','anticancer','anti'],['signal-simple','31강 · 단순 표적 매칭','signal','sig']])staticBank(id,title,route,SIMPLE_BANKS[id],'pharmacology-'+id+'-v1',{tabId:prefix+'SimpleTab'});
+  staticBank('abx-simple','23–27강 · 항생제 단순 매칭','abx',ABX_SIMPLE,'pharmacology-abx-simple-v1',{tabId:'abxSimpleTab'});
+  staticBank('abx','23–27강 · 항생제 일반 5지선다','abx',ABX_QUESTIONS,'pharmacology-abx-v1',{tabId:'abxQuizTab'});
   const match=(id,title,route,items,boardIds)=>store.register({id,title,route,type:'match',items,boardIds});
   const rows=items=>items.map(x=>({id:x.drug,name:x.drug,categories:[x.category],note:x.note||''}));
   match('cyp-match','7강 · CYP 드래그','drag',CYP_FACTS.map(x=>({id:x.id,name:x.drug,categories:[x.enzyme],note:x.note})),['dragCards']);

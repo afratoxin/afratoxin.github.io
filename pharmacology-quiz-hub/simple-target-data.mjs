@@ -1,5 +1,5 @@
 // Short recognition practice, derived from the already verified lecture banks.
-import {IMM_DRUGS} from './immune-data.mjs?v=20261015-imm1';
+import {IMM_DRUGS} from './immune-data.mjs?v=20261016-abx1';
 import {ANTI_DRUGS} from './anticancer-data.mjs?v=20261015-anti1';
 import {SIGNAL_DRUGS} from './signal31-data.mjs?v=20261016-signal1';
 const immuneTargets={calcineurin:'Calcineurin',mtor:'mTOR',jak:'JAK',gr:'GR',purine:'Purine 합성',impdh:'IMPDH',dhfr:'DHFR',polyt:'T세포 표면항원',cd3:'CD3',cd25:'CD25 (IL-2Rα)',cd52:'CD52',cd20:'CD20',b7:'B7 (CD80·CD86)',cd2:'CD2',cd11a:'CD11a (LFA-1)',a4:'α4 integrin',tnf:'TNF',il6r:'IL-6R',il1r:'IL-1R',il17:'IL-17A'};

@@ -1,6 +1,6 @@
-import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261016-simple1';
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261016-abx1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {IMM_DRUGS,IMM_SECTIONS,IMM_QUESTIONS,IMM_CORRECTIONS,pickImmQuestion} from './immune-data.mjs?v=20261015-imm1';
+import {IMM_DRUGS,IMM_SECTIONS,IMM_QUESTIONS,IMM_CORRECTIONS,pickImmQuestion} from './immune-data.mjs?v=20261016-abx1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initImmuneQuiz(){

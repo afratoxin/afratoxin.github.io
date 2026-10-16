@@ -46,6 +46,11 @@ test('오답 재풀이 탭에서 복수 정답을 채점하고 정답 시 빈 �
  review.open(['ui-queue']);const stems=[];
  for(let n=0;n<6;n++){stems.push(el('studyWrongStem').textContent);el('studyWrongChoices').children.find(b=>b.children[1].textContent==='Y').click();el('studyWrongCheck').click();el('studyWrongNext').click();}
  assert.equal(new Set(stems.slice(0,3)).size,3,'모든 오답을 한 번씩 먼저 출제');
+ const old={id:'old-label',stem:'Filgrastim (rhG-CSF)의 연결은?',choices:['Filgrastim (rhG-CSF)','Sargramostim (rhGM-CSF)','Abatacept (CTLA-4-Ig)','Alefacept (LFA-3-Ig)','Etanercept (Enbrel)'],answerIndex:0,note:'기전 설명은 그대로'};
+ studyStore.register({id:'label-ui',title:'이전 약물명',route:'test',items:['old-label'],build:()=>old});studyStore.record('label-ui',old,false);review.open(['label-ui']);
+ assert.equal(el('studyWrongStem').textContent,'Filgrastim의 연결은?');assert.deepEqual(new Set(el('studyWrongChoices').children.map(b=>b.children[1].textContent)),new Set(['Filgrastim','Sargramostim','Abatacept','Alefacept','Etanercept']));
+ el('studyWrongChoices').children.find(b=>b.children[1].textContent==='Filgrastim').click();el('studyWrongCheck').click();assert.equal(studyStore.status('label-ui','old-label'),'correct');
+
 
 });
 

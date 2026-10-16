@@ -215,3 +215,6 @@ button.study-progress-fill:focus-visible,.study-wrong-tab:focus-visible{outline:
 @media(max-width:650px){.signal-view .drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}.signal-view .ans-tabs button{padding:9px 11px;font-size:12px}#sigTableSearch{width:100%}}
 
 .simple-target-options button{min-height:48px}.simple-target-options .option-no{flex-shrink:0}
+
+.abx-entry .hub-icon{background:#e3f3ee;color:#237365}.abx-summary{margin-bottom:14px}.abx-summary .study-live-summary{margin:0}.abx-view .imm-corrections{margin-top:20px}.abx-view .ans-tabs button{padding:10px 13px;font-size:13px}
+@media(max-width:650px){.abx-view .ans-tabs button{padding:9px 11px;font-size:12px}.abx-view .imm-toolbar select{max-width:100%}}

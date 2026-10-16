@@ -40,7 +40,7 @@ test('빈출·표적 선택, 채점, 키보드, 드래그, 암기표가 함께 �
   el('immScope').value='all';el('immScope').dispatch('change');el('immMode').value='target';el('immMode').dispatch('change');assert.match(el('immProgress').textContent,/표적·매칭/);
   el('immDragTab').click();assert.equal(el('immQuizPanel').hidden,true);
   const core=el('immCards').children.length;assert.ok(core>15);
-  const abat=el('immCards').children.find(c=>c.textContent==='Abatacept (CTLA-4-Ig)');abat.click();
+  const abat=el('immCards').children.find(c=>c.textContent==='Abatacept');abat.click();
   el('immZones').children.find(z=>z.dataset.category==='B7 (CD80·CD86)').click();el('immCheck').click();assert.match(el('immDragStatus').textContent,/1개 정답/);
   el('immReset').click();assert.equal(el('immCheck').hidden,false);
   el('immMatchFilter').value='all';el('immMatchFilter').dispatch('change');assert.ok(el('immCards').children.length>core);

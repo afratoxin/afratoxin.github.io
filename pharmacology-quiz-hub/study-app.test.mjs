@@ -5,15 +5,15 @@ test('허브의 전체 오답 메뉴와 재풀이 화면이 제공된다',async(
 });
 
 import {createTestDocument} from './test-dom.mjs';
-test('실제 앱의 19개 객관식과 14개 드래그를 채점하고 오답 탭·진행률까지 연결한다',async()=>{
+test('실제 앱의 21개 객관식과 14개 드래그를 채점하고 오답 탭·진행률까지 연결한다',async()=>{
  const html=await readFile(new URL('index.html',import.meta.url),'utf8'),data=JSON.parse(await readFile(new URL('questions.json',import.meta.url),'utf8'));
  const doc=createTestDocument(html),disk=new Map();globalThis.document=doc;globalThis.window={scrollTo(){}};globalThis.location={hash:''};globalThis.CSS={escape:x=>x};globalThis.localStorage={getItem:k=>disk.get(k),setItem:(k,v)=>disk.set(k,v)};globalThis.fetch=async()=>({ok:true,json:async()=>data});
  await import('./app.mjs');
  const {studyStore}=await import('./study-records.mjs?v=20261015-review1'),el=id=>doc.getElementById(id);
  assert.ok(!el('unitGroups').textContent.includes('불러오지 못했습니다'),el('unitGroups').textContent.slice(0,150));
- assert.equal(studyStore.definitions.size,33);
+ assert.equal(studyStore.definitions.size,35);
  const go=route=>{const b=doc.querySelector('.hub-card[data-open="'+route+'"]')||doc.querySelector('[data-open="'+route+'"]');assert.ok(b,route);b.click();};
- for(const [scope,route,prefix,tab]of [['cyp','cyp','cyp','cypProbeTab'],['ddi','cyp','cypDdi','cypDdiTab'],['tx','tx','tx','txQuizTab'],['ans','ans','ans','ansMainTab'],['ans-gpcr','ans','ans','ansGpcrTab'],['chol','chol','chol','cholQuizTab'],['chol11','chol11','chol11','chol11QuizTab'],['adr12','adr12','adr12','adr12QuizTab'],['adr13','adr13','adr13','adr13QuizTab'],['mixed','mixed','mixed',null],['pk','pk','pk','pkQuizTab'],['cns','cns','cns','cnsQuizTab'],['immune','immune','imm','immQuizTab'],['anticancer','anticancer','anti','antiQuizTab'],['signal','signal','sig','sigQuizTab'],['immune-simple','immune','immSimple','immSimpleTab'],['anticancer-simple','anticancer','antiSimple','antiSimpleTab'],['signal-simple','signal','sigSimple','sigSimpleTab']]){
+ for(const [scope,route,prefix,tab]of [['cyp','cyp','cyp','cypProbeTab'],['ddi','cyp','cypDdi','cypDdiTab'],['tx','tx','tx','txQuizTab'],['ans','ans','ans','ansMainTab'],['ans-gpcr','ans','ans','ansGpcrTab'],['chol','chol','chol','cholQuizTab'],['chol11','chol11','chol11','chol11QuizTab'],['adr12','adr12','adr12','adr12QuizTab'],['adr13','adr13','adr13','adr13QuizTab'],['mixed','mixed','mixed',null],['pk','pk','pk','pkQuizTab'],['cns','cns','cns','cnsQuizTab'],['immune','immune','imm','immQuizTab'],['anticancer','anticancer','anti','antiQuizTab'],['signal','signal','sig','sigQuizTab'],['immune-simple','immune','immSimple','immSimpleTab'],['anticancer-simple','anticancer','antiSimple','antiSimpleTab'],['signal-simple','signal','sigSimple','sigSimpleTab'],['abx-simple','abx','abxSimple','abxSimpleTab'],['abx','abx','abx','abxQuizTab']]){
   go(route);if(tab)el(tab).click();assert.equal(el(prefix+'Choices').children.length,5,scope);
   // Every rendered answer must reach the shared latest-result ledger.
   for(let n=0;n<12&&!studyStore.wrong(scope).length;n++){el(prefix+'Choices').children[0].click();if(!studyStore.wrong(scope).length)el(prefix+'Next').click();}

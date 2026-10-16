@@ -1,7 +1,8 @@
+import {initAbxQuiz} from './abx-quiz.mjs?v=20261016-abx1';
 import {initAdr13Table} from './adr13-table.mjs?v=20261015-adr13tab1';
 import {studyStore,recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261016-simple1';
-import {initStudyReview} from './study-review.mjs?v=20261015-review1';
+import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261016-abx1';
+import {initStudyReview} from './study-review.mjs?v=20261016-abx1';
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
 import {initCypQuiz} from './cyp.mjs?v=20261015-review1';
 import {initCyp3a45Quiz} from './cyp3a45.mjs?v=20261015-review1';
@@ -15,11 +16,11 @@ import {buildMixedPool,nextMixedQuestion} from './autonomic-mixed.mjs?v=20261015
 import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261015-adr13tab1';
 import {initPkQuiz} from './pk-quiz.mjs?v=20261015-review1';
 import {initCnsQuiz} from './cns-quiz.mjs?v=20261015-review1';
-import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261016-simple1';
+import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261016-abx1';
 import {syncStudyFolder} from './study-folder.mjs?v=20261016-signal1';
-import {initImmuneQuiz} from './immune-quiz.mjs?v=20261016-simple1';
+import {initImmuneQuiz} from './immune-quiz.mjs?v=20261016-abx1';
 
-import {initSignalQuiz} from './signal31-quiz.mjs?v=20261016-simple1';
+import {initSignalQuiz} from './signal31-quiz.mjs?v=20261016-abx1';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -40,6 +41,7 @@ const cns=initCnsQuiz();
 const immune=initImmuneQuiz();
 const anticancer=initAnticancerQuiz();
 const signal=initSignalQuiz();
+const abx=initAbxQuiz();
 const STORAGE='pharmacology-exam-2026-v1';
 let data=null,year='all',section='all',current=null,shown=null,answered=false,selected=new Set(),session=0,mode='quiz';
 let progress={seen:{},correct:{},missed:{},recent:[]};
@@ -58,7 +60,7 @@ function label(unit){
 function show(view){
   const jumpToChol11Match=view==='chol11match';
   if(jumpToChol11Match)view='chol11';
-  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','pk','cns','menu','practice','review','mistakes'])$(name+'View').hidden=(view!==name);
+  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','pk','cns','abx','menu','practice','review','mistakes'])$(name+'View').hidden=(view!==name);
   syncStudyFolder(view);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
@@ -81,6 +83,7 @@ function show(view){
   if(view==='immune')immune.open();
   if(view==='anticancer')anticancer.open();
   if(view==='signal')signal.open();
+  if(view==='abx')abx.open();
   window.scrollTo({top:0,behavior:'instant'});
 }
 function stats(){
@@ -240,7 +243,7 @@ try{
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
   else if(location.hash==='#mistakes')studyReview.open();
-  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','anticancer','signal','archive'].includes(location.hash.slice(1)))
+  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','anticancer','signal','abx','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}
 
