@@ -2,6 +2,7 @@ import {SIGNAL_CLINICAL} from './immune-cancer-clinical-data.mjs?v=20261017-clin
 import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 // Scope: 2026 lecture 31; the supplied summary is cross-checked against the lecture.
 import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
+import {SIGNAL_EXAM_PRIORITY,signalPriorityPool,signalSubjectPool} from './signal31-priority.mjs?v=20261017-sigfreq1';
 const rows=[];
 function drug(id,name,section,targets,type,note,clinical,pages,exam='',weight=1,core=true){rows.push({id,name,section,targets,type,note,clinical,source:`31강 강의록 PDF ${pages}쪽`,exam,weight,core,targetLabel:targets.join(' · ')});}
 drug('tretinoin','Tretinoin (ATRA)','분화·기타 표적',['RARα'],'분화 촉진제','PML–RARα 융합단백질의 RARα 부위에 작용하여 분화 관련 유전자의 전사 억제를 풀고 미성숙 백혈병 세포의 분화를 촉진합니다. TKI나 CD 항원 항체가 아닙니다.','급성전골수성백혈병(APL)','2·16','족보 반복: RARα·APL',4);
@@ -104,6 +105,7 @@ export function pickSignalQuestion(state,scope='core',mode='mixed',random=Math.r
  const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):(mode==='clinical'?'target':mode),bank=clinicalQuestionPool(questions.filter(q=>q.kind===kind&&(scope!=='core'||q.core)),state,mode==='mixed'?'mixed':mode==='clinical'?'clinical':'ordinary',5,1),recent=state.recent||[],subjects=state.subjects||[];
  let pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject)&&q.group!==state.lastGroup);
  if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject));if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id));if(!pool.length)pool=bank;
- const score=q=>(state.seen?.[q.id]||0)/q.weight,min=Math.min(...pool.map(score)),eligible=pool.filter(q=>score(q)===min),q=eligible[Math.floor(random()*eligible.length)],choices=shuffle(q.options,random).map(text=>({text}));
- return {...q,choices,answerIndex:choices.findIndex(x=>x.text===q.answer)};
+ pool=signalSubjectPool(signalPriorityPool(pool,state),bank,state,random);
+ const score=q=>Number(state.seen?.[q.id])||0,min=Math.min(...pool.map(score)),eligible=pool.filter(q=>score(q)===min),q=eligible[Math.floor(random()*eligible.length)],choices=shuffle(q.options,random).map(text=>({text}));
+ return {...q,examFocus:!!SIGNAL_EXAM_PRIORITY[q.subject],choices,answerIndex:choices.findIndex(x=>x.text===q.answer)};
 }

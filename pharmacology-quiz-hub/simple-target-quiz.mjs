@@ -1,4 +1,4 @@
-import {pickSimpleTargetQuestion} from './simple-target-data.mjs?v=20261017-sigimage1';
+import {pickSimpleTargetQuestion} from './simple-target-data.mjs?v=20261017-sigfreq1';
 import {studyStore,recordStudyResult,studyCountLabel,paintStudyProgress} from './study-records.mjs?v=20261015-review1';
 export function initSimpleTargetQuiz({scope,prefix,viewId}){
  const $=suffix=>document.getElementById(prefix+suffix),symbols=['①','②','③','④','⑤'],storage='pharmacology-'+scope+'-v1';
@@ -11,7 +11,7 @@ export function initSimpleTargetQuiz({scope,prefix,viewId}){
  function next(){
   current=pickSimpleTargetQuestion(scope,state,$('Scope').value);answered=false;state.draws++;
   state.recent=[current.id,...state.recent].slice(0,3);state.subjects=[current.subject,...state.subjects].slice(0,3);save();
-  $('Progress').textContent=`${current.format==='judgment'?'연결 판별':'단순 매칭'} · ${state.draws}번째 연습`;$('Exam').textContent=current.exam;$('Stem').textContent=current.stem;$('Source').textContent=current.source;
+  $('Progress').textContent=`${current.format==='judgment'?'연결 판별':'단순 매칭'} · ${state.draws}번째 연습`;$('Exam').textContent=(current.examFocus?'족보 핵심 · ':'')+current.exam;$('Stem').textContent=current.stem;$('Source').textContent=current.source;
   $('Feedback').hidden=true;$('Next').hidden=true;$('Choices').replaceChildren();
   current.choices.forEach((c,i)=>{const b=node('button');b.type='button';b.append(node('span','option-no',symbols[i]),node('span','',c.text));b.addEventListener('click',()=>answer(i));$('Choices').append(b);});stats();
  }

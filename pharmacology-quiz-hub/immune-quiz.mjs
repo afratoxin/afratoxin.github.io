@@ -1,4 +1,4 @@
-import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-sigimage1';
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-sigfreq1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {IMM_DRUGS,IMM_SECTIONS,IMM_QUESTIONS,IMM_CORRECTIONS,pickImmQuestion} from './immune-data.mjs?v=20261017-clinical1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';

@@ -1,7 +1,7 @@
 import {initAbxQuiz} from './abx-quiz.mjs?v=20261017-abxfocus1';
 import {initAdr13Table} from './adr13-table.mjs?v=20261017-clinical1';
 import {studyStore,recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261017-sigimage1';
+import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261017-sigfreq1';
 import {initStudyReview} from './study-review.mjs?v=20261017-exam2';
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
 import {initCypQuiz} from './cyp.mjs?v=20261017-clinical1';
@@ -16,11 +16,11 @@ import {buildMixedPool,nextMixedQuestion} from './autonomic-mixed.mjs?v=20261017
 import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261017-clinical1';
 import {initPkQuiz} from './pk-quiz.mjs?v=20261017-exam2';
 import {initCnsQuiz} from './cns-quiz.mjs?v=20261017-clinical1';
-import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261017-sigimage1';
+import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261017-sigfreq1';
 import {syncStudyFolder} from './study-folder.mjs?v=20261017-c32v1';
-import {initImmuneQuiz} from './immune-quiz.mjs?v=20261017-sigimage1';
+import {initImmuneQuiz} from './immune-quiz.mjs?v=20261017-sigfreq1';
 
-import {initSignalQuiz} from './signal31-quiz.mjs?v=20261017-sigimage1';
+import {initSignalQuiz} from './signal31-quiz.mjs?v=20261017-sigfreq1';
 import {initCheckpointQuiz} from './checkpoint32-quiz.mjs?v=20261017-c32v1';
 
 const $=id=>document.getElementById(id);

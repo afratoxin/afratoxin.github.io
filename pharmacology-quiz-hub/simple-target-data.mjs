@@ -2,7 +2,8 @@ import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // Short recognition practice, derived from the already verified lecture banks.
 import {IMM_DRUGS} from './immune-data.mjs?v=20261017-clinical1';
 import {ANTI_DRUGS} from './anticancer-data.mjs?v=20261017-clinical1';
-import {SIGNAL_DRUGS} from './signal31-data.mjs?v=20261017-sigimage1';
+import {SIGNAL_DRUGS} from './signal31-data.mjs?v=20261017-sigfreq1';
+import {SIGNAL_EXAM_PRIORITY,signalPriorityPool,signalSubjectPool} from './signal31-priority.mjs?v=20261017-sigfreq1';
 const immuneTargets={calcineurin:'Calcineurin',mtor:'mTOR',jak:'JAK',gr:'GR',purine:'Purine 합성',impdh:'IMPDH',dhfr:'DHFR',polyt:'T세포 표면항원',cd3:'CD3',cd25:'CD25 (IL-2Rα)',cd52:'CD52',cd20:'CD20',b7:'B7 (CD80·CD86)',cd2:'CD2',cd11a:'CD11a (LFA-1)',a4:'α4 integrin',tnf:'TNF',il6r:'IL-6R',il1r:'IL-1R',il17:'IL-17A'};
 const antiTargets={vinca:'미세소관 중합',taxane:'미세소관 탈중합',topo1:'Topoisomerase I',topo2:'Topoisomerase II',anthra:'Topoisomerase II',ros:'DNA',crosslink:'DNA',intercalation:'DNA',asparagine:'Asparagine',gr:'GR',aromatase:'Aromatase',serm:'ER',serd:'ER',gnrhagonist:'GnRH 수용체',gnrhantagonist:'GnRH 수용체',ar:'AR',cyp17:'CYP17'};
 const receptorKeys=new Set(['gr','serm','serd','gnrhagonist','gnrhantagonist','ar']);
@@ -39,6 +40,7 @@ function shuffle(items,random){const out=[...items];for(let i=out.length-1;i>0;i
 export function pickSimpleTargetQuestion(scope,state,range='core',random=Math.random){
  const bank=SIMPLE_BANKS[scope].filter(q=>range!=='core'||q.core),recent=state.recent||[],subjects=state.subjects||[];
  let pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject));if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id));if(!pool.length)pool=bank;
- const score=q=>(state.seen?.[q.id]||0)/q.weight,min=Math.min(...pool.map(score)),available=pool.filter(q=>score(q)===min),q=available[Math.floor(random()*available.length)],choices=shuffle(q.options,random).map(text=>({text}));
- return {...q,choices,answerIndex:choices.findIndex(x=>x.text===q.answer)};
+ if(scope==='signal-simple')pool=signalSubjectPool(signalPriorityPool(pool,state),bank,state,random);
+ const score=q=>(state.seen?.[q.id]||0)/(scope==='signal-simple'?1:q.weight),min=Math.min(...pool.map(score)),available=pool.filter(q=>score(q)===min),q=available[Math.floor(random()*available.length)],choices=shuffle(q.options,random).map(text=>({text}));
+ return {...q,examFocus:scope==='signal-simple'&&!!SIGNAL_EXAM_PRIORITY[q.subject],choices,answerIndex:choices.findIndex(x=>x.text===q.answer)};
 }

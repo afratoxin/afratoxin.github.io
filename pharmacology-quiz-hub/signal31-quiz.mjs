@@ -1,6 +1,6 @@
-import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-sigimage1';
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-sigfreq1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {SIGNAL_DRUGS,SIGNAL_TARGETS,SIGNAL_SECTIONS,SIGNAL_QUESTIONS,SIGNAL_CORRECTIONS,pickSignalQuestion} from './signal31-data.mjs?v=20261017-sigimage1';
+import {SIGNAL_DRUGS,SIGNAL_TARGETS,SIGNAL_SECTIONS,SIGNAL_QUESTIONS,SIGNAL_CORRECTIONS,pickSignalQuestion} from './signal31-data.mjs?v=20261017-sigfreq1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initSignalQuiz(){
@@ -20,7 +20,7 @@ export function initSignalQuiz(){
     current=pickSignalQuestion(state,$('sigScope').value,$('sigMode').value);answered=false;state.draws++;
     state.recent=[current.id,...state.recent].slice(0,3);state.subjects=[current.subject,...state.subjects].slice(0,3);state.lastGroup=current.group;save();stats();
     $('sigProgress').textContent=`${current.format==='clinical'?'임상 상황 · 약물 선택':current.kind==='target'?'표적·매칭':'기전·사례'} · ${state.draws}번째 연습`;
-    $('sigStem').textContent=current.stem;$('sigSource').textContent=current.source;$('sigExam').textContent=current.exam||'전체 범위 · 강의록';
+    $('sigStem').textContent=current.stem;$('sigSource').textContent=current.source;$('sigExam').textContent=(current.examFocus?'족보 핵심 · ':'')+(current.exam||'전체 범위 · 강의록');
     $('sigFeedback').hidden=true;$('sigNext').hidden=true;$('sigChoices').replaceChildren();
     current.choices.forEach((c,i)=>{const b=node('button');b.type='button';b.append(node('span','option-no',symbols[i]),node('span','',c.text));b.addEventListener('click',()=>answer(i));$('sigChoices').append(b);});
   }

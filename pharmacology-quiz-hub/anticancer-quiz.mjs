@@ -1,4 +1,4 @@
-import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-sigimage1';
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-sigfreq1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {ANTI_SECTIONS,ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY,ANTI_NOTES,pickAntiQuestion} from './anticancer-data.mjs?v=20261017-clinical1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
