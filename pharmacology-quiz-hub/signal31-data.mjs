@@ -1,4 +1,5 @@
 // Scope: 2026 lecture 31; the supplied summary is cross-checked against the lecture.
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 const rows=[];
 function drug(id,name,section,targets,type,note,clinical,pages,exam='',weight=1,core=true){rows.push({id,name,section,targets,type,note,clinical,source:`31강 강의록 PDF ${pages}쪽`,exam,weight,core,targetLabel:targets.join(' · ')});}
 drug('tretinoin','Tretinoin (ATRA)','분화·기타 표적',['RARα'],'분화 촉진제','PML–RARα 융합단백질의 RARα 부위에 작용하여 분화 관련 유전자의 전사 억제를 풀고 미성숙 백혈병 세포의 분화를 촉진합니다. TKI나 CD 항원 항체가 아닙니다.','급성전골수성백혈병(APL)','2·16','족보 반복: RARα·APL',4);
@@ -79,6 +80,12 @@ support('borte-path','mechanism','bortezomib','강의 그림에서 bortezomib �
 support('borte-myeloma','clinical','bortezomib','다발성 골수종에서 proteasome을 억제하여 단백질 분해·생존 신호를 방해하는 약물은?','Bortezomib',['Crizotinib','Tretinoin (ATRA)','Bevacizumab (Avastin)','Lapatinib'],'Bortezomib의 26S proteasome과 다발성 골수종을 연결합니다.','50–51');
 support('nfkb-transcription','mechanism','bortezomib','강의의 proteasome–IκBα 경로에서 NF-κB 활성 억제 후 예상되는 변화는?','IL-6 등 생존·증식 유전자 발현 감소',['IL-6 등 생존·증식 유전자 발현 증가','IκBα의 분해 속도와 NF-κB 활성 증가','EGFR의 ATP 결합과 kinase 활성 증가','HER2의 세포외 결합과 분화 억제 증가'],'강의 그림은 NF-κB의 활성과 생존·증식 관련 전사 산물의 감소를 연결합니다. 요약 이미지의 IL-6 증가를 억제제의 효과로 바꾸어 외우지 않습니다.','50');
 support('ligand-path','mechanism','bevacizumab','Bevacizumab에 의한 혈관신생 억제 경로로 옳은 것은?','VEGF-A 결합 → VEGFR 자극 감소',['VEGFR 직접 자극 → 혈관신생 감소','EGFR 직접 자극 → 혈관신생 감소','HER2 직접 자극 → VEGF-A 생성 차단','CD33 직접 결합 → VEGFR kinase 활성 증가'],'Bevacizumab은 VEGF-A를 중화하여 수용체의 활성화를 줄입니다. 수용체 tyrosine kinase 부위와 직접 결합하는 TKI가 아닙니다.','46–47');
+// False targets are checked per drug rather than inferred from a different
+// primary target. KIT/PDGFR/EGFR/HER2 overlaps stay valid; kinase drugs are not
+// assigned another kinase merely because it was absent from a short label.
+const statementWrongTargets={tretinoin:'HDAC',cetuximab:'CD20',panitumumab:'CD52',gefitinib:'VEGF-A',erlotinib:'PD-1',lapatinib:'CD33',afatinib:'CD30',trastuzumab:'EGFR',enhertu:'CD20',rituximab:'CD52',ibritumomab:'CD33',alemtuzumab:'CD20',denileukin:'CD30',gemtuzumab:'CD30',brentuximab:'CD33',pembrolizumab:'PD-L1',nivolumab:'PD-L1',durvalumab:'PD-1',atezolizumab:'PD-1',imatinib:'CD20',nilotinib:'CD52',dasatinib:'CD33',bevacizumab:'VEGFR',sorafenib:'VEGF-A',sunitinib:'PD-1',bortezomib:'HDAC',crizotinib:'CD20',vorinostat:'26S proteasome'};
+const statementRows=rows.map(d=>({id:d.id,left:d.name,right:d.targets[0],wrong:statementWrongTargets[d.id],source:d.source,note:d.note,family:d.section}));
+for(const [i,d] of rows.entries())for(const polarity of ['correct','incorrect'])questions.push(createPairedQuestion({id:`statement-${polarity}-${d.id}`,kind:'target',group:`statement-${polarity}`,direction:`statement-${polarity}`,subject:d.id,core:d.core,weight:d.weight,exam:d.exam},statementRows[i],statementRows.filter(r=>r.id!==d.id),{polarity,index:i,topic:'표적항암제와 직접 작용·인식 표적'}));
 export const SIGNAL_QUESTIONS=questions;
 export function pickSignalQuestion(state,scope='core',mode='mixed',random=Math.random){
  const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):mode,bank=questions.filter(q=>q.kind===kind&&(scope!=='core'||q.core)),recent=state.recent||[],subjects=state.subjects||[];

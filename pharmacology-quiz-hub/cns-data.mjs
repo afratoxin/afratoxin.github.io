@@ -1,4 +1,4 @@
-import {buildCnsPairQuestions} from './cns-pair-builder.mjs?v=20261016-cnspairs1';
+import {buildCnsPairQuestions} from './cns-pair-builder.mjs?v=20261017-exam2';
 // Teaching scope: 2026 CNS lectures 14–15. PDF page numbers include note pages.
 export const CNS_AREAS={structure:'수용체 구조',effect:'흥분·억제',disease:'질환–약물',features:'약물 세부 특징'};
 const structureLabel={ionotropic:'Ionotropic · 리간드개폐 이온통로',metabotropic:'Metabotropic · GPCR'};
@@ -93,15 +93,22 @@ export const CNS_MATCH={
 export function shuffle(items,random=Math.random){const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
 export const CNS_QUESTIONS=buildCnsPairQuestions({RECEPTORS,DRUGS,hasMechanism,possibleUse});
 
-export function pickCnsQuestion(state,area='all',random=Math.random){
-  const bank=CNS_QUESTIONS.filter(q=>area==='all'||q.area===area);
+export function cnsQuestionBank(area='all',focus='all'){
+  return CNS_QUESTIONS.filter(q=>(area==='all'||q.area===area)&&(
+    focus==='all'||['structure','effect'].includes(area)||
+    (focus==='structures'?q.priority==='structure-drug':['structure-drug','emphasized-drug'].includes(q.priority))
+  ));
+}
+export function pickCnsQuestion(state,area='all',random=Math.random,focus='all'){
+  const bank=cnsQuestionBank(area,focus);
   const recent=state.recent||[],subjects=state.recentSubjects||[],seen=state.seen||{};
   let pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject)&&q.subject!==state.lastSubject&&q.group!==state.lastGroup);
   if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id)&&q.subject!==state.lastSubject);
   if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id));
   if(!pool.length)pool=bank;
-  const min=Math.min(...pool.map(q=>seen[q.id]||0));
-  const eligible=pool.filter(q=>(seen[q.id]||0)===min),q=eligible[Math.floor(random()*eligible.length)];
+  const score=q=>(seen[q.id]||0)/(focus==='core'&&q.priority==='structure-drug'?2:1);
+  const min=Math.min(...pool.map(score));
+  const eligible=pool.filter(q=>score(q)===min),q=eligible[Math.floor(random()*eligible.length)];
   const choices=shuffle(q.options,random).map(text=>({text}));
   return {...q,choices,answerIndex:choices.findIndex(x=>x.text===q.answer)};
 }

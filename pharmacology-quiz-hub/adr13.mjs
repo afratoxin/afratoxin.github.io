@@ -1,4 +1,5 @@
 // 2026 13강 아드레날린성 약리학 (2), 슬라이드 11–23쪽.
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 const q=(id,group,stem,answer,distractors,note,page)=>({id,group,stem,answer,options:[answer,...distractors],note,page});
 export const ADR13_QUESTIONS=[
   q('pheo-long','clinical','갈색세포종에서 카테콜아민에 의한 혈압 상승을 억제할 비가역적 α 차단제는?','Phenoxybenzamine',['Phentolamine','Prazosin','Propranolol','Clonidine'],'Phenoxybenzamine은 비가역적 α 차단제다. Phentolamine은 가역적 α 차단제이며 prazosin은 선택적 α1 차단제다.',13),
@@ -36,3 +37,20 @@ export const ADR13_MATCH=[
   ['labetalol','α1·비선택성 β 차단'],['carvedilol','α1·비선택성 β 차단'],
   ['metyrosine','카테콜아민 합성 억제'],['reserpine','VMAT 소포 저장 억제'],['guanethidine','NE 소포 유리 억제']
 ].map(([drug,category])=>({drug,category}));
+
+const ADR13_WRONG_ROLE={
+  '비가역성 α 차단':'가역성 α 차단','가역성 α 차단':'비가역성 α 차단',
+  '선택적 α1 차단':'선택적 β1 차단','전립선 α1A 차단':'선택적 α2 차단','선택적 α2 차단':'전립선 α1A 차단',
+  '비선택성 β 차단':'선택적 α1 차단','선택적 β1 차단':'선택적 α1 차단','α1·비선택성 β 차단':'선택적 α2 차단',
+  '카테콜아민 합성 억제':'VMAT 소포 저장 억제','VMAT 소포 저장 억제':'카테콜아민 합성 억제','NE 소포 유리 억제':'NE 소포 유리 촉진'
+};
+const adr13StatementRows=ADR13_MATCH.map(d=>{
+  const original=ADR13_QUESTIONS.find(q=>q.answer.toLowerCase()===d.drug);
+  const page=original?.page||(['terazosin','alfuzosin','silodosin'].includes(d.drug)?18:['reserpine','guanethidine'].includes(d.drug)?16:20);
+  return {id:d.drug,left:d.drug,right:d.category,wrong:ADR13_WRONG_ROLE[d.category],source:`13강 강의록 ${page}쪽`,note:`${d.drug}의 강의록 대표 작용은 ${d.category}이다.`};
+});
+ADR13_QUESTIONS.push(...adr13StatementRows.flatMap((row,index)=>['correct','incorrect'].map(polarity=>
+  createPairedQuestion({id:`judgment:${row.id}:${polarity}`,anchor:row.id,group:'mechanism'},row,adr13StatementRows,{
+    index,polarity,topic:'13강 강의록의 약물–대표 작용 연결'
+  })
+)));

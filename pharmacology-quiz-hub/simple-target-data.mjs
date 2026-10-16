@@ -1,7 +1,8 @@
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // Short recognition practice, derived from the already verified lecture banks.
-import {IMM_DRUGS} from './immune-data.mjs?v=20261016-abx1';
-import {ANTI_DRUGS} from './anticancer-data.mjs?v=20261015-anti1';
-import {SIGNAL_DRUGS} from './signal31-data.mjs?v=20261016-signal1';
+import {IMM_DRUGS} from './immune-data.mjs?v=20261017-exam2';
+import {ANTI_DRUGS} from './anticancer-data.mjs?v=20261017-exam2';
+import {SIGNAL_DRUGS} from './signal31-data.mjs?v=20261017-exam2';
 const immuneTargets={calcineurin:'Calcineurin',mtor:'mTOR',jak:'JAK',gr:'GR',purine:'Purine 합성',impdh:'IMPDH',dhfr:'DHFR',polyt:'T세포 표면항원',cd3:'CD3',cd25:'CD25 (IL-2Rα)',cd52:'CD52',cd20:'CD20',b7:'B7 (CD80·CD86)',cd2:'CD2',cd11a:'CD11a (LFA-1)',a4:'α4 integrin',tnf:'TNF',il6r:'IL-6R',il1r:'IL-1R',il17:'IL-17A'};
 const antiTargets={vinca:'미세소관 중합',taxane:'미세소관 탈중합',topo1:'Topoisomerase I',topo2:'Topoisomerase II',anthra:'Topoisomerase II',ros:'DNA',crosslink:'DNA',intercalation:'DNA',asparagine:'Asparagine',gr:'GR',aromatase:'Aromatase',serm:'ER',serd:'ER',gnrhagonist:'GnRH 수용체',gnrhantagonist:'GnRH 수용체',ar:'AR',cyp17:'CYP17'};
 const receptorKeys=new Set(['gr','serm','serd','gnrhagonist','gnrhantagonist','ar']);
@@ -24,7 +25,16 @@ function build(rows){
   return {id:d.id+':'+n,subject:d.id,core:d.core,weight:d.weight||1,stem:d.stem,answer,options:[answer,...wrong],validTargets:d.validTargets,note:d.note,lectureNote:d.lectureNote,details:[d.lectureNote],source:d.source,exam:d.exam||'강의 표적 복습'};
  }).filter(Boolean));
 }
-export const SIMPLE_BANKS={'immune-simple':build(immune),'anticancer-simple':build(anticancer),'signal-simple':build(signal)};
+function withJudgments(drugs){
+ const direct=build(drugs),byId=Object.fromEntries(drugs.map(d=>[d.id,d]));
+ const rows=direct.map(q=>({id:q.id,left:byId[q.subject].name,right:q.answer,wrong:q.options.find(t=>!q.validTargets.includes(t)),source:q.source,note:q.note,family:byId[q.subject].key}));
+ const judgments=direct.flatMap((q,index)=>['correct','incorrect'].map(polarity=>{
+  const result=createPairedQuestion({...q,id:`judgment:${q.id}:${polarity}`},rows[index],rows,{polarity,index,topic:'약물과 강의록의 직접 표적'});
+  return {...result,details:[...result.details,q.lectureNote]};
+ }));
+ return [...direct,...judgments];
+}
+export const SIMPLE_BANKS={'immune-simple':withJudgments(immune),'anticancer-simple':withJudgments(anticancer),'signal-simple':withJudgments(signal)};
 function shuffle(items,random){const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
 export function pickSimpleTargetQuestion(scope,state,range='core',random=Math.random){
  const bank=SIMPLE_BANKS[scope].filter(q=>range!=='core'||q.core),recent=state.recent||[],subjects=state.subjects||[];

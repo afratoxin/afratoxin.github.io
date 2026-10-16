@@ -1,5 +1,6 @@
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // 2026년 7강 약물대사: 강의록에 제시된 CYP probe drug (16, 36, 39쪽).
 export const CYP_FACTS = [
   {id:'theophylline', enzyme:'CYP1A2', drug:'theophylline', page:16, note:'CYP1A2의 probe drug으로 제시됩니다.'},
@@ -32,22 +33,20 @@ export function shuffle(items, random=Math.random){
 }
 
 export function makeCypQuestion(fact,direction,random=Math.random){
-  const reverse=direction==='enzyme-to-drug';
-  let choices;
-  if(reverse){
-    // Every distractor belongs to a different enzyme; none is another valid answer.
-    const otherEnzymes=shuffle(CYP_ENZYMES.filter(e=>e!==fact.enzyme),random).slice(0,4);
-    choices=shuffle([fact.drug,...otherEnzymes.map(e=>{
-      const candidates=CYP_FACTS.filter(f=>f.enzyme===e);
-      return candidates[Math.floor(random()*candidates.length)].drug;
-    })],random);
-  }else{
-    choices=shuffle([fact.enzyme,...shuffle(CYP_ENZYMES.filter(e=>e!==fact.enzyme),random).slice(0,4)],random);
-  }
-  const answer=reverse?fact.drug:fact.enzyme;
-  return {fact,direction,choices,answer,stem:reverse
-    ? `${fact.enzyme}의 probe drug은?`
-    : `${fact.drug}과 대응하는 CYP 효소는?`};
+  const index=CYP_FACTS.findIndex(f=>f.id===fact.id);
+  const rows=CYP_FACTS.map(f=>({
+    id:f.id,left:`${f.drug} — 강의록의 대표 probe 효소`,right:f.enzyme,
+    wrong:CYP_ENZYMES[(CYP_ENZYMES.indexOf(f.enzyme)+1)%CYP_ENZYMES.length],
+    source:`7강 강의록 ${f.page}쪽`,note:f.note
+  }));
+  // The table's representative probe assignment is being judged, not every metabolic pathway.
+  const q=createPairedQuestion({fact,direction},rows[index],rows,{
+    index,polarity:(index+Number(direction==='enzyme-to-drug'))%2?'incorrect':'correct',
+    topic:'강의록의 대표 CYP probe drug–효소 연결'
+  });
+  const bundles=shuffle(q.options.map((text,i)=>({text,pair:q.pairs[i],detail:q.details[i]})),random);
+  const choices=bundles.map(b=>b.text);
+  return {...q,choices,options:choices,pairs:bundles.map(b=>b.pair),details:bundles.map(b=>b.detail),answerIndex:choices.indexOf(q.answer)};
 }
 export function makeCypCaseQuestion(fact,random=Math.random){
   const choices=shuffle(fact.options,random);
@@ -76,7 +75,6 @@ export function initCypQuiz(){
   }catch{}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(progress));}catch{}};
   let current=null,answered=false,quizCount=0;
-  const factById=id=>CYP_FACTS.find(f=>f.id===id);
   const record=(fact,good)=>{
     progress.total++;
     if(good)progress.right++;
@@ -134,19 +132,16 @@ export function initCypQuiz(){
     const feedback=$('cypFeedback');
     feedback.className=`feedback ${good?'ok':'bad'}`;
     const why=document.createElement('p');
-    why.textContent=`${current.fact.enzyme} ↔ ${current.fact.drug}. ${current.fact.note} (강의록 ${current.fact.page}쪽)`;
+    why.textContent=current.note||`${current.fact.enzyme} ↔ ${current.fact.drug}. ${current.fact.note} (강의록 ${current.fact.page}쪽)`;
     feedback.replaceChildren();
     const title=document.createElement('strong');title.textContent=good?'정답입니다.':'다시 짚어보세요.';
     feedback.append(title,why);
-    if(!good&&!current.special){
-      const competing=current.direction==='drug-to-enzyme'
-        ?CYP_FACTS.find(f=>f.enzyme===selected)
-        :factById(selected);
-      if(competing){
-        const contrast=document.createElement('p');
-        contrast.textContent=`선택한 ${selected}은(는) ${competing.enzyme} ↔ ${competing.drug} 쪽의 대응입니다.`;
-        feedback.append(contrast);
-      }
+    if(current.details){
+      const list=document.createElement('ul');
+      current.details.forEach((detail,i)=>{
+        const li=document.createElement('li');li.textContent=`${SYMBOLS[i]} ${detail}`;list.append(li);
+      });
+      feedback.append(list);
     }
     feedback.hidden=false;$('cypNext').hidden=false;
   };

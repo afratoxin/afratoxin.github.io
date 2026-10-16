@@ -1,6 +1,6 @@
-import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261016-abx1';
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-exam2';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {SIGNAL_DRUGS,SIGNAL_SECTIONS,SIGNAL_QUESTIONS,SIGNAL_CORRECTIONS,pickSignalQuestion} from './signal31-data.mjs?v=20261016-signal1';
+import {SIGNAL_DRUGS,SIGNAL_SECTIONS,SIGNAL_QUESTIONS,SIGNAL_CORRECTIONS,pickSignalQuestion} from './signal31-data.mjs?v=20261017-exam2';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initSignalQuiz(){

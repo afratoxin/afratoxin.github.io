@@ -33,7 +33,10 @@ test('객관식 영역 선택·채점·키보드와 드래그 3개 탭이 함께
   const {ids,listeners,Element,saved}=fixture(html),el=id=>ids.get(id);
   const quiz=api.initCnsQuiz();quiz.open();
   assert.equal(el('cnsChoices').children.length,5);
+  assert.ok(el('cnsFocus'));assert.equal(el('cnsFocus').value,'core');assert.match(el('cnsScopeSummary').textContent,/62.*29/);
+  el('cnsFocus').value='structures';el('cnsFocus').dispatch('change');assert.match(el('cnsScopeSummary').textContent,/구조식/);
   el('cnsArea').value='effect';el('cnsArea').dispatch('change');
+  assert.equal(el('cnsFocus').disabled,true);
   assert.match(el('cnsStem').textContent,/연결.*옳/);assert.match(el('cnsChoices').textContent,/흥분성|억제성/);
   el('cnsChoices').children[0].click();assert.equal(el('cnsFeedback').hidden,false);
   assert.ok(el('cnsChoices').children.every(b=>b.disabled));assert.equal(el('cnsNext').hidden,false);
@@ -55,7 +58,9 @@ test('객관식 영역 선택·채점·키보드와 드래그 3개 탭이 함께
   assert.equal(el('cnsStructureCards').children.length,6);
   listeners.keydown({key:'1',target:new Element(),preventDefault(){}});assert.equal(JSON.parse([...saved.values()][0]).total,firstTotal);
   el('cnsEffectTab').click();assert.equal(el('cnsEffectCards').children.length,46);
-  el('cnsDiseaseTab').click();assert.equal(el('cnsDiseaseCards').children.length,84);
+  el('cnsDiseaseTab').click();assert.equal(el('cnsDiseaseCards').children.length,62);
+  el('cnsDiseasePriority').value='structures';el('cnsDiseasePriority').dispatch('change');assert.equal(el('cnsDiseaseCards').children.length,29);
+  el('cnsDiseasePriority').value='all';el('cnsDiseasePriority').dispatch('change');assert.equal(el('cnsDiseaseCards').children.length,84);
   const diazepam=el('cnsDiseaseCards').children.find(x=>x.textContent==='Diazepam');diazepam.click();
   el('cnsDiseaseZones').children.find(x=>x.dataset.category==='뇌전증').click();
   el('cnsDiseaseCheck').click();assert.match(el('cnsDiseaseDragStatus').textContent,/1개 정답/);

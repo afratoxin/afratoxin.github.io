@@ -1,22 +1,22 @@
 import {studyStore,normalizeStudyQuestion} from './study-records.mjs?v=20261015-review1';
-import {CYP_FACTS,CYP_CASES,makeCypQuestion,makeCypCaseQuestion} from './cyp.mjs?v=20261015-review1';
-import {ddiCandidates,makeDdiClassificationQuestion,makeDdiCaseQuestion,makeDdiEffectQuestion,CYP3A45_LABELS} from './cyp3a45.mjs?v=20261015-review1';
-import {TRANSPORT_FACTS,TRANSPORT_SPECIALS,TRANSPORT_CASES,AE_CASES,TRANSPORT_DRUGS,makeTransportQuestion,makeTransportSpecial,makeAeQuestion} from './transport8.mjs?v=20261015-review1';
+import {CYP_FACTS,CYP_CASES,makeCypQuestion,makeCypCaseQuestion} from './cyp.mjs?v=20261017-exam2';
+import {ddiCandidates,makeDdiClassificationQuestion,makeDdiCaseQuestion,makeDdiEffectQuestion,CYP3A45_LABELS} from './cyp3a45.mjs?v=20261017-exam2';
+import {TRANSPORT_FACTS,TRANSPORT_SPECIALS,TRANSPORT_CASES,AE_CASES,TRANSPORT_DRUGS,makeTransportQuestion,makeTransportSpecial,makeAeQuestion} from './transport8.mjs?v=20261017-exam2';
 import {ANS_FACTS,ANS_CASES,ANS_MATCH,makeAnsQuestion,makeAnsSpecialQuestion} from './ans9.mjs?v=20261015-review1';
-import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,CHOL_DRUGS,makeCholQuestion,makeCholSpecialQuestion} from './chol10.mjs?v=20261015-review1';
-import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,CHOL11_DRUGS,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261015-review1';
-import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261009-1';
-import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261009-1';
-import {buildMixedPool} from './autonomic-mixed.mjs?v=20261015-adr13tab1';
-import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261015-4';
-import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261016-cnspairs1';
-import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261016-abx1';
-import {ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY} from './anticancer-data.mjs?v=20261015-anti1';
-import {SIGNAL_QUESTIONS,SIGNAL_TARGETS} from './signal31-data.mjs?v=20261016-signal1';
-import {SIMPLE_BANKS} from './simple-target-data.mjs?v=20261016-abx1';
-import {ABX_SIMPLE,ABX_QUESTIONS} from './abx-data.mjs?v=20261016-abx1';
+import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,CHOL_DRUGS,makeCholQuestion,makeCholSpecialQuestion} from './chol10.mjs?v=20261017-exam2';
+import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,CHOL11_DRUGS,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261017-exam2';
+import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261017-exam2';
+import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261017-exam2';
+import {buildMixedPool} from './autonomic-mixed.mjs?v=20261017-exam2';
+import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261017-exam2';
+import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261017-exam2';
+import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261017-exam2';
+import {ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY} from './anticancer-data.mjs?v=20261017-exam2';
+import {SIGNAL_QUESTIONS,SIGNAL_TARGETS} from './signal31-data.mjs?v=20261017-exam2';
+import {SIMPLE_BANKS} from './simple-target-data.mjs?v=20261017-exam2';
+import {ABX_SIMPLE,ABX_QUESTIONS} from './abx-data.mjs?v=20261017-exam2';
 const read=key=>{try{return JSON.parse(globalThis.localStorage?.getItem(key)||'{}')||{};}catch{return {};}};
-export function ddiStudyNote(q){return q.kind==='classification'?q.case?q.fact.note:`${q.fact.drug}: CYP3A4/5 ${CYP3A45_LABELS[q.fact.category]}`:`${q.modifier.drug}: ${CYP3A45_LABELS[q.modifier.category]} → ${q.substrate.drug} 대사 ${q.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소'}`;}
+export function ddiStudyNote(q){if(q.note)return q.note;return q.kind==='classification'?q.case?q.fact.note:`${q.fact.drug}: CYP3A4/5 ${CYP3A45_LABELS[q.fact.category]}`:`${q.modifier.drug}: ${CYP3A45_LABELS[q.modifier.category]} → ${q.substrate.drug} 대사 ${q.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소'}`;}
 export function registerLectureStudies(store=studyStore){
   const add=(id,title,route,bank,build,key,extra={})=>store.register({id,title,route,type:'quiz',items:bank.map(x=>x.id),build:id=>({...build(bank.find(x=>x.id===id)),id}),legacy:read(key),...extra});
   const staticBank=(id,title,route,bank,key,extra={})=>add(id,title,route,bank,q=>q,key,extra);

@@ -1,4 +1,5 @@
 // Source: 2026 lecture 28, supplied summary images, and past exams (PDF 67–68).
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // Each target key describes the relationship actually tested, not every action of a drug.
 const rows=[];
 function drug(id,name,section,key,target,binding,note,clinical,risk,pages,exam='',weight=1){rows.push({id,name,section,key,target,binding,note,clinical,risk,source:`28강 강의록 PDF ${pages}쪽`,exam,core:Boolean(exam),weight});}
@@ -97,6 +98,13 @@ add('pathway-mtor','support','pathway','sirolimus','Sirolimus가 억제하는 �
 add('structure-fusion','support','structure','abatacept','두 약물 모두 융합단백질로 구성된 조합은?','Abatacept — Alefacept',['Abatacept — Alemtuzumab','Alefacept — Efalizumab','Infliximab — Adalimumab','Basiliximab — Daclizumab'],'Abatacept는 CTLA-4–Ig, alefacept는 LFA-3–Ig입니다. Etanercept도 TNF 수용체–Fc 융합단백질입니다.','40–41·44');
 add('interferon-ms','support','application','betaseron','Betaseron과 Avonex의 자료상 공통 용도는?','다발성경화증(MS)',['호중구 감소증','적혈구 생성 저하성 빈혈','HPV 감염 예방','장기이식 급성 거부반응 억제'],'두 제품은 각각 IFN-β1b와 IFN-β1a입니다. TNF 억제제와 interferon 제제를 구별합니다.','9·12','');
 add('vaccine-common','support','application','cervarix','Cervarix와 Gardasil 9의 공통 예방대상 HPV 유형은?','16형·18형',['6형·11형','31형·33형','45형·52형','52형·58형'],'Cervarix는 16·18형, Gardasil 9는 이를 포함한 9개 유형입니다. 효과를 100%로 단정하는 문항은 출제하지 않습니다.','13–14','');
+// Each false pair swaps a distinct taught mechanism, not a downstream effect.
+// ATG is polyclonal, so a single alternative surface antigen is not used as its
+// false feature. Vaccine lists are explicitly complete to preserve shared types.
+const statementWrongKeys={calcineurin:'mtor',mtor:'calcineurin',jak:'cd20',gr:'calcineurin',purine:'cd25',impdh:'calcineurin',dhfr:'mtor',polyt:'impdh',cd3:'cd25',cd25:'cd3',cd52:'cd20',cd20:'cd52',b7:'cd2',cd2:'b7',cd11a:'a4',a4:'cd11a',tnf:'il6r',il6r:'il1r',il1r:'il6r',il17:'tnf',rbc:'neutrophil',neutrophil:'rbc',gmcsf:'rbc',macrophage:'rbc',ifnb1b:'ifnb1a',ifnb1a:'ifnb1b',hpv2:'hpv9',hpv9:'hpv2'};
+const statementLabel=d=>d.key.startsWith('hpv')?`예방대상 HPV 유형 전체 목록: ${d.target}`:d.target;
+const statementRows=rows.map(d=>({id:d.id,left:d.name,right:statementLabel(d),wrong:statementLabel(rows.find(x=>x.key===statementWrongKeys[d.key])),source:d.source,note:d.note,family:d.key}));
+for(const [i,d] of rows.entries())for(const polarity of ['correct','incorrect'])questions.push(createPairedQuestion({id:`statement-${polarity}-${d.id}`,kind:'target',group:`statement-${polarity}`,direction:`statement-${polarity}`,subject:d.id,key:d.key,core:d.core,weight:d.weight,exam:d.exam},statementRows[i],statementRows.filter(r=>r.id!==d.id),{polarity,index:i,topic:'면역약리 약물·제제와 표적·작용'}));
 export const IMM_QUESTIONS=questions;
 export function pickImmQuestion(state,scope='core',mode='mixed',random=Math.random){
   const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):mode;

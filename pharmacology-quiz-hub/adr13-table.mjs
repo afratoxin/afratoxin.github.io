@@ -1,4 +1,4 @@
-import {ADR13_MATCH} from './adr13.mjs?v=20261009-1';
+import {ADR13_MATCH} from './adr13.mjs?v=20261017-exam2';
 const beta={
   propranolol:[1,'Propranolol','β1·β2',[],'비선택적 β 차단의 대표 약물 · 기관지 수축·저혈당 회복 지연을 구별'],
   timolol:[1,'Timolol','β1·β2',[],'녹내장: 방수 생성 감소 · 콜린 효현제의 방수 배출 촉진과 구별'],

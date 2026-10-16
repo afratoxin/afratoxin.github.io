@@ -1,4 +1,4 @@
-import {pickAbxQuestion} from './abx-data.mjs?v=20261016-abx1';
+import {pickAbxQuestion} from './abx-data.mjs?v=20261017-exam2';
 import {studyStore,recordStudyResult,studyCountLabel,paintStudyProgress} from './study-records.mjs?v=20261015-review1';
 export function initAbxQuiz(){
  const doc=document,$=id=>doc.getElementById(id),symbols=['①','②','③','④','⑤'];let tab='simple';

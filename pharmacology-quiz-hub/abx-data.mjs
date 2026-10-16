@@ -1,3 +1,4 @@
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 import {DRUGS as coreDrugs,QUESTIONS as coreQuestions} from './abx-core-data.mjs?v=20261016-abx1';
 import {DRUGS as bacterialDrugs,QUESTIONS as bacterialQuestions} from './abx-bacterial-data.mjs?v=20261016-abx1';
 import {DRUGS as extraDrugs,QUESTIONS as extraQuestions} from './abx-extra-data.mjs?v=20261016-abx1';
@@ -7,11 +8,43 @@ const keys=[...new Set(ABX_DRUGS.flatMap(d=>d.targets))];
 // Broad effects are useful answers for their own drugs, but make poor distractors
 // against a more specific mechanism that can produce the same downstream effect.
 const broad=new Set(['cellwall','membrane','dna_damage','pza','viral_rnap']);
-export const ABX_SIMPLE=ABX_DRUGS.flatMap((d,i)=>d.targets.map((key,n)=>{
+const simpleQuestions=ABX_DRUGS.flatMap((d,i)=>d.targets.map((key,n)=>{
  const other=keys.filter(k=>!d.targets.includes(k)&&!broad.has(k)&&!(d.targets.includes('viral_rnap')&&k==='ns5b')),start=(i*3+n)%other.length,wrong=[...other.slice(start),...other.slice(0,start)].slice(0,4),answer=ABX_MECHANISMS[key];
  return {id:d.id+':'+key,subject:d.id,lecture:d.lecture,family:d.family,group:'simple',core:d.core,weight:d.weight||1,stem:`${d.name}의 작용기전은?`,options:[answer,...wrong.map(k=>ABX_MECHANISMS[k])],answer,note:`${d.name} → ${answer}. ${d.note}`,source:d.source,details:[],targets:d.targets};
 }));
-export const ABX_QUESTIONS=[...coreQuestions,...bacterialQuestions,...extraQuestions];
+// A specific target may imply a broader effect. Do not turn that overlap into
+// a supposedly false pair, including either valid target of multi-target drugs.
+const overlappingTargets=[
+ ['cellwall','pbp','dala','mycolic','arabinosyl'],
+ ['viral_rnap','ns5b'],
+ ['dna_pol','rt'],
+ ['membrane','ergosterol','pza','atpsynthase'],
+ ['pza','atpsynthase'],
+ ['dna_damage','gyrase','topo4','dna_pol','rt']
+];
+const statementRows=ABX_DRUGS.flatMap(d=>d.targets.map(key=>{
+ const excluded=new Set(d.targets);
+ for(const cluster of overlappingTargets)if(d.targets.some(t=>cluster.includes(t)))for(const t of cluster)excluded.add(t);
+ // Sulbactam also has intrinsic PBP activity in some organisms; that activity
+ // must not become a false statement even though this lecture teaches its BLI role.
+ if(d.id==='sulbactam')excluded.add('pbp');
+ const candidates=keys.filter(k=>!excluded.has(k)&&!broad.has(k));
+ const right=ABX_MECHANISMS[key],wrong=ABX_MECHANISMS[candidates[(ABX_DRUGS.indexOf(d)*3+d.targets.indexOf(key))%candidates.length]];
+ return {id:`${d.id}:${key}`,left:d.name,right,wrong,source:d.source,note:`${d.name}의 작용기전은 ${right}이다.`,family:d.family,drug:d};
+}));
+function mechanismJudgments(kind){
+ return statementRows.flatMap((row,index)=>{
+  const d=row.drug,local=statementRows.filter(other=>other.drug.lecture===d.lecture);
+  const pool=new Set(local.map(other=>other.left)).size>=5?local:statementRows;
+  return ['correct','incorrect'].map(polarity=>createPairedQuestion({
+   id:`abx-${kind}-judgment:${row.id}:${polarity}`,subject:d.id,lecture:d.lecture,
+   family:d.family,group:kind==='simple'?'simple':'mechanism',core:d.core,
+   weight:d.weight||1,targets:d.targets
+  },row,pool,{polarity,index,topic:'약물과 작용기전'}));
+ });
+}
+export const ABX_SIMPLE=[...simpleQuestions,...mechanismJudgments('simple')];
+export const ABX_QUESTIONS=[...coreQuestions,...bacterialQuestions,...extraQuestions,...mechanismJudgments('general')];
 export function shuffleAbx(values,random=Math.random){const out=[...values];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
 export function pickAbxQuestion(kind,state,lecture='all',range='core',random=Math.random){
  const full=kind==='simple'?ABX_SIMPLE:ABX_QUESTIONS,selected=full.filter(q=>lecture==='all'||q.lecture===Number(lecture)),focused=selected.filter(q=>range!=='core'||q.core),bank=focused.length?focused:selected,recent=state.recent||[],subjects=state.subjects||[];

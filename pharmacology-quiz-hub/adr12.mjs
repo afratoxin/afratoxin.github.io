@@ -1,4 +1,5 @@
 // 2026 12강 아드레날린성 약리학 (1), 슬라이드 7–26쪽.
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // Case options deliberately mix receptor classes without adding a second defensible answer.
 const q=(id,group,stem,answer,distractors,note,page)=>({id,group,stem,answer,options:[answer,...distractors],note,page});
 export const ADR12_QUESTIONS=[
@@ -44,3 +45,24 @@ export const ADR12_MATCH=[
   ['selegiline','MAO-B 억제'],['entacapone','COMT 억제'],['tolcapone','COMT 억제'],
   ['reserpine','VMAT 소포 저장 억제'],['guanethidine','NE 소포 유리 억제']
 ].map(([drug,category])=>({drug,category}));
+
+// False assignments use a different mechanism, avoiding overlapping adrenergic effects.
+const ADR12_WRONG_ROLE={
+  'α1 직접 효현':'MAO-B 억제','α2 직접 효현':'COMT 억제','β1 직접 효현':'VMAT 소포 저장 억제',
+  'β2 단시간 효현':'NET 재흡수 억제','β2 장시간 효현':'카테콜아민 합성 억제','β2 자궁 이완':'VMAT 소포 저장 억제',
+  'β3 직접 효현':'MAO-B 억제','β1·β2 직접 효현':'α1 직접 효현',
+  'α·β 직접 효현 · β2 포함':'COMT 억제','α·β 직접 효현 · β2 미미':'MAO-B 억제',
+  '직접·간접 혼합 작용':'VMAT 소포 저장 억제','NE 유리 촉진':'COMT 억제','NE 유리·재흡수에 작용':'α1 직접 효현',
+  'NET 재흡수 억제':'VMAT 소포 저장 억제','카테콜아민 합성 억제':'VMAT 소포 저장 억제',
+  'MAO-B 억제':'COMT 억제','COMT 억제':'MAO-B 억제','VMAT 소포 저장 억제':'NET 재흡수 억제','NE 소포 유리 억제':'NE 유리 촉진'
+};
+const adr12StatementRows=ADR12_MATCH.map(d=>{
+  const original=ADR12_QUESTIONS.find(q=>q.answer.toLowerCase()===d.drug);
+  const page=original?.page||(['methoxamine'].includes(d.drug)?22:['imipramine'].includes(d.drug)?20:25);
+  return {id:d.drug,left:d.drug,right:d.category,wrong:ADR12_WRONG_ROLE[d.category],source:`12강 강의록 ${page}쪽`,note:`${d.drug}의 강의록 대표 작용은 ${d.category}이다.`};
+});
+ADR12_QUESTIONS.push(...adr12StatementRows.flatMap((row,index)=>['correct','incorrect'].map(polarity=>
+  createPairedQuestion({id:`judgment:${row.id}:${polarity}`,anchor:row.id,group:'mechanism'},row,adr12StatementRows,{
+    index,polarity,topic:'12강 강의록의 약물–대표 작용 연결'
+  })
+)));

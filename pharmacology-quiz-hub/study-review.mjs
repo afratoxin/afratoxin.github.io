@@ -1,7 +1,7 @@
 import {cleanStudyDrugLabels} from './drug-labels.mjs?v=20261016-abx1';
 import {studyStore,studyCountLabel,paintStudyProgress,shuffleStudyQuestion,gradeStudyAnswer} from './study-records.mjs?v=20261015-review1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
-import {createPkPlot} from './pk-quiz.mjs?v=20261015-review1';
+import {createPkPlot} from './pk-quiz.mjs?v=20261017-exam2';
 
 export function initStudyReview({navigate}){
   const $=id=>document.getElementById(id),symbols=['①','②','③','④','⑤','⑥','⑦','⑧','⑨'];

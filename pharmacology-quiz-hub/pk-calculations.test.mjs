@@ -22,10 +22,10 @@ function reference(q){
     }
   }
 }
-test('10개 주제의 모든 변형을 독립 계산하고 단일 정답·보기 다섯 개 유지',()=>{
+test('10개 주제의 수치형 21개를 독립 계산하고 단일 정답·보기 다섯 개 유지',()=>{
   assert.equal(PK_TOPICS.length,10);
   let checked=0;
-  for(const topic of PK_TOPICS)for(const variant of PK_VARIANTS[topic.id]){
+  for(const topic of PK_TOPICS)for(const variant of PK_VARIANTS[topic.id].filter(v=>!v.startsWith('judge-'))){
     const positions=new Set();
     for(let i=0;i<500;i++){
       const q=makePkQuestion(topic.id,random,variant);
@@ -41,6 +41,7 @@ test('10개 주제의 모든 변형을 독립 계산하고 단일 정답·보기
     }
     assert.equal(positions.size,5,topic.id+':'+variant);
   }
+  assert.equal(checked,10500);
   console.log('검증한 생성 문항',checked);
 });
 test('족보 주입속도와 강의록 신장애·축적 예시의 수치가 맞는다',()=>{

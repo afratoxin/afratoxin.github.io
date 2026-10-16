@@ -1,6 +1,6 @@
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 // 2026 8강 약물수송체: 현 강의록의 표, 사례, 마지막 두 연습문제.
-import {shuffle} from './cyp.mjs?v=20261007-1';
+import {shuffle} from './cyp.mjs?v=20261017-exam2';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const TRANSPORT_FACTS=[

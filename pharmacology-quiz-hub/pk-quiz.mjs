@@ -1,5 +1,5 @@
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {PK_TOPICS,PK_VARIANTS,makePkQuestion,pickPkTopic,shuffle} from './pk-calculations.mjs?v=20261015-4';
+import {PK_TOPICS,PK_VARIANTS,makePkQuestion,pickPkTopic,shuffle} from './pk-calculations.mjs?v=20261017-exam2';
 const SYMBOLS=['①','②','③','④','⑤'];
 const KEY='pharmacology-pk-calculations-v1';
 
@@ -81,8 +81,8 @@ export function initPkQuiz(){
     const fb=$('pkFeedback');fb.replaceChildren();fb.className=`feedback ${good?'ok':'bad'}`;
     const title=document.createElement('strong');title.textContent=`${good?'정답입니다.':'공식과 단위를 다시 확인하세요.'} 정답 ${SYMBOLS[current.answerIndex]} · ${current.choices[current.answerIndex].text}`;
     const steps=document.createElement('ol');steps.className='pk-solution';for(const text of current.steps){const li=document.createElement('li');li.textContent=text;steps.append(li);}
-    const details=document.createElement('details');details.className='pk-distractors';const summary=document.createElement('summary');summary.textContent='보기별 계산 실수 확인';details.append(summary);
-    const list=document.createElement('ul');current.choices.forEach((choice,j)=>{if(choice.correct)return;const row=document.createElement('li');row.textContent=`${SYMBOLS[j]} ${choice.text} · ${choice.reason}`;list.append(row);});details.append(list);
+    const details=document.createElement('details');details.className='pk-distractors';details.open=current.format==='judgment';const summary=document.createElement('summary');summary.textContent=current.format==='judgment'?'보기별 진위와 바른 관계 확인':'보기별 계산 실수 확인';details.append(summary);
+    const list=document.createElement('ul');current.choices.forEach((choice,j)=>{if(choice.correct&&current.format!=='judgment')return;const row=document.createElement('li');row.textContent=`${SYMBOLS[j]} ${choice.text} · ${choice.reason}`;list.append(row);});details.append(list);
     fb.append(title,steps,details);fb.hidden=false;$('pkNext').hidden=false;
   }
   $('pkNext').addEventListener('click',next);$('pkTopic').addEventListener('change',next);

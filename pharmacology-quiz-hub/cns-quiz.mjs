@@ -1,5 +1,6 @@
+import {CNS_DRUG_PRIORITY} from './cns-priority.mjs?v=20261017-exam2';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {CNS_AREAS,CNS_QUESTIONS,CNS_MATCH,pickCnsQuestion} from './cns-data.mjs?v=20261016-cnspairs1';
+import {CNS_AREAS,CNS_QUESTIONS,CNS_MATCH,cnsQuestionBank,pickCnsQuestion} from './cns-data.mjs?v=20261017-exam2';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initCnsQuiz(){
@@ -8,6 +9,7 @@ export function initCnsQuiz(){
   const state={seen:{},lastResult:{},recent:[],recentSubjects:[],lastGroup:null,lastSubject:null,total:0,right:0};
   try{const saved=JSON.parse(localStorage.getItem(storage)||'null');if(saved&&typeof saved==='object')Object.assign(state,saved);}catch{}
   state.seen||={};state.lastResult||={};if(!Array.isArray(state.recent))state.recent=[];if(!Array.isArray(state.recentSubjects))state.recentSubjects=[];
+  $('cnsFocus').value='core';$('cnsDiseasePriority').value='core';
   let tab='Quiz',current=null,answered=false,session=0;
   const boards={};
   const save=()=>{try{localStorage.setItem(storage,JSON.stringify(state));}catch{}};
@@ -17,7 +19,11 @@ export function initCnsQuiz(){
 
   }
   function next(){
-    current=pickCnsQuestion(state,$('cnsArea').value);answered=false;session++;
+    const area=$('cnsArea').value,focus=$('cnsFocus').value,basic=['structure','effect'].includes(area);
+    $('cnsFocus').disabled=basic;
+    const scope=cnsQuestionBank(area,focus);
+    $('cnsScopeSummary').textContent=(basic?'수용체 기초 분류':focus==='core'?'진한 글씨 62개 · 그중 구조식 29개 우선':focus==='structures'?'구조식이 제시된 약물 29개 집중':'전체 수용체·약물 범위')+` · 현재 ${scope.length}문항`;
+    current=pickCnsQuestion(state,area,Math.random,focus);answered=false;session++;
     state.recent=[current.id,...state.recent].slice(0,3);state.recentSubjects=[current.subject,...state.recentSubjects].slice(0,3);state.lastGroup=current.group;state.lastSubject=current.subject;save();
     $('cnsProgress').textContent=`${CNS_AREAS[current.area]} · 이번 회독 ${session}문제`;
     $('cnsPolarity').textContent=current.polarity==='incorrect'?'옳지 않은 연결 1개':'옳은 연결 1개';$('cnsPolarity').classList.toggle('cns-negative',current.polarity==='incorrect');
@@ -38,7 +44,8 @@ export function initCnsQuiz(){
   }
   function buildBoard(name){
     const kind=name.toLowerCase(),prefix='cns'+name,filter=$(prefix+'Filter').value;
-    const items=CNS_MATCH[kind].filter(x=>filter==='all'||x.family===filter).map(x=>({...x,note:x.why||x.note}));
+    const priority=kind==='disease'?$('cnsDiseasePriority').value:'all';
+    const items=CNS_MATCH[kind].filter(x=>(filter==='all'||x.family===filter)&&(priority==='all'||(priority==='structures'?CNS_DRUG_PRIORITY[x.id]?.structures.length:CNS_DRUG_PRIORITY[x.id]?.emphasized))).map(x=>({...x,note:x.why||x.note}));
     const host=$(prefix+'Board');host.replaceChildren();
     const board=node('div','match-board'),pool=node('div','match-column match-pool');pool.id=prefix+'Pool';
     const heading=node('h3','','카드 ');heading.append(node('span','pool-count'));pool.append(heading);
@@ -63,6 +70,7 @@ export function initCnsQuiz(){
     for(const n of ['Quiz','Structure','Effect','Disease']){$('cns'+n+'Panel').hidden=n!==tab;const b=$('cns'+n+'Tab');b.classList.toggle('active',n===tab);b.setAttribute('aria-selected',String(n===tab));}
     if(tab==='Quiz'){if(!current)next();}else if(!boards[name])buildBoard(name);else boards[name].open();
   });
+  $('cnsFocus').addEventListener('change',next);$('cnsDiseasePriority').addEventListener('change',()=>buildBoard('Disease'));
   $('cnsArea').addEventListener('change',next);$('cnsNext').addEventListener('click',next);$('cnsSkip').addEventListener('click',next);
   document.addEventListener('keydown',e=>{
     if($('cnsView').hidden||tab!=='Quiz'||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT|SUMMARY/.test(e.target.tagName))return;

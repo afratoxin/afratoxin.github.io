@@ -1,4 +1,4 @@
-import {pickSimpleTargetQuestion} from './simple-target-data.mjs?v=20261016-abx1';
+import {pickSimpleTargetQuestion} from './simple-target-data.mjs?v=20261017-exam2';
 import {studyStore,recordStudyResult,studyCountLabel,paintStudyProgress} from './study-records.mjs?v=20261015-review1';
 export function initSimpleTargetQuiz({scope,prefix,viewId}){
  const $=suffix=>document.getElementById(prefix+suffix),symbols=['①','②','③','④','⑤'],storage='pharmacology-'+scope+'-v1';
@@ -11,7 +11,7 @@ export function initSimpleTargetQuiz({scope,prefix,viewId}){
  function next(){
   current=pickSimpleTargetQuestion(scope,state,$('Scope').value);answered=false;state.draws++;
   state.recent=[current.id,...state.recent].slice(0,3);state.subjects=[current.subject,...state.subjects].slice(0,3);save();
-  $('Progress').textContent=`단순 매칭 · ${state.draws}번째 연습`;$('Exam').textContent=current.exam;$('Stem').textContent=current.stem;$('Source').textContent=current.source;
+  $('Progress').textContent=`${current.format==='judgment'?'연결 판별':'단순 매칭'} · ${state.draws}번째 연습`;$('Exam').textContent=current.exam;$('Stem').textContent=current.stem;$('Source').textContent=current.source;
   $('Feedback').hidden=true;$('Next').hidden=true;$('Choices').replaceChildren();
   current.choices.forEach((c,i)=>{const b=node('button');b.type='button';b.append(node('span','option-no',symbols[i]),node('span','',c.text));b.addEventListener('click',()=>answer(i));$('Choices').append(b);});stats();
  }
@@ -20,7 +20,9 @@ export function initSimpleTargetQuiz({scope,prefix,viewId}){
   state.seen[current.id]=(state.seen[current.id]||0)+1;save();recordStudyResult(scope,current,good);stats();
   [...$('Choices').children].forEach((b,i)=>{b.disabled=true;if(i===current.answerIndex)b.classList.add('correct');else if(i===index)b.classList.add('wrong');});
   const fb=$('Feedback');fb.className=`feedback ${good?'ok':'bad'}`;fb.replaceChildren(node('strong','',`${good?'정답입니다.':'다시 연결해 보세요.'} 정답 ${symbols[current.answerIndex]} · ${current.answer}`),node('p','',current.note));
-  const details=node('details','cns-choice-notes');details.append(node('summary','','강의 설명 더 보기'),node('p','',current.lectureNote),node('p','cns-source',current.source));fb.append(details);fb.hidden=false;$('Next').hidden=false;
+  const details=node('details','cns-choice-notes');
+  if(current.format==='judgment'){details.append(node('summary','','선지별 판정·바른 연결'));const list=node('ul');for(const c of current.choices){const text=current.details.find(d=>d.startsWith(c.text+':'));if(text)list.append(node('li','',text));}details.append(list);}else details.append(node('summary','','강의 설명 더 보기'));
+  details.append(node('p','',current.lectureNote),node('p','cns-source',current.source));fb.append(details);fb.hidden=false;$('Next').hidden=false;
  }
  $('Scope').addEventListener('change',next);$('Skip').addEventListener('click',next);$('Next').addEventListener('click',next);
  document.addEventListener('keydown',e=>{

@@ -1,4 +1,5 @@
 // Teaching scope: 2026 lecture 30 + supplied 78–79 summary. No dose selection.
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 const drugs=[];
 function add(id,name,section,key,target,overlap,note,toxicity,clue,pages,exam='',weight=1){drugs.push({id,name,section,key,target,overlap:[key,...overlap],note,toxicity,clue,source:`30강 강의록 PDF ${pages}쪽 · 78–79 요약표`,exam,core:Boolean(exam),weight});}
 add('vincristine','Vincristine','방추사·미세소관','vinca','미세소관 중합 억제',[], 'β-tubulin에 결합하여 microtubule polymerization을 억제합니다. Taxane의 탈중합 억제와 반대이며 M기 방추사 기능을 방해합니다.','신경독성 · 손발저림·근무력·심한 변비','Vinca · 신경독성이 주된 구별 단서','7–9','족보 반복: 신경독성·변비 사례',4);
@@ -74,6 +75,11 @@ support('abiraterone-prednisone','abiraterone','Abiraterone과 prednisone을 병
 support('abiraterone-case','abiraterone','전립선암 치료 중 CYP17 억제와 함께 고혈압·저칼륨혈증·부종이 발생했다. 해당 약물은?','Abiraterone',['Enzalutamide','Tamoxifen','Fulvestrant','Goserelin'],'Abiraterone의 mineralocorticoid excess 단서입니다. Enzalutamide는 AR 차단제이며 CYP17 억제제로 분류하지 않습니다.',35);
 item('pgp-resistance','support','mechanism','pgp','Vinca·taxane 치료에서 P-gp 발현 증가에 따른 변화로 옳은 것은?','약물 유출 증가 → 세포 내 농도 감소 → 교차내성',['약물 유입 증가 → 세포 내 농도 증가 → 감수성 증가','약물 유출 감소 → 세포 내 농도 감소 → 교차내성','약물 유입 감소 → 세포 내 농도 증가 → 감수성 증가','약물 유출 증가 → 세포 내 농도 증가 → 감수성 증가'],'P-gp(ABCB1/MDR1)는 여러 항암제를 세포 밖으로 배출합니다. 서로 다른 약물에도 동시 내성이 생길 수 있습니다.',11);
 item('combination-principle','support','mechanism','combination','항암제 병용요법의 강의록상 원칙으로 옳은 것은?','서로 다른 표적을 조합하고 용량 제한 독성의 중첩을 줄인다.',['같은 표적만 조합하고 공통 독성을 최대한 중첩시킨다.','병용하면 모든 독성이 사라지므로 용량 제한이 없어진다.','수송체·대사효소 상호작용은 병용 시 고려하지 않는다.','내성 세포가 존재하더라도 한 가지 기전만 반복한다.'],'종양의 이질성·동시 내성을 고려해 효과를 보완하고 주요 독성을 분산합니다. 병용이 독성을 없앤다는 뜻은 아닙니다.','3–4·36');
+// Explicit false mechanisms avoid the anthracycline Topo II/ROS/intercalation
+// overlap and avoid treating GnRH stimulation as direct receptor blockade.
+const statementWrongKeys={vinca:'taxane',taxane:'vinca',topo2:'topo1',topo1:'topo2',anthra:'aromatase',ros:'gr',crosslink:'asparagine',intercalation:'asparagine',asparagine:'gr',gr:'asparagine',cardioprotection:'ar',aromatase:'cyp17',serm:'aromatase',serd:'aromatase',gnrhagonist:'gnrhantagonist',gnrhantagonist:'gnrhagonist',ar:'cyp17',cyp17:'serd'};
+const statementRows=drugs.map(d=>({id:d.id,left:d.name,right:d.target,wrong:drugs.find(x=>x.key===statementWrongKeys[d.key]).target,source:d.source,note:d.note,family:d.key}));
+for(const [i,d] of drugs.entries())for(const polarity of ['correct','incorrect'])questions.push(createPairedQuestion({id:`statement-${polarity}-${d.id}`,kind:'target',group:`statement-${polarity}`,direction:`statement-${polarity}`,subject:d.id,key:d.key,core:d.core,weight:d.weight,exam:d.exam},statementRows[i],statementRows.filter(r=>r.id!==d.id),{polarity,index:i,topic:'항암제와 작용기전·보조 역할'}));
 export const ANTI_QUESTIONS=questions;
 export function pickAntiQuestion(state,scope='core',mode='mixed',random=Math.random){
   const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):mode;

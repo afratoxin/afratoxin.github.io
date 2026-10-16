@@ -1,3 +1,4 @@
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // Expected exam drills constrained to the 2026 lectures, not patient dosing advice.
 export const PK_TOPICS=[
   {id:'ke',title:'소실속도상수',formula:'kₑ = CL/V = (ln C₁ − ln C₂) / (t₂ − t₁)',unit:'h⁻¹',note:'CL(L/h)을 V(L)로 나누므로 단위는 h⁻¹입니다. 로그 소실기의 기울기는 −kₑ입니다.'},
@@ -12,12 +13,101 @@ export const PK_TOPICS=[
   {id:'renal',title:'신장애·용량 조정',formula:'CL새 = CL기존 × [(1 − fₑ) + fₑ × 신기능비]',unit:'L/h',note:'신장 CL만 신기능에 비례한다고 가정합니다. 동일 용량·F에서 AUC 비는 CL기존/CL새입니다.'}
 ];
 export const PK_VARIANTS={ke:['slope'],half:['halfLife','steady'],volume:['volume','ratio'],clearance:['iv','oral','apparent'],bio:['sameDose','differentDose'],auc:['trapezoids','tail','total'],infusion:['rate','concentration'],loading:['iv'],accumulation:['ratio','peak'],renal:['clearance','auc','rate']};
+for(const variants of Object.values(PK_VARIANTS))variants.push('judge-correct','judge-incorrect');
 const pick=(values,random)=>values[Math.floor(random()*values.length)];
 const numeric=(v,d=2)=>Number(v.toFixed(d));
 const n=v=>String(numeric(v,3));
 export function shuffle(values,random=Math.random){const out=[...values];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
 const candidate=(value,reason)=>({value,reason});
 const source=(pdf,slide)=>`약동학(2) PDF ${pdf}쪽 · 슬라이드 ${slide}쪽`;
+
+// These propositions use only the formulas and conditions already used by the
+// numeric drills above. Each topic compares five different quantities/relations.
+const PK_STATEMENTS={
+  ke:[
+    ['소실속도상수 kₑ','CL/V','2 × CL/V','CL을 V로 나눈 값이 kₑ입니다.'],
+    ['두 소실기 농도로 구한 kₑ','ln(C₁/C₂)/(t₂−t₁)','ln(C₂/C₁)/(t₂−t₁)','t₂>t₁, C₁>C₂인 소실기에서 양수인 로그 농도비를 시간 차이로 나눕니다.'],
+    ['ln C–시간 소실기 직선의 기울기','−kₑ','+kₑ','농도가 감소하므로 로그 소실기의 기울기는 음수입니다.'],
+    ['V가 일정할 때 CL을 두 배로 한 뒤 kₑ','기존의 두 배','기존의 절반','kₑ=CL/V이므로 V가 같으면 CL과 비례합니다.'],
+    ['CL이 일정할 때 V를 두 배로 한 뒤 kₑ','기존의 절반','기존의 두 배','kₑ=CL/V이므로 CL이 같으면 V와 반비례합니다.']
+  ],
+  half:[
+    ['반감기 t½','0.693/kₑ','2 × 0.693/kₑ','반감기는 ln 2를 소실속도상수로 나눕니다.'],
+    ['CL과 V로 나타낸 반감기','0.693 × V/CL','0.693 × CL/V','kₑ=CL/V를 반감기 식에 대입합니다.'],
+    ['CL 일정·V 두 배일 때 반감기','기존의 두 배','기존의 절반','반감기는 V에 비례합니다.'],
+    ['V 일정·CL 두 배일 때 반감기','기존의 절반','기존의 두 배','반감기는 CL에 반비례합니다.'],
+    ['부하용량 없이 일정 정맥주입할 때 약 4~5반감기 후 농도','항정상태에 거의 도달','항정상태 농도의 약 절반','반감기가 여러 번 경과해야 항정상태에 거의 도달합니다.']
+  ],
+  volume:[
+    ['정맥 일시주사 직후 외삽 농도 C₀를 이용한 분포용적 V','Dose/C₀','2 × Dose/C₀','정맥 일시주사·1구획 조건에서 V=Dose/C₀입니다.'],
+    ['청소율과 소실속도상수로 나타낸 V','CL/kₑ','kₑ/CL','kₑ=CL/V를 V에 대해 정리합니다.'],
+    ['정맥 일시주사 용량이 같고 C₀가 두 배일 때 V','기존의 절반','기존의 두 배','V=Dose/C₀이므로 동일 용량에서 V는 C₀와 반비례합니다.'],
+    ['V 일정·정맥 일시주사 용량 두 배일 때 C₀','기존의 두 배','기존과 동일','C₀=Dose/V이므로 같은 V에서 C₀는 용량과 비례합니다.'],
+    ['체중당 용량을 실제 투여량으로 환산','체중 × mg/kg 용량','체중을 곱하지 않은 mg/kg 수치 그대로','Dose/C₀에 넣는 Dose는 실제 투여량 mg입니다.']
+  ],
+  clearance:[
+    ['정맥투여 후 실제 청소율 CL','Dose/AUC₀–∞','2 × Dose/AUC₀–∞','정맥투여에서는 F=1입니다.'],
+    ['경구투여 후 F를 알 때 실제 CL','F × Dose/AUC₀–∞','Dose/(F × AUC₀–∞)','경구 AUC=F×Dose/CL을 정리하면 F를 분자에 곱합니다.'],
+    ['경구투여 후 겉보기 청소율 CL/F','Dose/AUC₀–∞','F × Dose/AUC₀–∞','Dose/AUC로 구하는 것은 CL/F이며 실제 CL과 구별합니다.'],
+    ['경구투여 후 F가 알려지지 않은 경우','Dose와 AUC만으로 실제 CL을 따로 확정할 수 없음','Dose/AUC가 항상 실제 CL과 같음','F를 모르면 CL과 F를 분리할 수 없고 CL/F만 구합니다.'],
+    ['정맥투여량 동일·CL 두 배일 때 AUC₀–∞','기존의 절반','기존의 두 배','IV AUC=Dose/CL이므로 AUC는 CL에 반비례합니다.']
+  ],
+  bio:[
+    ['CL이 같은 약물의 경구 생체이용률 F','(AUC경구/Dose경구)/(AUCIV/DoseIV)','(AUCIV/DoseIV)/(AUC경구/Dose경구)','투여량으로 보정한 경구 AUC를 IV AUC로 나눕니다.'],
+    ['CL과 투여량이 같은 경구·정맥 비교에서 F','AUC경구/AUCIV','AUCIV/AUC경구','같은 용량일 때만 용량 항이 약분됩니다.'],
+    ['CL 동일·경구와 정맥의 용량이 다를 때 비교','각 AUC를 해당 투여량으로 보정','용량을 무시하고 AUC 비만 사용','서로 다른 용량의 AUC를 직접 비교하면 F가 아닌 용량 효과가 섞입니다.'],
+    ['생체이용률 분율 0.5의 백분율','50%','0.5%','백분율은 분율에 100을 곱합니다.'],
+    ['CL·F 일정·경구 용량 두 배일 때 AUC','기존의 두 배','기존과 동일','경구 AUC=F×Dose/CL이므로 선형 조건에서 용량에 비례합니다.']
+  ],
+  auc:[
+    ['마지막 측정 이후 1차 소실을 가정한 AUC_last–∞','C_last/kₑ','0.693 × C_last/kₑ','외삽 꼬리 면적은 마지막 측정 농도를 kₑ로 나눈 값입니다.'],
+    ['관측 구간의 사다리꼴 면적','(Cᵢ+Cᵢ₊₁)/2 × Δt','(Cᵢ+Cᵢ₊₁) × Δt','두 끝 농도의 평균에 시간 간격을 곱합니다.'],
+    ['전체 AUC₀–∞','AUC₀–last + C_last/kₑ','AUC₀–last − C_last/kₑ','관측 면적과 마지막 측정 이후의 양수인 면적을 더합니다.'],
+    ['C_last 일정·kₑ 두 배일 때 외삽 꼬리 면적','기존의 절반','기존의 두 배','꼬리 면적은 kₑ와 반비례합니다.'],
+    ['kₑ 일정·C_last 두 배일 때 외삽 꼬리 면적','기존의 두 배','기존과 동일','꼬리 면적은 마지막 측정 농도에 비례합니다.']
+  ],
+  infusion:[
+    ['일정 정맥주입의 항정상태 농도 Cₛₛ','R₀/CL','2 × R₀/CL','항정상태 농도는 주입속도를 CL로 나눕니다.'],
+    ['목표 항정상태 농도를 위한 주입속도 R₀','Cₛₛ × CL','Cₛₛ × V','주입속도는 목표 농도와 청소율로 구하며 부하용량과 구별합니다.'],
+    ['CL 일정·주입속도 두 배일 때 Cₛₛ','기존의 두 배','기존의 절반','Cₛₛ는 같은 CL에서 R₀에 비례합니다.'],
+    ['주입속도 일정·CL 두 배일 때 Cₛₛ','기존의 절반','기존의 두 배','Cₛₛ는 같은 R₀에서 CL에 반비례합니다.'],
+    ['주입속도·CL 일정·V만 두 배일 때 Cₛₛ','기존과 동일','기존의 절반','V는 도달 속도에 영향을 주지만 Cₛₛ=R₀/CL의 항은 아닙니다.']
+  ],
+  loading:[
+    ['정맥 부하용량 LDIV','C목표 × V','2 × C목표 × V','처음 목표 농도를 만들 양은 목표 농도와 분포용적의 곱입니다.'],
+    ['V 일정·목표 농도 두 배일 때 정맥 부하용량','기존의 두 배','기존의 절반','LDIV는 목표 농도에 비례합니다.'],
+    ['목표 농도 일정·V 두 배일 때 정맥 부하용량','기존의 두 배','기존과 동일','LDIV는 V에 비례합니다.'],
+    ['목표 농도·V 일정·CL만 두 배일 때 정맥 부하용량','기존과 동일','기존의 두 배','LDIV=C목표×V이므로 이 조건에서 CL 변화는 LDIV를 바꾸지 않습니다.'],
+    ['목표 농도·CL 일정·V만 두 배일 때 유지 주입속도','기존과 동일','기존의 두 배','유지 R₀=C목표×CL과 부하 LDIV=C목표×V를 구별합니다.']
+  ],
+  accumulation:[
+    ['투여 간격 뒤 남는 분율 r에 대한 축적비 R','1/(1−r)','1/(1+r)','반복 투여의 축적비는 문제에 제공된 R=1/(1−r)을 사용합니다.'],
+    ['첫 투여 직후 C₀로 나타낸 항정상태 최고 농도','C₀ × R','C₀/R','반복 정맥 일시주사에서 항정상태 최고 농도는 C₀에 축적비를 곱합니다.'],
+    ['r=0.5일 때 축적비','2','0.5','1/(1−0.5)=2입니다.'],
+    ['0<r<1에서 r이 커질 때 축적비','증가','감소','다음 투여까지 남은 분율이 커지면 1−r이 작아져 축적비는 커집니다.'],
+    ['r 일정·첫 투여 직후 C₀ 두 배일 때 항정상태 최고 농도','기존의 두 배','기존과 동일','r이 같으면 R이 같으므로 Cmax,ss는 C₀에 비례합니다.']
+  ],
+  renal:[
+    ['신장 CL만 신기능비 g에 비례할 때 CL새/CL기존','(1−fₑ)+fₑ × g','g','비신장 몫 1−fₑ는 보존하고 신장 몫 fₑ에만 신기능비를 곱합니다.'],
+    ['CL새 식에서 유지되는 비신장 청소율 몫','CL기존 × (1−fₑ)','CL기존 × (1−fₑ) × g','이 모형에서는 비신장 청소율이 신기능에 따라 줄지 않습니다.'],
+    ['CL새 식에서 달라지는 신장 청소율 몫','CL기존 × fₑ × g','CL기존 × fₑ/g','신장 청소율만 신기능비 g에 비례합니다.'],
+    ['동일 용량·F일 때 AUC새/AUC기존','CL기존/CL새','CL새/CL기존','같은 용량과 F에서 AUC는 전신 청소율에 반비례합니다.'],
+    ['같은 목표 Cₛₛ의 유지 주입속도 R₀새/R₀기존','CL새/CL기존','CL기존/CL새','일정 정맥주입의 R₀=Cₛₛ×CL이므로 같은 목표에서는 CL 변화율을 그대로 적용합니다.']
+  ]
+};
+const PK_STATEMENT_SOURCES={ke:source(9,34),half:source(9,34)+' · '+source(19,44),volume:'약동학(1) PDF 21쪽 · 약동학(2) PDF 8·15쪽',clearance:source(7,32)+' · '+source(15,40),bio:source(6,31)+' · '+source(7,32),auc:source(13,38)+' · '+source(14,39),infusion:source(19,44),loading:source(20,45),accumulation:source(22,47),renal:'약동학(3) PDF 15쪽 · 슬라이드 61쪽'};
+
+function makePkStatement(definition,variant,random){
+  const topic=definition.id,polarity=variant==='judge-correct'?'correct':'incorrect';
+  const rows=PK_STATEMENTS[topic].map(([left,right,wrong,note],i)=>({id:`${topic}:relation-${i+1}`,left,right,wrong,note,source:PK_STATEMENT_SOURCES[topic]}));
+  const base={id:`${topic}:${variant}`,topic,variant,title:definition.title,formula:definition.formula,parameters:{}};
+  const anchorIndex=Math.floor(random()*rows.length);
+  const question=createPairedQuestion(base,rows[anchorIndex],rows,{polarity,index:anchorIndex,topic:definition.title});
+  const assumptions='강의의 선형·1구획·1차 소실 모형을 가정한다. 투여 경로·고정 변수·비교 조건은 각 보기에 명시한다.';
+  const extra=topic==='accumulation'?' 반복 투여는 동일 간격·동일 용량의 정맥 일시주사이며, 0<r<1이고 r은 다음 투여 직전 남은 분율이다.':topic==='renal'?' fₑ는 기존 총 CL 중 신장 청소율의 분율(0<fₑ<1), g는 새/기존 신기능비(0<g<1)이며, 신장 CL만 g에 비례하고 비신장 CL은 일정하다.':topic==='bio'||topic==='clearance'?' 경구 생체이용률은 0<F<1이고, 비교하는 같은 약물의 CL은 일정하다.':'';
+  const choices=shuffle(question.options.map((text,i)=>({text,correct:text===question.answer,reason:question.details[i]})),random);
+  return {...question,stem:`${assumptions}${extra}\n${question.stem}`,choices,answerIndex:choices.findIndex(c=>c.correct),steps:[assumptions+extra,`기준 관계: ${definition.formula}`,question.note]};
+}
 
 function finish(q,distractors,random){
   const text=value=>`${value.toFixed(q.digits)} ${q.unit}`;
@@ -41,6 +131,7 @@ export function makePkQuestion(topic,random=Math.random,selectedVariant){
   if(!definition)throw Error('알 수 없는 계산 주제: '+topic);
   const variant=selectedVariant||pick(PK_VARIANTS[topic],random);
   if(!PK_VARIANTS[topic].includes(variant))throw Error('알 수 없는 변형: '+variant);
+  if(variant.startsWith('judge-'))return makePkStatement(definition,variant,random);
   let q={id:`${topic}:${variant}`,topic,variant,title:definition.title,formula:definition.formula,digits:2,parameters:{},steps:[]},wrong=[];
   if(topic==='ke'){
     const halfLife=pick([2,4,6,8],random),halves=pick([2,3],random),c1=pick([16,32,64],random),c2=c1/2**halves,t1=pick([1,2,3],random),t2=t1+halfLife*halves;

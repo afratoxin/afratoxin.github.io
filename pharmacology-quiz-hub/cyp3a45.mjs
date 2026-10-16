@@ -1,4 +1,5 @@
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
+import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // 2026년 7강 약물대사, 강의록 54쪽: CYP3A4/5 substrates, inhibitors, inducers.
 export const CYP3A45_FACTS=[
   {id:'ritonavir',drug:'ritonavir',category:'inhibitor'},
@@ -37,16 +38,18 @@ export function shuffleDdi(items,random=Math.random){
 }
 
 export function makeDdiClassificationQuestion(fact,random=Math.random){
-  const distractors=shuffleDdi(CYP3A45_FACTS.filter(f=>f.category!==fact.category),random).slice(0,4);
-  const choices=shuffleDdi([fact,...distractors],random);
-  return {
-    id:`class:${fact.id}`,
-    kind:'classification',
-    fact,
-    stem:`다음 중 CYP3A4/5 ${CYP3A45_LABELS[fact.category]}에 해당하는 것은?`,
-    choices:choices.map(f=>({text:f.drug,fact:f,correct:f.id===fact.id})),
-    answerIndex:choices.findIndex(f=>f.id===fact.id)
-  };
+  const index=CYP3A45_FACTS.findIndex(f=>f.id===fact.id);
+  const rows=CYP3A45_FACTS.map(f=>({
+    id:f.id,left:`${f.drug} — 강의록 CYP3A4/5 표의 분류`,right:CYP3A45_LABELS[f.category],
+    wrong:CYP3A45_LABELS[f.category==='inhibitor'?'inducer':f.category==='inducer'?'inhibitor':'inducer'],
+    source:'7강 강의록 54쪽',note:`${f.drug}: CYP3A4/5 ${CYP3A45_LABELS[f.category]}`
+  }));
+  const q=createPairedQuestion({id:`class:${fact.id}`,kind:'classification',fact},rows[index],rows,{
+    index,polarity:index%2?'incorrect':'correct',topic:'강의록 CYP3A4/5 표의 약물–분류 연결'
+  });
+  const bundles=shuffleDdi(q.options.map((text,i)=>({text,pair:q.pairs[i],detail:q.details[i]})),random);
+  const choices=bundles.map(b=>({text:b.text,fact:CYP3A45_FACTS.find(f=>f.id===b.pair.entity),correct:b.text===q.answer}));
+  return {...q,choices,options:choices.map(c=>c.text),pairs:bundles.map(b=>b.pair),details:bundles.map(b=>b.detail),answerIndex:choices.findIndex(c=>c.correct)};
 }
 export function makeDdiCaseQuestion(fact,random=Math.random){
   const choices=shuffleDdi(fact.options.map(drug=>CYP3A45_FACTS.find(f=>f.drug===drug)),random);
@@ -77,7 +80,10 @@ export function makeDdiEffectQuestion(modifier,substrate,random=Math.random){
     kind:'effect',
     modifier,
     substrate,
-    stem:`${modifier.drug}와 ${substrate.drug}을 병용할 때 CYP3A4/5 상호작용으로 예상되는 변화는?`,
+    stem:`${modifier.drug}와 ${substrate.drug}을 병용할 때 CYP3A4/5 상호작용에 대한 설명 중 옳은 것은?`,
+    polarity:'correct',format:'judgment',
+    source:'7강 강의록 54쪽',
+    note:`${modifier.drug}은(는) CYP3A4/5 ${CYP3A45_LABELS[modifier.category]}이므로 ${substrate.drug} 대사는 ${correctPattern.metabolism}하고 노출은 ${correctPattern.exposure}한다.`,
     choices,
     answerIndex:choices.findIndex(choice=>choice.correct)
   };
@@ -162,7 +168,7 @@ export function initCyp3a45Quiz(){
     progress.seen[current.id]=(progress.seen[current.id]||0)+1;
     if(!good)progress.missed[current.id]=(progress.missed[current.id]||0)+1;
     save();renderStats();
-    recordStudyResult('ddi',current,good,{source:'7강 강의록 54쪽',note:current.kind==='classification'?(current.case?current.fact.note:current.fact.drug+' · '+CYP3A45_LABELS[current.fact.category]):current.modifier.drug+' · '+CYP3A45_LABELS[current.modifier.category]+' → '+current.substrate.drug+' 대사 '+(current.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소')});
+    recordStudyResult('ddi',current,good,{source:'7강 강의록 54쪽',note:current.note||current.fact?.note});
     [...$('cypDdiChoices').children].forEach((button,i)=>{
       button.disabled=true;
       if(i===current.answerIndex)button.classList.add('correct');
@@ -172,17 +178,17 @@ export function initCyp3a45Quiz(){
     const title=document.createElement('strong');title.textContent=good?'정답입니다.':'분류와 변화 방향을 다시 확인하세요.';
     const main=document.createElement('p');
     if(current.kind==='classification'){
-      main.textContent=current.case?`${current.fact.note} (강의록 54쪽)`:`${current.fact.drug}은(는) CYP3A4/5 ${CYP3A45_LABELS[current.fact.category]}입니다. (강의록 54쪽)`;
+      main.textContent=current.note||`${current.fact.note} (강의록 54쪽)`;
       const list=document.createElement('ul');list.className='ddi-explanations';
       current.choices.forEach((choice,i)=>{
         const li=document.createElement('li');
-        li.textContent=`${SYMBOLS[i]} ${choice.fact.drug} · ${CYP3A45_LABELS[choice.fact.category]}`;
+        li.textContent=`${SYMBOLS[i]} ${current.details?.[i]||`${choice.fact.drug} · ${CYP3A45_LABELS[choice.fact.category]}`}`;
         list.append(li);
       });
       feedback.append(title,main,list);
     }else{
       const inhibitor=current.modifier.category==='inhibitor';
-      main.textContent=`${current.modifier.drug}은(는) CYP3A4/5 ${CYP3A45_LABELS[current.modifier.category]}이므로 ${current.substrate.drug} 대사는 ${inhibitor?'감소':'증가'}하고 노출은 ${inhibitor?'증가':'감소'}합니다. (강의록 54쪽)`;
+      main.textContent=`${current.note} (강의록 54쪽)`;
       const cue=document.createElement('p');
       cue.textContent=inhibitor?'억제 → 기질 제거 감소 → 기질 AUC·노출 증가':'유도 → 기질 제거 증가 → 기질 AUC·노출 감소';
       feedback.append(title,main,cue);
