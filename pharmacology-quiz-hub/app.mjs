@@ -1,6 +1,6 @@
 import {initAdr13Table} from './adr13-table.mjs?v=20261015-adr13tab1';
 import {studyStore,recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261016-signal1';
+import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261016-simple1';
 import {initStudyReview} from './study-review.mjs?v=20261015-review1';
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
 import {initCypQuiz} from './cyp.mjs?v=20261015-review1';
@@ -15,11 +15,11 @@ import {buildMixedPool,nextMixedQuestion} from './autonomic-mixed.mjs?v=20261015
 import {initAutonomicQuiz} from './autonomic-quiz.mjs?v=20261015-adr13tab1';
 import {initPkQuiz} from './pk-quiz.mjs?v=20261015-review1';
 import {initCnsQuiz} from './cns-quiz.mjs?v=20261015-review1';
-import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261015-review1';
+import {initAnticancerQuiz} from './anticancer-quiz.mjs?v=20261016-simple1';
 import {syncStudyFolder} from './study-folder.mjs?v=20261016-signal1';
-import {initImmuneQuiz} from './immune-quiz.mjs?v=20261015-review1';
+import {initImmuneQuiz} from './immune-quiz.mjs?v=20261016-simple1';
 
-import {initSignalQuiz} from './signal31-quiz.mjs?v=20261016-signal1';
+import {initSignalQuiz} from './signal31-quiz.mjs?v=20261016-simple1';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

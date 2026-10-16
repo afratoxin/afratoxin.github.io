@@ -1,3 +1,4 @@
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261016-simple1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {IMM_DRUGS,IMM_SECTIONS,IMM_QUESTIONS,IMM_CORRECTIONS,pickImmQuestion} from './immune-data.mjs?v=20261015-imm1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
@@ -10,10 +11,10 @@ export function initImmuneQuiz(){
   const save=()=>{try{localStorage.setItem(storage,JSON.stringify(state));}catch{}};
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
   let current=null,answered=false,tab='Quiz',board=null;
+  const simple=initSimpleTargetQuiz({scope:'immune-simple',prefix:'immSimple',viewId:'immuneView'});
   function stats(){
     $('immStats').textContent=`정답 ${state.right}/${state.total} · 복습 ${Object.keys(state.seen).length}/${IMM_QUESTIONS.length}문항`;
-    const ids=new Set(IMM_QUESTIONS.map(q=>q.id)),done=Object.keys(state.lastResult).filter(id=>ids.has(id)),correct=done.filter(id=>state.lastResult[id]);
-    const entry=$('immEntry');if(entry){entry.style.setProperty('--correct-end',`${100*correct.length/ids.size}%`);entry.style.setProperty('--wrong-end',`${100*done.length/ids.size}%`);entry.setAttribute('aria-label',`28강 면역억제·면역조절 · ${done.length}/${ids.size}문항 복습`);}
+
   }
   function next(){
     current=pickImmQuestion(state,$('immScope').value,$('immMode').value);answered=false;state.draws++;
@@ -61,9 +62,9 @@ export function initImmuneQuiz(){
   }
   for(const item of IMM_CORRECTIONS){const p=node('p');p.append(node('strong','',item.title+' · '),node('span','',item.text+' '));const a=node('a','source-button','확인 근거');a.href=item.url;a.target='_blank';a.rel='noopener noreferrer';p.append(a);$('immCorrections').append(p);}
   $('immMatchFilter').addEventListener('change',buildBoard);$('immTableFilter').addEventListener('change',table);
-  for(const name of ['Quiz','Drag','Table'])$('imm'+name+'Tab').addEventListener('click',()=>{
-    tab=name;for(const n of ['Quiz','Drag','Table']){$('imm'+n+'Panel').hidden=n!==name;const b=$('imm'+n+'Tab');b.classList.toggle('active',n===name);b.setAttribute('aria-selected',String(n===name));}
-    if(name==='Quiz'){if(!current)next();}else if(name==='Drag'){if(!board)buildBoard();else board.open();}else table();
+  for(const name of ['Quiz','Simple','Drag','Table'])$('imm'+name+'Tab').addEventListener('click',()=>{
+    tab=name;for(const n of ['Quiz','Simple','Drag','Table']){$('imm'+n+'Panel').hidden=n!==name;const b=$('imm'+n+'Tab');b.classList.toggle('active',n===name);b.setAttribute('aria-selected',String(n===name));}
+    if(name==='Quiz'){if(!current)next();}else if(name==='Drag'){if(!board)buildBoard();else board.open();}else if(name==='Table')table();else simple.open();
   });
   for(const id of ['immScope','immMode'])$(id).addEventListener('change',next);
   $('immNext').addEventListener('click',next);$('immSkip').addEventListener('click',next);
@@ -72,5 +73,5 @@ export function initImmuneQuiz(){
     if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}
     if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}
   });
-  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(tab==='Drag'){if(!board)buildBoard();else board.open();}else table();}};
+  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(tab==='Drag'){if(!board)buildBoard();else board.open();}else if(tab==='Table')table();else simple.open();}};
 }

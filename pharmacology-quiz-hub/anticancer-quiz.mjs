@@ -1,3 +1,4 @@
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261016-simple1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {ANTI_SECTIONS,ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY,ANTI_NOTES,pickAntiQuestion} from './anticancer-data.mjs?v=20261015-anti1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
@@ -10,10 +11,10 @@ export function initAnticancerQuiz(){
   const save=()=>{try{localStorage.setItem(storage,JSON.stringify(state));}catch{}};
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
   let current=null,answered=false,tab='Quiz',board=null;
+  const simple=initSimpleTargetQuiz({scope:'anticancer-simple',prefix:'antiSimple',viewId:'anticancerView'});
   function stats(){
     $('antiStats').textContent=`정답 ${state.right}/${state.total} · 복습 ${Object.keys(state.seen).length}/${ANTI_QUESTIONS.length}문항`;
-    const ids=new Set(ANTI_QUESTIONS.map(q=>q.id)),done=Object.keys(state.lastResult).filter(id=>ids.has(id)),correct=done.filter(id=>state.lastResult[id]);
-    const entry=$('antiEntry');if(entry){entry.style.setProperty('--correct-end',`${100*correct.length/ids.size}%`);entry.style.setProperty('--wrong-end',`${100*done.length/ids.size}%`);entry.setAttribute('aria-label',`30강 항암제 · ${done.length}/${ids.size}문항 복습`);}
+
   }
   function next(){
     current=pickAntiQuestion(state,$('antiScope').value,$('antiMode').value);answered=false;state.draws++;
@@ -52,9 +53,9 @@ export function initAnticancerQuiz(){
   for(const section of ANTI_SECTIONS){const option=node('option','',section);option.value=section;$('antiMatchFilter').append(option);}
   for(const text of ANTI_NOTES)$('antiNotes').append(node('p','',text));
   for(const id of ['antiMatchFilter','antiMatchKind'])$(id).addEventListener('change',buildBoard);
-  for(const name of ['Quiz','Drag'])$('anti'+name+'Tab').addEventListener('click',()=>{
-    tab=name;for(const n of ['Quiz','Drag']){$('anti'+n+'Panel').hidden=n!==name;const b=$('anti'+n+'Tab');b.classList.toggle('active',n===name);b.setAttribute('aria-selected',String(n===name));}
-    if(name==='Quiz'){if(!current)next();}else if(!board)buildBoard();else board.open();
+  for(const name of ['Quiz','Simple','Drag'])$('anti'+name+'Tab').addEventListener('click',()=>{
+    tab=name;for(const n of ['Quiz','Simple','Drag']){$('anti'+n+'Panel').hidden=n!==name;const b=$('anti'+n+'Tab');b.classList.toggle('active',n===name);b.setAttribute('aria-selected',String(n===name));}
+    if(name==='Quiz'){if(!current)next();}else if(name==='Simple')simple.open();else if(!board)buildBoard();else board.open();
   });
   for(const id of ['antiScope','antiMode'])$(id).addEventListener('change',next);
   $('antiNext').addEventListener('click',next);$('antiSkip').addEventListener('click',next);
@@ -63,5 +64,5 @@ export function initAnticancerQuiz(){
     if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}
     if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}
   });
-  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(!board)buildBoard();else board.open();}};
+  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(tab==='Simple')simple.open();else if(!board)buildBoard();else board.open();}};
 }

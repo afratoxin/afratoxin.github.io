@@ -1,3 +1,4 @@
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261016-simple1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {SIGNAL_DRUGS,SIGNAL_SECTIONS,SIGNAL_QUESTIONS,SIGNAL_CORRECTIONS,pickSignalQuestion} from './signal31-data.mjs?v=20261016-signal1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
@@ -10,6 +11,7 @@ export function initSignalQuiz(){
   const save=()=>{try{localStorage.setItem(storage,JSON.stringify(state));}catch{}};
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
   let current=null,answered=false,tab='Quiz',board=null;
+  const simple=initSimpleTargetQuiz({scope:'signal-simple',prefix:'sigSimple',viewId:'signalView'});
   function stats(){
     $('signalStats').textContent=`정답 ${state.right}/${state.total} · 복습 ${Object.keys(state.seen).length}/${SIGNAL_QUESTIONS.length}문항`;
 
@@ -61,9 +63,9 @@ export function initSignalQuiz(){
   }
   for(const item of SIGNAL_CORRECTIONS){const p=node('p');p.append(node('strong','',item.title+' · '),node('span','',item.text+' '));if(item.url){const a=node('a','source-button','확인 근거');a.href=item.url;a.target='_blank';a.rel='noopener noreferrer';p.append(a);}$('sigCorrections').append(p);}
   $('sigMatchFilter').addEventListener('change',buildBoard);$('sigTableFilter').addEventListener('change',table);$('sigTableSearch').addEventListener('input',table);
-  for(const name of ['Quiz','Drag','Table'])$('sig'+name+'Tab').addEventListener('click',()=>{
-    tab=name;for(const n of ['Quiz','Drag','Table']){$('sig'+n+'Panel').hidden=n!==name;const b=$('sig'+n+'Tab');b.classList.toggle('active',n===name);b.setAttribute('aria-selected',String(n===name));}
-    if(name==='Quiz'){if(!current)next();}else if(name==='Drag'){if(!board)buildBoard();else board.open();}else table();
+  for(const name of ['Quiz','Simple','Drag','Table'])$('sig'+name+'Tab').addEventListener('click',()=>{
+    tab=name;for(const n of ['Quiz','Simple','Drag','Table']){$('sig'+n+'Panel').hidden=n!==name;const b=$('sig'+n+'Tab');b.classList.toggle('active',n===name);b.setAttribute('aria-selected',String(n===name));}
+    if(name==='Quiz'){if(!current)next();}else if(name==='Drag'){if(!board)buildBoard();else board.open();}else if(name==='Table')table();else simple.open();
   });
   for(const id of ['sigScope','sigMode'])$(id).addEventListener('change',next);
   $('sigNext').addEventListener('click',next);$('sigSkip').addEventListener('click',next);
@@ -72,5 +74,5 @@ export function initSignalQuiz(){
     if(/^[1-5]$/.test(e.key)){e.preventDefault();answer(Number(e.key)-1);}
     if(e.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();next();}
   });
-  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(tab==='Drag'){if(!board)buildBoard();else board.open();}else table();}};
+  stats();return {open(){if(tab==='Quiz'){if(!current)next();}else if(tab==='Drag'){if(!board)buildBoard();else board.open();}else if(tab==='Table')table();else simple.open();}};
 }
