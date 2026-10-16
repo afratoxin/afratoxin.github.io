@@ -1,6 +1,6 @@
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 // 2026 11강 콜린성 약리학 (2): 강의록 11–22쪽과 족보 임상 발문.
-import {shuffle} from './cyp.mjs?v=20261017-exam2';
+import {shuffle} from './cyp.mjs?v=20261017-clinical1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const CHOL11_FACTS=[

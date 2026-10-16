@@ -1,3 +1,4 @@
+import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
@@ -12,19 +13,18 @@ export function prepareQuestion(fact,random=Math.random){
   return {...fact,choices,answerIndex:choices.findIndex(x=>x.text===fact.answer)};
 }
 
-export function pickQuestion(bank,state,random=Math.random){
-  let pool=bank.filter(x=>!state.recent.includes(x.id)&&x.group!==state.lastGroup);
-  if(!pool.length)pool=bank.filter(x=>!state.recent.includes(x.id));
-  if(!pool.length)pool=bank;
-  // Keep clinical drug selection in every short practice run while still rotating all facts.
-  if((state.total||0)%3===0){const cases=pool.filter(x=>x.group==='clinical');if(cases.length)pool=cases;}
+export function pickQuestion(bank,state,random=Math.random,mode='mixed'){
+  const selected=clinicalQuestionPool(bank,state,mode,4);
+  let pool=selected.filter(x=>!state.recent.includes(x.id)&&x.group!==state.lastGroup);
+  if(!pool.length)pool=selected.filter(x=>!state.recent.includes(x.id));
+  if(!pool.length)pool=selected;
   const value=x=>(state.seen[x.id]||0)-0.3*(state.missed[x.id]||0);
   const min=Math.min(...pool.map(value));
   return prepareQuestion(shuffle(pool.filter(x=>value(x)===min),random)[0],random);
 }
 
 export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw,table=null}){
-  const $=id=>document.getElementById(id), state={seen:{},missed:{},recent:[],lastGroup:null,lastLecture:null,total:0,right:0};
+  const $=id=>document.getElementById(id), state={seen:{},missed:{},recent:[],lastGroup:null,lastLecture:null,total:0,right:0,draws:0};
   try{Object.assign(state,JSON.parse(localStorage.getItem(storageKey)||'{}'));}catch{}
   state.seen||={};state.missed||={};state.recent||=[];
   const save=()=>{try{localStorage.setItem(storageKey,JSON.stringify(state));}catch{}};
@@ -37,13 +37,13 @@ export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw
     $(prefix+'Stats').textContent=`정답 ${state.right}/${state.total} · 복기한 연결 ${Object.keys(state.seen).length}/${bank.length}`;
   }
   function next(){
-    current=draw?draw(state):pickQuestion(bank,state);
+    current=draw?draw(state):pickQuestion(bank,state,Math.random,$(prefix+'QuestionType')?.value||'mixed');
     state.recent=[current.id,...state.recent.filter(id=>id!==current.id)].slice(0,3);
     state.lastGroup=current.group;state.lastLecture=current.lecture??null;
-    answered=false;session++;save();stats();
+    answered=false;session++;state.draws++;save();stats();
     $(prefix+'Progress').textContent=`이번 회독 ${session}문제`;
     $(prefix+'Stem').textContent=current.stem;
-    if($(prefix+'Source'))$(prefix+'Source').textContent=current.lecture==='cross'?'9~13강 연결':`${current.lecture||prefix.replace('adr','')}강 · 강의록 ${current.page||'관련'}쪽`;
+    if($(prefix+'Source'))$(prefix+'Source').textContent=current.source||(current.lecture==='cross'?'9~13강 연결':`${current.lecture||prefix.replace('adr','')}강 · 강의록 ${current.page||'관련'}쪽`);
     $(prefix+'Feedback').hidden=true;$(prefix+'Next').hidden=true;
     const host=$(prefix+'Choices');host.replaceChildren();
     current.choices.forEach((item,i)=>{
@@ -65,9 +65,10 @@ export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw
     const heading=document.createElement('strong');heading.textContent=`${good?'정답입니다.':'다시 연결해 보세요.'} 정답 ${symbols[current.answerIndex]} · ${current.choices[current.answerIndex].text}`;
     const note=document.createElement('p');note.textContent=current.note;
     fb.append(heading,note);
-    if(current.details?.length){const list=document.createElement('ol');list.className='ans-explanations';for(const detail of current.details){const row=document.createElement('li');row.textContent=detail;list.append(row);}fb.append(list);}
+    if(current.details?.length){const list=document.createElement('ol');list.className='ans-explanations';const mapped=current.choices.map(c=>current.details.find(d=>d.startsWith(c.text+':')));for(const detail of mapped.every(Boolean)?mapped:current.details){const row=document.createElement('li');row.textContent=detail;list.append(row);}fb.append(list);}
     fb.hidden=false;$(prefix+'Next').hidden=false;
   }
+  $(prefix+'QuestionType')?.addEventListener('change',next);
   $(prefix+'Next').addEventListener('click',next);
   if(match||table){
     const tabs=[['Quiz','quiz'],...(match?[['Drag','drag']]:[]),...(table?[['Table','table']]:[])];

@@ -67,10 +67,10 @@ test('CYP3A4/5 exposure questions ask a complete statement judgment with the sam
 
 for(const [lecture,bank,match,oldCount]of [[12,ADR12_QUESTIONS,ADR12_MATCH,26],[13,ADR13_QUESTIONS,ADR13_MATCH,24]]){
   test(`${lecture}강 preserves original items and adds both polarities per named drug`,()=>{
-    assert.equal(bank.length,oldCount+match.length*2);
+    assert.equal(bank.filter(q=>q.format!=='clinical').length,oldCount+match.length*2);
     assert.equal(new Set(bank.map(q=>q.id)).size,bank.length);
     assert.ok(bank.slice(0,oldCount).every(q=>q.format!=='judgment'));
-    const variants=bank.slice(oldCount);assert.ok(variants.length/bank.length>=0.5);
+    const variants=bank.filter(q=>q.format==='judgment');assert.ok(variants.length/bank.length>=0.5);
     for(const d of match){
       const rows=variants.filter(q=>q.anchor===d.drug);assert.equal(rows.length,2);
       assert.deepEqual(rows.map(q=>q.polarity).sort(),['correct','incorrect']);
@@ -85,7 +85,7 @@ test('CYP feedback renders the actual five statement explanations including fals
     const doc=createTestDocument(readFileSync(new URL('./index.html',import.meta.url),'utf8'));
     globalThis.document=doc;globalThis.localStorage={getItem(){return null;},setItem(){}};Math.random=fixed;
     const el=id=>doc.getElementById(id);
-    initCypQuiz().open('cyp');
+    el('cypQuestionType').value='ordinary';initCypQuiz().open('cyp');
     const probe=makeCypQuestion(CYP_FACTS[3],'drug-to-enzyme',fixed);
     assert.equal(el('cypStem').textContent,probe.stem);
     el('cypChoices').children[0].click();

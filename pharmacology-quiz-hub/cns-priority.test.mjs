@@ -24,7 +24,7 @@ test('핵심 약물 중심에서는 회색 약물·수용체 기초 문항을 �
  const expected=CNS_QUESTIONS.filter(q=>['structure-drug','emphasized-drug'].includes(q.priority));assert.equal(Object.keys(state.seen).length,expected.length);
  for(let i=0;i<100;i++)assert.equal(pickCnsQuestion({},'all',random,'structures').priority,'structure-drug');
  assert.equal(pickCnsQuestion({},'structure',random,'core').area,'structure');assert.equal(pickCnsQuestion({},'effect',random,'core').area,'effect');
- for(const q of CNS_QUESTIONS.filter(q=>q.priority==='structure-drug')){
+ for(const q of CNS_QUESTIONS.filter(q=>q.priority==='structure-drug'&&q.format!=='clinical')){
   assert.ok(q.pairs.every(p=>priority.CNS_DRUG_PRIORITY[p.entity]?.structures.length),q.id+' structure-only options');
  }
 });

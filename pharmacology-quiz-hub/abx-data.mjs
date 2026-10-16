@@ -1,3 +1,5 @@
+import {ABX_CLINICAL} from './systems-clinical-data.mjs?v=20261017-clinical1';
+import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 import {DRUGS as coreDrugs,QUESTIONS as coreQuestions} from './abx-core-data.mjs?v=20261016-abx1';
 import {DRUGS as bacterialDrugs,QUESTIONS as bacterialQuestions} from './abx-bacterial-data.mjs?v=20261016-abx1';
@@ -44,10 +46,10 @@ function mechanismJudgments(kind){
  });
 }
 export const ABX_SIMPLE=[...simpleQuestions,...mechanismJudgments('simple')];
-export const ABX_QUESTIONS=[...coreQuestions,...bacterialQuestions,...extraQuestions,...mechanismJudgments('general')];
+export const ABX_QUESTIONS=[...coreQuestions,...bacterialQuestions,...extraQuestions,...mechanismJudgments('general'),...ABX_CLINICAL];
 export function shuffleAbx(values,random=Math.random){const out=[...values];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
-export function pickAbxQuestion(kind,state,lecture='all',range='core',random=Math.random){
- const full=kind==='simple'?ABX_SIMPLE:ABX_QUESTIONS,selected=full.filter(q=>lecture==='all'||q.lecture===Number(lecture)),focused=selected.filter(q=>range!=='core'||q.core),bank=focused.length?focused:selected,recent=state.recent||[],subjects=state.subjects||[];
+export function pickAbxQuestion(kind,state,lecture='all',range='core',random=Math.random,mode='mixed'){
+ const full=kind==='simple'?ABX_SIMPLE:ABX_QUESTIONS,selected=full.filter(q=>lecture==='all'||q.lecture===Number(lecture)),focused=selected.filter(q=>range!=='core'||q.core),bank=kind==='simple'?(focused.length?focused:selected):clinicalQuestionPool(focused.length?focused:selected,state,mode),recent=state.recent||[],subjects=state.subjects||[];
  if(!bank.length)return null;
  let pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject)&&(kind==='simple'||q.group!==state.lastGroup));
  if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject));if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id));if(!pool.length)pool=bank;

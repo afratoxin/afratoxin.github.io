@@ -60,7 +60,7 @@ test('항생제 판단형도 섞인 선지와 원문 메타데이터를 함께 �
   const bank=kind==='simple'?ABX_SIMPLE:ABX_QUESTIONS;
   const target=bank.find(q=>q.format==='judgment'&&q.polarity==='incorrect');
   const seen=Object.fromEntries(bank.map(q=>[q.id,q.id===target.id?0:100]));
-  const rendered=pickAbxQuestion(kind,{seen},'all','all',()=>0.5);
+  const rendered=pickAbxQuestion(kind,{seen},'all','all',()=>0.5,'ordinary');
   assert.equal(rendered.id,target.id);assert.deepEqual(rendered.pairs,target.pairs);
   assert.equal(rendered.choices[rendered.answerIndex].text,rendered.answer);
  }

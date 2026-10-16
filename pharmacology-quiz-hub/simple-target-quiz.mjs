@@ -1,4 +1,4 @@
-import {pickSimpleTargetQuestion} from './simple-target-data.mjs?v=20261017-exam2';
+import {pickSimpleTargetQuestion} from './simple-target-data.mjs?v=20261017-clinical1';
 import {studyStore,recordStudyResult,studyCountLabel,paintStudyProgress} from './study-records.mjs?v=20261015-review1';
 export function initSimpleTargetQuiz({scope,prefix,viewId}){
  const $=suffix=>document.getElementById(prefix+suffix),symbols=['①','②','③','④','⑤'],storage='pharmacology-'+scope+'-v1';

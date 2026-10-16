@@ -1,3 +1,4 @@
+import {CNS_QUESTIONS} from './cns-data.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createStudyStore,normalizeStudyQuestion} from './study-records.mjs';
 const catalog=await import('./study-catalog.mjs').catch(()=>({}));
@@ -21,6 +22,6 @@ test('중추신경계의 기존 오답은 같은 ID의 개편 문항으로 표�
  const cns=s.definitions.get('cns'),old={id:'structure-gabaa',stem:'기존 단순 발문',choices:['A','B','C','D','E'],answerIndex:0,note:'기존 해설'};
  s.record('cns',old,false);const saved=s.wrong('cns')[0].question,revised=cns.reviewQuestion(saved);
  assert.equal(revised.id,old.id);assert.match(revised.stem,/연결.*옳/);assert.equal(revised.choices.length,5);assert.ok(revised.choices.every(c=>c.includes(' — ')));assert.equal(revised.answers.length,1);
- assert.equal(s.counts('cns').wrong,1);assert.equal(s.counts('cns').total,300);assert.equal(s.wrong('cns')[0].question.stem,old.stem);
+ assert.equal(s.counts('cns').wrong,1);assert.equal(s.counts('cns').total,CNS_QUESTIONS.length);assert.equal(s.wrong('cns')[0].question.stem,old.stem);
  for(const d of s.definitions.values())if(d.id!=='cns')assert.equal(d.reviewQuestion,undefined,d.id);
 });

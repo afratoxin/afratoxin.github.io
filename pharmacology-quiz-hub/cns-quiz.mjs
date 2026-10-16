@@ -1,12 +1,12 @@
 import {CNS_DRUG_PRIORITY} from './cns-priority.mjs?v=20261017-exam2';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {CNS_AREAS,CNS_QUESTIONS,CNS_MATCH,cnsQuestionBank,pickCnsQuestion} from './cns-data.mjs?v=20261017-exam2';
+import {CNS_AREAS,CNS_QUESTIONS,CNS_MATCH,cnsQuestionBank,pickCnsQuestion} from './cns-data.mjs?v=20261017-clinical1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initCnsQuiz(){
   const $=id=>document.getElementById(id),symbols=['①','②','③','④','⑤'];
   const storage='pharmacology-cns-14-15-v1';
-  const state={seen:{},lastResult:{},recent:[],recentSubjects:[],lastGroup:null,lastSubject:null,total:0,right:0};
+  const state={seen:{},lastResult:{},recent:[],recentSubjects:[],lastGroup:null,lastSubject:null,total:0,right:0,draws:0};
   try{const saved=JSON.parse(localStorage.getItem(storage)||'null');if(saved&&typeof saved==='object')Object.assign(state,saved);}catch{}
   state.seen||={};state.lastResult||={};if(!Array.isArray(state.recent))state.recent=[];if(!Array.isArray(state.recentSubjects))state.recentSubjects=[];
   $('cnsFocus').value='core';$('cnsDiseasePriority').value='core';
@@ -23,10 +23,10 @@ export function initCnsQuiz(){
     $('cnsFocus').disabled=basic;
     const scope=cnsQuestionBank(area,focus);
     $('cnsScopeSummary').textContent=(basic?'수용체 기초 분류':focus==='core'?'진한 글씨 62개 · 그중 구조식 29개 우선':focus==='structures'?'구조식이 제시된 약물 29개 집중':'전체 수용체·약물 범위')+` · 현재 ${scope.length}문항`;
-    current=pickCnsQuestion(state,area,Math.random,focus);answered=false;session++;
+    current=pickCnsQuestion(state,area,Math.random,focus);answered=false;session++;state.draws++;
     state.recent=[current.id,...state.recent].slice(0,3);state.recentSubjects=[current.subject,...state.recentSubjects].slice(0,3);state.lastGroup=current.group;state.lastSubject=current.subject;save();
     $('cnsProgress').textContent=`${CNS_AREAS[current.area]} · 이번 회독 ${session}문제`;
-    $('cnsPolarity').textContent=current.polarity==='incorrect'?'옳지 않은 연결 1개':'옳은 연결 1개';$('cnsPolarity').classList.toggle('cns-negative',current.polarity==='incorrect');
+    $('cnsPolarity').textContent=current.format==='clinical'?'임상 상황 · 약물 선택':current.polarity==='incorrect'?'옳지 않은 연결 1개':'옳은 연결 1개';$('cnsPolarity').classList.toggle('cns-negative',current.polarity==='incorrect');
     $('cnsStem').textContent=current.stem;$('cnsSource').textContent=current.source;
     $('cnsFeedback').hidden=true;$('cnsNext').hidden=true;
     const host=$('cnsChoices');host.replaceChildren();

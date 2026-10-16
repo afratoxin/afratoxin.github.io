@@ -1,3 +1,4 @@
+import {ADR13_CLINICAL} from './systems-clinical-data.mjs?v=20261017-clinical1';
 // 2026 13강 아드레날린성 약리학 (2), 슬라이드 11–23쪽.
 import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 const q=(id,group,stem,answer,distractors,note,page)=>({id,group,stem,answer,options:[answer,...distractors],note,page});
@@ -54,3 +55,5 @@ ADR13_QUESTIONS.push(...adr13StatementRows.flatMap((row,index)=>['correct','inco
     index,polarity,topic:'13강 강의록의 약물–대표 작용 연결'
   })
 )));
+
+ADR13_QUESTIONS.push(...ADR13_CLINICAL);

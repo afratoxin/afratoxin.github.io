@@ -1,11 +1,12 @@
+import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 import {ANS_FACTS,ANS_CASES,makeAnsQuestion,makeAnsSpecialQuestion} from './ans9.mjs?v=20261015-review1';
-import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,makeCholQuestion,makeCholSpecialQuestion} from './chol10.mjs?v=20261017-exam2';
-import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261017-exam2';
-import {ADR12_QUESTIONS} from './adr12.mjs?v=20261017-exam2';
-import {ADR13_QUESTIONS} from './adr13.mjs?v=20261017-exam2';
-import {shuffle,prepareQuestion} from './autonomic-quiz.mjs?v=20261015-adr13tab1';
+import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,makeCholQuestion,makeCholSpecialQuestion} from './chol10.mjs?v=20261017-clinical1';
+import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261017-clinical1';
+import {ADR12_QUESTIONS} from './adr12.mjs?v=20261017-clinical1';
+import {ADR13_QUESTIONS} from './adr13.mjs?v=20261017-clinical1';
+import {shuffle,prepareQuestion} from './autonomic-quiz.mjs?v=20261017-clinical1';
 
-const q=(id,stem,answer,distractors,note)=>({id,group:'cross',lecture:'cross',stem,answer,options:[answer,...distractors],note});
+const q=(id,stem,answer,distractors,note)=>({id,group:'cross',lecture:'cross',stem,answer,options:[answer,...distractors],note,format:'clinical'});
 export const MIXED_QUESTIONS=[
   q('oab-beta3','과민성 방광 환자에서 배뇨근을 이완시키되 β3 수용체를 직접 자극하는 약물은?','Mirabegron',['Oxybutynin','Bethanechol','Pilocarpine','Prazosin'],'Mirabegron(12강)은 β3 효현제다. Oxybutynin(11강)은 항무스카린제이고 bethanechol(10강)은 배뇨근을 수축시킨다.'),
   q('oab-antimuscarinic','과민성 방광에서 무스카린 수용체를 차단해 배뇨근을 이완시키는 약물은?','Oxybutynin',['Mirabegron','Bethanechol','Pilocarpine','Phenylephrine'],'Oxybutynin(11강)은 항무스카린제다. Mirabegron(12강)도 배뇨근을 이완하지만 β3 효현제이며 bethanechol(10강)은 반대 방향으로 작용한다.'),
@@ -24,11 +25,11 @@ export const MIXED_QUESTIONS=[
 ];
 
 function fromLegacy(lecture,fact,build){
-  return {id:`${lecture}:${fact.id}`,lecture,group:`${lecture}:${fact.group}`,render:seen=>{
+  return {id:`${lecture}:${fact.id}`,lecture,format:fact.format||(fact.id.startsWith('case-')?'clinical':undefined),group:`${lecture}:${fact.group}`,render:seen=>{
     const question=build(fact,seen%2===0);
     const entries=question.choices||question.answers;
     const details=question.special?[]:entries.map((x,i)=>`${i+1}. ${x.fact.note} ${x.text===x.fact.correct?'':'바른 설명: '+x.fact.correct}`);
-    return {stem:question.stem,choices:entries.map(x=>({text:x.text})),answerIndex:question.answerIndex,note:question.special?fact.note:`핵심: ${fact.note} (강의록 ${fact.page}쪽)`,details,page:fact.page};
+    return {format:fact.format||(fact.id.startsWith('case-')?'clinical':undefined),stem:question.stem,choices:entries.map(x=>({text:x.text})),answerIndex:question.answerIndex,note:question.special?fact.note:`핵심: ${fact.note} (강의록 ${fact.page}쪽)`,details,page:fact.page};
   }};
 }
 
@@ -40,8 +41,8 @@ export function buildMixedPool(){
   for(const f of [...CHOL_SPECIALS,...CHOL_CASES])out.push(fromLegacy(10,f,x=>makeCholSpecialQuestion(x)));
   for(const f of CHOL11_FACTS)out.push(fromLegacy(11,f,(x,correct)=>makeChol11Question(x,correct)));
   for(const f of [...CHOL11_SPECIALS,...CHOL11_CASES])out.push(fromLegacy(11,f,x=>makeChol11Special(x)));
-  for(const [lecture,bank] of [[12,ADR12_QUESTIONS],[13,ADR13_QUESTIONS]])for(const fact of bank){out.push({id:`${lecture}:${fact.id}`,lecture,group:`${lecture}:${fact.group}`,render:()=>prepareQuestion(fact)});}
-  for(const fact of MIXED_QUESTIONS)out.push({id:`cross:${fact.id}`,lecture:'cross',group:'cross',render:()=>prepareQuestion(fact)});
+  for(const [lecture,bank] of [[12,ADR12_QUESTIONS],[13,ADR13_QUESTIONS]])for(const fact of bank){out.push({id:`${lecture}:${fact.id}`,lecture,format:fact.format,group:`${lecture}:${fact.group}`,render:()=>prepareQuestion(fact)});}
+  for(const fact of MIXED_QUESTIONS)out.push({id:`cross:${fact.id}`,lecture:'cross',format:'clinical',group:'cross',render:()=>prepareQuestion(fact)});
   return out;
 }
 
@@ -54,6 +55,7 @@ export function nextMixedQuestion(pool,state,random=Math.random){
   let candidates=pool.filter(x=>x.lecture===lecture&&!state.recent.includes(x.id)&&x.group!==state.lastGroup);
   if(!candidates.length)candidates=pool.filter(x=>x.lecture===lecture&&!state.recent.includes(x.id));
   if(!candidates.length)candidates=pool.filter(x=>x.lecture===lecture);
+  candidates=clinicalQuestionPool(candidates,state,'mixed',4);
   const score=x=>(state.seen[x.id]||0)-0.3*(state.missed?.[x.id]||0);
   const low=Math.min(...candidates.map(score));
   const fact=shuffle(candidates.filter(x=>score(x)===low),random)[0];

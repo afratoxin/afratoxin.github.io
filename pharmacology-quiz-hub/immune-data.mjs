@@ -1,3 +1,5 @@
+import {IMM_CLINICAL} from './immune-cancer-clinical-data.mjs?v=20261017-clinical1';
+import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 // Source: 2026 lecture 28, supplied summary images, and past exams (PDF 67–68).
 import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // Each target key describes the relationship actually tested, not every action of a drug.
@@ -105,10 +107,11 @@ const statementWrongKeys={calcineurin:'mtor',mtor:'calcineurin',jak:'cd20',gr:'c
 const statementLabel=d=>d.key.startsWith('hpv')?`예방대상 HPV 유형 전체 목록: ${d.target}`:d.target;
 const statementRows=rows.map(d=>({id:d.id,left:d.name,right:statementLabel(d),wrong:statementLabel(rows.find(x=>x.key===statementWrongKeys[d.key])),source:d.source,note:d.note,family:d.key}));
 for(const [i,d] of rows.entries())for(const polarity of ['correct','incorrect'])questions.push(createPairedQuestion({id:`statement-${polarity}-${d.id}`,kind:'target',group:`statement-${polarity}`,direction:`statement-${polarity}`,subject:d.id,key:d.key,core:d.core,weight:d.weight,exam:d.exam},statementRows[i],statementRows.filter(r=>r.id!==d.id),{polarity,index:i,topic:'면역약리 약물·제제와 표적·작용'}));
+questions.push(...IMM_CLINICAL);
 export const IMM_QUESTIONS=questions;
 export function pickImmQuestion(state,scope='core',mode='mixed',random=Math.random){
-  const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):mode;
-  const bank=questions.filter(q=>(scope!=='core'||q.core)&&q.kind===kind);
+  const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):(mode==='clinical'?'target':mode);
+  const bank=clinicalQuestionPool(questions.filter(q=>(scope!=='core'||q.core)&&q.kind===kind),state,mode==='mixed'?'mixed':mode==='clinical'?'clinical':'ordinary',5,1);
   const recent=state.recent||[],subjects=state.subjects||[];
   let pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject)&&q.group!==state.lastGroup);
   if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject));

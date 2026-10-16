@@ -13,7 +13,7 @@ test('수용체 예외와 아형을 독립된 근거표대로 분류한다',()=>
   assert.ok(!api.CNS_MATCH.structure.some(x=>x.id==='nmda-glycine'),'결합부위는 별개의 수용체로 분류하지 않습니다');
 });
 
-test('네 영역의 모든 문항에 다섯 개의 서로 다른 선지와 한 정답이 있다',()=>{
+test('임상형을 포함한 다섯 영역의 모든 문항에 다섯 개의 서로 다른 선지와 한 정답이 있다',()=>{
   assert.ok(api.CNS_QUESTIONS?.length>=100,'전체 범위를 회독할 문항이 필요합니다');
   assert.equal(new Set(api.CNS_QUESTIONS.map(x=>x.id)).size,api.CNS_QUESTIONS.length);
   for(const q of api.CNS_QUESTIONS){
@@ -27,7 +27,7 @@ test('네 영역의 모든 문항에 다섯 개의 서로 다른 선지와 한 �
       assert.equal(q.pairs.filter(p=>p.valid===(q.polarity==='correct')).length,1,q.id);
     }
   }
-  assert.deepEqual([...new Set(api.CNS_QUESTIONS.map(x=>x.area))].sort(),['disease','effect','features','structure']);
+  assert.deepEqual([...new Set(api.CNS_QUESTIONS.map(x=>x.area))].sort(),['clinical','disease','effect','features','structure']);
 });
 
 test('1,000문제 순환에서 영역 선택·중복 억제·정답 위치를 유지한다',()=>{
@@ -42,7 +42,7 @@ test('1,000문제 순환에서 영역 선택·중복 억제·정답 위치를 �
     state.seen[q.id]=(state.seen[q.id]||0)+1;state.recent=[q.id,...state.recent].slice(0,3);state.recentSubjects=[q.subject,...state.recentSubjects].slice(0,3);state.lastGroup=q.group;
   }
   assert.equal(Object.keys(state.seen).length,api.CNS_QUESTIONS.length);
-  const counts=Object.values(state.seen);assert.ok(Math.max(...counts)-Math.min(...counts)<=2);
+  for(const clinical of [true,false]){const counts=api.CNS_QUESTIONS.filter(q=>(q.format==='clinical')===clinical).map(q=>state.seen[q.id]);assert.ok(Math.max(...counts)-Math.min(...counts)<=2);}
   for(const area of ['structure','effect','disease','features'])assert.equal(api.pickCnsQuestion(state,area).area,area);
 });
 

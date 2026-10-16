@@ -1,6 +1,7 @@
+import {TX_CLINICAL} from './systems-clinical-data.mjs?v=20261017-clinical1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 // 2026 8강 약물수송체: 현 강의록의 표, 사례, 마지막 두 연습문제.
-import {shuffle} from './cyp.mjs?v=20261017-exam2';
+import {shuffle} from './cyp.mjs?v=20261017-clinical1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 const f=(id,group,correct,incorrect,note,page)=>({id,group,correct,incorrect,note,page});
 export const TRANSPORT_FACTS=[
@@ -67,6 +68,7 @@ export const TRANSPORT_CASES=[
     options:['Probenecid','Pyrimethamine','Amiodarone','Tariquidar','Cyclosporine'],
     note:'Probenecid는 OAT1·OAT3 억제제다. Pyrimethamine은 MATE, amiodarone·tariquidar는 P-gp, cyclosporine은 BCRP·OATP1B1 억제와 연결된다. (강의록 23–24쪽)'}
 ];
+TRANSPORT_CASES.push(...TX_CLINICAL);
 export const AE_CASES=[
   {id:'ae-lecture',auc:2.15,cl:0.39},
   {id:'ae-a',auc:1.5,cl:0.4},
@@ -97,7 +99,7 @@ export function makeTransportQuestion(fact,targetCorrect,random=Math.random){
 }
 export function makeTransportSpecial(fact,random=Math.random){
   const choices=shuffle(fact.options.map(text=>({text,isAnswer:text===fact.answer})),random);
-  return {stem:fact.stem,choices,answerIndex:choices.findIndex(x=>x.isAnswer),fact,special:true};
+  return {...fact,stem:fact.stem,choices,answerIndex:choices.findIndex(x=>x.isAnswer),fact,special:true};
 }
 export function makeAeQuestion(fact,random=Math.random){
   const val=(n)=>`${Number(n.toFixed(2))}배`;
@@ -117,9 +119,13 @@ export function initTransportQuiz(){
   function stats(){$('txStats').textContent=`정답 ${state.right}/${state.total} · 복기한 연결 ${Object.keys(state.seen).length}/${totalFacts}`;}
   function next(){
     const all=[...TRANSPORT_FACTS,...TRANSPORT_SPECIALS,...TRANSPORT_CASES,...AE_CASES.map(c=>({...c,group:'calculation'}))];
-    let pool=all.filter(f=>!(state.recent||[]).includes(f.id)&&f.group!==state.lastGroup);
-    if(!pool.length)pool=all.filter(f=>!(state.recent||[]).includes(f.id));
-    if(session%4===0){const short=pool.filter(f=>TRANSPORT_CASES.includes(f)||f.id==='pick-inhibitor');if(short.length)pool=short;}
+    const mode=$('txQuestionType')?.value||'mixed';
+    const selected=mode==='clinical'?all.filter(f=>f.format==='clinical'):mode==='ordinary'?all.filter(f=>f.format!=='clinical'):all;
+    let pool=selected.filter(f=>!(state.recent||[]).includes(f.id)&&f.group!==state.lastGroup);
+    if(!pool.length)pool=selected.filter(f=>!(state.recent||[]).includes(f.id));
+    if(!pool.length)pool=selected.filter(f=>f.id!==(state.recent||[])[0]);
+    if(!pool.length)pool=selected;
+    if(mode==='mixed'&&session%4===0){const short=pool.filter(f=>TRANSPORT_CASES.includes(f)||f.id==='pick-inhibitor');if(short.length)pool=short;}
     const weight=f=>(state.seen[f.id]||0)-0.3*(state.missed[f.id]||0);
     const min=Math.min(...pool.map(weight));const fact=shuffle(pool.filter(f=>weight(f)===min))[0];
     const target=!state.lastTarget;state.lastTarget=target;state.lastGroup=fact.group;
@@ -138,12 +144,16 @@ export function initTransportQuiz(){
     const fb=$('txFeedback');fb.className=`feedback ${good?'ok':'bad'}`;fb.replaceChildren();
     const heading=document.createElement('strong');heading.textContent=`${good?'정답입니다.':'바뀐 부분을 확인하세요.'} 정답 ${SYMBOLS[current.answerIndex]}`;
     const list=document.createElement('ol');list.className='ans-explanations';
-    if(current.special){const row=document.createElement('li');row.textContent=`${f.answer} · ${f.note}`;list.append(row);}
+    if(current.format==='clinical'){for(const choice of current.choices){const row=document.createElement('li');row.textContent=current.details.find(d=>d.startsWith(choice.text+':'));list.append(row);}}
+    else if(current.special){const row=document.createElement('li');row.textContent=`${f.answer} · ${f.note}`;list.append(row);}
     else current.choices.forEach((item,j)=>{const row=document.createElement('li');row.textContent=`${SYMBOLS[j]} ${item.text===item.fact.correct?'옳음':'틀림'} · ${item.fact.note}${item.text!==item.fact.correct?' 바른 설명: '+item.fact.correct:''} (강의록 ${item.fact.page}쪽)`;list.append(row);});
-    fb.append(heading,list);fb.hidden=false;$('txNext').hidden=false;
+    fb.append(heading,list);
+    if(current.format==='clinical'){const note=document.createElement('p');note.textContent=`${f.note} (${f.source})`;fb.append(note);}
+    fb.hidden=false;$('txNext').hidden=false;
   }
   function buildTable(){const body=$('txTableBody');for(const [target,drug,effect,page] of TARGET_TABLE){const row=document.createElement('tr');for(const value of [target,drug,effect,`${page}쪽`]){const cell=document.createElement('td');cell.textContent=value;row.append(cell);}body.append(row);}}
   const match=createMatchBoard({poolId:'txPool',cardsId:'txCards',zonesId:'txZones',statusId:'txDragStatus',checkId:'txCheck',resetId:'txReset',items:TRANSPORT_DRUGS,categoryOf:x=>x.category,keyOf:x=>x.drug,labelOf:x=>x.drug,onGrade:()=>{state.boards++;save();}});
+  $('txQuestionType')?.addEventListener('change',next);
   $('txNext').addEventListener('click',next);
   for(const [id,value] of [['txQuizTab','quiz'],['txDragTab','drag'],['txTableTab','table']])$(id).addEventListener('click',()=>{
     tab=value;for(const panel of ['quiz','drag','table'])$('tx'+panel[0].toUpperCase()+panel.slice(1)+'Panel').hidden=tab!==panel;

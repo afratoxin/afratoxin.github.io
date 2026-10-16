@@ -1,3 +1,5 @@
+import {SIGNAL_CLINICAL} from './immune-cancer-clinical-data.mjs?v=20261017-clinical1';
+import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 // Scope: 2026 lecture 31; the supplied summary is cross-checked against the lecture.
 import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 const rows=[];
@@ -86,9 +88,10 @@ support('ligand-path','mechanism','bevacizumab','Bevacizumab에 의한 혈관신
 const statementWrongTargets={tretinoin:'HDAC',cetuximab:'CD20',panitumumab:'CD52',gefitinib:'VEGF-A',erlotinib:'PD-1',lapatinib:'CD33',afatinib:'CD30',trastuzumab:'EGFR',enhertu:'CD20',rituximab:'CD52',ibritumomab:'CD33',alemtuzumab:'CD20',denileukin:'CD30',gemtuzumab:'CD30',brentuximab:'CD33',pembrolizumab:'PD-L1',nivolumab:'PD-L1',durvalumab:'PD-1',atezolizumab:'PD-1',imatinib:'CD20',nilotinib:'CD52',dasatinib:'CD33',bevacizumab:'VEGFR',sorafenib:'VEGF-A',sunitinib:'PD-1',bortezomib:'HDAC',crizotinib:'CD20',vorinostat:'26S proteasome'};
 const statementRows=rows.map(d=>({id:d.id,left:d.name,right:d.targets[0],wrong:statementWrongTargets[d.id],source:d.source,note:d.note,family:d.section}));
 for(const [i,d] of rows.entries())for(const polarity of ['correct','incorrect'])questions.push(createPairedQuestion({id:`statement-${polarity}-${d.id}`,kind:'target',group:`statement-${polarity}`,direction:`statement-${polarity}`,subject:d.id,core:d.core,weight:d.weight,exam:d.exam},statementRows[i],statementRows.filter(r=>r.id!==d.id),{polarity,index:i,topic:'표적항암제와 직접 작용·인식 표적'}));
+questions.push(...SIGNAL_CLINICAL);
 export const SIGNAL_QUESTIONS=questions;
 export function pickSignalQuestion(state,scope='core',mode='mixed',random=Math.random){
- const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):mode,bank=questions.filter(q=>q.kind===kind&&(scope!=='core'||q.core)),recent=state.recent||[],subjects=state.subjects||[];
+ const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):(mode==='clinical'?'target':mode),bank=clinicalQuestionPool(questions.filter(q=>q.kind===kind&&(scope!=='core'||q.core)),state,mode==='mixed'?'mixed':mode==='clinical'?'clinical':'ordinary',5,1),recent=state.recent||[],subjects=state.subjects||[];
  let pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject)&&q.group!==state.lastGroup);
  if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject));if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id));if(!pool.length)pool=bank;
  const score=q=>(state.seen?.[q.id]||0)/q.weight,min=Math.min(...pool.map(score)),eligible=pool.filter(q=>score(q)===min),q=eligible[Math.floor(random()*eligible.length)],choices=shuffle(q.options,random).map(text=>({text}));

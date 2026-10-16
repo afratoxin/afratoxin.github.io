@@ -76,7 +76,7 @@ for (const [name,drugs,questions,pick,truth] of banks) {
       for(const option of q.options)assert.equal(q.details.filter(d=>d.startsWith(option+':')).length,1,q.id+' explanation');
     }
   });
-  test(`${name}: judgment questions appear substantially while target coverage stays at 80%`, () => {
+  test(`${name}: judgment questions remain frequent beside clinical selection while target coverage stays at 80%`, () => {
     let seed=7901;const random=()=>((seed=(1664525*seed+1013904223)>>>0)/2**32);
     const state={draws:0,seen:{},recent:[],subjects:[],lastGroup:null};let target=0,judgment=0;
     const positions=new Set(),polarities=new Set();
@@ -86,7 +86,7 @@ for (const [name,drugs,questions,pick,truth] of banks) {
       assert.equal(q.choices[q.answerIndex].text,q.answer);
       state.draws++;state.seen[q.id]=(state.seen[q.id]||0)+1;state.recent=[q.id,...state.recent].slice(0,3);state.subjects=[q.subject,...state.subjects].slice(0,3);state.lastGroup=q.group;
     }
-    assert.equal(target,800);assert.ok(judgment>=300,`${judgment}/1000`);assert.equal(polarities.size,2);assert.equal(positions.size,5);
+    assert.equal(target,800);assert.ok(judgment>=240,`${judgment}/1000`);assert.equal(polarities.size,2);assert.equal(positions.size,5);
   });
 }
 

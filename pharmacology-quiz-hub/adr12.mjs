@@ -1,3 +1,4 @@
+import {ADR12_CLINICAL} from './systems-clinical-data.mjs?v=20261017-clinical1';
 // 2026 12강 아드레날린성 약리학 (1), 슬라이드 7–26쪽.
 import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 // Case options deliberately mix receptor classes without adding a second defensible answer.
@@ -66,3 +67,5 @@ ADR12_QUESTIONS.push(...adr12StatementRows.flatMap((row,index)=>['correct','inco
     index,polarity,topic:'12강 강의록의 약물–대표 작용 연결'
   })
 )));
+
+ADR12_QUESTIONS.push(...ADR12_CLINICAL);

@@ -1,6 +1,6 @@
-import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-exam2';
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-clinical1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {ANTI_SECTIONS,ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY,ANTI_NOTES,pickAntiQuestion} from './anticancer-data.mjs?v=20261017-exam2';
+import {ANTI_SECTIONS,ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY,ANTI_NOTES,pickAntiQuestion} from './anticancer-data.mjs?v=20261017-clinical1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initAnticancerQuiz(){
@@ -19,7 +19,7 @@ export function initAnticancerQuiz(){
   function next(){
     current=pickAntiQuestion(state,$('antiScope').value,$('antiMode').value);answered=false;state.draws++;
     state.recent=[current.id,...state.recent].slice(0,3);state.subjects=[current.subject,...state.subjects].slice(0,3);state.lastGroup=current.group;save();stats();
-    $('antiProgress').textContent=`${current.kind==='target'?'표적·매칭':'기전·독성·사례'} · ${state.draws}번째 연습`;
+    $('antiProgress').textContent=`${current.format==='clinical'?'임상 상황 · 약물 선택':current.kind==='target'?'표적·매칭':'기전·독성·사례'} · ${state.draws}번째 연습`;
     $('antiStem').textContent=current.stem;$('antiSource').textContent=current.source;$('antiExam').textContent=current.exam||'전체 범위 · 강의록';
     $('antiFeedback').hidden=true;$('antiNext').hidden=true;$('antiChoices').replaceChildren();
     current.choices.forEach((c,i)=>{const b=node('button');b.type='button';b.append(node('span','option-no',symbols[i]),node('span','',c.text));b.addEventListener('click',()=>answer(i));$('antiChoices').append(b);});

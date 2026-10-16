@@ -1,6 +1,6 @@
-import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-exam2';
+import {initSimpleTargetQuiz} from './simple-target-quiz.mjs?v=20261017-clinical1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {IMM_DRUGS,IMM_SECTIONS,IMM_QUESTIONS,IMM_CORRECTIONS,pickImmQuestion} from './immune-data.mjs?v=20261017-exam2';
+import {IMM_DRUGS,IMM_SECTIONS,IMM_QUESTIONS,IMM_CORRECTIONS,pickImmQuestion} from './immune-data.mjs?v=20261017-clinical1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 
 export function initImmuneQuiz(){
@@ -19,7 +19,7 @@ export function initImmuneQuiz(){
   function next(){
     current=pickImmQuestion(state,$('immScope').value,$('immMode').value);answered=false;state.draws++;
     state.recent=[current.id,...state.recent].slice(0,3);state.subjects=[current.subject,...state.subjects].slice(0,3);state.lastGroup=current.group;save();stats();
-    $('immProgress').textContent=`${current.kind==='target'?'표적·매칭':'기전·부작용'} · ${state.draws}번째 연습`;
+    $('immProgress').textContent=`${current.format==='clinical'?'임상 상황 · 약물 선택':current.kind==='target'?'표적·매칭':'기전·부작용'} · ${state.draws}번째 연습`;
     $('immStem').textContent=current.stem;$('immSource').textContent=current.source;$('immExam').textContent=current.exam||'전체 범위 · 강의록';
     $('immFeedback').hidden=true;$('immNext').hidden=true;$('immChoices').replaceChildren();
     current.choices.forEach((c,i)=>{const b=node('button');b.type='button';b.append(node('span','option-no',symbols[i]),node('span','',c.text));b.addEventListener('click',()=>answer(i));$('immChoices').append(b);});

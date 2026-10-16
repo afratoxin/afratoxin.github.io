@@ -1,7 +1,7 @@
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 // 2026 10강 콜린성 약리학 (1): 강의록 직접작용제·AChE 억제제 표와 사례.
-import {shuffle} from './cyp.mjs?v=20261017-exam2';
+import {shuffle} from './cyp.mjs?v=20261017-clinical1';
 const f=(id,group,correct,incorrect,note)=>({id,group,correct,incorrect,note});
 export const CHOL_FACTS=[
   f('car-glaucoma','clinical','Carbachol은 녹내장 치료에 쓰이는 직접작용 콜린 효현제이다.','Carbachol은 녹내장 치료에 쓰이는 간접작용 콜린 효현제이다.','Carbachol은 수용체에 직접 결합하며 방수 배출을 돕는다.'),

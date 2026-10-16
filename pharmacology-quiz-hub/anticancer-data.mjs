@@ -1,3 +1,5 @@
+import {ANTI_CLINICAL} from './immune-cancer-clinical-data.mjs?v=20261017-clinical1';
+import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 // Teaching scope: 2026 lecture 30 + supplied 78–79 summary. No dose selection.
 import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
 const drugs=[];
@@ -80,10 +82,11 @@ item('combination-principle','support','mechanism','combination','항암제 병�
 const statementWrongKeys={vinca:'taxane',taxane:'vinca',topo2:'topo1',topo1:'topo2',anthra:'aromatase',ros:'gr',crosslink:'asparagine',intercalation:'asparagine',asparagine:'gr',gr:'asparagine',cardioprotection:'ar',aromatase:'cyp17',serm:'aromatase',serd:'aromatase',gnrhagonist:'gnrhantagonist',gnrhantagonist:'gnrhagonist',ar:'cyp17',cyp17:'serd'};
 const statementRows=drugs.map(d=>({id:d.id,left:d.name,right:d.target,wrong:drugs.find(x=>x.key===statementWrongKeys[d.key]).target,source:d.source,note:d.note,family:d.key}));
 for(const [i,d] of drugs.entries())for(const polarity of ['correct','incorrect'])questions.push(createPairedQuestion({id:`statement-${polarity}-${d.id}`,kind:'target',group:`statement-${polarity}`,direction:`statement-${polarity}`,subject:d.id,key:d.key,core:d.core,weight:d.weight,exam:d.exam},statementRows[i],statementRows.filter(r=>r.id!==d.id),{polarity,index:i,topic:'항암제와 작용기전·보조 역할'}));
+questions.push(...ANTI_CLINICAL);
 export const ANTI_QUESTIONS=questions;
 export function pickAntiQuestion(state,scope='core',mode='mixed',random=Math.random){
-  const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):mode;
-  const bank=questions.filter(q=>q.kind===kind&&(scope!=='core'||q.core)),recent=state.recent||[],subjects=state.subjects||[];
+  const kind=mode==='mixed'?((state.draws||0)%5<4?'target':'support'):(mode==='clinical'?'target':mode);
+  const bank=clinicalQuestionPool(questions.filter(q=>q.kind===kind&&(scope!=='core'||q.core)),state,mode==='mixed'?'mixed':mode==='clinical'?'clinical':'ordinary',5,1),recent=state.recent||[],subjects=state.subjects||[];
   let pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject)&&q.group!==state.lastGroup);
   if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject));if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id));if(!pool.length)pool=bank;
   const score=q=>(state.seen?.[q.id]||0)/q.weight,min=Math.min(...pool.map(score)),eligible=pool.filter(q=>score(q)===min),q=eligible[Math.floor(random()*eligible.length)],choices=shuffle(q.options,random).map(text=>({text}));

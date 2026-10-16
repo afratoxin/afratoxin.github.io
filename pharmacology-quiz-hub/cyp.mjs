@@ -1,3 +1,5 @@
+import {CYP_CLINICAL} from './systems-clinical-data.mjs?v=20261017-clinical1';
+import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
 import {createMatchBoard} from './match-board.mjs?v=20261015-review1';
 import {createPairedQuestion} from './statement-quiz.mjs?v=20261017-exam2';
@@ -20,6 +22,7 @@ export const CYP_CASES=[
     options:['clopidogrel','omeprazole','voriconazole','S-warfarin','ibuprofen'],
     note:'Clopidogrel은 CYP2C19의 활성화를 거치는 전구약물이다. Omeprazole·voriconazole은 CYP2C19 대사 기질이고 S-warfarin·ibuprofen은 CYP2C9와 연결된다.'}
 ];
+CYP_CASES.push(...CYP_CLINICAL);
 export const CYP_ENZYMES = [...new Set(CYP_FACTS.map(f=>f.enzyme))];
 const SYMBOLS=['①','②','③','④','⑤'];
 
@@ -50,14 +53,15 @@ export function makeCypQuestion(fact,direction,random=Math.random){
 }
 export function makeCypCaseQuestion(fact,random=Math.random){
   const choices=shuffle(fact.options,random);
-  return {fact,direction:'case-to-drug',special:true,stem:fact.stem,choices,answer:fact.answer,answerIndex:choices.indexOf(fact.answer)};
+  const details=fact.details?.length?choices.map(choice=>fact.details.find(detail=>detail.startsWith(choice+':'))):fact.details;
+  return {...fact,fact,details,direction:'case-to-drug',special:true,stem:fact.stem,choices,answer:fact.answer,answerIndex:choices.indexOf(fact.answer)};
 }
 
-export function pickCypFact(progress={},random=Math.random){
+export function pickCypFact(progress={},random=Math.random,mode='mixed'){
   const recent=progress.recent||[];
   const all=[...CYP_FACTS,...CYP_CASES];
   const available=all.filter(f=>!recent.includes(f.id));
-  const pool=available.length?available:all;
+  const pool=clinicalQuestionPool(available.length?available:all,progress,mode,4);
   // 낮은 회상 횟수와 이전 오답을 함께 고려한다.
   const weight=f=>(progress.seen?.[f.id]||0)-0.5*(progress.missed?.[f.id]||0);
   const min=Math.min(...pool.map(weight));
@@ -68,7 +72,7 @@ export function pickCypFact(progress={},random=Math.random){
 export function initCypQuiz(){
   const $=id=>document.getElementById(id);
   const KEY='pharmacology-cyp-probes-v1';
-  let progress={seen:{},missed:{},right:0,total:0,recent:[],lastDirection:null,boards:0};
+  let progress={seen:{},missed:{},right:0,total:0,draws:0,recent:[],lastDirection:null,boards:0};
   try{
     const saved=JSON.parse(localStorage.getItem(KEY)||'null');
     if(saved&&typeof saved==='object') progress={...progress,...saved,seen:saved.seen||{},missed:saved.missed||{}};
@@ -96,13 +100,13 @@ export function initCypQuiz(){
     }
   };
   const nextQuestion=()=>{
-    const fact=pickCypFact(progress);
+    const fact=pickCypFact(progress,Math.random,$('cypQuestionType')?.value||'mixed');
     const direction=progress.lastDirection==='drug-to-enzyme'?'enzyme-to-drug':'drug-to-enzyme';
     current=CYP_CASES.includes(fact)?makeCypCaseQuestion(fact):makeCypQuestion(fact,direction);
     progress.lastDirection=direction;
     progress.recent=[fact.id,...(progress.recent||[]).filter(id=>id!==fact.id)].slice(0,3);
     save();
-    answered=false;quizCount++;
+    answered=false;quizCount++;progress.draws=(progress.draws||0)+1;save();
     $('cypProgress').textContent=`이번 회독 ${quizCount}문제`;
     $('cypStem').textContent=current.stem;
     $('cypFeedback').hidden=true;$('cypNext').hidden=true;
@@ -156,6 +160,7 @@ export function initCypQuiz(){
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answerQuestion(Number(event.key)-1);}
     if(event.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(event.target.tagName)){event.preventDefault();nextQuestion();}
   });
+  $('cypQuestionType')?.addEventListener('change',nextQuestion);
   buildTable();
   $('cypStats').textContent=`정답 ${progress.right} / 시도 ${progress.total} · 복기한 연결 ${Object.keys(progress.seen).length}/${CYP_FACTS.length+CYP_CASES.length}`;
   return {open(view){

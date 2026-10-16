@@ -1,6 +1,9 @@
+import {CNS_CLINICAL} from './cns-clinical-data.mjs?v=20261017-clinical1';
+import {CNS_DRUG_PRIORITY,cnsPriority} from './cns-priority.mjs?v=20261017-exam2';
+import {clinicalQuestionPool} from './clinical-mix.mjs?v=20261017-clinical1';
 import {buildCnsPairQuestions} from './cns-pair-builder.mjs?v=20261017-exam2';
 // Teaching scope: 2026 CNS lectures 14–15. PDF page numbers include note pages.
-export const CNS_AREAS={structure:'수용체 구조',effect:'흥분·억제',disease:'질환–약물',features:'약물 세부 특징'};
+export const CNS_AREAS={structure:'수용체 구조',effect:'흥분·억제',disease:'질환–약물',features:'약물 세부 특징',clinical:'임상 상황 → 약물'};
 const structureLabel={ionotropic:'Ionotropic · 리간드개폐 이온통로',metabotropic:'Metabotropic · GPCR'};
 const effectLabel={excitatory:'흥분성',inhibitory:'억제성'};
 const receptor=(id,name,family,type,effect,why)=>({id,name,family,type,effect,why,source:'14강 PDF 15–17·19·22·27·31·36·39·49쪽'});
@@ -91,16 +94,17 @@ export const CNS_MATCH={
 };
 
 export function shuffle(items,random=Math.random){const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
-export const CNS_QUESTIONS=buildCnsPairQuestions({RECEPTORS,DRUGS,hasMechanism,possibleUse});
+export const CNS_PAIR_QUESTIONS=buildCnsPairQuestions({RECEPTORS,DRUGS,hasMechanism,possibleUse}).map(q=>({...q,format:'judgment'}));
+export const CNS_QUESTIONS=[...CNS_PAIR_QUESTIONS,...CNS_CLINICAL.map(q=>({...q,priority:cnsPriority(q.subject),prioritySources:CNS_DRUG_PRIORITY[q.subject]}))];
 
 export function cnsQuestionBank(area='all',focus='all'){
-  return CNS_QUESTIONS.filter(q=>(area==='all'||q.area===area)&&(
+  return CNS_QUESTIONS.filter(q=>(area==='all'||(area==='judgment'?q.format!=='clinical':q.area===area))&&(
     focus==='all'||['structure','effect'].includes(area)||
     (focus==='structures'?q.priority==='structure-drug':['structure-drug','emphasized-drug'].includes(q.priority))
   ));
 }
 export function pickCnsQuestion(state,area='all',random=Math.random,focus='all'){
-  const bank=cnsQuestionBank(area,focus);
+  const bank=clinicalQuestionPool(cnsQuestionBank(area,focus),state,area==='clinical'?'clinical':area==='all'?'mixed':'ordinary');
   const recent=state.recent||[],subjects=state.recentSubjects||[],seen=state.seen||{};
   let pool=bank.filter(q=>!recent.includes(q.id)&&!subjects.includes(q.subject)&&q.subject!==state.lastSubject&&q.group!==state.lastGroup);
   if(!pool.length)pool=bank.filter(q=>!recent.includes(q.id)&&q.subject!==state.lastSubject);
