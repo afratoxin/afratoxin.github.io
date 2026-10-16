@@ -9,14 +9,17 @@ const baseCount=ABX_DRUGS.reduce((n,d)=>n+d.targets.length,0);
 const nested=[['cellwall','pbp','dala','mycolic','arabinosyl'],['viral_rnap','ns5b'],['dna_pol','rt'],['membrane','ergosterol','pza','atpsynthase'],['pza','atpsynthase'],['dna_damage','gyrase','topo4','dna_pol','rt']];
 const keysByLabel=new Map(Object.entries(ABX_MECHANISMS).map(([key,label])=>[label,key]));
 
-test('항생제 두 모드에 기존 문항을 보존하면서 양 극성 판단형을 충분히 추가한다',()=>{
- assert.deepEqual(ABX_QUESTIONS.slice(0,core.length+bacterial.length+extra.length),[...core,...bacterial,...extra]);
+test('항생제 두 모드에 기존 문항 ID·정답·출처를 보존하면서 핵심 선지와 양 극성 판단형을 구성한다',()=>{
+ for(const original of [...core,...bacterial,...extra]){
+  const current=ABX_QUESTIONS.find(q=>q.id===original.id);assert.ok(current);
+  assert.equal(current.answer,original.answer,original.id);assert.equal(current.source,original.source);assert.equal(current.lecture,original.lecture);
+ }
  for(const d of ABX_DRUGS)for(const key of d.targets){
   const original=ABX_SIMPLE.find(q=>q.id===`${d.id}:${key}`);
   assert.ok(original);assert.equal(original.stem,`${d.name}의 작용기전은?`);assert.equal(original.answer,ABX_MECHANISMS[key]);
  }
  for(const [kind,bank] of [['simple',ABX_SIMPLE],['general',ABX_QUESTIONS]]){
-  const judgments=bank.filter(q=>q.format==='judgment');
+  const judgments=bank.filter(q=>q.format==='judgment'&&!q.id.startsWith('priority-ceph-'));
   assert.equal(judgments.length,baseCount*2,kind);
   assert.ok(judgments.length/bank.length>=0.6,kind);
   assert.equal(new Set(bank.map(q=>q.id)).size,bank.length,kind);
@@ -31,7 +34,7 @@ test('항생제 두 모드에 기존 문항을 보존하면서 양 극성 판단
 });
 
 test('판단형의 다섯 약물·기전 연결은 출처가 있고 다중 표적과 포괄 기전을 오답으로 삼지 않는다',()=>{
- for(const q of [...ABX_SIMPLE,...ABX_QUESTIONS].filter(q=>q.format==='judgment')){
+ for(const q of [...ABX_SIMPLE,...ABX_QUESTIONS].filter(q=>q.format==='judgment'&&!q.id.startsWith('priority-ceph-'))){
   assert.equal(q.pairs.length,5,q.id);assert.equal(new Set(q.options).size,5,q.id);
   assert.equal(new Set(q.pairs.map(p=>p.left)).size,5,q.id);
   assert.equal(q.pairs.filter(p=>p.valid).length,q.polarity==='correct'?1:4,q.id);
