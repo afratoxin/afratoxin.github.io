@@ -7,7 +7,8 @@ import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,CHOL_DRUGS,makeCholQuestion,makeChol
 import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,CHOL11_DRUGS,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261017-clinical1';
 import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261017-clinical1';
 import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261017-clinical1';
-import {buildMixedPool} from './autonomic-mixed.mjs?v=20261017-clinical1';
+import {ADR13_BETA_QUESTIONS,ADR13_BETA_ITEMS} from './adr13-beta.mjs?v=20261017-beta1';
+import {buildMixedPool} from './autonomic-mixed.mjs?v=20261017-beta1';
 import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261017-exam2';
 import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261017-clinical1';
 import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261017-clinical1';
@@ -31,6 +32,7 @@ export function registerLectureStudies(store=studyStore){
   add('chol11','11강 · 콜린성 (2)','chol11',[...CHOL11_FACTS,...CHOL11_SPECIALS,...CHOL11_CASES],f=>CHOL11_FACTS.includes(f)?makeChol11Question(f,true):makeChol11Special(f),'pharmacology-cholinergic-lecture11-v1',{tabId:'chol11QuizTab'});
   staticBank('adr12','12강 · 아드레날린성 (1)','adr12',ADR12_QUESTIONS,'pharmacology-adrenergic-12-v1',{tabId:'adr12QuizTab'});
   staticBank('adr13','13강 · 아드레날린성 (2)','adr13',ADR13_QUESTIONS,'pharmacology-adrenergic-13-v1',{tabId:'adr13QuizTab'});
+  staticBank('adr13-beta','13강 · β 선택성 5지선다','adr13',ADR13_BETA_QUESTIONS,'pharmacology-adr13-beta-v1',{tabId:'adr13BetaQuizTab'});
   add('mixed','9–13강 · 종합','mixed',buildMixedPool(),f=>f.render(0),'pharmacology-autonomic-mixed-v1');
   const variants=Object.entries(PK_VARIANTS).flatMap(([topic,vs])=>vs.map(variant=>({id:topic+':'+variant,topic,variant})));
   add('pk','2–4강 · 약동학 계산','pk',variants,f=>makePkQuestion(f.topic,Math.random,f.variant),'pharmacology-pk-calculations-v1',{unknownLegacy:true,tabId:'pkQuizTab',unitLabel:'문제 형태'});
@@ -45,6 +47,7 @@ export function registerLectureStudies(store=studyStore){
   for(const [scope,bank]of Object.entries(SYSTEMS_BANKS))staticBank(scope,SYSTEMS_CONFIG[scope].title,scope,bank,'pharmacology-systems-'+scope+'-v1',{legacy:{},tabId:scope+'QuizTab'});
   const match=(id,title,route,items,boardIds)=>store.register({id,title,route,type:'match',items,boardIds});
   const rows=items=>items.map(x=>({id:x.drug,name:x.drug,categories:[x.category],note:x.note||''}));
+  store.register({id:'adr13-beta-match',title:'13강 · β 선택성 드래그',route:'adr13',type:'match',items:rows(ADR13_BETA_ITEMS),boardIds:['adr13BetaCards'],tabId:'adr13BetaDragTab'});
   match('cyp-match','7강 · CYP 드래그','drag',CYP_FACTS.map(x=>({id:x.id,name:x.drug,categories:[x.enzyme],note:x.note})),['dragCards']);
   for(const [id,title,route,items,board]of [['tx-match','8강 · 수송체 드래그','tx',TRANSPORT_DRUGS,'txCards'],['ans-match','9강 · 드래그','ans',ANS_MATCH,'ansCards'],['chol-match','10강 · 드래그','chol',CHOL_DRUGS,'cholCards'],['chol11-match','11강 · 드래그','chol11',CHOL11_DRUGS,'chol11Cards'],['adr12-match','12강 · 드래그','adr12',ADR12_MATCH,'adr12Cards'],['adr13-match','13강 · 드래그','adr13',ADR13_MATCH,'adr13Cards']])match(id,title,route,rows(items),[board]);
   for(const [kind,title]of [['structure','수용체 구조'],['effect','흥분·억제'],['disease','질환·약물']])match('cns-'+kind,'14–15강 · '+title,'cns',CNS_MATCH[kind].map(x=>({...x,note:x.why||x.note})),['cns'+kind[0].toUpperCase()+kind.slice(1)+'Cards']);

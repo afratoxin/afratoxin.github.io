@@ -4,7 +4,7 @@ import {CHOL_FACTS,CHOL_SPECIALS,CHOL_CASES,makeCholQuestion,makeCholSpecialQues
 import {CHOL11_FACTS,CHOL11_SPECIALS,CHOL11_CASES,makeChol11Question,makeChol11Special} from './chol11.mjs?v=20261017-clinical1';
 import {ADR12_QUESTIONS} from './adr12.mjs?v=20261017-clinical1';
 import {ADR13_QUESTIONS} from './adr13.mjs?v=20261017-clinical1';
-import {shuffle,prepareQuestion} from './autonomic-quiz.mjs?v=20261017-clinical1';
+import {shuffle,prepareQuestion} from './autonomic-quiz.mjs?v=20261017-beta1';
 
 const q=(id,stem,answer,distractors,note)=>({id,group:'cross',lecture:'cross',stem,answer,options:[answer,...distractors],note,format:'clinical'});
 export const MIXED_QUESTIONS=[

@@ -23,7 +23,7 @@ export function pickQuestion(bank,state,random=Math.random,mode='mixed'){
   return prepareQuestion(shuffle(pool.filter(x=>value(x)===min),random)[0],random);
 }
 
-export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw,table=null}){
+export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw,table=null,studyId=prefix,extraTabs=[],manageTabs=true}){
   const $=id=>document.getElementById(id), state={seen:{},missed:{},recent:[],lastGroup:null,lastLecture:null,total:0,right:0,draws:0};
   try{Object.assign(state,JSON.parse(localStorage.getItem(storageKey)||'{}'));}catch{}
   state.seen||={};state.missed||={};state.recent||=[];
@@ -59,7 +59,7 @@ export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw
     state.total++;state.right+=Number(good);state.seen[current.id]=(state.seen[current.id]||0)+1;
     if(!good)state.missed[current.id]=(state.missed[current.id]||0)+1;
     save();stats();
-    recordStudyResult(prefix,current,good);
+    recordStudyResult(studyId,current,good);
     [...$(prefix+'Choices').children].forEach((button,j)=>{button.disabled=true;if(j===current.answerIndex)button.classList.add('correct');else if(j===i)button.classList.add('wrong');});
     const fb=$(prefix+'Feedback');fb.className=`feedback ${good?'ok':'bad'}`;fb.replaceChildren();
     const heading=document.createElement('strong');heading.textContent=`${good?'정답입니다.':'다시 연결해 보세요.'} 정답 ${symbols[current.answerIndex]} · ${current.choices[current.answerIndex].text}`;
@@ -70,17 +70,20 @@ export function initAutonomicQuiz({prefix,viewId,bank,matchItems,storageKey,draw
   }
   $(prefix+'QuestionType')?.addEventListener('change',next);
   $(prefix+'Next').addEventListener('click',next);
-  if(match||table){
-    const tabs=[['Quiz','quiz'],...(match?[['Drag','drag']]:[]),...(table?[['Table','table']]:[])];
-    for(const [suffix,name]of tabs)$(prefix+suffix+'Tab').addEventListener('click',()=>{
-      tab=name;for(const [suffix,value]of tabs){$(prefix+suffix+'Panel').hidden=value!==name;$(prefix+suffix+'Tab').classList.toggle('active',value===name);$(prefix+suffix+'Tab').setAttribute('aria-selected',String(value===name));}
-      if(tab==='drag')match.open();else if(tab==='table')table.open();else if(!current)next();
-    });
+  const tabs=[['Quiz','quiz'],...(match?[['Drag','drag']]:[]),...(table?[['Table','table']]:[]),...extraTabs.map(x=>[x.suffix,x.name])];
+  function openActiveTab(){
+    const extra=extraTabs.find(x=>x.name===tab);
+    if(extra)extra.open();else if(tab==='drag')match.open();else if(tab==='table')table.open();else if(!current)next();
   }
+  function openTab(name){
+    tab=name;for(const [suffix,value]of tabs){$(prefix+suffix+'Panel').hidden=value!==name;$(prefix+suffix+'Tab').classList.toggle('active',value===name);$(prefix+suffix+'Tab').setAttribute('aria-selected',String(value===name));}
+    openActiveTab();
+  }
+  if(manageTabs&&tabs.length>1)for(const [suffix,name]of tabs)$(prefix+suffix+'Tab').addEventListener('click',()=>openTab(name));
   document.addEventListener('keydown',event=>{
-    if($(viewId).hidden||tab!=='quiz'||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
+    if($(viewId).hidden||$(prefix+'QuizPanel')?.hidden||tab!=='quiz'||event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;
     if(/^[1-5]$/.test(event.key)){event.preventDefault();answer(Number(event.key)-1);}
     if(event.key==='Enter'&&answered&&!/^(BUTTON|A)$/.test(event.target.tagName)){event.preventDefault();next();}
   });
-  stats();return {open(){if(tab==='drag')match.open();else if(tab==='table')table.open();else if(!current)next();}};
+  stats();return {open:openActiveTab,openTab};
 }
