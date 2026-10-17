@@ -1,70 +1,43 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ABX_DRUGS,ABX_MECHANISMS,ABX_SIMPLE,ABX_QUESTIONS,pickAbxQuestion} from './abx-data.mjs';
+import {ABX_FEATURE_GROUPS} from './abx-features.mjs';
 import {QUESTIONS as core} from './abx-core-data.mjs';
 import {QUESTIONS as bacterial} from './abx-bacterial-data.mjs';
 import {QUESTIONS as extra} from './abx-extra-data.mjs';
 
-const baseCount=ABX_DRUGS.reduce((n,d)=>n+d.targets.length,0);
-const nested=[['cellwall','pbp','dala','mycolic','arabinosyl'],['viral_rnap','ns5b'],['dna_pol','rt'],['membrane','ergosterol','pza','atpsynthase'],['pza','atpsynthase'],['dna_damage','gyrase','topo4','dna_pol','rt']];
-const keysByLabel=new Map(Object.entries(ABX_MECHANISMS).map(([key,label])=>[label,key]));
-
-test('항생제 두 모드에 기존 문항 ID·정답·출처를 보존하면서 핵심 선지와 양 극성 판단형을 구성한다',()=>{
- for(const original of [...core,...bacterial,...extra]){
-  const current=ABX_QUESTIONS.find(q=>q.id===original.id);assert.ok(current);
-  assert.equal(current.answer,original.answer,original.id);assert.equal(current.source,original.source);assert.equal(current.lecture,original.lecture);
- }
- for(const d of ABX_DRUGS)for(const key of d.targets){
-  const original=ABX_SIMPLE.find(q=>q.id===`${d.id}:${key}`);
-  assert.ok(original);assert.equal(original.stem,`${d.name}의 작용기전은?`);assert.equal(original.answer,ABX_MECHANISMS[key]);
- }
- for(const [kind,bank] of [['simple',ABX_SIMPLE],['general',ABX_QUESTIONS]]){
-  const judgments=bank.filter(q=>q.format==='judgment'&&!q.id.startsWith('priority-ceph-'));
-  assert.equal(judgments.length,baseCount*2,kind);
-  assert.ok(judgments.length/bank.length>=0.6,kind);
-  assert.equal(new Set(bank.map(q=>q.id)).size,bank.length,kind);
-  assert.equal(judgments.filter(q=>q.polarity==='correct').length,baseCount,kind);
-  assert.equal(judgments.filter(q=>q.polarity==='incorrect').length,baseCount,kind);
-  for(const d of ABX_DRUGS)for(const key of d.targets)for(const polarity of ['correct','incorrect']){
-   const q=judgments.find(q=>q.id===`abx-${kind}-judgment:${d.id}:${key}:${polarity}`);
-   assert.ok(q,`${kind} ${d.id} ${key} ${polarity}`);
-   assert.equal(q.subject,d.id);assert.equal(q.lecture,d.lecture);assert.equal(q.core,d.core);
-  }
- }
+test('남긴 문항의 ID·정답·출처는 보존하고 단순 기전의 정·역방향 중복은 제거한다',()=>{
+ const original=[...core,...bacterial,...extra];
+ for(const q of ABX_QUESTIONS){const old=original.find(x=>x.id===q.id);if(old){assert.equal(q.answer,old.answer,q.id);assert.equal(q.source,old.source);assert.equal(q.lecture,old.lecture);}}
+ assert.equal(ABX_SIMPLE.length,ABX_DRUGS.length);
+ for(const d of ABX_DRUGS){const qs=ABX_SIMPLE.filter(q=>q.subject===d.id);assert.equal(qs.length,1);assert.equal(qs[0].id,d.id+':'+d.targets[0]);assert.equal(qs[0].answer,ABX_MECHANISMS[d.targets[0]]);}
+ assert.equal(ABX_QUESTIONS.filter(q=>q.format==='judgment').length,30);
+ assert.ok(ABX_QUESTIONS.filter(q=>q.format==='judgment').every(q=>q.kind==='feature'));
 });
 
-test('판단형의 다섯 약물·기전 연결은 출처가 있고 다중 표적과 포괄 기전을 오답으로 삼지 않는다',()=>{
- for(const q of [...ABX_SIMPLE,...ABX_QUESTIONS].filter(q=>q.format==='judgment'&&!q.id.startsWith('priority-ceph-'))){
-  assert.equal(q.pairs.length,5,q.id);assert.equal(new Set(q.options).size,5,q.id);
-  assert.equal(new Set(q.pairs.map(p=>p.left)).size,5,q.id);
-  assert.equal(q.pairs.filter(p=>p.valid).length,q.polarity==='correct'?1:4,q.id);
-  const expected=q.pairs.find(p=>p.valid===(q.polarity==='correct'));
-  assert.equal(q.answer,`${expected.left} — ${expected.right}`,q.id);
-  assert.match(q.stem,q.polarity==='correct'?/옳은 것은/:/옳지 않은 것은/,q.id);
-  for(const pair of q.pairs){
-   const d=ABX_DRUGS.find(d=>d.name===pair.left);assert.ok(d,pair.left);
-   assert.equal(pair.source,d.source,q.id);assert.ok(q.details.some(detail=>detail.includes(pair.source)),q.id);
-   assert.ok(d.targets.map(k=>ABX_MECHANISMS[k]).includes(pair.correctRight),q.id);
-   const right=keysByLabel.get(pair.right);assert.ok(right,q.id);
-   assert.equal(d.targets.includes(right),pair.valid,`${q.id}: ${pair.left} — ${pair.right}`);
-   if(!pair.valid&&d.id==='sulbactam')assert.notEqual(right,'pbp',q.id);
-   if(!pair.valid){
-    assert.ok(!['cellwall','membrane','dna_damage','pza','viral_rnap'].includes(right),q.id);
-    for(const cluster of nested)if(d.targets.some(t=>cluster.includes(t)))assert.ok(!cluster.includes(right),q.id);
-   }
-   assert.ok(q.details.some(detail=>detail.startsWith(`${pair.left} — ${pair.right}:`)),q.id);
-  }
-  if(q.group==='simple')assert.doesNotMatch([q.stem,...q.options,...q.details].join(' '),/적응증|신독성|시신경|B6|치아|23S\s*rRNA|16S\s*rRNA|A\s*site|P\s*site|peptidyl.transferase|translocation/i,q.id);
+test('판별형은 기전 대신 범위·독성·배설·상호작용을 비교하고 선지별 진릿값을 보존한다',()=>{
+ const rows=ABX_FEATURE_GROUPS.flatMap(g=>g.rows);
+ for(const q of ABX_QUESTIONS.filter(q=>q.format==='judgment')){
+  assert.equal(q.pairs.length,5);assert.equal(new Set(q.pairs.map(p=>p.left)).size,5);
+  assert.equal(q.pairs.filter(p=>p.valid).length,q.polarity==='correct'?1:4);
+  for(const p of q.pairs){const r=rows.find(r=>r.id===p.entity);assert.ok(r);assert.equal(p.right,p.valid?r.right:r.wrong);assert.equal(p.correctRight,r.right);assert.equal(p.source,r.source);assert.ok(q.details.some(d=>d.startsWith(p.left+' — '+p.right+':')));}
  }
+ // Counterexamples to the summary's incorrect simplifications.
+ const r=id=>rows.find(r=>r.id===id);
+ assert.match(r('vori-cyp').right,/CYP2C19/);assert.match(r('vori-cyp').wrong,/CYP2D6/);
+ assert.match(r('rif').right,/효소 유도/);assert.match(r('itra-cyp').right,/억제/);
+ assert.match(r('chlor-baby').right,/포합 대사 미성숙/);
+ assert.match(r('vanco-resistance').right,/D-Ala-D-Ala/);assert.match(r('vanco-resistance').wrong,/PBP2a/);
+ assert.match(r('doxy-child').right,/연령만으로 배제하지 않는다/);
+ assert.match(r('nystatin').note,/경구 현탁액/);
+ assert.match(r('teno').note,/모두 유효 표적/);
+ assert.match(r('ag-tox').right,/신독성은 대체로 가역적이고 이독성은 비가역적/);
 });
 
-test('항생제 판단형도 섞인 선지와 원문 메타데이터를 함께 반환한다',()=>{
- for(const kind of ['simple','general']){
-  const bank=kind==='simple'?ABX_SIMPLE:ABX_QUESTIONS;
-  const target=bank.find(q=>q.format==='judgment'&&q.polarity==='incorrect');
-  const seen=Object.fromEntries(bank.map(q=>[q.id,q.id===target.id?0:100]));
-  const rendered=pickAbxQuestion(kind,{seen},'all','all',()=>0.5,'ordinary');
-  assert.equal(rendered.id,target.id);assert.deepEqual(rendered.pairs,target.pairs);
-  assert.equal(rendered.choices[rendered.answerIndex].text,rendered.answer);
- }
+test('특징 전용 추출도 섞인 선지·정답·전 선지 해설을 원래 문항과 함께 반환한다',()=>{
+ const target=ABX_QUESTIONS.find(q=>q.kind==='feature'&&q.polarity==='incorrect');
+ const seen=Object.fromEntries(ABX_QUESTIONS.map(q=>[q.id,q.id===target.id?0:100]));
+ const q=pickAbxQuestion('general',{seen},'all','core',()=>0.5,'features');
+ assert.equal(q.id,target.id);assert.deepEqual(q.pairs,target.pairs);assert.equal(q.choices[q.answerIndex].text,target.answer);
+ for(const c of q.choices)assert.ok(q.details.find(d=>d.startsWith(c.text+':')));
 });

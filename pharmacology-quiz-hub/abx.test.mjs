@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 const api=await import('./abx-data.mjs').catch(()=>({}));
 test('23–27강의 약물·기전과 일반 문항을 분리한 완전한 은행을 제공한다',()=>{
- assert.ok(api.ABX_DRUGS?.length>=85);assert.ok(api.ABX_SIMPLE?.length>=85);assert.ok(api.ABX_QUESTIONS?.length>=100);
+ assert.ok(api.ABX_DRUGS?.length===47);assert.ok(api.ABX_SIMPLE?.length===47);assert.ok(api.ABX_QUESTIONS?.length===50);
  assert.equal(new Set(api.ABX_DRUGS.map(d=>d.id)).size,api.ABX_DRUGS.length);
  for(const d of api.ABX_DRUGS){assert.ok([23,24,25,26,27].includes(d.lecture));assert.ok(d.source&&d.note&&d.family);for(const key of d.targets)assert.ok(api.ABX_MECHANISMS[key],d.id+key);}
  for(const bank of [api.ABX_SIMPLE,api.ABX_QUESTIONS]){assert.equal(new Set(bank.map(q=>q.id)).size,bank.length);for(const q of bank){assert.equal(q.options.length,5,q.id);assert.equal(new Set(q.options).size,5,q.id);assert.ok(q.options.includes(q.answer));assert.ok(q.note&&q.source);}}

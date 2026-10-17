@@ -2,7 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ADR12_CLINICAL,ADR13_CLINICAL,CYP_CLINICAL,TX_CLINICAL,ABX_CLINICAL} from './systems-clinical-data.mjs';
 import {normalizeStudyQuestion,gradeStudyAnswer,shuffleStudyQuestion} from './study-records.mjs';
-import {ABX_DRUGS} from './abx-data.mjs';
+// These fixtures include archived cases; validate them against their source facts,
+// independently of the smaller active quiz catalog.
+import {DRUGS as coreAbx} from './abx-core-data.mjs';
+import {DRUGS as bacterialAbx} from './abx-bacterial-data.mjs';
+import {DRUGS as extraAbx} from './abx-extra-data.mjs';
+const ABX_DRUGS=[...coreAbx,...bacterialAbx,...extraAbx];
 import {ADR12_MATCH} from './adr12.mjs';
 import {ADR13_MATCH} from './adr13.mjs';
 import {CYP_FACTS} from './cyp.mjs';

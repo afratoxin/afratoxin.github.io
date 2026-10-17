@@ -16,7 +16,7 @@ import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261017-clinical1';
 import {ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY} from './anticancer-data.mjs?v=20261017-clinical1';
 import {SIGNAL_QUESTIONS,SIGNAL_TARGETS} from './signal31-data.mjs?v=20261017-sigfreq1';
 import {SIMPLE_BANKS} from './simple-target-data.mjs?v=20261017-sigfreq1';
-import {ABX_SIMPLE,ABX_QUESTIONS} from './abx-data.mjs?v=20261017-abxfocus1';
+import {ABX_SIMPLE,ABX_QUESTIONS} from './abx-data.mjs?v=20261017-abxshort1';
 import {C32_QUESTIONS,C32_DRUGS,C32_FEATURE_CARDS} from './checkpoint32-data.mjs?v=20261017-c32v1';
 import {SYSTEMS_BANKS,SYSTEMS_CONFIG} from './systems-data.mjs?v=20261017-systems1';
 const read=key=>{try{return JSON.parse(globalThis.localStorage?.getItem(key)||'{}')||{};}catch{return {};}};

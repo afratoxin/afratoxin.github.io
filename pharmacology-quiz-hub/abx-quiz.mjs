@@ -1,8 +1,7 @@
-import {pickAbxQuestion} from './abx-data.mjs?v=20261017-abxfocus1';
-import {ABX_PRIORITY_SCOPE} from './abx-priority.mjs?v=20261017-abxfocus1';
+import {pickAbxQuestion} from './abx-data.mjs?v=20261017-abxshort1';
 import {studyStore,recordStudyResult,studyCountLabel,paintStudyProgress} from './study-records.mjs?v=20261015-review1';
 export function initAbxQuiz(){
- const doc=document,$=id=>doc.getElementById(id),symbols=['①','②','③','④','⑤'];let tab='simple';
+ const doc=document,$=id=>doc.getElementById(id),symbols=['①','②','③','④','⑤'];let tab='general';
  const node=(tag,cls,text)=>{const e=doc.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
  function panel(kind,prefix,scope,statsId){
   const storage='pharmacology-'+scope+'-v1';let state={draws:0,seen:{},recent:[],subjects:[],lastGroup:null},current=null,answered=false;
@@ -11,19 +10,19 @@ export function initAbxQuiz(){
   const save=()=>{try{localStorage.setItem(storage,JSON.stringify(state));}catch{}};
   function stats(){const n=studyStore.counts(scope);$(statsId).textContent=studyCountLabel(n);paintStudyProgress($(statsId),n);}
   function next(){
-   const q=pickAbxQuestion(kind,state,$(prefix+'Lecture').value,$(prefix+'Range').value,Math.random,$(prefix+'QuestionType')?.value||'mixed');if(!q){current=null;answered=false;$(prefix+'Choices').replaceChildren();$(prefix+'Stem').textContent='선택한 범위에 문항이 없습니다. 강의나 출제 방식을 바꿔 주세요.';$(prefix+'Source').textContent='';$(prefix+'Exam').textContent='';$(prefix+'Progress').textContent='0문항';$(prefix+'Feedback').hidden=true;$(prefix+'Next').hidden=true;stats();return;}current=q;answered=false;state.draws++;state.recent=[q.id,...state.recent].slice(0,3);state.subjects=[q.subject,...state.subjects].slice(0,3);state.lastGroup=q.group;save();
-   $(prefix+'Progress').textContent=`${q.format==='clinical'?'임상 상황 · 약물 선택':kind==='simple'?'단순 매칭':'일반 5지선다'} · ${state.draws}번째 연습`;$(prefix+'Exam').textContent=`${q.lecture}강 · ${q.core?ABX_PRIORITY_SCOPE:'추가 범위'}`;$(prefix+'Stem').textContent=q.stem;$(prefix+'Source').textContent=q.source+(q.prioritySources?.length?' · '+q.prioritySources.join(' · '):'');
+   const q=pickAbxQuestion(kind,state,$(prefix+'Lecture').value,'core',Math.random,$(prefix+'QuestionType')?.value||'mixed');if(!q){current=null;answered=false;$(prefix+'Choices').replaceChildren();$(prefix+'Stem').textContent='선택한 범위에 문항이 없습니다. 강의나 출제 방식을 바꿔 주세요.';$(prefix+'Source').textContent='';$(prefix+'Exam').textContent='';$(prefix+'Progress').textContent='0문항';$(prefix+'Feedback').hidden=true;$(prefix+'Next').hidden=true;stats();return;}current=q;answered=false;state.draws++;state.recent=[q.id,...state.recent].slice(0,3);state.subjects=[q.subject,...state.subjects].slice(0,3);state.lastGroup=q.group;save();
+   $(prefix+'Progress').textContent=`${q.format==='clinical'?'임상 상황 · 약물 선택':kind==='simple'?'단순 매칭':q.kind==='feature'?'특징 판별':'핵심 원리'} · ${state.draws}번째 연습`;$(prefix+'Exam').textContent=`${q.lecture}강 · ${q.exam||'강의·족보·정리본 핵심'}`;$(prefix+'Stem').textContent=q.stem;$(prefix+'Source').textContent=q.source+(q.prioritySources?.length?' · '+q.prioritySources.join(' · '):'');
    $(prefix+'Feedback').hidden=true;$(prefix+'Next').hidden=true;$(prefix+'Choices').replaceChildren();
    q.choices.forEach((c,i)=>{const b=node('button');b.type='button';b.append(node('span','option-no',symbols[i]),node('span','',c.text));b.addEventListener('click',()=>answer(i));$(prefix+'Choices').append(b);});stats();
   }
   function answer(index){
-   if(!current||answered||index<0||index>=5)return;answered=true;const good=index===current.answerIndex;state.seen[current.id]=(state.seen[current.id]||0)+1;save();recordStudyResult(scope,current,good);stats();
+   if(!current||answered||$('abxView').hidden||tab!==kind||index<0||index>=5)return;answered=true;const good=index===current.answerIndex;state.seen[current.id]=(state.seen[current.id]||0)+1;save();recordStudyResult(scope,current,good);stats();
    [...$(prefix+'Choices').children].forEach((b,i)=>{b.disabled=true;if(i===current.answerIndex)b.classList.add('correct');else if(i===index)b.classList.add('wrong');});
    const fb=$(prefix+'Feedback');fb.className=`feedback ${good?'ok':'bad'}`;fb.replaceChildren(node('strong','',`${good?'정답입니다.':'다시 확인해 보세요.'} 정답 ${symbols[current.answerIndex]} · ${current.answer}`),node('p','',current.note));
-   if(current.details?.length){const detail=node('details','cns-choice-notes');detail.append(node('summary','','추가 해설'));for(const text of current.details)detail.append(node('p','',text));fb.append(detail);}fb.append(node('p','cns-source',current.source));fb.hidden=false;$(prefix+'Next').hidden=false;
+   if(current.details?.length){const detail=node('details','cns-choice-notes');detail.append(node('summary','','추가 해설'));for(const choice of current.choices){const text=current.details.find(t=>t.startsWith(choice.text+':'));if(text)detail.append(node('p','',text));}fb.append(detail);}fb.append(node('p','cns-source',current.source));fb.hidden=false;$(prefix+'Next').hidden=false;
   }
   $(prefix+'QuestionType')?.addEventListener('change',next);
-  for(const suffix of ['Lecture','Range'])$(prefix+suffix).addEventListener('change',next);for(const suffix of ['Next','Skip'])$(prefix+suffix).addEventListener('click',next);
+  for(const suffix of ['Lecture'])$(prefix+suffix).addEventListener('change',next);for(const suffix of ['Next','Skip'])$(prefix+suffix).addEventListener('click',next);
   studyStore.subscribe(stats);stats();return {open(){if(!current)next();else stats();},answer,next,get answered(){return answered;}};
  }
  const panels={simple:panel('simple','abxSimple','abx-simple','abxSimpleStats'),general:panel('general','abx','abx','abxQuizStats')};
