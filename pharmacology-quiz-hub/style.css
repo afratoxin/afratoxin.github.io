@@ -232,3 +232,11 @@ button.study-progress-fill:focus-visible,.study-wrong-tab:focus-visible{outline:
 .systems-explanations li{margin:.85rem 0;line-height:1.75}
 .systems-entry .hub-icon{font-size:.95rem;min-width:3.4rem}
 .systems-view .options button>span:last-child{line-height:1.65;text-align:left;overflow-wrap:anywhere}
+
+
+/* Histamine: compact classification cards, with room for long ingredient names. */
+#histamineView .drop-zones{grid-template-columns:repeat(auto-fit,minmax(170px,230px));justify-content:start;align-items:start;gap:8px}
+#histamineView .drug-chip{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+#histamineView table{min-width:560px}
+#histamineView .table-wrap{overflow-x:auto}
+@media(max-width:640px){#histamineView .drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}#histamineView .ans-tabs button{font-size:12px;padding:8px 10px}}

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물의 이해 족보 회독과 약동학·자율신경계·중추신경계·면역억제·항생제 약리 퀴즈">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261017-systems1">
+  <link rel="stylesheet" href="style.css?v=20261017-hist1">
 </head>
 <body>
   <main class="shell">
@@ -44,6 +44,9 @@
           <button id="cnsEntry" type="button" data-open="cns" class="hub-card cns-entry"><span class="hub-icon">CNS</span><span><strong>중추신경계 퀴즈</strong><small>족보형 5지선다 · 드래그 3종</small><span class="hub-tags"><span>수용체 구조</span><span>흥분·억제</span><span>질환–약물</span></span></span></button>
         </section>
         <section class="hub-group systems-group" aria-labelledby="systemsGroupTitle"><div class="hub-group-head"><h2 id="systemsGroupTitle">16–20강 · 내분비·신장·순환기</h2><p>족보형 종합 이해 · 각 40문항</p></div><div class="ans-menu-grid"><button type="button" data-open="endocrine" class="hub-card systems-entry"><span class="hub-icon">16</span><span><strong>16강 · 내분비 약리</strong><small>호르몬 원리 · 당뇨병 약물 · 부작용</small><span class="hub-tags"><span>옳은 것·옳지 않은 것</span><span>40문항</span></span></span></button><button type="button" data-open="renal" class="hub-card systems-entry"><span class="hub-icon">17–18</span><span><strong>17–18강 · 신장 약리</strong><small>네프론 · 수송체·이온 방향 · 이뇨제</small><span class="hub-tags"><span>옳은 것·옳지 않은 것</span><span>40문항</span></span></span></button><button type="button" data-open="cardio" class="hub-card systems-entry"><span class="hub-icon">19–20</span><span><strong>19–20강 · 순환기 약리</strong><small>심부전 vs 부정맥 · 활동전위·치료 기전</small><span class="hub-tags"><span>옳은 것·옳지 않은 것</span><span>40문항</span></span></span></button></div></section>
+        <section class="hub-group" aria-labelledby="histGroupTitle"><div class="hub-group-head"><h2 id="histGroupTitle">21강 · 히스타민 약리</h2><p>H1·H2 중심 · 위산 억제제</p></div>
+        <button type="button" data-open="histamine" class="hub-card systems-entry"><span class="hub-icon">21</span><span><strong>21강 · 히스타민 약리</strong><small>족보·강의·정리본 · H1 세대와 위산 억제제</small><span class="hub-tags"><span>5지선다 50문항</span><span>표 기반 드래그 2세트</span></span></span></button>
+        </section>
         <section class="hub-group abx-group" aria-labelledby="abxGroupTitle"><div class="hub-group-head"><h2 id="abxGroupTitle">항생제·항미생물 약리</h2><p>23–27강 · 약물명과 기전부터</p></div><button id="abxEntry" type="button" data-open="abx" class="hub-card abx-entry"><span class="hub-icon">ABX</span><span><strong>항생제·항미생물 퀴즈</strong><small>족보·별도 PDF 핵심 · 기전 매칭·5지선다</small><span class="hub-tags"><span>23–27강 선택</span><span>기전·내성</span><span>대표 부작용</span></span></span></button></section>
         <section class="hub-group immune-group" aria-labelledby="immuneGroupTitle"><div class="hub-group-head"><h2 id="immuneGroupTitle">면역·항암 약리</h2><p>28강 · 30–32강</p></div>
           <div class="study-menu"><button id="immEntry" type="button" data-open="immune" class="hub-card immune-entry"><span class="hub-icon">IM</span><span><strong>28강 · 면역억제제</strong><small>표적 매칭 80% · 기전·부작용 20%</small><span class="hub-tags"><span>족보 빈출</span><span>약물–표적 드래그</span><span>암기표</span></span></span></button>
@@ -51,6 +54,22 @@
         </section>
       </div>
     </section>
+    <section id="histamineView" class="ans-view systems-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">21강 · HISTAMINE</p><h2>히스타민 약리</h2></div><p>족보 · 강의록 v2 · #약리학 정리본</p></div>
+      <div class="ans-tabs" role="tablist" aria-label="히스타민 약리 학습">
+        <button id="histQuizTab" type="button" role="tab" class="active" aria-selected="true" aria-controls="histQuizPanel">족보형 5지선다 · 50문항</button>
+        <button id="histH1Tab" type="button" role="tab" aria-selected="false" aria-controls="histH1Panel">H1 1·2세대 드래그</button>
+        <button id="histAcidTab" type="button" role="tab" aria-selected="false" aria-controls="histAcidPanel">H2RA·PPI·P-CAB 드래그</button>
+      </div>
+      <section id="histQuizPanel" role="tabpanel" aria-labelledby="histQuizTab">
+        <div class="imm-toolbar"><label for="histArea">출제 영역</label><select id="histArea"><option value="all">전체 영역</option><option value="clinical">임상 상황만</option></select><label for="histMode">문항 방향</label><select id="histMode"><option value="all">옳은 것·옳지 않은 것 혼합</option><option value="correct">옳은 것은?</option><option value="incorrect">옳지 않은 것은?</option></select><button id="histSkip" type="button" class="back-button">다른 문제</button></div>
+        <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="histPolarity" class="badge"></span><span id="histProgress" class="q-count"></span></div><h2 id="histStem" class="systems-stem"></h2><div id="histChoices" class="options"></div><div id="histFeedback" class="feedback" aria-live="polite" hidden></div><button id="histNext" type="button" class="primary next" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">전체 50문항 진도</span><p id="histStats" class="study-live-summary"></p><p>합성·대사 → 수용체·조직 작용 → H1 약물 → 위산 억제제 → 브라디키닌</p><span class="side-label">현재 문제의 근거</span><p id="histSource"></p><span class="side-label">참고한 족보 유형</span><p id="histExam"></p><p>숫자 1–5로 답하고 Enter로 다음 문제로 이동합니다. 건너뛴 문제는 진도에 포함하지 않습니다.</p></aside></div>
+      </section>
+      <section id="histH1Panel" role="tabpanel" aria-labelledby="histH1Tab" hidden><h2>H1 항히스타민제 · 세대 구분</h2><p>첨부 표의 11개 성분을 1세대·2세대로 분류하세요. 제품명은 표시하지 않습니다.</p><div id="histH1Board"></div><details class="imm-corrections"><summary>분류·특징 정리 보기</summary><div class="table-wrap"><table><thead><tr><th scope="col">분류</th><th scope="col">성분명</th><th scope="col">특징</th></tr></thead><tbody><tr><th scope="row">1세대</th><td>Diphenhydramine · Chlorpheniramine · Hydroxyzine · Promethazine · Doxylamine</td><td>BBB 통과 · 진정 · 항무스카린 작용</td></tr><tr><th scope="row">2세대</th><td>Cetirizine · Levocetirizine · Loratadine · Desloratadine · Fexofenadine · Rupatadine</td><td>뇌 이행·진정이 대체로 적음. Cetirizine은 졸림 가능</td></tr></tbody></table></div></details></section>
+      <section id="histAcidPanel" role="tabpanel" aria-labelledby="histAcidTab" hidden><h2>위산 억제제 · 표적과 분류</h2><p>첨부 표의 12개 성분만 사용합니다. H2RA는 수용체 차단, PPI와 P-CAB은 양성자펌프 억제입니다.</p><div id="histAcidBoard"></div><details class="imm-corrections"><summary>분류·기전 정리 보기</summary><div class="table-wrap"><table><thead><tr><th scope="col">분류</th><th scope="col">성분명</th><th scope="col">작용</th></tr></thead><tbody><tr><th scope="row">H2 차단제</th><td>Ranitidine · Famotidine · Cimetidine · Nizatidine · Lafutidine</td><td>벽세포 H2 경쟁적 차단</td></tr><tr><th scope="row">PPI</th><td>Omeprazole · Esomeprazole · Lansoprazole · Pantoprazole</td><td>양성자펌프에 비가역적 공유결합 · 산 활성화 필요</td></tr><tr><th scope="row">P-CAB</th><td>Tegoprazan · Fexuprazan · Vonoprazan</td><td>펌프 K⁺ 부위의 가역적 경쟁 · 산 활성화 불필요</td></tr></tbody></table></div><p>Ranitidine은 강의에서 NDMA 관련 철수 이력을 다룬 과거 약물입니다. PPI와 P-CAB은 항히스타민제가 아닙니다.</p></details></section>
+      <details class="imm-corrections"><summary>출제 범위·혼동 주의</summary><p>강의록 v2의 2019–2025 족보를 참고했습니다. 2025년 #55·#56의 복수정답 논란은 그대로 옮기지 않고 각 문항을 단일정답으로 구성했습니다.</p><p>정리본의 “2세대는 안 졸림”은 cetirizine의 예외를 반영합니다. H3 작용제의 수면 촉진을 승인된 불면증 치료제로 단정하지 않습니다. 브라디키닌성 부종과 알레르기성 두드러기도 구별합니다.</p></details>
+    </section>
+
     <section id="endocrineView" class="ans-view systems-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 16강 · UNDERSTANDING PHARMACOLOGY</p><h2>내분비 약리 · 종합 이해</h2></div><p>키보드 1–5 선택 · Enter 다음</p></div>
       <div class="ans-tabs" aria-label="내분비 약리 · 종합 이해 학습"><button id="endocrineQuizTab" type="button" class="active">종합 이해 · 40문항</button></div>
@@ -307,7 +326,7 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약리 강의록 · 면역 억제 약리학 v3·첨부 요약표 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>면역억제 자료 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261017-beta1"></script>
+  <script type="module" src="app.mjs?v=20261017-hist1"></script>
 </body>
 </html>
 

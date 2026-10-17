@@ -1,3 +1,4 @@
+import {HIST_QUESTIONS,HIST_H1_CARDS,HIST_ACID_CARDS} from './histamine21-data.mjs?v=20261017-hist1';
 import {studyStore,normalizeStudyQuestion} from './study-records.mjs?v=20261015-review1';
 import {CYP_FACTS,CYP_CASES,makeCypQuestion,makeCypCaseQuestion} from './cyp.mjs?v=20261017-clinical1';
 import {ddiCandidates,makeDdiClassificationQuestion,makeDdiCaseQuestion,makeDdiEffectQuestion,CYP3A45_LABELS} from './cyp3a45.mjs?v=20261017-exam2';
@@ -45,6 +46,7 @@ export function registerLectureStudies(store=studyStore){
   staticBank('abx-simple','23–27강 · 항생제 단순 매칭','abx',ABX_SIMPLE,'pharmacology-abx-simple-v1',{tabId:'abxSimpleTab'});
   staticBank('abx','23–27강 · 항생제 일반 5지선다','abx',ABX_QUESTIONS,'pharmacology-abx-v1',{tabId:'abxQuizTab'});
   for(const [scope,bank]of Object.entries(SYSTEMS_BANKS))staticBank(scope,SYSTEMS_CONFIG[scope].title,scope,bank,'pharmacology-systems-'+scope+'-v1',{legacy:{},tabId:scope+'QuizTab'});
+  staticBank('histamine','21강 · 히스타민 약리','histamine',HIST_QUESTIONS,'pharmacology-histamine-21-v1',{tabId:'histQuizTab'});
   const match=(id,title,route,items,boardIds)=>store.register({id,title,route,type:'match',items,boardIds});
   const rows=items=>items.map(x=>({id:x.drug,name:x.drug,categories:[x.category],note:x.note||''}));
   store.register({id:'adr13-beta-match',title:'13강 · β 선택성 드래그',route:'adr13',type:'match',items:rows(ADR13_BETA_ITEMS),boardIds:['adr13BetaCards'],tabId:'adr13BetaDragTab'});
@@ -56,6 +58,8 @@ export function registerLectureStudies(store=studyStore){
   match('signal-target','31강 · 표적 드래그','signal',SIGNAL_TARGETS,['sigCards']);
   match('checkpoint32-target','32강 · 면역관문 항체 분류','checkpoint32',C32_DRUGS,['c32TargetCards']);
   match('checkpoint32-car','32강 · CAR 특징 분류','checkpoint32',C32_FEATURE_CARDS,['c32CarCards']);
+  store.register({id:'histamine-h1',title:'21강 · H1 1·2세대 분류',route:'histamine',type:'match',items:HIST_H1_CARDS,boardIds:['histH1Cards'],tabId:'histH1Tab'});
+  store.register({id:'histamine-acid',title:'21강 · H2RA·PPI·P-CAB 분류',route:'histamine',type:'match',items:HIST_ACID_CARDS,boardIds:['histAcidCards'],tabId:'histAcidTab'});
   return store;
 }
 export function registerArchiveStudy(data,store=studyStore,legacy=read('pharmacology-exam-2026-v1')){
