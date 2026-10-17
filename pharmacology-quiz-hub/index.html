@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물의 이해 족보 회독과 약동학·자율신경계·중추신경계·면역억제·항생제 약리 퀴즈">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261017-sigimage1">
+  <link rel="stylesheet" href="style.css?v=20261017-systems1">
 </head>
 <body>
   <main class="shell">
@@ -16,7 +16,7 @@
     </header>
     <section id="homeView">
       <div class="hub-review-link"><button type="button" data-open="mistakes" class="wrong-button">전체 퀴즈 · 오답 모아 풀기 →</button><span class="study-legend"><i class="legend-correct"></i> 정답 <i class="legend-wrong"></i> 오답 <i class="legend-unanswered"></i> 미풀이 · 문항별 최신 결과</span></div>
-      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 약동학 계산, CYP·수송체, 자율신경계와 중추신경계 약리학을 함께 복습할 수 있습니다.</p></div>
+      <div class="hub-hero"><p class="eyebrow">INFINITE RECALL · PHARMACOLOGY</p><h1>족보부터,<br>필요한 연결까지.</h1><p>족보 문항을 강의별로 풀고 오답을 다시 확인하세요. 약동학 계산, CYP·수송체, 신경계와 내분비·신장·순환기 약리학을 함께 복습할 수 있습니다.</p></div>
       <div class="hub-groups">
         <section class="hub-group" aria-labelledby="examGroupTitle"><div class="hub-group-head"><h2 id="examGroupTitle">족보 회독</h2><p>복원 기출을 강의별로 반복</p></div>
           <button type="button" data-open="menu" class="hub-card archive-card"><span class="hub-icon">족보</span><span><strong>족보 문항 풀기</strong><small>단원별 기출 · 오답 회독 · 원문 확인</small><span class="hub-tags"><span>단원별</span><span>오답 회독</span><span>학습 기록</span></span></span><b aria-hidden="true">→</b></button>
@@ -43,12 +43,37 @@
         <section class="hub-group" aria-labelledby="cnsGroupTitle"><div class="hub-group-head"><h2 id="cnsGroupTitle">14–15강 · 중추신경계 약리</h2><p>수용체 분류부터 질환·약물까지</p></div>
           <button id="cnsEntry" type="button" data-open="cns" class="hub-card cns-entry"><span class="hub-icon">CNS</span><span><strong>중추신경계 퀴즈</strong><small>족보형 5지선다 · 드래그 3종</small><span class="hub-tags"><span>수용체 구조</span><span>흥분·억제</span><span>질환–약물</span></span></span></button>
         </section>
+        <section class="hub-group systems-group" aria-labelledby="systemsGroupTitle"><div class="hub-group-head"><h2 id="systemsGroupTitle">16–20강 · 내분비·신장·순환기</h2><p>족보형 종합 이해 · 각 40문항</p></div><div class="ans-menu-grid"><button type="button" data-open="endocrine" class="hub-card systems-entry"><span class="hub-icon">16</span><span><strong>16강 · 내분비 약리</strong><small>호르몬 원리 · 당뇨병 약물 · 부작용</small><span class="hub-tags"><span>옳은 것·옳지 않은 것</span><span>40문항</span></span></span></button><button type="button" data-open="renal" class="hub-card systems-entry"><span class="hub-icon">17–18</span><span><strong>17–18강 · 신장 약리</strong><small>네프론 · 수송체·이온 방향 · 이뇨제</small><span class="hub-tags"><span>옳은 것·옳지 않은 것</span><span>40문항</span></span></span></button><button type="button" data-open="cardio" class="hub-card systems-entry"><span class="hub-icon">19–20</span><span><strong>19–20강 · 순환기 약리</strong><small>심부전 vs 부정맥 · 활동전위·치료 기전</small><span class="hub-tags"><span>옳은 것·옳지 않은 것</span><span>40문항</span></span></span></button></div></section>
         <section class="hub-group abx-group" aria-labelledby="abxGroupTitle"><div class="hub-group-head"><h2 id="abxGroupTitle">항생제·항미생물 약리</h2><p>23–27강 · 약물명과 기전부터</p></div><button id="abxEntry" type="button" data-open="abx" class="hub-card abx-entry"><span class="hub-icon">ABX</span><span><strong>항생제·항미생물 퀴즈</strong><small>족보·별도 PDF 핵심 · 기전 매칭·5지선다</small><span class="hub-tags"><span>23–27강 선택</span><span>기전·내성</span><span>대표 부작용</span></span></span></button></section>
         <section class="hub-group immune-group" aria-labelledby="immuneGroupTitle"><div class="hub-group-head"><h2 id="immuneGroupTitle">면역·항암 약리</h2><p>28강 · 30–32강</p></div>
           <div class="study-menu"><button id="immEntry" type="button" data-open="immune" class="hub-card immune-entry"><span class="hub-icon">IM</span><span><strong>28강 · 면역억제제</strong><small>표적 매칭 80% · 기전·부작용 20%</small><span class="hub-tags"><span>족보 빈출</span><span>약물–표적 드래그</span><span>암기표</span></span></span></button>
           <button id="antiEntry" type="button" data-open="anticancer" class="hub-card anti-entry"><span class="hub-icon">30</span><span><strong>30강 · 항암제</strong><small>족보형 표적·기전 · 대표 독성 사례</small><span class="hub-tags"><span>표적 드래그</span><span>독성 드래그</span><span>호르몬 항암제</span></span></span></button><button id="signalEntry" type="button" data-open="signal" class="hub-card signal-entry"><span class="hub-icon">31</span><span><strong>31강 · 신호전달 표적항암제</strong><small>약물–표적 80% · 족보 연결·사례형</small><span class="hub-tags"><span>표적 드래그</span><span>약물 정리</span><span>오답 복습</span></span></span></button><button id="checkpoint32Entry" type="button" data-open="checkpoint32" class="hub-card signal-entry"><span class="hub-icon">32</span><span><strong>32강 · 면역항암제·CAR 비교</strong><small>8개 항체의 차단 표적 · CAR-T·NK·M</small><span class="hub-tags"><span>족보형 판별</span><span>약물 분류</span><span>CAR 비교</span></span></span></button></div>
         </section>
       </div>
+    </section>
+    <section id="endocrineView" class="ans-view systems-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 16강 · UNDERSTANDING PHARMACOLOGY</p><h2>내분비 약리 · 종합 이해</h2></div><p>키보드 1–5 선택 · Enter 다음</p></div>
+      <div class="ans-tabs" aria-label="내분비 약리 · 종합 이해 학습"><button id="endocrineQuizTab" type="button" class="active">종합 이해 · 40문항</button></div>
+      <div class="imm-toolbar"><label for="endocrineArea">출제 영역</label><select id="endocrineArea"><option value="all">전체 영역</option></select><label for="endocrineMode">문항 방향</label><select id="endocrineMode"><option value="all">옳은 것·옳지 않은 것 혼합</option><option value="correct">옳은 것은?</option><option value="incorrect">옳지 않은 것은?</option></select><button id="endocrineSkip" type="button" class="back-button">다른 문제</button></div>
+      <p class="cyp-intro">호르몬 기본 원리와 당뇨병 약물을 장기·표적·효과·부작용으로 연결하세요. 다섯 선지를 비교한 후 한 개를 고르세요.</p>
+      <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="endocrinePolarity" class="badge"></span><span id="endocrineProgress" class="q-count"></span></div><h2 id="endocrineStem" class="systems-stem"></h2><div id="endocrineChoices" class="options"></div><div id="endocrineFeedback" class="feedback" aria-live="polite" hidden></div><button id="endocrineNext" type="button" class="primary next" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">전체 40문항 진도</span><p id="endocrineStats" class="study-live-summary"></p><p id="endocrineFocus"></p><span class="side-label">현재 문제의 강의 근거</span><p id="endocrineSource"></p><span class="side-label">참고한 족보 유형</span><p id="endocrineExam"></p><p>혼합 모드에서는 문항 방향을 번갈아 내고 최근 사례의 반복을 줄입니다. 건너뛴 문제는 풀이로 세지 않습니다.</p></aside></div>
+      <details class="imm-corrections"><summary>출제 범위·헷갈리기 쉬운 설명 확인</summary><div id="endocrineNotes"></div></details>
+    </section>
+    <section id="renalView" class="ans-view systems-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 17–18강 · UNDERSTANDING PHARMACOLOGY</p><h2>신장 약리 · 종합 이해</h2></div><p>키보드 1–5 선택 · Enter 다음</p></div>
+      <div class="ans-tabs" aria-label="신장 약리 · 종합 이해 학습"><button id="renalQuizTab" type="button" class="active">종합 이해 · 40문항</button></div>
+      <div class="imm-toolbar"><label for="renalArea">출제 영역</label><select id="renalArea"><option value="all">전체 영역</option></select><label for="renalMode">문항 방향</label><select id="renalMode"><option value="all">옳은 것·옳지 않은 것 혼합</option><option value="correct">옳은 것은?</option><option value="incorrect">옳지 않은 것은?</option></select><button id="renalSkip" type="button" class="back-button">다른 문제</button></div>
+      <p class="cyp-intro">네프론의 위치, 관강·혈액 사이의 이동 방향, 소변·혈중 변화를 구분하세요. 다섯 선지를 비교한 후 한 개를 고르세요.</p>
+      <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="renalPolarity" class="badge"></span><span id="renalProgress" class="q-count"></span></div><h2 id="renalStem" class="systems-stem"></h2><div id="renalChoices" class="options"></div><div id="renalFeedback" class="feedback" aria-live="polite" hidden></div><button id="renalNext" type="button" class="primary next" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">전체 40문항 진도</span><p id="renalStats" class="study-live-summary"></p><p id="renalFocus"></p><span class="side-label">현재 문제의 강의 근거</span><p id="renalSource"></p><span class="side-label">참고한 족보 유형</span><p id="renalExam"></p><p>혼합 모드에서는 문항 방향을 번갈아 내고 최근 사례의 반복을 줄입니다. 건너뛴 문제는 풀이로 세지 않습니다.</p></aside></div>
+      <details class="imm-corrections"><summary>출제 범위·헷갈리기 쉬운 설명 확인</summary><div id="renalNotes"></div></details>
+    </section>
+    <section id="cardioView" class="ans-view systems-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">2026 19–20강 · UNDERSTANDING PHARMACOLOGY</p><h2>순환기 약리 · 종합 이해</h2></div><p>키보드 1–5 선택 · Enter 다음</p></div>
+      <div class="ans-tabs" aria-label="순환기 약리 · 종합 이해 학습"><button id="cardioQuizTab" type="button" class="active">종합 이해 · 40문항</button></div>
+      <div class="imm-toolbar"><label for="cardioArea">출제 영역</label><select id="cardioArea"><option value="all">전체 영역</option></select><label for="cardioMode">문항 방향</label><select id="cardioMode"><option value="all">옳은 것·옳지 않은 것 혼합</option><option value="correct">옳은 것은?</option><option value="incorrect">옳지 않은 것은?</option></select><button id="cardioSkip" type="button" class="back-button">다른 문제</button></div>
+      <p class="cyp-intro">심부전의 치료 목적과 부정맥의 발생 기전을 구분하고 약물의 작용 단계를 연결하세요. 다섯 선지를 비교한 후 한 개를 고르세요.</p>
+      <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="cardioPolarity" class="badge"></span><span id="cardioProgress" class="q-count"></span></div><h2 id="cardioStem" class="systems-stem"></h2><div id="cardioChoices" class="options"></div><div id="cardioFeedback" class="feedback" aria-live="polite" hidden></div><button id="cardioNext" type="button" class="primary next" hidden>다음 문제 →</button></article><aside class="side-card"><span class="side-label">전체 40문항 진도</span><p id="cardioStats" class="study-live-summary"></p><p id="cardioFocus"></p><span class="side-label">현재 문제의 강의 근거</span><p id="cardioSource"></p><span class="side-label">참고한 족보 유형</span><p id="cardioExam"></p><p>혼합 모드에서는 문항 방향을 번갈아 내고 최근 사례의 반복을 줄입니다. 건너뛴 문제는 풀이로 세지 않습니다.</p></aside></div>
+      <details class="imm-corrections"><summary>출제 범위·헷갈리기 쉬운 설명 확인</summary><div id="cardioNotes"></div></details>
     </section>
     <section id="mistakesView" class="ans-view study-review-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">WRONG ANSWERS · RETRY</p><h2 id="studyReviewTitle">전체 퀴즈 · 오답 다시 풀기</h2></div><button id="studyReviewBack" class="back-button" type="button">← 원래 퀴즈로</button></div>
@@ -273,7 +298,7 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약리 강의록 · 면역 억제 약리학 v3·첨부 요약표 · 2026 「약물의 이해」 족보 · 2025 Om 정리본</span><span>면역억제 자료 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261017-sigfreq1"></script>
+  <script type="module" src="app.mjs?v=20261017-systems1"></script>
 </body>
 </html>
 

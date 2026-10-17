@@ -224,3 +224,11 @@ button.study-progress-fill:focus-visible,.study-wrong-tab:focus-visible{outline:
 @media(max-width:650px){.abx-view .ans-tabs button{padding:9px 11px;font-size:12px}.abx-view .imm-toolbar select{max-width:100%}}
 
 #cnsPolarity.cns-negative{background:#fff0ed;color:#a33e36;border-color:#edb7ae}
+
+/* 16–20: causal statement comparisons share the existing review/progress UI. */
+.systems-stem{white-space:pre-line;line-height:1.65}
+.systems-negative{background:#fff1e8;color:#8b3315}
+.systems-explanations{list-style:none;padding-left:0}
+.systems-explanations li{margin:.85rem 0;line-height:1.75}
+.systems-entry .hub-icon{font-size:.95rem;min-width:3.4rem}
+.systems-view .options button>span:last-child{line-height:1.65;text-align:left;overflow-wrap:anywhere}

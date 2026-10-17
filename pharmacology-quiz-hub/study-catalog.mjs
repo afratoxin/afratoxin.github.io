@@ -16,6 +16,7 @@ import {SIGNAL_QUESTIONS,SIGNAL_TARGETS} from './signal31-data.mjs?v=20261017-si
 import {SIMPLE_BANKS} from './simple-target-data.mjs?v=20261017-sigfreq1';
 import {ABX_SIMPLE,ABX_QUESTIONS} from './abx-data.mjs?v=20261017-abxfocus1';
 import {C32_QUESTIONS,C32_DRUGS,C32_FEATURE_CARDS} from './checkpoint32-data.mjs?v=20261017-c32v1';
+import {SYSTEMS_BANKS,SYSTEMS_CONFIG} from './systems-data.mjs?v=20261017-systems1';
 const read=key=>{try{return JSON.parse(globalThis.localStorage?.getItem(key)||'{}')||{};}catch{return {};}};
 export function ddiStudyNote(q){if(q.note)return q.note;return q.kind==='classification'?q.case?q.fact.note:`${q.fact.drug}: CYP3A4/5 ${CYP3A45_LABELS[q.fact.category]}`:`${q.modifier.drug}: ${CYP3A45_LABELS[q.modifier.category]} → ${q.substrate.drug} 대사 ${q.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소'}`;}
 export function registerLectureStudies(store=studyStore){
@@ -41,6 +42,7 @@ export function registerLectureStudies(store=studyStore){
   for(const [id,title,route,prefix]of [['immune-simple','28강 · 단순 표적 매칭','immune','imm'],['anticancer-simple','30강 · 단순 표적 매칭','anticancer','anti'],['signal-simple','31강 · 단순 표적 매칭','signal','sig']])staticBank(id,title,route,SIMPLE_BANKS[id],'pharmacology-'+id+'-v1',{tabId:prefix+'SimpleTab'});
   staticBank('abx-simple','23–27강 · 항생제 단순 매칭','abx',ABX_SIMPLE,'pharmacology-abx-simple-v1',{tabId:'abxSimpleTab'});
   staticBank('abx','23–27강 · 항생제 일반 5지선다','abx',ABX_QUESTIONS,'pharmacology-abx-v1',{tabId:'abxQuizTab'});
+  for(const [scope,bank]of Object.entries(SYSTEMS_BANKS))staticBank(scope,SYSTEMS_CONFIG[scope].title,scope,bank,'pharmacology-systems-'+scope+'-v1',{legacy:{},tabId:scope+'QuizTab'});
   const match=(id,title,route,items,boardIds)=>store.register({id,title,route,type:'match',items,boardIds});
   const rows=items=>items.map(x=>({id:x.drug,name:x.drug,categories:[x.category],note:x.note||''}));
   match('cyp-match','7강 · CYP 드래그','drag',CYP_FACTS.map(x=>({id:x.id,name:x.drug,categories:[x.enzyme],note:x.note})),['dragCards']);
