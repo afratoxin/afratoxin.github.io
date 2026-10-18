@@ -18,7 +18,7 @@ import {SIGNAL_QUESTIONS,SIGNAL_TARGETS} from './signal31-data.mjs?v=20261017-si
 import {SIMPLE_BANKS} from './simple-target-data.mjs?v=20261017-sigfreq1';
 import {ABX_SIMPLE,ABX_QUESTIONS} from './abx-data.mjs?v=20261017-abxshort1';
 import {C32_QUESTIONS,C32_DRUGS,C32_FEATURE_CARDS} from './checkpoint32-data.mjs?v=20261017-c32v1';
-import {SYSTEMS_BANKS,SYSTEMS_CONFIG} from './systems-data.mjs?v=20261017-systems1';
+import {SYSTEMS_BANKS,SYSTEMS_CONFIG} from './systems-data.mjs?v=20261018-cause1';
 const read=key=>{try{return JSON.parse(globalThis.localStorage?.getItem(key)||'{}')||{};}catch{return {};}};
 export function ddiStudyNote(q){if(q.note)return q.note;return q.kind==='classification'?q.case?q.fact.note:`${q.fact.drug}: CYP3A4/5 ${CYP3A45_LABELS[q.fact.category]}`:`${q.modifier.drug}: ${CYP3A45_LABELS[q.modifier.category]} → ${q.substrate.drug} 대사 ${q.modifier.category==='inhibitor'?'감소 · 노출 증가':'증가 · 노출 감소'}`;}
 export function registerLectureStudies(store=studyStore){

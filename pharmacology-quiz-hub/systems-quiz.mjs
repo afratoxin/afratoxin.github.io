@@ -1,4 +1,4 @@
-import {SYSTEMS_BANKS,SYSTEMS_CONFIG,pickSystemsQuestion} from './systems-data.mjs?v=20261017-systems1';
+import {SYSTEMS_BANKS,SYSTEMS_CONFIG,pickSystemsQuestion} from './systems-data.mjs?v=20261018-cause1';
 import {studyStore,recordStudyResult,studyCountLabel,paintStudyProgress} from './study-records.mjs?v=20261015-review1';
 export function initSystemsQuiz(scope){
  const config=SYSTEMS_CONFIG[scope];if(!config)throw Error('Unknown systems quiz: '+scope);
@@ -12,10 +12,14 @@ export function initSystemsQuiz(scope){
  function stats(){const counts=studyStore.counts(scope);$('Stats').textContent=studyCountLabel(counts);paintStudyProgress($('Stats'),counts);}
  function next(){
   current=pickSystemsQuestion(scope,state,$('Mode').value,Math.random,$('Area').value);answered=false;
-  if(!current)return;
+  if(!current){
+   $('Choices').replaceChildren();$('Stem').textContent='선택한 범위에 문항이 없습니다. 출제 영역이나 유형을 바꿔 주세요.';
+   for(const suffix of ['Polarity','Progress','Source','Exam'])$(suffix).textContent='';
+   $('Feedback').hidden=true;$('Next').hidden=true;stats();return;
+  }
   state.draws=(Number(state.draws)||0)+1;state.seen[current.id]=(Number(state.seen[current.id])||0)+1;
-  state.recent=[current.id,...state.recent].slice(0,4);state.subjects=[current.subject,...state.subjects].slice(0,3);state.lastPolarity=current.polarity;save();
-  $('Polarity').textContent=current.polarity==='correct'?'옳은 것은?':'옳지 않은 것은?';
+  state.recent=[current.id,...state.recent].slice(0,4);state.subjects=[current.subject,...state.subjects].slice(0,3);if(current.polarity)state.lastPolarity=current.polarity;save();
+  $('Polarity').textContent=current.format==='cause'?'원인 약물 추론':current.polarity==='correct'?'옳은 것은?':'옳지 않은 것은?';
   $('Polarity').classList.toggle('systems-negative',current.polarity==='incorrect');
   $('Progress').textContent=current.group+' · '+state.draws+'번째 연습';
   $('Stem').textContent=current.stem;$('Source').textContent=current.source;$('Exam').textContent=current.exam;

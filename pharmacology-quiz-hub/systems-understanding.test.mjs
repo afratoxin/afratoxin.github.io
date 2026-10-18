@@ -10,15 +10,17 @@ test('three complete banks contain 40 sourced reasoning questions with one unamb
  const ids=new Set();
  for(const [scope,bank] of Object.entries(module.SYSTEMS_BANKS)){
   assert.equal(bank.length,40,scope);
-  assert.equal(new Set(bank.map(q=>q.subject)).size,20,scope);
-  for(const polarity of ['correct','incorrect'])assert.equal(bank.filter(q=>q.polarity===polarity).length,20);
+  assert.ok(new Set(bank.map(q=>q.subject)).size>=20,scope);
+  for(const polarity of ['correct','incorrect'])assert.equal(bank.filter(q=>q.polarity===polarity).length,14);
   for(const q of bank){
    assert.ok(!ids.has(q.id),q.id);ids.add(q.id);
    assert.equal(q.options.length,5);assert.equal(new Set(q.options).size,5);
    assert.equal(q.options.filter(x=>x===q.answer).length,1);
-   assert.equal(q.statements.filter(x=>x.valid).length,q.polarity==='correct'?1:4);
-   assert.equal(q.statements.find(x=>x.text===q.answer).valid,q.polarity==='correct');
-   assert.match(q.stem,q.polarity==='correct'?/옳은 것은\?$/u:/옳지 않은 것은\?$/u);
+   if(q.format==='judgment'){
+    assert.equal(q.statements.filter(x=>x.valid).length,q.polarity==='correct'?1:4);
+    assert.equal(q.statements.find(x=>x.text===q.answer).valid,q.polarity==='correct');
+    assert.match(q.stem,q.polarity==='correct'?/옳은 것은\?$/u:/옳지 않은 것은\?$/u);
+   }else{assert.equal(q.format,'cause');assert.ok(q.answerAliases.includes(q.answer));}
    assert.ok(q.context.length>12);assert.ok(q.note.length>25);assert.ok(q.source.includes('쪽'));
    assert.ok(q.exam.length>10,'state the past-exam relationship');
    for(const option of q.options)assert.equal(q.details.filter(x=>x.startsWith(option+':')).length,1);
@@ -40,18 +42,18 @@ test('each new bank participates in shared progress and preserves an actual wron
  }
 });
 
-test('1000 draws per unit cover every ID, alternate polarity and avoid three recent cases',()=>{
+test('1000 draws cover every ID, rotate each format and avoid three recent cases',()=>{
  assert.equal(typeof module.pickSystemsQuestion,'function');
  let seed=71;const random=()=>((seed=(seed*1664525+1013904223)>>>0)/2**32);
  for(const scope of ['endocrine','renal','cardio']){
-  const state={seen:{},recent:[],subjects:[],lastPolarity:null};let previous;
+  const state={draws:0,seen:{},recent:[],subjects:[],lastPolarity:null};let previous;
   for(let i=0;i<1000;i++){
    const q=module.pickSystemsQuestion(scope,state,'all',random);
-   assert.ok(q);assert.ok(!state.subjects.includes(q.subject));if(previous)assert.notEqual(q.polarity,previous.polarity);
+   assert.ok(q);assert.ok(!state.subjects.includes(q.subject));if(q.format==='judgment'&&previous)assert.notEqual(q.polarity,previous.polarity);
    assert.equal(q.choices.length,5);assert.equal(q.choices[q.answerIndex].text,q.answer);
-   state.seen[q.id]=(state.seen[q.id]||0)+1;state.recent=[q.id,...state.recent].slice(0,4);state.subjects=[q.subject,...state.subjects].slice(0,3);state.lastPolarity=q.polarity;previous=q;
+   state.seen[q.id]=(state.seen[q.id]||0)+1;state.recent=[q.id,...state.recent].slice(0,4);state.subjects=[q.subject,...state.subjects].slice(0,3);state.draws++;if(q.format==='judgment'){state.lastPolarity=q.polarity;previous=q;}
   }
-  assert.equal(Object.keys(state.seen).length,40);const counts=Object.values(state.seen);assert.ok(Math.max(...counts)-Math.min(...counts)<=2);
+  assert.equal(Object.keys(state.seen).length,40);for(const format of ['cause','judgment']){const counts=module.SYSTEMS_BANKS[scope].filter(q=>q.format===format).map(q=>state.seen[q.id]);assert.ok(Math.max(...counts)-Math.min(...counts)<=3);}
   assert.equal(module.pickSystemsQuestion(scope,state,'correct',random).polarity,'correct');
   assert.equal(module.pickSystemsQuestion(scope,state,'incorrect',random).polarity,'incorrect');
  }
