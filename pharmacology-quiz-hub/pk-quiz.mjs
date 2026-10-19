@@ -1,5 +1,5 @@
 import {recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {PK_TOPICS,PK_VARIANTS,makePkQuestion,pickPkTopic,shuffle} from './pk-calculations.mjs?v=20261017-exam2';
+import {PK_TOPICS,PK_VARIANTS,pkQuestionId,makePkQuestion,pickPkTopic,shuffle} from './pk-calculations.mjs?v=20261019-pksimple1';
 const SYMBOLS=['①','②','③','④','⑤'];
 const KEY='pharmacology-pk-calculations-v1';
 
@@ -34,8 +34,10 @@ export function initPkQuiz(){
   for(const key of ['seenTopics','missedTopics','seenVariants','attemptedVariants'])if(!state[key]||typeof state[key]!=='object')state[key]={};
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch{}};
   let tab='quiz',current=null,answered=false,session=0;
+  const activeIds=PK_TOPICS.flatMap(t=>PK_VARIANTS[t.id].map(v=>pkQuestionId(t.id,v)));
   function stats(){
-    $('pkStats').textContent=`정답 ${state.right}/${state.total} · 풀이한 형태 ${Object.keys(state.attemptedVariants).length}/${Object.values(PK_VARIANTS).flat().length}`;
+    const attempted=activeIds.filter(id=>state.attemptedVariants[id]>0).length;
+    $('pkStats').textContent=`정답 ${state.right}/${state.total} · 풀이한 형태 ${attempted}/${activeIds.length}`;
   }
   for(const topic of PK_TOPICS){
     const option=document.createElement('option');option.value=topic.id;option.textContent=topic.title;$('pkTopic').append(option);
@@ -45,7 +47,7 @@ export function initPkQuiz(){
   }
   function next(){
     const topic=pickPkTopic(state,$('pkTopic').value);
-    const variants=PK_VARIANTS[topic],score=v=>state.seenVariants[`${topic}:${v}`]||0,min=Math.min(...variants.map(score));
+    const variants=PK_VARIANTS[topic],score=v=>state.seenVariants[pkQuestionId(topic,v)]||0,min=Math.min(...variants.map(score));
     const variant=shuffle(variants.filter(v=>score(v)===min))[0];
     current=makePkQuestion(topic,Math.random,variant);
     state.lastTopic=topic;state.seenTopics[topic]=(state.seenTopics[topic]||0)+1;state.seenVariants[current.id]=(state.seenVariants[current.id]||0)+1;

@@ -22,7 +22,7 @@ test('계산 화면의 채점·다음 문제·유형 선택·힌트·공식 탭 
   els.pkChoices.children[0].click();assert.equal(els.pkFeedback.hidden,false);assert.equal(els.pkNext.hidden,false);
   assert.ok(els.pkChoices.children.every(b=>b.disabled));
   els.pkNext.click();assert.notEqual(els.pkStem.textContent,before);assert.equal(els.pkHint.hidden,true);
-  els.pkTopic.value='renal';els.pkTopic.dispatch('change');assert.match(els.pkStem.textContent,/신기능/);
+  els.pkTopic.value='tail';els.pkTopic.dispatch('change');assert.match(els.pkStem.textContent,/마지막|전체 AUC/);
   els.pkFormulaTab.click();assert.equal(els.pkQuizPanel.hidden,true);assert.equal(els.pkFormulaPanel.hidden,false);
   const total=JSON.parse([...saved.values()][0]).total;
   listeners.keydown({key:'1',target:new Element(),preventDefault(){}});

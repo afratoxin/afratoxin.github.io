@@ -10,7 +10,7 @@ import {ADR12_QUESTIONS,ADR12_MATCH} from './adr12.mjs?v=20261017-clinical1';
 import {ADR13_QUESTIONS,ADR13_MATCH} from './adr13.mjs?v=20261017-clinical1';
 import {ADR13_BETA_QUESTIONS,ADR13_BETA_ITEMS} from './adr13-beta.mjs?v=20261017-beta1';
 import {buildMixedPool} from './autonomic-mixed.mjs?v=20261017-beta1';
-import {PK_VARIANTS,makePkQuestion} from './pk-calculations.mjs?v=20261017-exam2';
+import {PK_VARIANTS,pkQuestionId,makePkQuestion} from './pk-calculations.mjs?v=20261019-pksimple1';
 import {CNS_QUESTIONS,CNS_MATCH} from './cns-data.mjs?v=20261017-clinical1';
 import {IMM_QUESTIONS,IMM_DRUGS} from './immune-data.mjs?v=20261017-clinical1';
 import {ANTI_QUESTIONS,ANTI_TARGETS,ANTI_TOXICITY} from './anticancer-data.mjs?v=20261017-clinical1';
@@ -35,7 +35,7 @@ export function registerLectureStudies(store=studyStore){
   staticBank('adr13','13강 · 아드레날린성 (2)','adr13',ADR13_QUESTIONS,'pharmacology-adrenergic-13-v1',{tabId:'adr13QuizTab'});
   staticBank('adr13-beta','13강 · β 선택성 5지선다','adr13',ADR13_BETA_QUESTIONS,'pharmacology-adr13-beta-v1',{tabId:'adr13BetaQuizTab'});
   add('mixed','9–13강 · 종합','mixed',buildMixedPool(),f=>f.render(0),'pharmacology-autonomic-mixed-v1');
-  const variants=Object.entries(PK_VARIANTS).flatMap(([topic,vs])=>vs.map(variant=>({id:topic+':'+variant,topic,variant})));
+  const variants=Object.entries(PK_VARIANTS).flatMap(([topic,vs])=>vs.map(variant=>({id:pkQuestionId(topic,variant),topic,variant})));
   add('pk','2–4강 · 약동학 계산','pk',variants,f=>makePkQuestion(f.topic,Math.random,f.variant),'pharmacology-pk-calculations-v1',{unknownLegacy:true,tabId:'pkQuizTab',unitLabel:'문제 형태'});
   staticBank('cns','14–15강 · 중추신경계','cns',CNS_QUESTIONS,'pharmacology-cns-14-15-v1',{tabId:'cnsQuizTab',reviewQuestion:saved=>normalizeStudyQuestion(CNS_QUESTIONS.find(q=>q.id===saved.id)||saved)});
   staticBank('immune','28강 · 면역억제제','immune',IMM_QUESTIONS,'pharmacology-immune-28-v1',{tabId:'immQuizTab'});

@@ -9,7 +9,7 @@ test('모든 강의·종합·계산 퀴즈와 19종 드래그가 완전한 문�
   for(const id of d.items.keys()){const q=normalizeStudyQuestion(d.build(id),{id});assert.equal(q.id,id);assert.equal(q.choices.length,5,id);assert.equal(q.answers.length,1,id);assert.equal(new Set(q.choices).size,5,id);}
  }
  assert.equal([...s.definitions.values()].filter(d=>d.type==='match').length,19);
- assert.equal(s.definitions.get('pk').items.size,41);
+ assert.equal(s.definitions.get('pk').items.size,16);
  const anti=s.definitions.get('anti-target');assert.ok(anti.items.get('doxorubicin').categories.length>1);
 });
 test('족보 중 채점 가능한 문항만 추가하고 복수 정답·그림·이전 최신 결과를 유지한다',()=>{
