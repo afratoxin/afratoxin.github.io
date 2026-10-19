@@ -650,133 +650,423 @@ export default [
     verifiedSources: []
   },
   {
-    id: 'comp-L28-Q1', lecture: 28,
-    concept: '조혈성 cytokine·면역조절제의 생성 세포와 작용 구별',
-    format: 'association',
-    stem: '면역조절에 사용하는 제제와 대표 작용의 연결이 옳은 것은?',
-    options: [
-      'EPO — 호중구 계열의 생성을 촉진한다.',
-      'Filgrastim — 적혈구 계열의 생성을 촉진한다.',
-      'M-CSF — 항원제시세포의 B7 공동자극을 차단한다.',
-      'Sargramostim — 과립구·단핵구 계열의 생성을 촉진한다.',
-      'Interferon β — TNF를 포획하는 수용체 융합단백질이다.'
+    "id": "comp-L28-Q1",
+    "lecture": 28,
+    "concept": "조혈성 cytokine의 작용 계열과 sargramostim의 호중구·호산구 증가",
+    "format": "case",
+    "stem": "항암화학요법 뒤 호중구가 감소한 환자에게 호중구와 함께 호산구·단핵구 계열도 증가시키는 조혈성 제제를 사용하려 한다. 이에 해당하는 제제는?",
+    "options": [
+      "EPO",
+      "Filgrastim",
+      "M-CSF",
+      "Sargramostim",
+      "Interferon β"
     ],
-    answerIndex: 3,
-    explanations: [
-      '틀린 연결이다. EPO는 적혈구 생성을 촉진한다. 빈혈과 연결하며 혈전·심근경색·뇌졸중 위험이 구별점이다.',
-      '틀린 연결이다. Filgrastim은 호중구 생성을 촉진하는 G-CSF 제제다. 적혈구 생성은 EPO와 연결한다.',
-      '틀린 연결이다. M-CSF는 단핵구·대식세포 계열 및 파골세포와 연결된다. APC의 B7에 결합해 공동자극을 막는 약물은 abatacept다.',
-      '옳은 연결이다. Sargramostim은 GM-CSF 제제로 과립구·단핵구 계열을 촉진하며 호산구 증가도 연결한다. Filgrastim과 함께 뼈 통증이 생길 수 있다.',
-      '틀린 연결이다. TNF 수용체–Fc 융합단백질은 etanercept다. Interferon β는 별도의 cytokine이며 강의에서는 다발성경화증과 연결한다.'
+    "answerIndex": 3,
+    "explanations": [
+      "EPO는 적혈구 생성을 촉진하여 빈혈에 사용하는 제제이다. 호중구·호산구 계열을 함께 증가시키는 이 문항의 제제와 다르다.",
+      "Filgrastim은 G-CSF 제제로 강의에서 호중구 생성과 회복에 연결한다. 호산구 증가까지 함께 구별하는 단서는 sargramostim에 해당한다.",
+      "M-CSF는 단핵구·대식세포 및 파골세포 계열과 연결된다. 과립구와 호산구 계열까지 함께 증가시키는 제제는 sargramostim이다.",
+      "정답이다. Sargramostim은 GM-CSF 제제로 과립구·단핵구 계열을 촉진한다. 강의는 호중구뿐 아니라 호산구도 증가한다는 점을 filgrastim과 구별한다.",
+      "Interferon β는 강의에서 다발성경화증 치료에 연결한다. 이 문항이 묻는 과립구·단핵구 계열의 조혈 촉진 제제가 아니다."
     ],
-    rationale: 'EPO는 적혈구, filgrastim은 호중구, sargramostim은 보다 넓은 과립구·단핵구 계열을 촉진한다. 조혈성 cytokine과 TNF 억제제의 구조도 구별한다.',
-    notesPages: [36],
-    examRefs: [{id: '28-2023-58-p67', page: 67}, {id: '28-2019-92-p68', page: 68}, {id: '32-2020-86-p78', page: 78}],
-    lectureSources: [{label: '직접 정리 노트', page: 36}, {label: 'Om 요약본', page: 182}],
-    verifiedSources: []
+    "rationale": "Sargramostim은 GM-CSF 제제로 호중구뿐 아니라 호산구를 포함한 과립구·단핵구 계열을 촉진한다. Filgrastim의 G-CSF 작용 및 EPO의 적혈구 생성과 구별한다.",
+    "notesPages": [
+      36
+    ],
+    "examRefs": [
+      {
+        "id": "28-2023-58-p67",
+        "page": 67
+      },
+      {
+        "id": "28-2019-92-p68",
+        "page": 68
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 7
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 9
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 11
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 12
+      }
+    ],
+    "emphasis": {
+      "kind": "p7 GM-CSF 행의 빨간 상자, p9 sargramostim 행의 빨간 상자, p11 족보 스탬프와 호중구·호산구 증가의 노란 강조, p12 요약 표",
+      "pages": [
+        7,
+        9,
+        11,
+        12
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   },
   {
-    id: 'comp-L28-Q2', lecture: 28,
-    concept: 'Immunophilin 결합과 calcineurin·mTOR 효과 표적의 구별',
-    format: 'judgment', polarity: 'incorrect',
-    stem: '세포 내 신호를 억제하는 면역억제제의 결합 단백질·효과 표적과 특징에 관한 설명으로 옳지 않은 것은?',
-    options: [
-      'Cyclosporine은 cyclophilin과 복합체를 형성하여 calcineurin을 억제한다.',
-      'Tacrolimus는 FKBP12에 결합한 뒤 calcineurin–NFAT 경로를 억제한다.',
-      'Sirolimus는 FKBP12에 결합하여 calcineurin을 억제하는 것이 주된 작용이다.',
-      'Cyclosporine의 특징적인 유해반응에는 다모증과 치은비대증이 포함된다.',
-      'Sirolimus의 mTOR 억제는 세포주기 진행 억제 및 상처 치유 지연과 연결된다.'
+    "id": "comp-L28-Q2",
+    "lecture": 28,
+    "concept": "Immunophilin 결합과 calcineurin·mTOR 효과 표적의 구별",
+    "format": "judgment",
+    "polarity": "incorrect",
+    "stem": "세포 내 신호를 억제하는 면역억제제의 결합 단백질·효과 표적과 특징에 관한 설명으로 옳지 않은 것은?",
+    "options": [
+      "Cyclosporine은 cyclophilin과 복합체를 형성하여 calcineurin을 억제한다.",
+      "Tacrolimus는 FKBP12에 결합한 뒤 calcineurin–NFAT 경로를 억제한다.",
+      "Sirolimus는 FKBP12에 결합하여 calcineurin을 억제하는 것이 주된 작용이다.",
+      "Cyclosporine의 특징적인 유해반응에는 다모증과 치은비대증이 포함된다.",
+      "Sirolimus의 mTOR 억제는 세포주기 진행 억제 및 상처 치유 지연과 연결된다."
     ],
-    answerIndex: 2,
-    explanations: [
-      '옳은 설명이다. 결합 단백질은 cyclophilin, 복합체가 억제하는 효소는 calcineurin이다. 그 결과 NFAT 활성화와 IL-2 생산이 감소한다.',
-      '옳은 설명이다. Tacrolimus는 FKBP12와 결합하지만 효과 표적은 cyclosporine과 같이 calcineurin이다.',
-      '옳지 않은 설명이다. Sirolimus는 FKBP12 결합은 tacrolimus와 공유하지만 억제 표적은 mTOR다. Calcineurin 억제와 구별한다.',
-      '옳은 설명이다. Cyclosporine의 다모증·치은비대증은 반복 출제된 구별점이며 신독성도 중요하다.',
-      '옳은 설명이다. mTOR 억제는 IL-2에 대한 증식 반응을 줄이며 상처 치유 지연과 연결된다.'
+    "answerIndex": 2,
+    "explanations": [
+      "옳은 설명이다. 결합 단백질은 cyclophilin, 복합체가 억제하는 효소는 calcineurin이다. 그 결과 NFAT 활성화와 IL-2 생산이 감소한다.",
+      "옳은 설명이다. Tacrolimus는 FKBP12와 결합하지만 효과 표적은 cyclosporine과 같이 calcineurin이다.",
+      "옳지 않은 설명이다. Sirolimus는 FKBP12 결합은 tacrolimus와 공유하지만 억제 표적은 mTOR다. Calcineurin 억제와 구별한다.",
+      "옳은 설명이다. Cyclosporine의 다모증·치은비대증은 반복 출제된 구별점이며 신독성도 중요하다.",
+      "옳은 설명이다. mTOR 억제는 IL-2에 대한 증식 반응을 줄이며 상처 치유 지연과 연결된다."
     ],
-    rationale: '결합 단백질과 최종 억제 표적은 서로 다른 단계다. Tacrolimus와 sirolimus는 FKBP12에 결합하지만 각각 calcineurin과 mTOR를 억제한다.',
-    notesPages: [37],
-    examRefs: [{id: '24-2022-73-p58', page: 58}, {id: '28-2025-89-p66', page: 66}, {id: '28-2023-59-p67', page: 67}, {id: '28-2020-77-p68', page: 68}],
-    lectureSources: [{label: '직접 정리 노트', page: 37}, {label: 'Om 요약본', page: 184}],
-    verifiedSources: []
+    "rationale": "결합 단백질과 최종 억제 표적은 서로 다른 단계다. Tacrolimus와 sirolimus는 FKBP12에 결합하지만 각각 calcineurin과 mTOR를 억제한다.",
+    "notesPages": [
+      37
+    ],
+    "examRefs": [
+      {
+        "id": "24-2022-73-p58",
+        "page": 58
+      },
+      {
+        "id": "28-2025-89-p66",
+        "page": 66
+      },
+      {
+        "id": "28-2023-59-p67",
+        "page": 67
+      },
+      {
+        "id": "28-2020-77-p68",
+        "page": 68
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 20
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 21
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 26
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 27
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 28
+      }
+    ],
+    "emphasis": {
+      "kind": "p20·21 calcineurin 및 약물 이름의 빨간 상자와 “오늘 강의에서 강조” 필기, p26 기전의 노란 강조와 족보 스탬프, p28 결합 단백질·부작용 비교 표",
+      "pages": [
+        20,
+        21,
+        26,
+        28
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   },
   {
-    id: 'comp-L28-Q3', lecture: 28,
-    concept: '면역억제 항대사제의 활성 대사체·효소 표적 및 항염증 작용',
-    format: 'judgment', polarity: 'incorrect',
-    stem: '면역억제에 사용하는 항대사제의 대사 전환과 작용에 관한 설명으로 옳지 않은 것은?',
-    options: [
-      'Azathioprine은 6-MP로 전환되어 purine de novo 합성을 억제한다.',
-      'Mycophenolate mofetil은 MPA로 전환되며 IMPDH 억제와 연결된다.',
-      'Methotrexate의 효소 억제 표적에는 DHFR가 포함된다.',
-      'Mycophenolate mofetil은 guanine 유사체로 DNA에 삽입된다.',
-      'Methotrexate의 항염증 효과에는 adenosine 증가와 염증성 cytokine 감소가 관련된다.'
+    "id": "comp-L28-Q3",
+    "lecture": 28,
+    "concept": "항대사성 면역억제제의 활성 대사체와 핵산 합성·항염증 작용",
+    "format": "judgment",
+    "polarity": "incorrect",
+    "stem": "항대사성 면역억제제의 대사 전환과 작용에 관한 설명으로 옳지 않은 것은?",
+    "options": [
+      "Azathioprine은 체내에서 6-MP로 전환되어 purine de novo 합성을 억제한다.",
+      "Mycophenolate mofetil은 MPA로 전환되어 guanine nucleotide 합성을 억제한다.",
+      "Methotrexate는 엽산 대사를 억제하여 DNA 합성과 림프구 증식을 감소시킨다.",
+      "Mycophenolate mofetil은 guanine 유사체로 DNA 사슬에 직접 삽입되어 작용한다.",
+      "Methotrexate의 항염증 효과에는 adenosine 증가와 염증성 cytokine 감소가 관련된다."
     ],
-    answerIndex: 3,
-    explanations: [
-      '옳은 설명이다. Azathioprine의 대사 전환은 6-MP와 연결하며 purine 합성 경로를 억제한다.',
-      '옳은 설명이다. MMF의 활성 대사체는 mycophenolic acid(MPA)이며 IMPDH 억제로 guanine nucleotide 합성을 감소시킨다.',
-      '옳은 설명이다. Methotrexate는 DHFR 억제와 연결되는 항엽산제이며 항암·면역조절 맥락에서 모두 다뤄진다.',
-      '옳지 않은 설명이다. MMF–MPA의 핵심은 IMPDH 효소 억제다. Guanine 공급을 줄인다는 결과를 guanine 유사체의 DNA 직접 삽입으로 바꾸면 안 된다.',
-      '옳은 설명이다. 강의 정리에서는 adenosine 증가, 염증성 cytokine 감소와 항염증성 cytokine 증가를 연결한다.'
+    "answerIndex": 3,
+    "explanations": [
+      "옳다. Azathioprine은 6-MP로 전환되는 전구약물이다. 강의는 이 전환과 purine de novo 합성 억제를 중심으로 설명한다.",
+      "옳다. MMF의 활성 대사체는 mycophenolic acid(MPA)이다. MPA가 IMPDH를 억제하여 guanine nucleotide 공급과 핵산 합성을 감소시킨다.",
+      "옳다. Methotrexate의 항엽산 작용은 DNA 합성과 증식 억제로 이어진다. 강의는 DHFR를 억제 표적으로 제시한다.",
+      "옳지 않다. MMF–MPA는 IMPDH 효소를 억제하여 guanine nucleotide 합성을 줄인다. DNA 사슬에 guanine 유사체로 직접 삽입되는 것이 주된 작용은 아니다.",
+      "옳다. 강의는 methotrexate의 항염증 효과를 adenosine 증가, 염증성 cytokine 감소 및 항염증성 cytokine 증가와 연결한다."
     ],
-    rationale: 'Azathioprine–6-MP와 MMF–MPA의 대사 전환을 구별한다. MMF는 IMPDH를 억제해 guanine 합성을 줄이는 약물이지 DNA에 guanine 유사체로 직접 삽입되는 약물이 아니다.',
-    notesPages: [37],
-    examRefs: [{id: '28-2023-59-p67', page: 67}],
-    lectureSources: [{label: '직접 정리 노트', page: 37}, {label: 'Om 요약본', page: 185}],
-    verifiedSources: ['https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=93763b39-ba21-449b-bdc5-254ba57154e4']
+    "rationale": "Azathioprine–6-MP와 MMF–MPA의 대사 전환을 구별한다. MMF는 guanine nucleotide 합성 효소를 억제하며 DNA에 guanine 유사체로 직접 삽입되는 약물이 아니다.",
+    "notesPages": [
+      37
+    ],
+    "examRefs": [
+      {
+        "id": "28-2023-59-p67",
+        "page": 67
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 31
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 32
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 33
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 34
+      }
+    ],
+    "emphasis": {
+      "kind": "p31 약물·6-MP 전환의 빨간 상자와 족보 스탬프, p32 MMF→MPA→guanine 합성 억제 도식, p33 핵산·염증 작용도, p34 기전 요약 표",
+      "pages": [
+        31,
+        32,
+        33,
+        34
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   },
   {
-    id: 'comp-L28-Q4', lecture: 28,
-    concept: 'Abatacept의 APC CD80/86 결합에 의한 공동자극 차단',
-    format: 'case',
-    stem: '항원제시세포와 T세포를 함께 배양한 실험에서 TCR–MHC를 통한 항원 인식은 유지되지만, APC의 B7을 점유하여 T세포 CD28의 공동자극이 감소했다. 이 작용에 해당하는 약물은?',
-    options: [
-      'Alefacept',
-      'Abatacept',
-      'Efalizumab',
-      'Basiliximab',
-      'Natalizumab'
+    "id": "comp-L28-Q4",
+    "lecture": 28,
+    "concept": "Abatacept의 APC CD80/86 결합에 의한 공동자극 차단",
+    "format": "case",
+    "stem": "항원제시세포와 T세포를 함께 배양한 실험에서 TCR–MHC를 통한 항원 인식은 유지되지만, APC의 B7을 점유하여 T세포 CD28의 공동자극이 감소했다. 이 작용에 해당하는 약물은?",
+    "options": [
+      "Alefacept",
+      "Abatacept",
+      "Efalizumab",
+      "Basiliximab",
+      "Natalizumab"
     ],
-    answerIndex: 1,
-    explanations: [
-      'Alefacept는 CD2에 결합하여 CD2–CD58 상호작용을 방해한다. B7을 점유하는 약물은 아니다.',
-      '정답이다. Abatacept가 직접 결합하는 표적은 APC의 B7, 즉 CD80·CD86이다. 그 결과 CD28의 공동자극 신호가 차단된다.',
-      'Efalizumab은 CD11a를 표적으로 하여 LFA-1–ICAM-1 상호작용을 방해한다.',
-      'Basiliximab은 CD25, 즉 IL-2 수용체 α 사슬에 결합한다. CD28 공동자극의 B7 표적과 다르다.',
-      'Natalizumab은 α4 integrin에 결합해 세포 부착·침윤에 영향을 준다. B7–CD28 공동자극을 직접 차단하는 약물이 아니다.'
+    "answerIndex": 1,
+    "explanations": [
+      "Alefacept는 T세포의 CD2에 결합하여 CD2–CD58 상호작용을 방해한다. APC의 CD80·CD86을 점유하는 약물은 아니다.",
+      "정답이다. Abatacept가 직접 결합하는 표적은 APC의 B7, 즉 CD80·CD86이다. CD28과의 결합을 막아 T세포 공동자극을 감소시킨다.",
+      "Efalizumab은 LFA-1의 α 사슬인 CD11a를 표적으로 하여 ICAM-1과의 상호작용을 방해한다.",
+      "Basiliximab은 CD25인 IL-2 수용체 α 사슬에 결합한다. B7–CD28 공동자극을 차단하는 약물과 구별한다.",
+      "Natalizumab은 α4 integrin에 결합하여 VCAM-1과의 상호작용 및 림프구의 조직 침윤을 감소시킨다. B7을 직접 표적으로 하지 않는다."
     ],
-    rationale: '항원 인식 signal 1과 CD28–B7 공동자극 signal 2를 구별한다. Abatacept의 직접 결합 대상은 CD80/86이며 CTLA-4 자체가 아니다.',
-    notesPages: [37],
-    examRefs: [{id: '28-2025-90-p66', page: 66}, {id: '28-2021-77-p67', page: 67}, {id: '28-2019-91-p68', page: 68}],
-    lectureSources: [{label: '직접 정리 노트', page: 37}, {label: 'Om 요약본', page: 183}, {label: 'Om 요약본', page: 186}],
-    verifiedSources: ['https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=0836c6ac-ee37-5640-2fed-a3185a0b16eb']
+    "rationale": "항원 인식 signal 1과 CD28–B7 공동자극 signal 2를 구별한다. Abatacept의 직접 결합 대상은 APC의 CD80·CD86이다.",
+    "notesPages": [
+      37
+    ],
+    "examRefs": [
+      {
+        "id": "28-2025-90-p66",
+        "page": 66
+      },
+      {
+        "id": "28-2021-77-p67",
+        "page": 67
+      },
+      {
+        "id": "28-2019-91-p68",
+        "page": 68
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 19
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 37
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 40
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 41
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 42
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 43
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 44
+      }
+    ],
+    "emphasis": {
+      "kind": "p40 abatacept 제목의 빨간 상자와 CD80/86 결합 도식·족보 스탬프, p41~43 비교 표적의 빨간 상자, p44 biologicals 표",
+      "pages": [
+        40,
+        41,
+        42,
+        43,
+        44
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   },
   {
-    id: 'comp-L28-Q5', lecture: 28,
-    concept: 'Biologicals의 항체 유형과 CD·cytokine 표적 구별',
-    format: 'judgment', polarity: 'incorrect',
-    stem: '면역조절 biologicals의 종류 또는 직접 결합 표적을 연결한 것으로 옳지 않은 것은?',
-    options: [
-      'ATG — 여러 T세포 표면 항원을 인식하는 다클론 항체',
-      'Muromonab-CD3 — CD3를 표적으로 하는 단클론 항체',
-      'Basiliximab — CD25를 표적으로 하는 단클론 항체',
-      'Infliximab — TNF-α를 표적으로 하는 단클론 항체',
-      'Alemtuzumab — CD20을 표적으로 하는 단클론 항체'
+    "id": "comp-L28-Q5",
+    "lecture": 28,
+    "concept": "Biologicals의 항체 유형과 CD·cytokine 표적 구별",
+    "format": "judgment",
+    "polarity": "incorrect",
+    "stem": "면역조절 biologicals의 종류 또는 직접 결합 표적을 연결한 것으로 옳지 않은 것은?",
+    "options": [
+      "ATG — 여러 T세포 표면 항원을 인식하는 다클론 항체",
+      "Muromonab-CD3 — CD3를 표적으로 하는 단클론 항체",
+      "Basiliximab — CD25를 표적으로 하는 단클론 항체",
+      "Infliximab — TNF-α를 표적으로 하는 단클론 항체",
+      "Alemtuzumab — CD20을 표적으로 하는 단클론 항체"
     ],
-    answerIndex: 4,
-    explanations: [
-      '옳은 연결이다. ATG는 T세포의 여러 항원을 인식하는 다클론 항체 제제이며 단일 표적의 단클론 항체와 구별한다.',
-      '옳은 연결이다. Muromonab-CD3는 OKT3로도 부르는 anti-CD3 단클론 항체다.',
-      '옳은 연결이다. Basiliximab의 표적은 CD25인 IL-2Rα이며 IL-2 분자 자체나 CD2가 아니다.',
-      '옳은 연결이다. Infliximab은 TNF-α 표적 항체다. TNF 수용체–Fc 융합단백질인 etanercept와 구조를 구별한다.',
-      '옳지 않은 연결이다. Alemtuzumab의 표적은 CD52다. CD20 표적 항체는 rituximab이다.'
+    "answerIndex": 4,
+    "explanations": [
+      "옳은 연결이다. ATG는 T세포의 여러 항원을 인식하는 다클론 항체 제제이며 단일 표적의 단클론 항체와 구별한다.",
+      "옳은 연결이다. Muromonab-CD3는 OKT3로도 부르는 anti-CD3 단클론 항체다.",
+      "옳은 연결이다. Basiliximab의 표적은 CD25인 IL-2Rα이며 IL-2 분자 자체나 CD2가 아니다.",
+      "옳은 연결이다. Infliximab은 TNF-α 표적 항체다. TNF 수용체–Fc 융합단백질인 etanercept와 구조를 구별한다.",
+      "옳지 않은 연결이다. Alemtuzumab의 표적은 CD52다. CD20 표적 항체는 rituximab이다."
     ],
-    rationale: 'ATG의 다클론성, OKT3의 CD3, basiliximab의 CD25를 구별한다. Alemtuzumab–CD52와 rituximab–CD20은 바꾸기 쉬운 표적 연결이다.',
-    notesPages: [36, 37],
-    examRefs: [{id: '28-2022-57-p67', page: 67}, {id: '28-2023-59-p67', page: 67}, {id: '28-2021-76-p67', page: 67}, {id: '★표적-2017-77-p75', page: 75}],
-    lectureSources: [{label: '직접 정리 노트', page: 36}, {label: '직접 정리 노트', page: 37}, {label: 'Om 요약본', page: 186}],
-    verifiedSources: []
+    "rationale": "ATG는 다클론 항체이며 muromonab-CD3는 CD3, basiliximab은 CD25, infliximab은 TNF-α를 표적으로 한다. Alemtuzumab은 CD52 표적 항체이며 CD20 표적의 rituximab과 구별한다.",
+    "notesPages": [
+      37
+    ],
+    "examRefs": [
+      {
+        "id": "28-2022-57-p67",
+        "page": 67
+      },
+      {
+        "id": "28-2023-59-p67",
+        "page": 67
+      },
+      {
+        "id": "28-2021-76-p67",
+        "page": 67
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 12
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 35
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 36
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 37
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 38
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 44
+      },
+      {
+        "kind": "lecture",
+        "lecture": 28,
+        "label": "28강 · 면역 억제 약리학",
+        "page": 46
+      }
+    ],
+    "emphasis": {
+      "kind": "p35 ATG·polyclonal antibody 빨간 상자와 족보 스탬프, p36·37·38 항체–CD 표적 제목의 빨간 상자, p44 biologicals 및 p46 TNF-α·CD20 표적 표",
+      "pages": [
+        35,
+        36,
+        37,
+        38,
+        44,
+        46
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   }
 ];

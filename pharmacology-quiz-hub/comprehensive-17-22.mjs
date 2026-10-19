@@ -568,118 +568,359 @@ export default [
     lectureSources: [{label: '2026 히스타민 약리(v2)', page: 23}, {label: '2026 히스타민 약리(v2)', page: 24}]
   },
   {
-    id: 'comp-L22-Q1', lecture: 22,
-    concept: '항혈소판제의 COX-1·P2Y12·PDE3·GP IIb/IIIa 표적', format: 'association',
-    stem: '항혈소판제와 표적·작용의 연결로 옳은 것은?',
-    options: [
-      'Aspirin — P2Y12 차단 — ADP 신호 감소',
-      'Clopidogrel — COX-1 비가역 억제 — TXA2 생성 감소',
-      'Cilostazol — PDE3 억제 — 혈소판 cAMP 감소',
-      'Eptifibatide — GP IIb/IIIa 차단 — fibrinogen 결합 감소',
-      'Dipyridamole — adenosine 재흡수 촉진 — 혈소판 cAMP 감소'
+    "id": "comp-L22-Q1",
+    "lecture": 22,
+    "concept": "항혈소판제의 COX-1·P2Y12·PDE3·GP IIb/IIIa 표적",
+    "format": "association",
+    "stem": "항혈소판제와 표적·작용의 연결로 옳은 것은?",
+    "options": [
+      "Aspirin — P2Y12 차단 — ADP 신호 감소",
+      "Clopidogrel — COX-1 비가역 억제 — TXA2 생성 감소",
+      "Cilostazol — PDE3 억제 — 혈소판 cAMP 감소",
+      "Eptifibatide — GP IIb/IIIa 차단 — fibrinogen 결합 감소",
+      "Dipyridamole — adenosine 재흡수 촉진 — 혈소판 cAMP 감소"
     ],
-    answerIndex: 3,
-    explanations: [
-      '틀린 연결이다. Aspirin은 COX-1을 비가역적으로 억제하여 TXA2 생성을 줄인다. P2Y12 억제제와 다르다.',
-      '틀린 연결이다. Clopidogrel은 ADP 수용체 P2Y12를 억제한다. COX-1의 비가역 억제는 aspirin과 연결한다.',
-      '틀린 연결이다. PDE3 억제는 cAMP 분해를 줄여 혈소판 cAMP를 증가시키고 활성화를 억제한다.',
-      '옳은 연결이다. Eptifibatide는 GP IIb/IIIa를 막아 fibrinogen 매개의 혈소판 응집을 억제한다.',
-      '틀린 연결이다. Dipyridamole은 adenosine 재흡수를 억제하며 PDE 억제와 함께 cAMP 증가 방향으로 작용한다.'
+    "answerIndex": 3,
+    "explanations": [
+      "틀린 연결이다. Aspirin은 COX-1을 비가역적으로 억제하여 TXA2 생성을 감소시킨다. P2Y12 차단제는 clopidogrel과 연결한다.",
+      "틀린 연결이다. Clopidogrel은 ADP 수용체인 P2Y12를 억제한다. COX-1의 비가역적 억제는 aspirin의 작용이다.",
+      "틀린 연결이다. Cilostazol은 PDE3를 억제해 cAMP 분해를 줄이므로 혈소판 cAMP를 증가시킨다.",
+      "옳은 연결이다. Eptifibatide는 GP IIb/IIIa를 차단해 fibrinogen에 의한 혈소판 사이의 연결과 응집을 억제한다.",
+      "틀린 연결이다. Dipyridamole은 adenosine 재흡수를 억제한다. PDE 억제와 함께 cAMP가 증가하는 방향으로 작용한다."
     ],
-    rationale: 'Aspirin–COX-1, clopidogrel–P2Y12, cilostazol–PDE3, eptifibatide–GP IIb/IIIa를 구별한다. 혈소판 cAMP 증가는 활성화를 억제하는 방향이다.',
-    notesPages: [28],
-    examRefs: [{id: '22-2025-31-p51', page: 51}, {id: '22-2021-58-p52', page: 52}, {id: '22-2019-11-p52', page: 52}],
-    lectureSources: [{label: '사용자 약리학 필기', page: 28}, {label: 'Om 약리학 정리', page: 153}]
+    "rationale": "Aspirin–COX-1, clopidogrel–P2Y12, cilostazol–PDE3, eptifibatide–GP IIb/IIIa를 구별한다. 혈소판 cAMP 증가는 활성화 억제로 이어진다.",
+    "notesPages": [
+      28
+    ],
+    "examRefs": [
+      {
+        "id": "22-2025-31-p51",
+        "page": 51
+      },
+      {
+        "id": "22-2021-58-p52",
+        "page": 52
+      },
+      {
+        "id": "22-2019-11-p52",
+        "page": 52
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 9
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 10
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 11
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 12
+      }
+    ],
+    "emphasis": {
+      "kind": "p9·10 중요/족보 스탬프, p10 clopidogrel·Gi–cAMP 경로의 빨간 상자, p11 최종 공통 경로 밑줄과 p12 cAMP 작용도",
+      "pages": [
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   },
   {
-    id: 'comp-L22-Q2', lecture: 22,
-    concept: '혈소판 감소와 새로운 혈전이 동반되는 HIT의 원인 약물', format: 'case',
-    stem: '입원 후 항응고 약물을 투여하던 환자에서 8일째 혈소판 수가 24만/μL에서 8만/μL로 감소하고 새 다리 정맥혈전이 발생하였다. 혈색소와 백혈구 수에는 뚜렷한 변화가 없었다. 이 부작용을 일으킨 약물로 가장 적절한 것은?',
-    options: ['Warfarin', 'Dabigatran', 'Alteplase', 'Heparin', 'Clopidogrel'],
-    answerIndex: 3,
-    explanations: [
-      'Warfarin은 초기 protein C 감소로 혈전성 합병증이 가능하지만, 투여 5–10일 무렵의 현저한 혈소판 감소와 새 혈전은 HIT에 더 부합한다.',
-      'Dabigatran은 직접 thrombin 억제제이다. Heparin–PF4 항체를 매개로 하는 혈소판 활성화가 주된 부작용 기전은 아니다.',
-      'Alteplase는 혈전용해제이며 항응고제로 분류하지 않는다. 출혈 위험과 달리 제시된 혈소판 활성화성 혈전 양상은 HIT의 단서이다.',
-      'Heparin은 PF4와 복합체를 만들고 이에 대한 항체가 혈소판을 활성화하는 HIT를 유발할 수 있다. 혈소판 감소와 혈전증이 함께 나타난다.',
-      'Clopidogrel은 항혈소판제이다. 이 상황의 항응고 약물 투여 시점과 새 혈전·혈소판 감소의 전형적 조합은 heparin에 더 부합한다.'
+    "id": "comp-L22-Q2",
+    "lecture": 22,
+    "concept": "혈소판 감소와 새로운 혈전이 동반되는 HIT의 원인 약물",
+    "format": "case",
+    "stem": "항응고제를 투여한 뒤 혈소판 수가 크게 감소하면서 새 정맥혈전이 발생하였다. 이 부작용을 일으킨 약물로 가장 적절한 것은?",
+    "options": [
+      "Warfarin",
+      "Dabigatran",
+      "Rivaroxaban",
+      "Heparin",
+      "Argatroban"
     ],
-    rationale: '항응고제 투여 뒤 혈소판이 크게 감소하면서 오히려 새 혈전이 생기는 양상은 HIT를 시사한다. PF4–heparin 복합체에 대한 면역반응이 혈소판을 활성화한다.',
-    notesPages: [28],
-    examRefs: [{id: '22-2025-32-p51', page: 51}, {id: '22-2023-42-p52', page: 52}],
-    lectureSources: [{label: '사용자 약리학 필기', page: 28}, {label: 'Om 약리학 정리', page: 150}]
+    "answerIndex": 3,
+    "explanations": [
+      "Warfarin은 vitamin K 재생을 억제하며 초기 protein C 감소로 일시적 혈전 위험이 생길 수 있다. 혈소판 감소와 새 혈전이 함께 나타나는 이 문항의 핵심은 HIT이다.",
+      "Dabigatran은 antithrombin 없이 thrombin을 직접 억제한다. PF4–heparin 면역복합체에 의한 혈소판 활성화와는 다르다.",
+      "Rivaroxaban은 factor Xa를 직접 억제하는 비-heparin 항응고제이다. Heparin–PF4 항체가 혈소판을 활성화하는 HIT의 원인 약물과 구별한다.",
+      "정답이다. Heparin–PF4 복합체에 대한 항체가 혈소판 FcγRIIa를 통해 활성화를 유도하면 혈소판 감소와 혈전증이 함께 발생할 수 있다.",
+      "Argatroban은 thrombin을 직접 억제하는 비-heparin 항응고제이다. 강의는 HIT에서 사용할 수 있는 대체 항응고제로 제시한다."
+    ],
+    "rationale": "Heparin에 의한 HIT에서는 PF4–heparin 복합체에 대한 항체가 혈소판을 활성화한다. 따라서 혈소판 수가 줄면서도 혈전증이 발생한다.",
+    "notesPages": [
+      28
+    ],
+    "examRefs": [
+      {
+        "id": "22-2025-32-p51",
+        "page": 51
+      },
+      {
+        "id": "22-2023-42-p52",
+        "page": 52
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 20
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 21
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 22
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 23
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 24
+      }
+    ],
+    "emphasis": {
+      "kind": "p20 중요 스탬프와 HIT의 혈전증·혈소판 감소 도식, p21 PF4–heparin 면역기전의 강의 필기",
+      "pages": [
+        20,
+        21
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   },
   {
-    id: 'comp-L22-Q3', lecture: 22,
-    concept: '항응고제의 직접·antithrombin 매개 억제와 Xa·IIa 선택성', format: 'association',
-    stem: '항응고제와 작용 기전의 연결로 옳은 것은?',
-    options: [
-      'Dabigatran — antithrombin 매개 — thrombin 간접 억제',
-      'Rivaroxaban — antithrombin 비의존 — factor Xa 직접 억제',
-      'Fondaparinux — antithrombin 비의존 — factor Xa 직접 억제',
-      'UFH — vitamin K 재생 억제 — 응고인자 II·VII·IX·X의 기능 감소',
-      'LMWH — antithrombin 매개 — factor Xa보다 thrombin 억제가 우세'
+    "id": "comp-L22-Q3",
+    "lecture": 22,
+    "concept": "항응고제의 직접·antithrombin 매개 억제와 Xa·IIa 선택성",
+    "format": "association",
+    "stem": "항응고제와 작용 기전의 연결로 옳은 것은?",
+    "options": [
+      "Dabigatran — antithrombin 매개 — thrombin 간접 억제",
+      "Rivaroxaban — antithrombin 비의존 — factor Xa 직접 억제",
+      "Fondaparinux — antithrombin 비의존 — factor Xa 직접 억제",
+      "UFH — vitamin K 재생 억제 — 응고인자 II·VII·IX·X의 기능 감소",
+      "LMWH — antithrombin 비의존 — factor Xa 직접 억제"
     ],
-    answerIndex: 1,
-    explanations: [
-      '틀린 연결이다. Dabigatran은 antithrombin 없이 thrombin의 활성을 직접 억제한다.',
-      '옳은 연결이다. Rivaroxaban은 직접 factor Xa 억제제이며 antithrombin을 매개로 하지 않는다.',
-      '틀린 연결이다. Fondaparinux는 antithrombin에 결합하여 factor Xa 억제를 촉진하는 간접 억제제이다.',
-      '틀린 연결이다. UFH는 antithrombin을 통해 Xa와 IIa를 억제한다. Vitamin K 재생 억제는 warfarin의 기전이다.',
-      '틀린 연결이다. LMWH는 일반적으로 anti-Xa 활성이 anti-IIa 활성보다 크다. Thrombin 억제가 우세한 것도, 전혀 없는 것도 아니다.'
+    "answerIndex": 1,
+    "explanations": [
+      "틀린 연결이다. Dabigatran은 thrombin의 활성 부위에 직접 결합하며 antithrombin을 필요로 하지 않는다.",
+      "옳은 연결이다. Rivaroxaban은 factor Xa를 직접 억제하여 thrombin 생성을 감소시키며 antithrombin을 매개로 하지 않는다.",
+      "틀린 연결이다. Fondaparinux는 antithrombin에 결합하여 factor Xa 억제를 촉진하는 간접 억제제이다.",
+      "틀린 연결이다. UFH는 antithrombin을 매개로 Xa와 IIa를 억제한다. Vitamin K 재생과 응고인자의 성숙을 억제하는 약물은 warfarin이다.",
+      "틀린 연결이다. LMWH는 antithrombin을 매개로 작용한다. Anti-Xa 활성이 우세하지만 일부 anti-IIa 활성도 있어 직접 Xa 억제제로 분류하지 않는다."
     ],
-    rationale: '표적이 Xa인지 IIa인지와 antithrombin이 필요한지를 따로 판단한다. Fondaparinux와 rivaroxaban은 모두 Xa 억제 효과가 있지만 직접성에서 다르다.',
-    notesPages: [28],
-    examRefs: [{id: '22-2021-59-p52', page: 52}, {id: '22-2020-60-p52', page: 52}, {id: '22-2019-12-p53', page: 53}],
-    lectureSources: [{label: '사용자 약리학 필기', page: 28}, {label: 'Om 약리학 정리', page: 150}, {label: 'Om 약리학 정리', page: 151}],
-    verifiedSources: ['https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=d8afb29f-cbed-43bc-809f-09b30fca28f5']
+    "rationale": "직접 억제인지 antithrombin 매개인지와 표적이 Xa인지 IIa인지를 구별한다. Fondaparinux와 rivaroxaban은 모두 Xa 억제 효과가 있지만 작용 방식은 다르다.",
+    "notesPages": [
+      28
+    ],
+    "examRefs": [
+      {
+        "id": "22-2021-59-p52",
+        "page": 52
+      },
+      {
+        "id": "22-2020-60-p52",
+        "page": 52
+      },
+      {
+        "id": "22-2019-12-p53",
+        "page": 53
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 18
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 22
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 23
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 24
+      }
+    ],
+    "emphasis": {
+      "kind": "p18 heparin류 비교 표와 족보 스탬프, p22 antithrombin 비의존성 직접 thrombin 억제 도식, p23 fondaparinux와 직접 Xa 억제제 비교 상자",
+      "pages": [
+        18,
+        22,
+        23
+      ]
+    },
+    "materialRevision": "20261020-lectures1",
+    "verifiedSources": [
+      "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=5017a927-2a24-4f27-89f9-27c805bf7d59"
+    ]
   },
   {
-    id: 'comp-L22-Q4', lecture: 22,
-    concept: 'Warfarin의 VKORC1 억제와 초기 protein C 감소', format: 'judgment', polarity: 'incorrect',
-    stem: 'Warfarin에 관한 설명으로 옳지 않은 것은?',
-    options: [
-      'VKORC1을 억제하여 환원형 vitamin K의 재생을 감소시킨다.',
-      '응고인자 II·VII·IX·X의 vitamin K 의존성 γ-carboxylation을 저해한다.',
-      '혈중에 이미 존재하는 thrombin의 활성 부위를 직접 막아 즉시 작용한다.',
-      '투여 초기에 protein C가 감소하여 일시적으로 혈전 형성에 유리할 수 있다.',
-      '항응고 효과의 변동을 평가할 때 PT를 표준화한 INR이 이용된다.'
+    "id": "comp-L22-Q4",
+    "lecture": 22,
+    "concept": "Warfarin의 VKORC1 억제와 초기 protein C 감소",
+    "format": "judgment",
+    "polarity": "incorrect",
+    "stem": "Warfarin에 관한 설명으로 옳지 않은 것은?",
+    "options": [
+      "Vitamin K의 재생을 억제하여 환원형 vitamin K의 공급을 감소시킨다.",
+      "응고인자 II·VII·IX·X의 vitamin K 의존성 γ-carboxylation을 저해한다.",
+      "혈중에 이미 존재하는 thrombin의 활성 부위를 직접 막아 즉시 작용한다.",
+      "투여 초기에 protein C가 감소하여 일시적으로 혈전 형성에 유리할 수 있다.",
+      "항응고 효과의 변동을 추적하고 용량을 조절할 때 INR을 이용한다."
     ],
-    answerIndex: 2,
-    explanations: [
-      '옳다. VKORC1 억제는 vitamin K 재생을 막아 응고인자의 정상적인 성숙에 영향을 준다.',
-      '옳다. Vitamin K 의존성 γ-carboxylation이 저하되면 이들 인자의 Ca2+ 결합과 정상 기능이 감소한다.',
-      '옳지 않다. Warfarin은 이미 존재하는 thrombin을 직접 억제하지 않는다. 기존 응고인자가 소실되는 시간이 필요하다.',
-      '옳다. Protein C도 vitamin K 의존성 단백질이며 초기 감소로 항응고계가 먼저 약해질 수 있다.',
-      '옳다. INR은 warfarin 항응고 효과의 변동을 추적하는 대표적인 지표이다.'
+    "answerIndex": 2,
+    "explanations": [
+      "옳다. Warfarin은 vitamin K 재생에 필요한 VKORC1을 억제하여 응고인자의 정상적인 성숙을 방해한다.",
+      "옳다. Vitamin K 의존성 γ-carboxylation이 감소하면 이들 인자의 Ca2+ 결합과 정상 기능이 저하된다.",
+      "옳지 않다. Warfarin은 기존 thrombin을 직접 억제하지 않는다. 이미 존재하던 응고인자가 소실되는 시간이 필요하므로 효과가 지연된다.",
+      "옳다. Protein C 역시 vitamin K 의존성 단백질이다. 초기의 빠른 protein C 감소로 일시적인 응고 경향 증가가 나타날 수 있다.",
+      "옳다. 원본 슬라이드는 INR을 이용한 용량 조절을 제시한다. 음식과 약물 상호작용 등으로 효과가 변동할 수 있다."
     ],
-    rationale: 'Warfarin은 응고인자의 성숙을 방해하며 활성 thrombin 직접 억제제와 다르다. 작용 지연과 초기 protein C 감소는 같은 기전에서 이해할 수 있다.',
-    notesPages: [29],
-    examRefs: [{id: '22-2020-61-p52', page: 52}, {id: '22-2021-59-p52', page: 52}],
-    lectureSources: [{label: '사용자 약리학 필기', page: 29}, {label: 'Om 약리학 정리', page: 147}, {label: 'Om 약리학 정리', page: 151}]
+    "rationale": "Warfarin은 vitamin K 재생과 응고인자의 성숙을 억제한다. 기존 thrombin을 직접 막는 약물과 달리 효과가 지연되며 초기 protein C 감소에 따른 응고 경향 증가도 가능하다.",
+    "notesPages": [
+      29
+    ],
+    "examRefs": [],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 22
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 24
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 25
+      }
+    ],
+    "emphasis": {
+      "kind": "p24 족보 스탬프와 vitamin K–γ-carboxylation 도식, p25 protein C 감소를 다시 설명한 강의 필기",
+      "pages": [
+        24,
+        25
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   },
   {
-    id: 'comp-L22-Q5', lecture: 22,
-    concept: 'Plasminogen 활성화와 항섬유소용해 작용의 구별', format: 'judgment', polarity: 'incorrect',
-    stem: '섬유소용해와 이를 조절하는 약물·단백질의 설명으로 옳지 않은 것은?',
-    options: [
-      'Alteplase는 plasminogen을 plasmin으로 전환하여 fibrin 분해를 촉진한다.',
-      'Streptokinase는 plasminogen과 복합체를 형성하여 plasminogen 활성화를 촉진한다.',
-      'Tranexamic acid는 plasminogen의 fibrin 결합을 늘려 형성된 혈전의 분해를 촉진한다.',
-      'PAI-1은 tPA의 작용을 억제하여 plasmin 생성 단계를 제한한다.',
-      'α2-Antiplasmin은 생성된 plasmin을 억제하여 과도한 섬유소용해를 제한한다.'
+    "id": "comp-L22-Q5",
+    "lecture": 22,
+    "concept": "Plasminogen 활성화와 항섬유소용해 작용의 구별",
+    "format": "judgment",
+    "polarity": "incorrect",
+    "stem": "섬유소용해와 이를 조절하는 약물·단백질의 설명으로 옳지 않은 것은?",
+    "options": [
+      "Alteplase는 plasminogen을 plasmin으로 전환하여 fibrin 분해를 촉진한다.",
+      "Streptokinase는 plasminogen과 복합체를 형성하여 plasminogen 활성화를 촉진한다.",
+      "Tranexamic acid는 plasminogen의 fibrin 결합을 늘려 형성된 혈전의 분해를 촉진한다.",
+      "PAI-1은 tPA의 작용을 억제하여 plasmin 생성 단계를 제한한다.",
+      "α2-Antiplasmin은 생성된 plasmin을 억제하여 과도한 섬유소용해를 제한한다."
     ],
-    answerIndex: 2,
-    explanations: [
-      '옳다. Alteplase는 재조합 tPA로 plasmin 생성을 촉진하며 plasmin이 fibrin을 분해한다.',
-      '옳다. Streptokinase는 plasminogen과의 복합체를 통해 섬유소용해를 촉진한다.',
-      '옳지 않다. Tranexamic acid는 lysine 유사체로 plasminogen의 fibrin 결합을 억제하여 혈전 분해를 줄이고 형성된 clot을 보존한다.',
-      '옳다. PAI-1은 plasmin 자체보다 그 상위의 plasminogen activator를 억제한다.',
-      '옳다. α2-Antiplasmin은 활성 plasmin을 억제하는 내인성 섬유소용해 조절 단백질이다.'
+    "answerIndex": 2,
+    "explanations": [
+      "옳다. Alteplase는 재조합 tPA로 plasmin 생성을 촉진하며 plasmin이 fibrin을 분해한다.",
+      "옳다. Streptokinase는 plasminogen과의 복합체를 통해 섬유소용해를 촉진한다.",
+      "옳지 않다. Tranexamic acid는 lysine 유사체로 plasminogen의 fibrin 결합을 억제하여 혈전 분해를 줄이고 형성된 clot을 보존한다.",
+      "옳다. PAI-1은 plasmin 자체보다 그 상위의 plasminogen activator를 억제한다.",
+      "옳다. α2-Antiplasmin은 활성 plasmin을 억제하는 내인성 섬유소용해 조절 단백질이다."
     ],
-    rationale: '혈전용해제는 plasmin 생성을 촉진하지만 tranexamic acid는 plasminogen의 fibrin 결합을 막아 혈전 분해를 억제한다. PAI-1과 antiplasmin의 작용 단계도 구별한다.',
-    notesPages: [29],
-    examRefs: [{id: '22-2023-41-p51', page: 51}, {id: '22-2025-33-p51', page: 51}, {id: '22-2021-57-p52', page: 52}],
-    lectureSources: [{label: '사용자 약리학 필기', page: 29}, {label: 'Om 약리학 정리', page: 148}, {label: 'Om 약리학 정리', page: 152}]
+    "rationale": "혈전용해제는 plasmin 생성을 촉진하지만 tranexamic acid는 plasminogen의 fibrin 결합을 막아 혈전 분해를 억제한다. PAI-1과 antiplasmin의 작용 단계도 구별한다.",
+    "notesPages": [
+      29
+    ],
+    "examRefs": [
+      {
+        "id": "22-2023-41-p51",
+        "page": 51
+      },
+      {
+        "id": "22-2025-33-p51",
+        "page": 51
+      },
+      {
+        "id": "22-2021-57-p52",
+        "page": 52
+      }
+    ],
+    "lectureSources": [
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 26
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 27
+      },
+      {
+        "kind": "lecture",
+        "lecture": 22,
+        "label": "22강 · 지혈과 혈전증 약리",
+        "page": 28
+      }
+    ],
+    "emphasis": {
+      "kind": "p27 족보 스탬프와 streptokinase–plasminogen 복합체 밑줄, p26 PAI-1·α2-antiplasmin 비교 도식, p28 lysine 유사체의 clot 보존 작용도",
+      "pages": [
+        26,
+        27,
+        28
+      ]
+    },
+    "materialRevision": "20261020-lectures1"
   }
 ];

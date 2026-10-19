@@ -1,4 +1,4 @@
-import {COMPREHENSIVE_LECTURES,COMPREHENSIVE_QUESTIONS} from './comprehensive-data.mjs?v=20261020-comp1';
+import {COMPREHENSIVE_LECTURES,COMPREHENSIVE_QUESTIONS} from './comprehensive-data.mjs?v=20261020-lectures1';
 import {HIST_QUESTIONS,HIST_H1_CARDS,HIST_ACID_CARDS} from './histamine21-data.mjs?v=20261017-hist1';
 import {studyStore,normalizeStudyQuestion} from './study-records.mjs?v=20261015-review1';
 import {CYP_FACTS,CYP_CASES,makeCypQuestion,makeCypCaseQuestion} from './cyp.mjs?v=20261017-clinical1';

@@ -37,6 +37,20 @@ test('2·3·4강은 각 강의록의 실제 별표·중요 스탬프 쪽수에 �
   for(const q of qs){assert.ok(q.emphasis?.kind,q.id);assert.ok(q.emphasis.pages.some(p=>stars[n].includes(p)),q.id);assert.ok(q.lectureSources.some(s=>s.label===`약동학(${n-1})`&&stars[n].includes(s.page)),q.id);}
  }
 });
+test('새 원본을 받은 22·28–36강의 50문항은 해당 강의록의 쪽수와 강조 근거를 제공한다',async()=>{
+ const {COMPREHENSIVE_LECTURES:units,COMPREHENSIVE_QUESTIONS:bank}=await api();
+ const bounds={22:33,28:54,29:30,30:40,31:57,32:39,33:36,34:41,35:27,36:40};
+ const revised=bank.filter(q=>bounds[q.lecture]);assert.equal(revised.length,50);
+ assert.equal(units.find(u=>u.number===29).title,'유전자 표적 항암 약리');
+ for(const q of revised){
+  const sources=q.lectureSources.filter(s=>s.kind==='lecture'&&s.lecture===q.lecture);
+  assert.ok(sources.length,q.id+' 원본 강의록 출처 누락');
+  assert.ok(sources.every(s=>Number.isInteger(s.page)&&s.page>=1&&s.page<=bounds[q.lecture]),q.id);
+  assert.ok(q.emphasis?.kind&&q.emphasis.pages.length,q.id+' 강조 근거 누락');
+  assert.ok(q.emphasis.pages.every(p=>sources.some(s=>s.page===p)),q.id);
+  assert.equal(q.materialRevision,'20261020-lectures1',q.id);
+ }
+});
 test('강의별 회독은 최근 세 문항을 피하고 전 문항·모든 정답 위치를 사용한다',async()=>{
  const {COMPREHENSIVE_LECTURES:units,pickComprehensiveQuestion}=await api();
  let seed=919;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
@@ -65,6 +79,17 @@ test('전단원은 강의별 분모 5·전체 175로 등록되고 실제 오답�
   const saved=store.wrong(u.scope)[0].question;assert.deepEqual(saved.choices,q.choices.map(c=>c.text));assert.deepEqual(saved.answers,[q.answerIndex]);assert.equal(saved.stem,q.stem);
   store.record(u.scope,q,true);assert.equal(store.wrong(u.scope).length,0);assert.equal(store.counts(u.scope).solved,1);
  }
+});
+test('개념을 교체한 새 문항은 미풀이로 시작하고 유지한 개념과 다른 강의의 기록은 보존한다',async()=>{
+ const {createStudyStore,STUDY_KEY}=await import('./study-records.mjs'),{registerLectureStudies}=await import('./study-catalog.mjs');
+ const previous={version:1,records:{'comp-29':{'comp-L29-Q1':{status:'correct'},'comp-L29-Q3':{status:'wrong'}},'comp-30':{'comp-L30-Q2':{status:'wrong'},'comp-L30-Q3':{status:'correct'}},'comp-31':{'comp-L31-Q5':{status:'wrong'}},'comp-32':{'comp-L32-Q5':{status:'correct'}},'comp-34':{'comp-L34-Q4':{status:'wrong'}},'comp-02':{'comp-L02-Q1':{status:'correct'}}}};
+ const disk=new Map([[STUDY_KEY,JSON.stringify(previous)]]),store=createStudyStore({getItem:k=>disk.get(k),setItem:(k,v)=>disk.set(k,v)});registerLectureStudies(store);
+ assert.equal(store.counts('comp-29').total,5);assert.equal(store.counts('comp-29').solved,1);assert.equal(store.counts('comp-29').wrong,1);
+ for(const scope of ['comp-30','comp-31','comp-32','comp-34'])assert.equal(store.counts(scope).solved,0);assert.equal(store.counts('comp-02').solved,1);
+ for(const [scope,id]of [['comp-29','comp-L29-Q1-lectures1'],['comp-29','comp-L29-Q4-lectures1'],['comp-30','comp-L30-Q2-lectures1'],['comp-30','comp-L30-Q3-lectures1'],['comp-31','comp-L31-Q5-lectures1'],['comp-32','comp-L32-Q5-lectures1'],['comp-34','comp-L34-Q4-lectures1']]){
+  assert.ok(store.definitions.get(scope).items.has(id));assert.equal(store.status(scope,id),'unanswered');
+ }
+ const saved=JSON.parse(disk.get(STUDY_KEY));for(const [scope,rows]of Object.entries(previous.records))assert.deepEqual(saved.records[scope],rows);
 });
 test('실제 화면은 35개 강의를 선택·채점하고 건너뛰기와 숨겨진 화면을 미풀이로 남긴다',async()=>{
  const {COMPREHENSIVE_LECTURES:units,COMPREHENSIVE_QUESTIONS:bank}=await api();

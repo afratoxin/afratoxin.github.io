@@ -1,4 +1,4 @@
-import {COMPREHENSIVE_LECTURES as units,pickComprehensiveQuestion} from './comprehensive-data.mjs?v=20261020-comp1';
+import {COMPREHENSIVE_LECTURES as units,pickComprehensiveQuestion} from './comprehensive-data.mjs?v=20261020-lectures1';
 import {studyStore,recordStudyResult,studyCountLabel,paintStudyProgress} from './study-records.mjs?v=20261015-review1';
 const KEY='pharmacology-comprehensive-2026-v1',symbols=['①','②','③','④','⑤'];
 export function initComprehensiveQuiz(){
