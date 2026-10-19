@@ -1,10 +1,11 @@
+import {initComprehensiveQuiz} from './comprehensive-quiz.mjs?v=20261020-comp1';
 import {initHistamineQuiz} from './histamine21-quiz.mjs?v=20261017-hist1';
 import {initSystemsQuiz} from './systems-quiz.mjs?v=20261018-cause1';
 import {initAbxQuiz} from './abx-quiz.mjs?v=20261017-abxshort1';
 import {initAdr13Table} from './adr13-table.mjs?v=20261017-clinical1';
 import {ADR13_BETA_QUESTIONS,ADR13_BETA_ITEMS} from './adr13-beta.mjs?v=20261017-beta1';
 import {studyStore,recordStudyResult} from './study-records.mjs?v=20261015-review1';
-import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261019-pksimple1';
+import {registerLectureStudies,registerArchiveStudy} from './study-catalog.mjs?v=20261020-comp1';
 import {initStudyReview} from './study-review.mjs?v=20261019-pksimple1';
 import {shuffleChoices,gradeSelection,chooseQuestion,visibleQuestions} from './logic.mjs';
 import {initCypQuiz} from './cyp.mjs?v=20261017-clinical1';
@@ -42,6 +43,7 @@ const adr13=initAutonomicQuiz({prefix:'adr13',viewId:'adr13View',bank:ADR13_QUES
 const mixedPool=buildMixedPool();
 const mixed=initAutonomicQuiz({prefix:'mixed',viewId:'mixedView',bank:mixedPool,draw:state=>nextMixedQuestion(mixedPool,state),storageKey:'pharmacology-autonomic-mixed-v1'});
 const pk=initPkQuiz();
+const comprehensive=initComprehensiveQuiz();
 const cns=initCnsQuiz();
 const immune=initImmuneQuiz();
 const anticancer=initAnticancerQuiz();
@@ -68,7 +70,7 @@ function label(unit){
 function show(view){
   const jumpToChol11Match=view==='chol11match';
   if(jumpToChol11Match)view='chol11';
-  for(const name of ['home','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','pk','cns','abx','histamine','endocrine','renal','cardio','menu','practice','review','mistakes'])$(name+'View').hidden=(view!==name);
+  for(const name of ['home','comprehensive','cyp','drag','table','tx','ans','chol','chol11','adr12','adr13','mixed','pk','cns','abx','histamine','endocrine','renal','cardio','menu','practice','review','mistakes'])$(name+'View').hidden=(view!==name);
   syncStudyFolder(view);
   const archive=['menu','practice','review'].includes(view);
   $('archiveHero').hidden=!archive;
@@ -87,6 +89,7 @@ function show(view){
   if(view==='adr13')adr13.open();
   if(view==='mixed')mixed.open();
   if(view==='pk')pk.open();
+  if(view==='comprehensive')comprehensive.open();
   if(view==='cns')cns.open();
   if(view==='immune')immune.open();
   if(view==='anticancer')anticancer.open();
@@ -254,7 +257,7 @@ try{
   const wanted=decodeURIComponent(location.hash.replace(/^#unit=/,''));
   if(data.unitOrder.includes(wanted))startPractice(wanted);
   else if(location.hash==='#mistakes')studyReview.open();
-  else if(['cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','anticancer','signal','checkpoint32','abx','histamine','endocrine','renal','cardio','archive'].includes(location.hash.slice(1)))
+  else if(['comprehensive','cyp','drag','table','tx','ans','chol','chol11','chol11match','adr12','adr13','mixed','pk','cns','immune','anticancer','signal','checkpoint32','abx','histamine','endocrine','renal','cardio','archive'].includes(location.hash.slice(1)))
     show(location.hash==='#archive'?'menu':location.hash.slice(1));
 }catch(error){$('unitGroups').innerHTML=`<div class="empty">문항 자료를 불러오지 못했습니다. 새로고침해 주세요. (${esc(error.message)})</div>`;}
 

@@ -1,3 +1,4 @@
+import {COMPREHENSIVE_LECTURES,COMPREHENSIVE_QUESTIONS} from './comprehensive-data.mjs?v=20261020-comp1';
 import {HIST_QUESTIONS,HIST_H1_CARDS,HIST_ACID_CARDS} from './histamine21-data.mjs?v=20261017-hist1';
 import {studyStore,normalizeStudyQuestion} from './study-records.mjs?v=20261015-review1';
 import {CYP_FACTS,CYP_CASES,makeCypQuestion,makeCypCaseQuestion} from './cyp.mjs?v=20261017-clinical1';
@@ -37,6 +38,7 @@ export function registerLectureStudies(store=studyStore){
   add('mixed','9–13강 · 종합','mixed',buildMixedPool(),f=>f.render(0),'pharmacology-autonomic-mixed-v1');
   const variants=Object.entries(PK_VARIANTS).flatMap(([topic,vs])=>vs.map(variant=>({id:pkQuestionId(topic,variant),topic,variant})));
   add('pk','2–4강 · 약동학 계산','pk',variants,f=>makePkQuestion(f.topic,Math.random,f.variant),'pharmacology-pk-calculations-v1',{unknownLegacy:true,tabId:'pkQuizTab',unitLabel:'문제 형태'});
+  for(const unit of COMPREHENSIVE_LECTURES)staticBank(unit.scope,unit.number+'강 · '+unit.title+' · 핵심 5문항','comprehensive',COMPREHENSIVE_QUESTIONS.filter(q=>q.lecture===unit.number),'',{legacy:{},tabId:unit.tabId});
   staticBank('cns','14–15강 · 중추신경계','cns',CNS_QUESTIONS,'pharmacology-cns-14-15-v1',{tabId:'cnsQuizTab',reviewQuestion:saved=>normalizeStudyQuestion(CNS_QUESTIONS.find(q=>q.id===saved.id)||saved)});
   staticBank('immune','28강 · 면역억제제','immune',IMM_QUESTIONS,'pharmacology-immune-28-v1',{tabId:'immQuizTab'});
   staticBank('anticancer','30강 · 항암제','anticancer',ANTI_QUESTIONS,'pharmacology-anticancer-30-v1',{tabId:'antiQuizTab'});

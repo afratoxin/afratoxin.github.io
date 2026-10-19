@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#173f5f">
   <meta name="description" content="약물의 이해 족보 회독과 약동학·자율신경계·중추신경계·면역억제·항생제 약리 퀴즈">
   <title>약물의 이해 · 퀴즈 허브</title>
-  <link rel="stylesheet" href="style.css?v=20261017-hist1">
+  <link rel="stylesheet" href="style.css?v=20261020-comp1">
 </head>
 <body>
   <main class="shell">
@@ -20,6 +20,9 @@
       <div class="hub-groups">
         <section class="hub-group" aria-labelledby="examGroupTitle"><div class="hub-group-head"><h2 id="examGroupTitle">족보 회독</h2><p>복원 기출을 강의별로 반복</p></div>
           <button type="button" data-open="menu" class="hub-card archive-card"><span class="hub-icon">족보</span><span><strong>족보 문항 풀기</strong><small>단원별 기출 · 오답 회독 · 원문 확인</small><span class="hub-tags"><span>단원별</span><span>오답 회독</span><span>학습 기록</span></span></span><b aria-hidden="true">→</b></button>
+        </section>
+        <section class="hub-group" aria-labelledby="compGroupTitle"><div class="hub-group-head"><h2 id="compGroupTitle">2–36강 · 전단원 핵심 5문항</h2><p>각 강의 5문항 · 총 175문항</p></div>
+          <button type="button" data-open="comprehensive" class="hub-card cyp-card"><span class="hub-icon">5</span><span><strong>정리본 기반 · 강의별 종합 퀴즈</strong><small>족보형 판별 · 특징 연결 · 상황 추론 · 2–4강 별표 우선</small></span><b aria-hidden="true">→</b></button>
         </section>
         <section class="hub-group" aria-labelledby="pkGroupTitle"><div class="hub-group-head"><h2 id="pkGroupTitle">2–4강 · 약동학</h2><p>정리본·강의록·족보 기반 기본 계산</p></div>
           <button type="button" data-open="pk" class="hub-card cyp-card pk-entry"><span class="hub-icon">PK</span><span><strong>약동학 계산 예상문제</strong><small>반감기 · CL·V · AUC · 숫자로 답하는 계산</small></span></button>
@@ -208,6 +211,14 @@
       <div id="cnsEffectPanel" role="tabpanel" aria-labelledby="cnsEffectTab" hidden><div class="cns-toolbar"><label for="cnsEffectFilter">연습 범위</label><select id="cnsEffectFilter"><option value="all">수용체·결합부위 전체</option></select></div><p class="cyp-intro">14강 표에 따라 흥분성 / 억제성으로 분류하세요. 같은 전달물질도 수용체 아형에 따라 반대로 작용합니다. Glycine의 두 역할을 포함한 46개 카드입니다.</p><div id="cnsEffectBoard" class="cns-binary-board"></div></div>
       <div id="cnsDiseasePanel" role="tabpanel" aria-labelledby="cnsDiseaseTab" hidden><div class="cns-toolbar"><label for="cnsDiseasePriority">중요도 범위</label><select id="cnsDiseasePriority"><option value="core">진한 글씨·구조식 약물 62개</option><option value="structures">구조식 약물 29개</option><option value="all">약물 전체 84개</option></select><label for="cnsDiseaseFilter">질환별 범위</label><select id="cnsDiseaseFilter"><option value="all">약물 전체</option></select></div><p class="cyp-intro">강의록의 강조 약물부터 질환·치료 목적과 연결하세요. 구조식 약물 또는 전체 84개로 범위를 바꿀 수 있습니다. 여러 용도가 있는 약물은 강의록에 제시된 칸 중 하나에 놓으면 정답입니다. 채점 후 가능한 칸과 기전을 함께 확인할 수 있습니다.</p><div id="cnsDiseaseBoard"></div></div>
     </section>
+    <section id="comprehensiveView" class="ans-view" hidden>
+      <div class="section-head"><div><p class="eyebrow dark">LECTURE BY LECTURE · 2–36강</p><h2>전단원 핵심 5문항</h2></div><p>각 강의 5문항 · 총 175문항</p></div>
+      <p class="cyp-intro">본인 정리본과 강의록의 핵심 내용을 족보의 발문으로 복습합니다. 합쳐 정리된 강의도 각각 나누었습니다. 2–4강은 강의록의 별표·중요 표시를 우선 반영했습니다.</p>
+      <div class="comp-toolbar"><label for="compLecture">강의 선택</label><select id="compLecture"><option value="all">전단원 혼합 · 175문항</option></select><button id="compAll" type="button" class="back-button" aria-pressed="false">전단원 혼합</button></div>
+      <div id="compUnitGrid" class="comp-unit-grid" role="group" aria-label="강의별 다섯 문항 선택"></div>
+      <div class="ans-layout"><article class="question-card"><div class="q-meta"><span id="compKind" class="badge"></span><span id="compHeading" class="q-count"></span></div><h2 id="compStem"></h2><div id="compChoices" class="options"></div><div id="compFeedback" class="feedback" aria-live="polite" hidden></div><div class="comp-actions"><button id="compSkip" type="button" class="back-button">건너뛰기</button><button id="compNext" type="button" class="primary next" hidden>다음 문제 →</button></div></article>
+      <aside class="side-card"><span class="side-label">선택한 강의의 진도</span><p id="compSelectedStats"></p><span class="side-label">전단원 진도</span><p id="comprehensiveStats"></p><p>초록색은 정답, 붉은색은 오답, 빈 영역은 미풀이입니다. 건너뛴 문제는 미풀이로 남습니다.</p><span class="side-label">현재 문제의 근거</span><p id="compSource"></p><p id="compExam"></p><p>1–5로 답 선택 · Enter로 다음 문제</p></aside></div>
+    </section>
     <section id="pkView" class="ans-view" hidden>
       <div class="section-head"><div><p class="eyebrow dark">2026 2–4강 · PHARMACOKINETICS</p><h2>약동학 계산 예상문제</h2></div><p>키보드 1–5 / Enter</p></div>
       <div class="ans-tabs" role="tablist" aria-label="약동학 학습 방식"><button id="pkQuizTab" role="tab" aria-selected="true" aria-controls="pkQuizPanel" class="active" type="button">기본 계산 문제</button><button id="pkFormulaTab" role="tab" aria-selected="false" aria-controls="pkFormulaPanel" type="button">공식·단위 정리</button></div>
@@ -326,7 +337,7 @@
     <section id="reviewView" hidden><div class="practice-top"><button id="reviewBack" class="back-button" type="button">← 단원 목록</button><span id="reviewHeading"></span></div><div class="review-note">이 목록은 자동 채점하지 않습니다. 복원되지 않은 선지와 불확실한 답을 추측해 채우지 않았습니다.</div><div id="reviewItems" class="review-items"></div></section>
     <footer><span>자료: 2026 약리 강의록 · 면역 억제 약리학 v3·첨부 요약표 · 2026 「약물의 이해」 족보 · 본인 「# 약리학(3)」 정리본 · 2025 Om 정리본</span><span>면역억제 자료 확인: 2026-10-15</span></footer>
   </main>
-  <script type="module" src="app.mjs?v=20261019-pksimple1"></script>
+  <script type="module" src="app.mjs?v=20261020-comp1"></script>
 </body>
 </html>
 
