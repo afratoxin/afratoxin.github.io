@@ -2,6 +2,36 @@ export const LOCAL_TEXT_STORAGE_KEY = 'leet-atlas:local-texts:v1';
 const MAX_PACK_BYTES = 8 * 1024 * 1024;
 const MAX_TEXT_LENGTH = 100000;
 
+export function localTextCoverage(questions, localTexts) {
+  const coverage = {total: questions.length, available: 0, native: 0, imported: 0, exams: []};
+  const exams = new Map();
+  for (const question of questions) {
+    const examKey = question.examKey || String(question.year);
+    if (!exams.has(examKey)) {
+      const exam = {examKey, examLabel: question.examLabel || `${question.year || examKey}학년도`, total: 0, available: 0, native: 0, imported: 0};
+      exams.set(examKey, exam);
+      coverage.exams.push(exam);
+    }
+    const exam = exams.get(examKey);
+    exam.total++;
+    const native = typeof question.text === 'string' && Boolean(question.text.trim());
+    const record = localTexts?.get(question.id);
+    const sourcePage = record?.sourcePage ?? question.sourcePage;
+    const imported = !native && question.sourceAccess === 'local-only' && record?.id === question.id &&
+      record.examKey === question.examKey && record.number === question.number &&
+      Number.isInteger(sourcePage) && sourcePage > 0 && typeof record.text === 'string' &&
+      Boolean(record.text.trim()) && record.text.length <= MAX_TEXT_LENGTH;
+    if (native || imported) {
+      coverage.available++;
+      exam.available++;
+      const kind = native ? 'native' : 'imported';
+      coverage[kind]++;
+      exam[kind]++;
+    }
+  }
+  return coverage;
+}
+
 export function parseLocalTextPack(input, questions) {
   const serialized = typeof input === 'string' ? input : JSON.stringify(input);
   if (typeof serialized !== 'string' || new TextEncoder().encode(serialized).byteLength > MAX_PACK_BYTES) {
