@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#172f3a">
   <meta name="description" content="예비시험부터 2027학년도까지 LEET 추리논증 20회분 755문항의 소재·태그와 분류 이유를 탐색하는 학습 도구">
   <title>LEET Atlas · 추리논증 전체 아카이브</title>
-  <link rel="stylesheet" href="styles.css?v=20261025d">
-  <script type="module" src="app.js?v=20261025d"></script>
+  <link rel="stylesheet" href="styles.css?v=20261026b">
+  <script type="module" src="app.js?v=20261026b"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -30,7 +30,7 @@
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <dialog id="image-dialog" class="image-dialog" aria-labelledby="image-dialog-title">
     <div class="dialog-toolbar"><strong id="image-dialog-title">문항 원본 확대</strong><span class="dialog-hint">이미지를 가로로 이동해 확인할 수 있습니다.</span><button class="icon-button" id="close-image" type="button" aria-label="원본 확대 닫기">✕</button></div>
-    <div class="dialog-image-wrap"><img id="enlarged-image" alt=""></div>
+    <div class="dialog-image-wrap"><div id="image-dialog-status" hidden></div><img id="enlarged-image" alt="" hidden></div>
   </dialog>
   <dialog id="bookmark-dialog" class="bookmark-dialog" aria-labelledby="bookmark-dialog-title">
     <div class="bookmark-dialog-heading"><div><strong id="bookmark-dialog-title">북마크 색 선택</strong><p>한 문항에 여러 색을 함께 붙일 수 있습니다.</p></div><button class="icon-button" id="close-bookmarks" type="button" aria-label="북마크 색 선택 닫기">✕</button></div>

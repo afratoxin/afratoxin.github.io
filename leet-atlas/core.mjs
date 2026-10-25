@@ -72,3 +72,50 @@ export function buildRoute({view='list',id=null,tags=[],bookmark,page=1,mode}={}
   return '#'+path+(params.size?'?'+params:'');
 }
 
+export function createImageBundleStore(fetcher,{version=''}={}) {
+  const bundles=new Map();
+  function pathFor(question) {
+    const path=String(question.imageBundle||'');
+    const match=path.match(/^data\/images\/(preliminary|20\d{2})(?:-[a-z0-9]+)?\.json$/);
+    return match && match[1]===question.examKey ? path : '';
+  }
+  function get(question) {
+    const path=pathFor(question);
+    if(!path)return {status:'error',url:'',error:new Error('이미지 경로가 올바르지 않습니다.')};
+    const entry=bundles.get(path);
+    if(!entry)return {status:'idle',url:''};
+    if(entry.status==='ready') {
+      const image=entry.images[question.id];
+      return image ? {status:'ready',url:`data:image/webp;base64,${image}`} : {status:'error',url:'',error:new Error(`${question.id} 원본 이미지가 없습니다.`)};
+    }
+    return {status:entry.status,url:'',error:entry.error};
+  }
+  async function load(question,{retry=false}={}) {
+    const path=pathFor(question);
+    if(!path)throw get(question).error;
+    let entry=bundles.get(path);
+    if(!entry || (retry && (entry.status==='error' || entry.status==='ready' && !entry.images[question.id]))) {
+      entry={status:'pending',images:null,error:null,promise:null};
+      bundles.set(path,entry);
+      entry.promise=(async()=>{
+        try {
+          const response=await fetcher(path+(version?`?v=${encodeURIComponent(version)}`:''));
+          if(!response.ok)throw new Error(`HTTP ${response.status}`);
+          const data=await response.json();
+          if(data.schemaVersion!==1 || data.examKey!==question.examKey || data.mimeType!=='image/webp' || !data.images || Array.isArray(data.images) || typeof data.images!=='object')throw new Error('이미지 자료 형식이 올바르지 않습니다.');
+          for(const [id,bytes] of Object.entries(data.images)) {
+            if(!/^(?:p\d{3}|\d{4})$/.test(id) || typeof bytes!=='string' || !/^UklGR[A-Za-z0-9+/]*={0,2}$/.test(bytes))throw new Error('이미지 자료를 읽을 수 없습니다.');
+          }
+          entry.images=data.images;
+          entry.status='ready';
+        } catch(error) { entry.status='error';entry.error=error;throw error; }
+      })();
+    }
+    if(entry.status==='pending')await entry.promise;
+    const result=get(question);
+    if(result.status!=='ready')throw result.error;
+    return result.url;
+  }
+  return {get,load};
+}
+

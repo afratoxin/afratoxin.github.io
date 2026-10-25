@@ -1,9 +1,13 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute } from './core.mjs?v=20261025d';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026b';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261025d';
+const CACHE_VERSION = '20261026b';
+const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
+let imageHydrationVersion = 0;
+let visibleImageQuestions = [];
+let dialogQuestionId = null;
 const AXES = [
   { id: 'domain', label: '대범주', field: 'domains' },
   { id: 'field', label: '분야', field: 'fields' },
@@ -53,6 +57,64 @@ function asText(value) {
 function safeAsset(path) {
   const value = String(path || '');
   return /^(?:assets|data)\/[a-zA-Z0-9_.\/-]+$/.test(value) && !value.includes('..') ? `${value}?v=${CACHE_VERSION}` : '';
+}
+function usesImageBundle(question) {
+  return question.sourceAccess !== 'local-only' && Boolean(question.imageBundle || question.sourceAccess === 'bundled');
+}
+function imageFor(question, thumbnail = false) {
+  if (question.sourceAccess === 'local-only') return '';
+  return usesImageBundle(question) ? imageBundles.get(question).url : safeAsset(thumbnail ? question.thumbnail || question.image : question.image);
+}
+function imagePlaceholder(question, thumbnail = false) {
+  const failed = imageBundles.get(question).status === 'error';
+  if (thumbnail) return `<span class="thumbnail-placeholder image-loading" aria-hidden="true"><small>원본 이미지</small><strong>${esc(String(question.number).padStart(2, '0'))}</strong><span>${failed ? '상세에서 다시 불러오기' : '불러오는 중'}</span></span>`;
+  return `<div class="image-loading-state" role="status"><p>${failed ? '원본 이미지를 불러오지 못했습니다.' : '원본 이미지를 불러오는 중입니다.'}</p>${failed ? `<button type="button" class="button button-quiet" data-retry-image="${esc(question.id)}">다시 불러오기</button>` : '<span class="image-loading-dot" aria-hidden="true"></span>'}</div>`;
+}
+function thumbnailMarkup(question) {
+  const url = imageFor(question, true);
+  return url ? `<img src="${esc(url)}" alt="" loading="lazy" decoding="async">` : usesImageBundle(question) ? imagePlaceholder(question, true) : `<span class="thumbnail-placeholder" aria-hidden="true"><small>문항</small><strong>${esc(String(question.number).padStart(2, '0'))}</strong><span>${esc(question.fields?.[0] || questionTags(question, 'field')[0]?.label || '추리논증')}</span></span>`;
+}
+function sourceImageMarkup(question) {
+  const url = imageFor(question);
+  return url ? `<button type="button" class="source-image-button" data-enlarge="${esc(question.id)}" aria-label="${esc(question.id)}번 원본 확대"><img class="source-image" src="${esc(url)}" alt="${esc(question.id)}번 원본 문항. 원문은 추출 텍스트 보기에서도 읽을 수 있습니다." decoding="async"></button>` : imagePlaceholder(question);
+}
+function updateImageHolders() {
+  document.querySelectorAll('[data-image-question]').forEach(holder => {
+    const question = state.questions.get(holder.dataset.imageQuestion);
+    if (!question || !usesImageBundle(question)) return;
+    const thumbnail = holder.dataset.imageKind === 'thumbnail';
+    holder.innerHTML = thumbnail ? thumbnailMarkup(question) : sourceImageMarkup(question);
+    holder.classList.toggle('is-placeholder', thumbnail && !imageFor(question, true));
+    holder.setAttribute('aria-busy', String(['idle', 'pending'].includes(imageBundles.get(question).status)));
+  });
+}
+async function hydrateImages(questions) {
+  const generation = ++imageHydrationVersion;
+  visibleImageQuestions = questions;
+  const pending = questions.filter(question => usesImageBundle(question) && ['idle', 'pending'].includes(imageBundles.get(question).status));
+  if (!pending.length) { updateImageHolders(); return; }
+  await Promise.allSettled(pending.map(question => imageBundles.load(question)));
+  if (generation === imageHydrationVersion) updateImageHolders();
+}
+function updateImageDialog(question) {
+  if (dialogQuestionId !== question.id || !imageDialog.open) return;
+  const image = document.querySelector('#enlarged-image');
+  const url = imageFor(question);
+  image.hidden = !url;
+  if (url) image.src = url; else image.removeAttribute('src');
+  image.alt = `${question.id}번 문항의 원본 이미지.`;
+  const status = document.querySelector('#image-dialog-status');
+  status.hidden = Boolean(url);
+  status.innerHTML = url ? '' : imagePlaceholder(question);
+}
+async function retryImage(id) {
+  const question = state.questions.get(id);
+  if (!question || !usesImageBundle(question)) return;
+  const request = imageBundles.load(question, { retry: true });
+  updateImageHolders();
+  updateImageDialog(question);
+  await Promise.allSettled([request, hydrateImages(visibleImageQuestions)]);
+  updateImageDialog(question);
 }
 function examLabel(question) {
   return question.examLabel || `${question.year}학년도`;
@@ -227,9 +289,8 @@ function questionCard(question) {
   const href = buildRoute(questionRoute(question));
   const activeTag = state.route.view === 'tag' ? state.taxonomy.get(state.route.id) : null;
   const reason = activeTag ? question.tagReasons?.[activeTag.label] || question.tagReasons?.[activeTag.id] : null;
-  const thumbnail = question.sourceAccess === 'local-only' ? '' : safeAsset(question.thumbnail || question.image);
-  const thumbnailBody = thumbnail ? `<img src="${esc(thumbnail)}" alt="" loading="lazy" decoding="async">` : `<span class="thumbnail-placeholder" aria-hidden="true"><small>문항</small><strong>${esc(String(question.number).padStart(2, '0'))}</strong><span>${esc(question.fields?.[0] || questionTags(question, 'field')[0]?.label || '추리논증')}</span></span>`;
-  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailBody}</a></article>`;
+  const thumbnail = imageFor(question, true);
+  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
 }
 function paginationMarkup(result) {
   if (!result.total) return '';
@@ -251,6 +312,7 @@ function updateListResults() {
   const zeroBaseTag = state.route.view === 'tag' && tagCount(state.route.id) === 0;
   document.querySelector('#question-list').innerHTML = result.items.length ? result.items.map(questionCard).join('') : `<div class="empty-state"><strong>${zeroBaseTag ? emptyTaxonomyLabel() : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '아직 북마크한 문항이 없습니다.' : '조건에 맞는 문항이 없습니다.'}</strong><p>${zeroBaseTag ? '이 분류에 연결된 문항이 아직 없습니다. 현재 문항을 임의로 연결하지 않았습니다.' : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '문항의 북마크 버튼에서 원하는 색을 골라 주세요.' : '검색어나 태그, 북마크 색을 줄여 다시 찾아보세요.'}</p><button class="button button-sage" type="button" data-reset>조건 초기화</button></div>`;
   document.querySelector('#list-pagination').innerHTML = paginationMarkup(result);
+  void hydrateImages(result.items);
 }
 function catalogTags() {
   const term = state.tagQuery.normalize('NFKC').trim().toLocaleLowerCase('ko');
@@ -290,7 +352,7 @@ function renderRibbon(question) {
 }
 function renderAnswer(question) {
   if (question.answerStatus === 'source-conflict') {
-    return `<div class="conflict-alert" role="note"><strong>원본 문항·답안 불일치</strong><p>${esc(asText(question.answerIssue || question.answerWarning || question.answerConflict?.message) || '원본 표시 답안과 독립 풀이가 일치하지 않습니다. 보기 판단과 검수 참고를 함께 확인해 주세요. 원본은 그대로 보존했으며 공식 답안을 확정하지 않았습니다.')}</p><div class="conflict-source"><span>보존한 원본 표시 답안</span><b>${esc(CIRCLED[question.answer] || question.answer)} · 검토 필요</b></div></div>`;
+    return `<div class="conflict-alert" role="note"><strong>원본 문항·답안 불일치</strong><p>${esc(asText(question.answerIssue || question.answerWarning || question.answerConflict?.message) || '원본 표시 답안과 독립 풀이가 일치하지 않습니다. 보기 판단과 검수 참고를 함께 확인해 주세요. 원본은 그대로 보존했으며 공식 답안을 확정하지 않았습니다.')}</p><div class="conflict-source"><span>보존한 원본 표시 답안</span><b>${esc(CIRCLED[question.answer] || question.answer)} · 검토 필요</b></div>${question.derivedConclusion ? `<div class="conflict-derived"><strong>문언에 따른 자체 풀이</strong><p>${esc(question.derivedConclusion)}</p></div>` : ''}</div>`;
   }
   return `<div class="answer-strip"><div><span class="answer-caption">원본 표시 + 독립 풀이 대조</span><strong>정답 ${esc(CIRCLED[question.answer] || '확인 중')}</strong></div><p class="answer-basis">${esc(question.answerBasis || '원본 회색 강조와 독립 풀이를 대조했습니다.')}<br>공식정답 외부 대조 미완료</p></div>`;
 }
@@ -328,13 +390,12 @@ function documentLinks(question) {
 }
 function readerSource(question) {
   if (question.sourceAccess === 'local-only') {
-    return `<section class="reader-panel source-panel" aria-label="원문 출처"><div class="panel-heading"><h2>원문 출처 <span>SOURCE REFERENCE</span></h2></div><div class="source-reference"><span class="source-reference-icon" aria-hidden="true">${icon('grid')}</span><h3>${esc(examLabel(question))}<br>추리논증 ${esc(question.number)}번</h3><dl><div><dt>문항 ID</dt><dd>${esc(question.id)}</dd></div>${question.examPage ? `<div><dt>회차 문제지</dt><dd>${esc(question.examPage)}쪽</dd></div>` : ''}${question.sourcePage ? `<div><dt>통합 PDF</dt><dd>${esc(question.sourcePage)}쪽</dd></div>` : ''}</dl><p>원문은 제공받은 PDF에서 확인해 주세요. 이 페이지에서 소재·태그와 문항별 분류 이유를 살펴볼 수 있습니다.</p></div></section>`;
+    return `<section class="reader-panel source-panel" aria-label="원문 출처"><div class="panel-heading"><h2>원문 출처 <span>SOURCE REFERENCE</span></h2></div><div class="source-reference"><span class="source-reference-icon" aria-hidden="true">${icon('grid')}</span><h3>${esc(examLabel(question))}<br>추리논증 ${esc(question.number)}번</h3><dl><div><dt>문항 ID</dt><dd>${esc(question.id)}</dd></div>${question.examPage ? `<div><dt>회차 문제지</dt><dd>${esc(question.examPage)}쪽</dd></div>` : ''}${question.sourcePage ? `<div><dt>통합 PDF</dt><dd>${esc(question.sourcePage)}쪽</dd></div>` : ''}</dl><p>원문은 제공받은 PDF에서 확인해 주세요. 이 페이지에서 ${question.answerStatus === 'not-reviewed' ? '소재·태그와 문항별 분류 이유' : '자체 해설 초안과 소재·태그'}를 살펴볼 수 있습니다.</p></div></section>`;
   }
-  const image = safeAsset(question.image);
   const corrections = question.textCorrections || [];
   const correctionNotice = corrections.length ? `<details class="text-corrections"><summary>원본 대조로 복원한 추출 오류 ${corrections.length}곳</summary><ul>${corrections.map(item => `<li><strong>${esc(item.to)}</strong><span>${esc(item.reason)}</span></li>`).join('')}</ul><p>원본 이미지와 복원 전 추출 텍스트는 보존되어 있습니다. 전체 내역은 문항 데이터 JSON에서 확인할 수 있습니다.</p></details>` : '';
   return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} 원본 이미지를 그대로 보존했습니다. 문제지 ${esc(question.examPage)}쪽${question.sourcePdfPage || question.sourcePage ? ` · 제공 PDF ${esc(question.sourcePdfPage || question.sourcePage)}쪽` : ''}</div>
-  <div id="source-image-view"${state.sourceMode === 'image' ? '' : ' hidden'}><button type="button" class="source-image-button" data-enlarge="${esc(question.id)}" aria-label="${esc(question.id)}번 원본 확대"><img class="source-image" src="${esc(image)}" alt="${esc(question.id)}번 원본 문항. 원문은 추출 텍스트 보기에서도 읽을 수 있습니다." decoding="async"></button></div>
+  <div id="source-image-view"${state.sourceMode === 'image' ? '' : ' hidden'}><div ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="source"` : ''}>${sourceImageMarkup(question)}</div></div>
   <div id="source-text-view"${state.sourceMode === 'text' ? '' : ' hidden'}><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(question.text || question.rawText || '추출 텍스트가 없습니다. 원본 이미지를 확인해 주세요.')}</pre><p class="text-warning">PDF 문자층에서 추출한 텍스트입니다. 공백·줄바꿈·표·수식은 원본과 다를 수 있으므로 원본 이미지를 함께 확인해 주세요.</p>${correctionNotice}</div></section>`;
 }
 function reviewWorkspace(question) {
@@ -362,9 +423,12 @@ function renderQuestion() {
   <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(examLabel(question))} 법학적성시험 · 추리논증 ${esc(question.number)}번 <span aria-hidden="true">·</span> 검수용 초안</div></div></div><div class="question-heading-actions">${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
   ${renderRibbon(question)}<div class="reader-grid">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="${unreviewed ? '문항 분류 이유' : '문항 해설'}"><div class="panel-heading"><h2>${unreviewed ? '소재와 태그 분류' : '해설과 논증 구조'} <span>${unreviewed ? 'CLASSIFICATION' : 'ANALYSIS'}</span></h2><span class="draft-label"><i></i>검수용 초안</span></div><div class="analysis-body">${unreviewed ? classificationSections(question) : explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
   ${documentLinks(question)}`;
+  void hydrateImages([question]);
 }
 function render() {
   if (!state.data) return;
+  imageHydrationVersion++;
+  visibleImageQuestions = [];
   hideTooltip();
   const previousRoute = state.route;
   state.route = parseRoute(location.hash);
@@ -480,12 +544,14 @@ function changeTextSize(delta) {
 }
 function showImage(id) {
   const question = state.questions.get(id);
-  if (!question) return;
+  if (!question || question.sourceAccess === 'local-only') return;
+  dialogQuestionId = id;
   document.querySelector('#image-dialog-title').textContent = `${question.id} · ${question.title} · 원본 확대`;
-  const image = document.querySelector('#enlarged-image');
-  image.src = safeAsset(question.image);
-  image.alt = `${question.id}번 문항의 원본 이미지.`;
-  imageDialog.showModal();
+  if (!imageDialog.open) imageDialog.showModal();
+  updateImageDialog(question);
+  if (usesImageBundle(question) && ['idle', 'pending'].includes(imageBundles.get(question).status)) {
+    void imageBundles.load(question).catch(() => {}).then(() => updateImageDialog(question));
+  }
   document.querySelector('#close-image').focus();
 }
 async function copyLink() {
@@ -539,6 +605,7 @@ function hideTooltip() {
 document.querySelector('#export-reviews').innerHTML = `${icon('download')}<span>검수 기록 내보내기</span>`;
 document.querySelector('#export-reviews').addEventListener('click', exportReviews);
 document.querySelector('#close-image').addEventListener('click', () => imageDialog.close());
+imageDialog.addEventListener('close', () => { dialogQuestionId = null; });
 document.querySelector('#close-bookmarks').addEventListener('click', closeBookmarkPalette);
 bookmarkDialog.addEventListener('click', event => { if (event.target === bookmarkDialog) closeBookmarkPalette(); });
 bookmarkDialog.addEventListener('cancel', event => { event.preventDefault(); closeBookmarkPalette(); });
@@ -583,6 +650,7 @@ document.addEventListener('click', event => {
   } else if (button.hasAttribute('data-source-mode')) changeSourceMode(button.dataset.sourceMode);
   else if (button.hasAttribute('data-text-size')) changeTextSize(Number(button.dataset.textSize));
   else if (button.hasAttribute('data-enlarge')) showImage(button.dataset.enlarge);
+  else if (button.hasAttribute('data-retry-image')) void retryImage(button.dataset.retryImage);
   else if (button.hasAttribute('data-copy-link')) copyLink();
   else if (button.hasAttribute('data-review-status')) {
     saveReview(state.route.id, { status: button.dataset.reviewStatus });

@@ -2,12 +2,19 @@
 import collections
 import hashlib
 import json
+import runpy
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 archive = ROOT / 'data/archive.json'
 assert archive.exists(), '20회분 전체 archive.json이 아직 생성되지 않았습니다.'
 d = json.loads(archive.read_text())
+if d.get('publicationMode') == 'explanations-only':
+    runpy.run_path(str(ROOT/'scripts/validate_explanations_archive.py'))
+    raise SystemExit(0)
+if d.get('publicationMode') == 'full-content':
+    runpy.run_path(str(ROOT/'scripts/validate_full_archive.py'))
+    raise SystemExit(0)
 old = json.loads((ROOT / 'data/2027.json').read_text())
 questions = d['questions']
 assert len(questions) == 755

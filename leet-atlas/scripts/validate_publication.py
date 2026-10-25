@@ -1,9 +1,16 @@
-"""Reject publication of any newly supplied source text, images, or PDFs."""
+"""Validate the authorized full-content or classification-only publication mode."""
 import json
+import runpy
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 data = json.loads((ROOT/'data/archive.json').read_text())
+if data.get('publicationMode') == 'explanations-only':
+    runpy.run_path(str(ROOT/'scripts/validate_explanations_archive.py'))
+    raise SystemExit(0)
+if data.get('publicationMode') == 'full-content':
+    runpy.run_path(str(ROOT/'scripts/validate_full_archive.py'))
+    raise SystemExit(0)
 assert data.get('publicationMode') == 'metadata-only', '공개 데이터는 분류 정보 전용이어야 합니다.'
 assert len(data['questions']) == 755
 for q in data['questions']:
