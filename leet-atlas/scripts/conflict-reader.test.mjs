@@ -4,8 +4,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as core from '../core.mjs';
+import * as tagGroups from '../tag-groups.mjs';
+import * as localText from '../local-text.mjs';
 
-const source = (await readFile(new URL('../app.js', import.meta.url), 'utf8')).replace(/^import[^\n]+\n/, '');
+const source = (await readFile(new URL('../app.js', import.meta.url), 'utf8')).replace(/^import[^\n]+\n/gm, '');
 const caseData = JSON.parse(await readFile(new URL('./fixtures/no-listed-answer.json', import.meta.url), 'utf8'));
 const preserved = JSON.parse(await readFile(new URL('../data/2027.json', import.meta.url), 'utf8')).questions.find(q => q.id === '2701');
 const conflict = {
@@ -43,7 +45,7 @@ async function boot(hash = '#/question/2305', data = fixture) {
       requests.push(path);
       if (!String(path).startsWith('data/archive.json?')) return { ok: false, status: 404 };
       return { ok: true, json: async () => structuredClone(data) };
-    }, ...core,
+    }, ...core, ...tagGroups, ...localText,
   };
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   const app = await new AsyncFunction(...Object.keys(env), source + '\nreturn {state,render};')(...Object.values(env));

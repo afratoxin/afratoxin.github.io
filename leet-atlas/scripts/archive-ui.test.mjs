@@ -4,8 +4,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as core from '../core.mjs';
+import * as tagGroups from '../tag-groups.mjs';
+import * as localText from '../local-text.mjs';
 
-const source=(await readFile(new URL('../app.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/,'');
+const source=(await readFile(new URL('../app.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
 const current=JSON.parse(await readFile(new URL('../data/2027.json',import.meta.url),'utf8')).questions.find(q=>q.id==='2701');
 const taxonomy=[
  {id:'domain-humanities',axis:'domain',label:'인문',description:'인간과 사회의 규범을 다룹니다.'},
@@ -25,7 +27,7 @@ function question(id,number,preliminary=false) {
 }
 const fixture={exam:{questionCount:13,examCount:3},exams:[{key:'preliminary',label:'2009학년도 예비시험',questionCount:2,year:2009},{key:'2009',label:'2009학년도',questionCount:10,year:2009},{key:'2027',label:'2027학년도',questionCount:1,year:2027}],taxonomy,tagAliases:{'subject-old-authority':'subject-law-institutions'},questions:[question('0901',1),question('p002',2,true),...Array.from({length:9},(_,i)=>question(`09${String(i+2).padStart(2,'0')}`,i+2)),question('p001',1,true),{...current,examKey:'2027',examLabel:'2027학년도',sourcePdf:'data/2027-original.pdf',sourcePdfPage:current.sourcePage,dataPath:'data/archive.json',tags:['domain-humanities','field-law','subject-law-institutions','year-2027']}]};
 
-async function boot(hash='',reviews={},data=fixture) {
+async function boot(hash='',reviews={},data=fixture,blockedStorage=false) {
  const elements=new Map(),events=new Map(),requests=[];
  function element(key) {
   if(!elements.has(key))elements.set(key,{innerHTML:'',textContent:'',hidden:true,open:false,value:'',dataset:{},classList:{add(){},toggle(){}},style:{setProperty(){}},addEventListener(){},focus(){this.focusCount=(this.focusCount||0)+1},setAttribute(){},removeAttribute(){},getClientRects(){return [1]},getBoundingClientRect(){return {left:0,top:0,bottom:10,width:100,height:20}},showModal(){this.open=true},close(){this.open=false}});
@@ -37,12 +39,95 @@ async function boot(hash='',reviews={},data=fixture) {
  const history={replaceState(_a,_b,path){location.hash=path}};
  const memory=new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})]]);
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
- const env={document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>structuredClone(data)}},...core};
+ const env={document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>structuredClone(data)}},...core, ...tagGroups, ...localText};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
- const app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,filteredQuestions,showBookmarkPalette,selectBookmarkColor,catalogTags};')(...Object.values(env));
+ const previous=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
+ if(blockedStorage) {
+  delete env.localStorage;
+  Object.defineProperty(globalThis,'localStorage',{configurable:true,get(){throw new Error('Storage disabled');}});
+ }
+ let app;
+ try {
+  app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,filteredQuestions,showBookmarkPalette,selectBookmarkColor,catalogTags,importLocalTextFile:typeof importLocalTextFile === "function" ? importLocalTextFile : null};')(...Object.values(env));
+ } finally {
+  if(blockedStorage) { if(previous) Object.defineProperty(globalThis,'localStorage',previous); else delete globalThis.localStorage; }
+ }
  return {app,elements,document,location,memory,events,requests};
 }
 const rows=html=>[...html.matchAll(/class="row-index"[^>]*>([^<]+)</g)].map(match=>match[1]);
+
+test('blocked browser storage does not prevent public questions and explanations loading',async()=>{
+ const {elements}=await boot('#/question/2701',{},fixture,true);
+ const html=elements.get('#main').innerHTML;
+ assert.match(html,/핵심 해설/);
+ assert.doesNotMatch(html,/문항 데이터를 불러오지 못했습니다/);
+});
+
+test('OR mode combines multiple exam years and keeps bookmark constraints',async()=>{
+ const reviews={'2701':{bookmarkColors:['blue']},'p001':{bookmarkColors:['blue']},'0901':{bookmarkColors:['red']}};
+ const {app,elements}=await boot('#/bookmarks?bookmark=blue&tag=year-preliminary&tag=year-2027&tagMode=or',reviews);
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['p001','2701']);
+ assert.match(elements.get('#main').innerHTML,/id="tag-match-mode"/);
+ assert.equal(elements.get('#tag-match-mode').value,'or');
+ assert.match(elements.get('#question-list').innerHTML,/tagMode=or/);
+});
+
+test('tag collection remains required while selected year filters use OR',async()=>{
+ const data=structuredClone(fixture);
+ data.questions.find(q=>q.id==='2701').tags=data.questions.find(q=>q.id==='2701').tags.filter(id=>id!=='field-law');
+ const {app}=await boot('#/tags/field-law?tag=year-2009&tag=year-2027&tagMode=or',{},data);
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['0901','0902','0903','0904','0905','0906','0907','0908','0909','0910']);
+});
+
+test('changing AND to OR resets page and retains sort, selected tags and color',async()=>{
+ const {app,events,location}=await boot('#/bookmarks?tag=year-2009&tag=year-2027&bookmark=blue&sort=newest');
+ events.get('change')({target:{id:'tag-match-mode',value:'or'}});
+ app.render();
+ assert.equal(app.state.route.tagMode,'or');
+ assert.equal(app.state.route.sort,'newest');
+ assert.equal(app.state.route.bookmark,'blue');
+ assert.equal(app.state.route.page,1);
+ assert.deepEqual(app.state.route.tags,['year-2009','year-2027']);
+ assert.match(location.hash,/tagMode=or/);
+});
+
+test('filter sidebar and tag catalog show semantic neighborhoods and parent fields',async()=>{
+ const list=await boot('#/questions');
+ assert.match(list.elements.get('#main').innerHTML,/class="filter-tag-group"/);
+ assert.match(list.elements.get('#main').innerHTML,/<h4>법학/);
+ const catalog=await boot('#/tags?tagMode=or');
+ assert.match(catalog.elements.get('#tag-catalog-results').innerHTML,/class="tag-neighborhood"/);
+ assert.match(catalog.elements.get('#tag-catalog-results').innerHTML,/tagMode=or/);
+});
+
+test('private text import renders escaped text, enables body search, and never sends contents',async()=>{
+ const data=metadataOnlyArchive();
+ const {app,elements,requests,memory}=await boot('#/question/0901',{},data);
+ assert.equal(typeof app.importLocalTextFile,'function');
+ const original=app.state.data.questions.find(q=>q.id==='0901').text;
+ const text='브라우저전용본문 <script>alert(1)</script>\n① 첫 선택지';
+ const pack={schemaVersion:1,kind:'leet-atlas-local-text',questions:[{id:'0901',examKey:'2009',number:1,sourcePage:3,text}]};
+ await app.importLocalTextFile({size:400,text:async()=>JSON.stringify(pack)});
+ assert.match(elements.get('#main').innerHTML,/브라우저전용본문 &lt;script&gt;/);
+ assert.doesNotMatch(elements.get('#main').innerHTML,/<script>alert/);
+ assert.equal(app.state.data.questions.find(q=>q.id==='0901').text,original);
+ app.state.query='브라우저전용본문';
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['0901']);
+ assert.equal(JSON.parse(memory.get('leet-atlas:local-texts:v1')).questions.length,1);
+ assert.equal(requests.length,1);
+});
+
+test('invalid local text leaves imported text and review records intact',async()=>{
+ const data=metadataOnlyArchive();
+ const {app,memory}=await boot('#/question/0901',{'0901':{bookmarkColors:['blue'],note:'내 검수메모'}},data);
+ assert.equal(typeof app.importLocalTextFile,'function');
+ const record={id:'0901',examKey:'2009',number:1,sourcePage:3,text:'먼저 불러온 본문'};
+ await app.importLocalTextFile({size:400,text:async()=>JSON.stringify({schemaVersion:1,kind:'leet-atlas-local-text',questions:[record]})});
+ await app.importLocalTextFile({size:400,text:async()=>'{broken'});
+ assert.equal(app.state.localTexts.get('0901').text,record.text);
+ assert.equal(app.state.reviews['0901'].note,'내 검수메모');
+ assert.equal(JSON.parse(memory.get('leet-atlas:local-texts:v1')).questions.length,1);
+});
 
 test('newest order applies to questions, bookmarks and tag collections while preserving number order',async()=>{
  for(const hash of ['#/questions?sort=newest','#/bookmarks?sort=newest','#/tags/field-law?sort=newest']) {

@@ -24,6 +24,6 @@ test('pagination serves exactly ten, clamps after filtering, and supports all-it
  const all=paginateQuestions(qs,{mode:'scroll',page:4});assert.equal(all.items.length,40);assert.equal(all.page,1);
 });
 test('bookmark, tag-directory and tag-bundle URLs round trip',()=>{
- for(const route of [{view:'bookmarks',id:null,tags:['biology'],bookmark:'blue',page:2,mode:'paged'},{view:'tags',id:null,tags:[],bookmark:'all',page:1,mode:'paged'},{view:'tag',id:'field-biology',tags:[],bookmark:'all',page:1,mode:'scroll'}])assert.deepEqual(parseRoute(buildRoute(route)),{...route,sort:'oldest'});
+ for(const route of [{view:'bookmarks',id:null,tags:['biology'],bookmark:'blue',page:2,mode:'paged'},{view:'tags',id:null,tags:[],bookmark:'all',page:1,mode:'paged'},{view:'tag',id:'field-biology',tags:[],bookmark:'all',page:1,mode:'scroll'}])assert.deepEqual(parseRoute(buildRoute(route)),{...route,sort:'oldest',tagMode:'and'});
  assert.equal(parseRoute('#/bookmarks').bookmark,'any');assert.equal(parseRoute('#/tags').view,'tags');assert.equal(parseRoute('#/question/2708').id,'2708');
 });

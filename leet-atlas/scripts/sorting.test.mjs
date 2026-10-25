@@ -36,7 +36,7 @@ test('sort URLs round trip list, tag, bookmark and question pages', () => {
     {view:'tag',id:'logic-대우',tags:['law'],bookmark:'all',page:2,mode:'paged',sort:'newest'},
     {view:'bookmarks',id:null,tags:[],bookmark:'blue',page:1,mode:'scroll',sort:'newest'},
     {view:'question',id:'2701',tags:['law'],bookmark:'all',page:2,mode:'paged',sort:'newest'},
-  ]) assert.deepEqual(parseRoute(buildRoute(route)),route);
+  ]) assert.deepEqual(parseRoute(buildRoute(route)),{...route,tagMode:'and'});
 });
 
 test('sort defaults to oldest and invalid URL values cannot change the default', () => {

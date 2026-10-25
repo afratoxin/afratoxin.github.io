@@ -4,8 +4,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import * as core from '../core.mjs';
+import * as tagGroups from '../tag-groups.mjs';
+import * as localText from '../local-text.mjs';
 const data=JSON.parse(await readFile(new URL('../data/2027.json',import.meta.url),'utf8'));
-const source=(await readFile(new URL('../app.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/,'');
+const source=(await readFile(new URL('../app.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
 async function boot(hash='',reviews={},mode='paged') {
  const elements=new Map();const events=new Map();
  function element(key){
@@ -18,7 +20,7 @@ async function boot(hash='',reviews={},mode='paged') {
  const history={replaceState(_a,_b,path){location.hash=path}};
  const memory=new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})],['leet-atlas:list-mode',mode]]);
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
- const env={document,location,window,history,localStorage,navigator:{},fetch:async()=>({ok:true,json:async()=>structuredClone(data)}),...core};
+ const env={document,location,window,history,localStorage,navigator:{},fetch:async()=>({ok:true,json:async()=>structuredClone(data)}),...core, ...tagGroups, ...localText};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const run=new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,toggleTag,saveReview,filteredQuestions,updateListResults,showBookmarkPalette,selectBookmarkColor,changeListMode,resetListPage};');
  const app=await run(...Object.values(env));

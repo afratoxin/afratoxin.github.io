@@ -1,9 +1,11 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-safe1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-tags1';
+import { groupTags } from './tag-groups.mjs?v=20261026-tags1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-tags1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-safe1';
+const CACHE_VERSION = '20261026-tags1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -17,7 +19,7 @@ const AXES = [
   { id: 'year', label: '연도', field: 'year' },
 ];
 const CIRCLED = ['', '①', '②', '③', '④', '⑤'];
-const state = { data: null, taxonomy: new Map(), tagCounts: new Map(), questions: new Map(), reviews: {}, route: parseRoute(location.hash), query: '', review: 'all', sourceMode: 'image', textSize: 16, filtersOpen: false, storageFailed: false, modePreference: 'paged', hasRendered: false, tagQuery: '', tagAxis: 'all', paletteQuestionId: null, returnRoute: null };
+const state = { data: null, taxonomy: new Map(), tagCounts: new Map(), questions: new Map(), reviews: {}, route: parseRoute(location.hash), query: '', review: 'all', sourceMode: 'image', textSize: 16, filtersOpen: false, storageFailed: false, modePreference: 'paged', hasRendered: false, tagQuery: '', tagAxis: 'all', paletteQuestionId: null, returnRoute: null, localTexts: new Map(), neighborhoods: new Map() };
 const main = document.querySelector('#main');
 const tooltip = document.querySelector('#tag-tooltip');
 const imageDialog = document.querySelector('#image-dialog');
@@ -185,11 +187,11 @@ function tagDescription(tag, question) {
 function effectiveTags() {
   return [...new Set([...(state.route.tags || []), ...(state.route.view === 'tag' && state.route.id ? [state.route.id] : [])])];
 }
-function tagButton(tag, question, filter = false) {
+function tagButton(tag, question, filter = false, groupLabel = '') {
   const active = effectiveTags().includes(tag.id);
   const body = `${filter ? '' : '<span class="tag-dot" aria-hidden="true"></span>'}${esc(tag.label)}`;
   const shared = `data-axis="${esc(tag.axis)}" data-tooltip="${esc(tagDescription(tag, question))}" aria-describedby="tag-tooltip"`;
-  return filter ? `<button type="button" class="filter-choice${active ? ' is-active' : ''}" ${shared} data-filter-tag="${esc(tag.id)}" aria-pressed="${active}">${body}</button>` : `<a class="tag-chip${active ? ' is-active' : ''}" ${shared} href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort }))}">${body}</a>`;
+  return filter ? `<button type="button" class="filter-choice${active ? ' is-active' : ''}" ${shared} data-tag-search="${esc([tag.label, tag.description, tagParent(tag), groupLabel].filter(Boolean).join(' '))}" data-filter-tag="${esc(tag.id)}" aria-pressed="${active}">${body}</button>` : `<a class="tag-chip${active ? ' is-active' : ''}" ${shared} href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode }))}">${body}</a>`;
 }
 function reviewBadge(id) {
   const status = state.reviews[id]?.status;
@@ -206,7 +208,7 @@ function bookmarkButton(id, compact = false) {
 function navigate(route, focus) {
   hideTooltip();
   nextFocus = focus || null;
-  const hash = buildRoute({ mode: state.route.mode || state.modePreference, sort: state.route.sort, ...route });
+  const hash = buildRoute({ mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode, ...route });
   if (hash === location.hash) render();
   else location.hash = hash;
 }
@@ -233,20 +235,22 @@ function resetFilters() {
   navigate(listRoute({ tags: [], bookmark: state.route.view === 'bookmarks' ? 'any' : 'all' }), { search: true });
 }
 function filteredQuestions() {
-  return filterQuestions(state.data.questions, { query: state.query, tags: effectiveTags(), review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
+  const requiredTags = state.route.view === 'tag' && state.route.id ? [state.route.id] : [];
+  const questions = state.data.questions.map(question => state.localTexts.has(question.id) ? { ...question, text: state.localTexts.get(question.id).text } : question);
+  return filterQuestions(questions, { query: state.query, tags: state.route.tags.filter(id => !requiredTags.includes(id)), requiredTags, tagMode: state.route.tagMode, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
 }
 function tagCount(id) { return state.tagCounts.get(id) || 0; }
 function filterPanel() {
   return `<aside class="filter-panel${state.filtersOpen ? ' is-open' : ''}" aria-label="문항 분류 필터">
     <button class="filter-toggle" type="button" data-toggle-filters aria-expanded="${state.filtersOpen}" aria-controls="filter-content"><span>${icon('filter')} 분류로 좁혀 보기${effectiveTags().length ? ` · ${effectiveTags().length}개 선택` : ''}</span>${icon('down')}</button>
     <div class="filter-heading"><h2>분류로 좁혀 보기</h2><button class="button-text" type="button" data-reset>초기화</button></div>
-    <div id="filter-content" class="filter-content">${AXES.map(axis => {
+    <div id="filter-content" class="filter-content"><label class="tag-match-label" for="tag-match-mode">선택한 태그의 조건<select id="tag-match-mode" class="review-select"><option value="and">모두 일치 (AND)</option><option value="or">하나 이상 일치 (OR)</option></select></label><p class="filter-help">여러 연도를 함께 보려면 OR를 선택하세요. 검색·북마크·검수 상태는 함께 적용됩니다.</p>${AXES.map(axis => {
       const tags = [...state.taxonomy.values()].filter(tag => tag.axis === axis.id);
       const needsPicker = tags.length > 8;
       const selectedCount = tags.filter(tag => effectiveTags().includes(tag.id)).length;
-      const choices = `<div class="filter-tags${needsPicker ? ' filter-tags-scroll' : ''}" data-tag-choices="${axis.id}">${tags.map(tag => tagButton(tag, null, true)).join('')}</div>`;
+      const choices = `<div class="filter-groups${needsPicker ? ' filter-tags-scroll' : ''}" data-tag-choices="${axis.id}">${groupTags(tags, { axis: axis.id }).map(group => `<section class="filter-tag-group" data-related-group><h4>${esc(group.label)}<span>${group.tags.length}</span></h4><div class="filter-tags">${group.tags.map(tag => tagButton(tag, null, true, group.label)).join('')}</div></section>`).join('')}</div>`;
       return tags.length ? `<section class="filter-section"><h3>${axis.label}<span>${selectedCount ? `${selectedCount}개 선택 / ` : ''}${tags.length}</span></h3>${needsPicker ? `<details class="filter-expander"${selectedCount ? ' open' : ''}><summary>${tags.length}개 태그에서 선택 ${icon('down')}</summary><label class="taxonomy-search-label"><span class="sr-only">${axis.label} 태그 검색</span><input class="taxonomy-search" type="search" data-taxonomy-search="${axis.id}" placeholder="${axis.label} 태그 찾기" autocomplete="off"></label>${choices}<p class="tag-search-empty" data-tag-empty="${axis.id}" hidden>일치하는 태그가 없습니다.</p></details>` : choices}</section>` : '';
-    }).join('')}<p class="filter-help">태그와 북마크 색을 함께 고르면 모든 조건을 만족하는 문항을 찾습니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
+    }).join('')}<p class="filter-help">선택 태그에는 AND/OR를 적용하고 북마크 조건은 함께 적용합니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, tagMode: state.route.tagMode, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
   </aside>`;
 }
 function bookmarkCount(color) {
@@ -272,7 +276,7 @@ function renderList() {
   const title = isBookmarks ? '모든 북마크' : tag ? tag.label : '문항 탐색';
   document.title = `${title} · LEET Atlas`;
   const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '예비시험부터 최신 회차까지, 소재·태그와 분류 이유를 함께 살펴보세요.';
-  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
+  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort, tagMode: state.route.tagMode }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
   <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="문항번호, 분야, 소재, 본문으로 검색" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
     <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
     <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="oldest">오래된순</option><option value="newest">최신순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
@@ -280,6 +284,7 @@ function renderList() {
   </section></div>`;
   document.querySelector('#review-filter').value = state.review;
   document.querySelector('#question-sort').value = state.route.sort;
+  document.querySelector('#tag-match-mode').value = state.route.tagMode;
   updateListResults();
 }
 function questionRoute(question) {
@@ -317,17 +322,18 @@ function updateListResults() {
 }
 function catalogTags() {
   const term = state.tagQuery.normalize('NFKC').trim().toLocaleLowerCase('ko');
-  return [...state.taxonomy.values()].filter(tag => (state.tagAxis === 'all' || tag.axis === state.tagAxis) && (!term || `${tag.label} ${tag.description || ''} ${tag.parentDomain || ''} ${(tag.parentFields || [tag.parentField]).filter(Boolean).join(' ')}`.normalize('NFKC').toLocaleLowerCase('ko').includes(term)));
+  return [...state.taxonomy.values()].filter(tag => (state.tagAxis === 'all' || tag.axis === state.tagAxis) && (!term || `${tag.label} ${state.neighborhoods.get(tag.id) || ''} ${tag.description || ''} ${tag.parentDomain || ''} ${(tag.parentFields || [tag.parentField]).filter(Boolean).join(' ')}`.normalize('NFKC').toLocaleLowerCase('ko').includes(term)));
 }
 function renderTagCatalogResults() {
   const tags = catalogTags();
   document.querySelector('#tag-catalog-count').textContent = `${tags.length}개 태그`;
   document.querySelector('#tag-catalog-results').innerHTML = tags.length ? AXES.map(axis => {
-    const group = tags.filter(tag => tag.axis === axis.id);
-    if (!group.length) return '';
-    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${group.length}</span></h2><div class="tag-catalog-grid">${group.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tagParent(tag) ? `<span class="catalog-parent">${esc(tagParent(tag))}</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? `<small>${esc(emptyTaxonomyLabel())}</small>` : ''}</a>`).join('')}</div></section>`;
-  }).join('') : '<div class="empty-state"><strong>일치하는 태그가 없습니다.</strong><p>태그 이름이나 정의의 다른 단어를 검색해 보세요.</p></div>';
+    const groups = groupTags(tags, { axis: axis.id });
+    if (!groups.length) return '';
+    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${groups.reduce((n, group) => n + group.tags.length, 0)}</span></h2>${groups.map(group => `<section class="tag-neighborhood"><h3>${esc(group.label)}<span>${group.tags.length}개 태그</span></h3><div class="tag-catalog-grid">${group.tags.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tagParent(tag) ? `<span class="catalog-parent">${esc(tagParent(tag))}</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? `<small>${esc(emptyTaxonomyLabel())}</small>` : ''}</a>`).join('')}</div></section>`).join('')}</section>`;
+  }).join('') : '<div class="empty-state"><strong>일치하는 태그가 없습니다.</strong><p>태그 이름이나 정의, 연관 묶음 이름을 검색해 보세요.</p></div>';
 }
+
 function renderTags() {
   document.title = '태그 사전 · LEET Atlas';
   main.innerHTML = `<div class="page-heading"><div><div class="eyebrow">TAXONOMY INDEX</div><h1>태그 사전</h1><p>분류의 뜻과 문항별 부여 이유를 살펴보세요. 0건인 분류도 함께 보존합니다.</p></div><div class="page-count"><strong>${state.taxonomy.size}</strong>태그</div></div><section class="tag-catalog" aria-label="태그 전체 목록"><div class="catalog-toolbar"><label class="search-box">${icon('search')}<input id="tag-catalog-search" type="search" value="${esc(state.tagQuery)}" placeholder="태그 이름, 정의, 상위 범주 검색" aria-label="태그 사전 검색" autocomplete="off"></label><span id="tag-catalog-count" role="status" aria-live="polite"></span></div><div class="tag-axis-nav" role="group" aria-label="분류 축 선택"><button type="button" data-tag-axis="all" class="${state.tagAxis === 'all' ? 'is-active' : ''}" aria-pressed="${state.tagAxis === 'all'}">전체</button>${AXES.map(axis => `<button type="button" data-tag-axis="${axis.id}" class="${state.tagAxis === axis.id ? 'is-active' : ''}" aria-pressed="${state.tagAxis === axis.id}">${axis.label}</button>`).join('')}</div><div id="tag-catalog-results"></div></section>`;
@@ -340,10 +346,10 @@ function updateNavigation() {
     const active = link.dataset.navView === activeView;
     link.classList.toggle('is-active', active);
     if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
-    link.href = buildRoute({ view: link.dataset.navView, mode: state.route.mode || state.modePreference, sort: state.route.sort });
+    link.href = buildRoute({ view: link.dataset.navView, mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode });
   });
   const allBookmarksLink = document.querySelector('#palette-all-link');
-  if (allBookmarksLink) allBookmarksLink.href = buildRoute({ view: 'bookmarks', mode: state.route.mode, sort: state.route.sort });
+  if (allBookmarksLink) allBookmarksLink.href = buildRoute({ view: 'bookmarks', mode: state.route.mode, sort: state.route.sort, tagMode: state.route.tagMode });
   const total = document.querySelector('#bookmark-total');
   if (total) total.textContent = bookmarkCount('any');
 }
@@ -392,14 +398,43 @@ function documentLinks(question) {
   return `<p class="document-links">${pdf ? `<a href="${esc(pdf)}${Number.isInteger(page) && page > 0 ? `#page=${page}` : ''}" target="_blank" rel="noopener">${esc(examLabel(question))} 원본 PDF</a><span aria-hidden="true">·</span>` : ''}<a href="${esc(data)}" target="_blank" rel="noopener">문항 데이터 JSON</a></p>`;
 }
 function readerSource(question) {
+  if (question.sourceAccess === 'local-only' && state.localTexts.has(question.id)) return localTextPanel(question);
   if (question.sourceAccess === 'local-only') {
-    return `<section class="reader-panel source-panel" aria-label="원문 출처"><div class="panel-heading"><h2>원문 출처 <span>SOURCE REFERENCE</span></h2></div><div class="source-reference"><span class="source-reference-icon" aria-hidden="true">${icon('grid')}</span><h3>${esc(examLabel(question))}<br>추리논증 ${esc(question.number)}번</h3><dl><div><dt>문항 ID</dt><dd>${esc(question.id)}</dd></div>${question.examPage ? `<div><dt>회차 문제지</dt><dd>${esc(question.examPage)}쪽</dd></div>` : ''}${question.sourcePage ? `<div><dt>통합 PDF</dt><dd>${esc(question.sourcePage)}쪽</dd></div>` : ''}</dl><p>원문은 제공받은 PDF에서 확인해 주세요. 이 페이지에서 ${question.answerStatus === 'not-reviewed' ? '소재·태그와 문항별 분류 이유' : '자체 해설 초안과 소재·태그'}를 살펴볼 수 있습니다.</p></div></section>`;
+    return `<section class="reader-panel source-panel" aria-label="원문 출처"><div class="panel-heading"><h2>원문 출처 <span>SOURCE REFERENCE</span></h2></div><div class="source-reference"><span class="source-reference-icon" aria-hidden="true">${icon('grid')}</span><h3>${esc(examLabel(question))}<br>추리논증 ${esc(question.number)}번</h3><dl><div><dt>문항 ID</dt><dd>${esc(question.id)}</dd></div>${question.examPage ? `<div><dt>회차 문제지</dt><dd>${esc(question.examPage)}쪽</dd></div>` : ''}${question.sourcePage ? `<div><dt>통합 PDF</dt><dd>${esc(question.sourcePage)}쪽</dd></div>` : ''}</dl><p>원문은 제공받은 PDF에서 확인해 주세요. 이 페이지에서 ${question.answerStatus === 'not-reviewed' ? '소재·태그와 문항별 분류 이유' : '자체 해설 초안과 소재·태그'}를 살펴볼 수 있습니다.</p><button type="button" class="button button-sage" data-import-local-text>내 본문 파일 불러오기</button><p class="local-text-hint">불러온 본문은 이 브라우저에만 보관합니다.</p></div></section>`;
   }
   const corrections = question.textCorrections || [];
   const correctionNotice = corrections.length ? `<details class="text-corrections"><summary>원본 대조로 복원한 추출 오류 ${corrections.length}곳</summary><ul>${corrections.map(item => `<li><strong>${esc(item.to)}</strong><span>${esc(item.reason)}</span></li>`).join('')}</ul><p>원본 이미지와 복원 전 추출 텍스트는 보존되어 있습니다. 전체 내역은 문항 데이터 JSON에서 확인할 수 있습니다.</p></details>` : '';
   return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} 원본 이미지를 그대로 보존했습니다. 문제지 ${esc(question.examPage)}쪽${question.sourcePdfPage || question.sourcePage ? ` · 제공 PDF ${esc(question.sourcePdfPage || question.sourcePage)}쪽` : ''}</div>
   <div id="source-image-view"${state.sourceMode === 'image' ? '' : ' hidden'}><div ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="source"` : ''}>${sourceImageMarkup(question)}</div></div>
   <div id="source-text-view"${state.sourceMode === 'text' ? '' : ' hidden'}><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(question.text || question.rawText || '추출 텍스트가 없습니다. 원본 이미지를 확인해 주세요.')}</pre><p class="text-warning">PDF 문자층에서 추출한 텍스트입니다. 공백·줄바꿈·표·수식은 원본과 다를 수 있으므로 원본 이미지를 함께 확인해 주세요.</p>${correctionNotice}</div></section>`;
+}
+function localTextPanel(question) {
+  const record = state.localTexts.get(question.id);
+  return `<section class="reader-panel source-panel" aria-label="내 기기의 문항 본문"><div class="panel-heading"><h2>문항 본문 <span>MY TEXT</span></h2><button type="button" class="button-text" data-clear-local-text="${esc(question.id)}">이 본문 지우기</button></div><div class="source-note">${icon('info')} 이 브라우저에서 불러온 본문입니다. 통합 PDF ${esc(record.sourcePage)}쪽</div><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(record.text)}</pre><p class="text-warning">도표·도식·수식의 배치는 원본 PDF와 함께 확인해 주세요. 불러온 본문은 서버에 전송되지 않습니다.</p><button type="button" class="button-text local-text-more" data-import-local-text>다른 본문 파일 불러오기</button></section>`;
+}
+async function importLocalTextFile(file) {
+  try {
+    if (file.size > 8 * 1024 * 1024) throw new Error('본문 파일은 8MB까지 불러올 수 있습니다.');
+    const records = parseLocalTextPack(await file.text(), state.data.questions);
+    const merged = new Map([...state.localTexts, ...records.map(record => [record.id, record])]);
+    parseLocalTextPack({schemaVersion: 1, kind: 'leet-atlas-local-text', questions: [...merged.values()]}, state.data.questions);
+    let persisted = true;
+    try { saveLocalTexts(localStorage, [...merged.values()]); } catch { persisted = false; }
+    state.localTexts = merged;
+    render();
+    showToast(`${records.length}문항의 본문을 불러왔습니다.${persisted ? ' 이 브라우저에 보관합니다.' : ' 저장 공간이 부족해 현재 탭에서만 표시합니다.'}`);
+  } catch (error) {
+    showToast(`본문을 불러오지 못했습니다. ${error.message}`);
+  }
+}
+function clearLocalText(id) {
+  const remaining = new Map(state.localTexts);
+  remaining.delete(id);
+  try { saveLocalTexts(localStorage, [...remaining.values()]); }
+  catch { showToast('본문을 지우지 못했습니다. 브라우저 저장 공간 접근을 확인해 주세요.'); return; }
+  state.localTexts = remaining;
+  render();
+  showToast('이 문항의 본문을 브라우저에서 지웠습니다.');
 }
 function reviewWorkspace(question) {
   const review = state.reviews[question.id] || {};
@@ -416,7 +451,7 @@ function renderQuestion() {
     return;
   }
   document.title = `${question.id} ${question.title} · LEET Atlas`;
-  const sorted = filterQuestions(state.data.questions, { sort: state.route.sort });
+  const sorted = filterQuestions(state.data.questions, { sort: state.route.sort, tagMode: state.route.tagMode });
   const index = sorted.findIndex(item => item.id === question.id);
   const prev = sorted[index - 1];
   const next = sorted[index + 1];
@@ -493,7 +528,7 @@ function renderBookmarkPalette() {
   const colors = bookmarkColors(state.reviews[question.id]);
   document.querySelector('#bookmark-dialog-title').textContent = `${question.id} · 북마크 색 선택`;
   document.querySelector('#bookmark-palette').innerHTML = BOOKMARK_COLORS.map(color => `<button type="button" class="palette-color${colors.includes(color.id) ? ' is-active' : ''}" data-bookmark-color="${color.id}" aria-pressed="${colors.includes(color.id)}"><span class="palette-swatch" style="--bookmark-color:${esc(color.hex)}" aria-hidden="true"></span><strong>${esc(color.label)}</strong><span class="palette-check" aria-hidden="true">${colors.includes(color.id) ? '✓' : '+'}</span></button>`).join('');
-  document.querySelector('#palette-all-link').href = buildRoute({ view: 'bookmarks', mode: state.route.mode || state.modePreference, sort: state.route.sort });
+  document.querySelector('#palette-all-link').href = buildRoute({ view: 'bookmarks', mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode });
 }
 function showBookmarkPalette(id) {
   if (!state.questions.has(id)) return;
@@ -650,7 +685,9 @@ document.addEventListener('click', event => {
       item.setAttribute('aria-pressed', String(active));
     });
     renderTagCatalogResults();
-  } else if (button.hasAttribute('data-source-mode')) changeSourceMode(button.dataset.sourceMode);
+  } else if (button.hasAttribute('data-import-local-text')) document.querySelector('#local-text-file')?.click();
+  else if (button.hasAttribute('data-clear-local-text')) clearLocalText(button.dataset.clearLocalText);
+  else if (button.hasAttribute('data-source-mode')) changeSourceMode(button.dataset.sourceMode);
   else if (button.hasAttribute('data-text-size')) changeTextSize(Number(button.dataset.textSize));
   else if (button.hasAttribute('data-enlarge')) showImage(button.dataset.enlarge);
   else if (button.hasAttribute('data-retry-image')) void retryImage(button.dataset.retryImage);
@@ -672,10 +709,11 @@ document.addEventListener('input', event => {
     const term = event.target.value.normalize('NFKC').trim().toLocaleLowerCase('ko');
     let visible = 0;
     document.querySelectorAll(`[data-tag-choices="${axis}"] [data-filter-tag]`).forEach(button => {
-      const match = button.textContent.normalize('NFKC').toLocaleLowerCase('ko').includes(term);
+      const match = (button.dataset.tagSearch || button.textContent).normalize('NFKC').toLocaleLowerCase('ko').includes(term);
       button.hidden = !match;
       if (match) visible++;
     });
+    document.querySelectorAll(`[data-tag-choices="${axis}"] [data-related-group]`).forEach(group => { group.hidden = ![...group.querySelectorAll('[data-filter-tag]')].some(button => !button.hidden); });
     document.querySelector(`[data-tag-empty="${axis}"]`).hidden = visible > 0;
     hideTooltip();
   } else if (event.target.id === 'question-search') { state.query = event.target.value; resetListPage(); updateListResults(); }
@@ -687,6 +725,8 @@ document.addEventListener('input', event => {
   }
 });
 document.addEventListener('change', event => {
+  if (event.target.id === 'tag-match-mode') navigate(listRoute({ tagMode: event.target.value === 'or' ? 'or' : 'and', page: 1 }), { main: true });
+  if (event.target.id === 'local-text-file') { const file = event.target.files?.[0]; if (file) void importLocalTextFile(file); event.target.value = ''; }
   if (event.target.id === 'question-sort') navigate(listRoute({ sort: event.target.value === 'newest' ? 'newest' : 'oldest', page: 1 }), { main: true });
   if (event.target.id === 'review-filter') { state.review = event.target.value; resetListPage(); updateListResults(); }
 });
@@ -733,6 +773,9 @@ try {
   });
   state.data.questions.forEach(question => (question.tags || []).forEach(id => state.tagCounts.set(id, (state.tagCounts.get(id) || 0) + 1)));
   state.data.questions.forEach(question => state.questions.set(String(question.id), question));
+  try { state.localTexts = loadLocalTexts(localStorage, state.data.questions); }
+  catch { state.localTexts = new Map(); }
+  AXES.forEach(axis => groupTags([...state.taxonomy.values()], { axis: axis.id }).forEach(group => group.tags.forEach(tag => state.neighborhoods.set(tag.id, group.label))));
   if (!location.hash) history.replaceState(null, '', buildRoute({ view: 'list' }));
   render();
 } catch (error) {
