@@ -27,8 +27,21 @@ export function toggleBookmarkColor(review={},color) {
   const colors=BOOKMARK_COLORS.map(c=>c.id).filter(id=>selected.has(id));
   return {...current,bookmarkColors:colors,bookmark:colors.length>0};
 }
-export function filterQuestions(questions, {query='',tags=[],tagMode='and',requiredTags=[],review='all',bookmark='all',sort='oldest'}={}, reviews={}) {
+// Only exam years are exclusive. Every other axis permits multiple tags per question.
+// Display neighborhoods and tag ID prefixes do not define logical alternatives.
+export function tagFilterGroups(tags=[], taxonomy=[]) {
+  const index=taxonomy instanceof Map ? taxonomy : new Map((Array.isArray(taxonomy)?taxonomy:[]).map(tag=>[tag.id,tag]));
+  const groups=new Map();
+  for(const id of new Set(tags)) {
+    const axis=index.get(id)?.axis || 'other';
+    if(!groups.has(axis))groups.set(axis,{axis,operator:axis==='year'?'or':'and',tags:[]});
+    groups.get(axis).tags.push(id);
+  }
+  return [...groups.values()].sort((a,b)=>Number(b.axis==='year')-Number(a.axis==='year'));
+}
+export function filterQuestions(questions, {query='',tags=[],taxonomy=[],requiredTags=[],review='all',bookmark='all',sort='oldest'}={}, reviews={}) {
   const terms=String(query||'').normalize('NFKC').trim().toLocaleLowerCase('ko').split(/\s+/).filter(Boolean);
+  const groups=tagFilterGroups(tags,taxonomy);
   return questions.filter(q=>{
     const reasons=Object.values(q.tagReasons||{}).map(reason=>typeof reason==='string'?reason:JSON.stringify(reason));
     const hay=[q.id,q.year,q.examLabel,q.examKey,q.number,q.title,q.text,...(q.domains||[]),...(q.fields||[]),...(q.subjects||[]),...(q.types||[]),...(q.logic||[]),...reasons].join(' ').normalize('NFKC').toLocaleLowerCase('ko');
@@ -36,7 +49,7 @@ export function filterQuestions(questions, {query='',tags=[],tagMode='and',requi
     const matchesReview=review==='all'||(review==='bookmarked'?colors.length>0:review==='unreviewed'?!r.status||r.status==='unreviewed':r.status===review);
     const matchesBookmark=bookmark==='all'||(bookmark==='any'?colors.length>0:colors.includes(bookmark));
     const questionTags=q.tags||[];
-    const matchesTags=!tags.length||(tagMode==='or'?tags.some(t=>questionTags.includes(t)):tags.every(t=>questionTags.includes(t)));
+    const matchesTags=groups.every(group=>group.operator==='or'?group.tags.some(t=>questionTags.includes(t)):group.tags.every(t=>questionTags.includes(t)));
     return terms.every(t=>hay.includes(t))&&requiredTags.every(t=>questionTags.includes(t))&&matchesTags&&matchesReview&&matchesBookmark;
   }).sort((a,b)=>{
     const examOrder=a.year-b.year||(a.examKey==='preliminary'?0:1)-(b.examKey==='preliminary'?0:1);
@@ -65,15 +78,14 @@ export function parseRoute(hash='') {
   const requestedBookmark=colorIds.has(b)||b==='any'||b==='all'?b:view==='bookmarks'?'any':'all';
   const bookmark=view==='bookmarks'&&requestedBookmark==='all'?'any':requestedBookmark;
   const n=Number(params.get('page')||1);const page=Number.isFinite(n)?Math.max(1,Math.floor(n)):1;
-  return {view,id,tags,bookmark,page,mode:params.get('mode')==='scroll'?'scroll':'paged',sort:params.get('sort')==='newest'?'newest':'oldest',tagMode:params.get('tagMode')==='or'?'or':'and'};
+  return {view,id,tags,bookmark,page,mode:params.get('mode')==='scroll'?'scroll':'paged',sort:params.get('sort')==='newest'?'newest':'oldest',tagMode:'auto'};
 }
-export function buildRoute({view='list',id=null,tags=[],bookmark,page=1,mode,sort,tagMode}={}) {
+export function buildRoute({view='list',id=null,tags=[],bookmark,page=1,mode,sort}={}) {
   const params=new URLSearchParams();[...new Set(tags)].forEach(t=>params.append('tag',t));
   const defaultBookmark=view==='bookmarks'?'any':'all';
   if(bookmark && bookmark!==defaultBookmark)params.set('bookmark',bookmark);
   if(mode)params.set('mode',mode==='scroll'?'scroll':'paged');
   if(sort==='newest')params.set('sort','newest');
-  if(tagMode==='or')params.set('tagMode','or');
   if(Number(page)>1 && mode!=='scroll')params.set('page',Math.floor(Number(page)));
   const path=view==='question'&&id?'/question/'+id:view==='bookmarks'?'/bookmarks':view==='tags'?'/tags':view==='tag'&&id?'/tags/'+encodeURIComponent(id):'/questions';
   return '#'+path+(params.size?'?'+params:'');

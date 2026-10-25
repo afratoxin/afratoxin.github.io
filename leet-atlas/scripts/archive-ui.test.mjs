@@ -48,7 +48,7 @@ async function boot(hash='',reviews={},data=fixture,blockedStorage=false) {
  }
  let app;
  try {
-  app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,filteredQuestions,showBookmarkPalette,selectBookmarkColor,catalogTags,importLocalTextFile:typeof importLocalTextFile === "function" ? importLocalTextFile : null};')(...Object.values(env));
+  app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,toggleTag,resetFilters,filteredQuestions,showBookmarkPalette,selectBookmarkColor,catalogTags,importLocalTextFile:typeof importLocalTextFile === "function" ? importLocalTextFile : null};')(...Object.values(env));
  } finally {
   if(blockedStorage) { if(previous) Object.defineProperty(globalThis,'localStorage',previous); else delete globalThis.localStorage; }
  }
@@ -63,13 +63,14 @@ test('blocked browser storage does not prevent public questions and explanations
  assert.doesNotMatch(html,/문항 데이터를 불러오지 못했습니다/);
 });
 
-test('OR mode combines multiple exam years and keeps bookmark constraints',async()=>{
+test('automatic filtering combines multiple exam years and keeps bookmark constraints',async()=>{
  const reviews={'2701':{bookmarkColors:['blue']},'p001':{bookmarkColors:['blue']},'0901':{bookmarkColors:['red']}};
  const {app,elements}=await boot('#/bookmarks?bookmark=blue&tag=year-preliminary&tag=year-2027&tagMode=or',reviews);
  assert.deepEqual(app.filteredQuestions().map(q=>q.id),['p001','2701']);
- assert.match(elements.get('#main').innerHTML,/id="tag-match-mode"/);
- assert.equal(elements.get('#tag-match-mode').value,'or');
- assert.match(elements.get('#question-list').innerHTML,/tagMode=or/);
+ assert.match(elements.get('#main').innerHTML,/연도끼리는 OR/);
+ assert.doesNotMatch(elements.get('#main').innerHTML,/id="tag-match-mode"/);
+ assert.equal(app.state.route.tagMode,'auto');
+ assert.doesNotMatch(elements.get('#question-list').innerHTML,/tagMode=/);
 });
 
 test('tag collection remains required while selected year filters use OR',async()=>{
@@ -79,16 +80,15 @@ test('tag collection remains required while selected year filters use OR',async(
  assert.deepEqual(app.filteredQuestions().map(q=>q.id),['0901','0902','0903','0904','0905','0906','0907','0908','0909','0910']);
 });
 
-test('changing AND to OR resets page and retains sort, selected tags and color',async()=>{
- const {app,events,location}=await boot('#/bookmarks?tag=year-2009&tag=year-2027&bookmark=blue&sort=newest');
- events.get('change')({target:{id:'tag-match-mode',value:'or'}});
- app.render();
- assert.equal(app.state.route.tagMode,'or');
+test('adding a filter resets page and retains sort, selected years and color',async()=>{
+ const {app,location}=await boot('#/bookmarks?tag=year-2009&tag=year-2027&bookmark=blue&sort=newest');
+ app.toggleTag('field-law');app.render();
+ assert.equal(app.state.route.tagMode,'auto');
  assert.equal(app.state.route.sort,'newest');
  assert.equal(app.state.route.bookmark,'blue');
  assert.equal(app.state.route.page,1);
- assert.deepEqual(app.state.route.tags,['year-2009','year-2027']);
- assert.match(location.hash,/tagMode=or/);
+ assert.deepEqual(app.state.route.tags,['year-2009','year-2027','field-law']);
+ assert.doesNotMatch(location.hash,/tagMode=/);
 });
 
 test('filter sidebar and tag catalog show semantic neighborhoods and parent fields',async()=>{
@@ -97,7 +97,7 @@ test('filter sidebar and tag catalog show semantic neighborhoods and parent fiel
  assert.match(list.elements.get('#main').innerHTML,/<h4>법학/);
  const catalog=await boot('#/tags?tagMode=or');
  assert.match(catalog.elements.get('#tag-catalog-results').innerHTML,/class="tag-neighborhood"/);
- assert.match(catalog.elements.get('#tag-catalog-results').innerHTML,/tagMode=or/);
+ assert.doesNotMatch(catalog.elements.get('#tag-catalog-results').innerHTML,/tagMode=/);
 });
 
 test('private text import renders escaped text, enables body search, and never sends contents',async()=>{
@@ -327,4 +327,45 @@ test('shared subject collections display every parent field and search by second
  assert.match(collection.elements.get('#main').innerHTML,/분야 · 법학 · 역사학/);
  collection.app.state.tagQuery='역사학';
  assert.ok(collection.app.catalogTags().some(tag=>tag.id==='subject-law-institutions'));
+});
+
+const fullArchive=JSON.parse(await readFile(new URL('../data/archive.json',import.meta.url),'utf8'));
+const puzzle='type-4536b24c5d',year2026='year-750655310c',year2025='year-abefd8a26e';
+
+test('real archive applies year AND puzzle even from an old global-OR URL',async()=>{
+ const {app,elements,location}=await boot(`#/questions?tag=${year2026}&tag=${puzzle}&tagMode=or`,{},fullArchive);
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2632','2633','2634']);
+ assert.match(elements.get('#main').innerHTML,/연도끼리는 OR/);
+ assert.doesNotMatch(elements.get('#main').innerHTML,/id="tag-match-mode"/);
+ assert.doesNotMatch(location.hash,/tagMode=/);
+});
+
+test('real archive combines multiple years with puzzle and explains the current expression',async()=>{
+ const {app,elements}=await boot(`#/questions?tag=${year2025}&tag=${year2026}&tag=${puzzle}`,{},fullArchive);
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2512','2533','2534','2535','2632','2633','2634']);
+ const html=elements.get('#main').innerHTML;
+ assert.match(html,/적용 중인 조건/);
+ assert.match(html,/2025학년도 또는 2026학년도/);
+ assert.match(html,/그리고 논리 퍼즐/);
+});
+
+test('year collection can add another year without contradicting its pinned year',async()=>{
+ const {app,location}=await boot(`#/tags/${year2026}?tag=${puzzle}&sort=newest`,{},fullArchive);
+ app.toggleTag(year2025);app.render();
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2632','2633','2634','2512','2533','2534','2535']);
+ assert.equal(app.state.route.view,'list');
+ assert.ok(app.state.route.tags.includes(year2026));
+ assert.doesNotMatch(location.hash,/tagMode=/);
+});
+
+test('adding and removing year tags preserves puzzle, query, review and bookmark restrictions',async()=>{
+ const reviews={'2632':{bookmarkColors:['blue'],status:'check'},'2512':{bookmarkColors:['blue'],status:'check'},'2533':{bookmarkColors:['red'],status:'check'}};
+ const {app}=await boot(`#/bookmarks?bookmark=blue&tag=${year2026}&tag=${puzzle}&sort=newest`,reviews,fullArchive);
+ app.state.query='논리';app.state.review='check';
+ app.toggleTag(year2025);app.render();
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2632','2512']);
+ assert.equal(app.state.query,'논리');assert.equal(app.state.review,'check');
+ app.toggleTag(year2026);app.render();
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2512']);
+ assert.ok(app.state.route.tags.includes(puzzle));assert.equal(app.state.route.bookmark,'blue');
 });

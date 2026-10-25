@@ -1,11 +1,11 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-tags1';
-import { groupTags } from './tag-groups.mjs?v=20261026-tags1';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-tags1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-smart1';
+import { groupTags } from './tag-groups.mjs?v=20261026-smart1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-smart1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-tags1';
+const CACHE_VERSION = '20261026-smart1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -191,7 +191,7 @@ function tagButton(tag, question, filter = false, groupLabel = '') {
   const active = effectiveTags().includes(tag.id);
   const body = `${filter ? '' : '<span class="tag-dot" aria-hidden="true"></span>'}${esc(tag.label)}`;
   const shared = `data-axis="${esc(tag.axis)}" data-tooltip="${esc(tagDescription(tag, question))}" aria-describedby="tag-tooltip"`;
-  return filter ? `<button type="button" class="filter-choice${active ? ' is-active' : ''}" ${shared} data-tag-search="${esc([tag.label, tag.description, tagParent(tag), groupLabel].filter(Boolean).join(' '))}" data-filter-tag="${esc(tag.id)}" aria-pressed="${active}">${body}</button>` : `<a class="tag-chip${active ? ' is-active' : ''}" ${shared} href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode }))}">${body}</a>`;
+  return filter ? `<button type="button" class="filter-choice${active ? ' is-active' : ''}" ${shared} data-tag-search="${esc([tag.label, tag.description, tagParent(tag), groupLabel].filter(Boolean).join(' '))}" data-filter-tag="${esc(tag.id)}" aria-pressed="${active}">${body}</button>` : `<a class="tag-chip${active ? ' is-active' : ''}" ${shared} href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort }))}">${body}</a>`;
 }
 function reviewBadge(id) {
   const status = state.reviews[id]?.status;
@@ -208,7 +208,7 @@ function bookmarkButton(id, compact = false) {
 function navigate(route, focus) {
   hideTooltip();
   nextFocus = focus || null;
-  const hash = buildRoute({ mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode, ...route });
+  const hash = buildRoute({ mode: state.route.mode || state.modePreference, sort: state.route.sort, ...route });
   if (hash === location.hash) render();
   else location.hash = hash;
 }
@@ -235,22 +235,21 @@ function resetFilters() {
   navigate(listRoute({ tags: [], bookmark: state.route.view === 'bookmarks' ? 'any' : 'all' }), { search: true });
 }
 function filteredQuestions() {
-  const requiredTags = state.route.view === 'tag' && state.route.id ? [state.route.id] : [];
   const questions = state.data.questions.map(question => state.localTexts.has(question.id) ? { ...question, text: state.localTexts.get(question.id).text } : question);
-  return filterQuestions(questions, { query: state.query, tags: state.route.tags.filter(id => !requiredTags.includes(id)), requiredTags, tagMode: state.route.tagMode, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
+  return filterQuestions(questions, { query: state.query, tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
 }
 function tagCount(id) { return state.tagCounts.get(id) || 0; }
 function filterPanel() {
   return `<aside class="filter-panel${state.filtersOpen ? ' is-open' : ''}" aria-label="문항 분류 필터">
     <button class="filter-toggle" type="button" data-toggle-filters aria-expanded="${state.filtersOpen}" aria-controls="filter-content"><span>${icon('filter')} 분류로 좁혀 보기${effectiveTags().length ? ` · ${effectiveTags().length}개 선택` : ''}</span>${icon('down')}</button>
     <div class="filter-heading"><h2>분류로 좁혀 보기</h2><button class="button-text" type="button" data-reset>초기화</button></div>
-    <div id="filter-content" class="filter-content"><label class="tag-match-label" for="tag-match-mode">선택한 태그의 조건<select id="tag-match-mode" class="review-select"><option value="and">모두 일치 (AND)</option><option value="or">하나 이상 일치 (OR)</option></select></label><p class="filter-help">여러 연도를 함께 보려면 OR를 선택하세요. 검색·북마크·검수 상태는 함께 적용됩니다.</p>${AXES.map(axis => {
+    <div id="filter-content" class="filter-content"><p class="filter-help"><strong>태그 조건 자동 조합</strong><br>연도끼리는 OR, 나머지 태그는 AND로 적용합니다.<br>예: (2025 또는 2026) 그리고 논리 퍼즐</p>${AXES.map(axis => {
       const tags = [...state.taxonomy.values()].filter(tag => tag.axis === axis.id);
       const needsPicker = tags.length > 8;
       const selectedCount = tags.filter(tag => effectiveTags().includes(tag.id)).length;
       const choices = `<div class="filter-groups${needsPicker ? ' filter-tags-scroll' : ''}" data-tag-choices="${axis.id}">${groupTags(tags, { axis: axis.id }).map(group => `<section class="filter-tag-group" data-related-group><h4>${esc(group.label)}<span>${group.tags.length}</span></h4><div class="filter-tags">${group.tags.map(tag => tagButton(tag, null, true, group.label)).join('')}</div></section>`).join('')}</div>`;
-      return tags.length ? `<section class="filter-section"><h3>${axis.label}<span>${selectedCount ? `${selectedCount}개 선택 / ` : ''}${tags.length}</span></h3>${needsPicker ? `<details class="filter-expander"${selectedCount ? ' open' : ''}><summary>${tags.length}개 태그에서 선택 ${icon('down')}</summary><label class="taxonomy-search-label"><span class="sr-only">${axis.label} 태그 검색</span><input class="taxonomy-search" type="search" data-taxonomy-search="${axis.id}" placeholder="${axis.label} 태그 찾기" autocomplete="off"></label>${choices}<p class="tag-search-empty" data-tag-empty="${axis.id}" hidden>일치하는 태그가 없습니다.</p></details>` : choices}</section>` : '';
-    }).join('')}<p class="filter-help">선택 태그에는 AND/OR를 적용하고 북마크 조건은 함께 적용합니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, tagMode: state.route.tagMode, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
+      return tags.length ? `<section class="filter-section"><h3>${axis.label}<span>${selectedCount ? `${selectedCount}개 선택 / ` : ''}${tags.length}</span></h3><p class="filter-rule">${axis.id === 'year' ? '선택 연도 중 하나 이상 · OR' : '선택 태그 모두 · AND'}</p>${needsPicker ? `<details class="filter-expander"${selectedCount ? ' open' : ''}><summary>${tags.length}개 태그에서 선택 ${icon('down')}</summary><label class="taxonomy-search-label"><span class="sr-only">${axis.label} 태그 검색</span><input class="taxonomy-search" type="search" data-taxonomy-search="${axis.id}" placeholder="${axis.label} 태그 찾기" autocomplete="off"></label>${choices}<p class="tag-search-empty" data-tag-empty="${axis.id}" hidden>일치하는 태그가 없습니다.</p></details>` : choices}</section>` : '';
+    }).join('')}<p class="filter-help">검색·북마크·검수 상태도 모두 함께 적용합니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
   </aside>`;
 }
 function bookmarkCount(color) {
@@ -262,7 +261,11 @@ function colorFilters() {
 }
 function selectedFilterChips() {
   const tags = effectiveTags();
-  return `<div id="selected-filters" class="selected-filters"${tags.length ? '' : ' hidden'}>${tags.map(id => { const tag = state.taxonomy.get(id); return `<button type="button" class="selected-filter" data-remove-tag="${esc(id)}" aria-label="${esc(tag?.label || id)} 필터 해제">${esc(tag?.label || id)}${icon('close')}</button>`; }).join('')}<button class="button-text" type="button" data-reset>조건 초기화</button></div>`;
+  const expression = tagFilterGroups(tags, state.taxonomy).map(group => {
+    const labels = group.tags.map(id => state.taxonomy.get(id)?.label || id);
+    return group.operator === 'or' && labels.length > 1 ? `(${labels.join(' 또는 ')})` : labels.join(' 그리고 ');
+  }).join(' 그리고 ');
+  return `<div id="selected-filters" class="selected-filters"${tags.length ? '' : ' hidden'}><p class="filter-expression"><strong>적용 중인 조건</strong><span>${esc(expression)}</span></p>${tags.map(id => { const tag = state.taxonomy.get(id); return `<button type="button" class="selected-filter" data-remove-tag="${esc(id)}" aria-label="${esc(tag?.label || id)} 필터 해제">${esc(tag?.label || id)}${icon('close')}</button>`; }).join('')}<button class="button-text" type="button" data-reset>조건 초기화</button></div>`;
 }
 function renderList() {
   const isBookmarks = state.route.view === 'bookmarks';
@@ -276,7 +279,7 @@ function renderList() {
   const title = isBookmarks ? '모든 북마크' : tag ? tag.label : '문항 탐색';
   document.title = `${title} · LEET Atlas`;
   const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '예비시험부터 최신 회차까지, 소재·태그와 분류 이유를 함께 살펴보세요.';
-  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort, tagMode: state.route.tagMode }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
+  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
   <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="문항번호, 분야, 소재, 본문으로 검색" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
     <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
     <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="oldest">오래된순</option><option value="newest">최신순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
@@ -284,7 +287,6 @@ function renderList() {
   </section></div>`;
   document.querySelector('#review-filter').value = state.review;
   document.querySelector('#question-sort').value = state.route.sort;
-  document.querySelector('#tag-match-mode').value = state.route.tagMode;
   updateListResults();
 }
 function questionRoute(question) {
@@ -330,7 +332,7 @@ function renderTagCatalogResults() {
   document.querySelector('#tag-catalog-results').innerHTML = tags.length ? AXES.map(axis => {
     const groups = groupTags(tags, { axis: axis.id });
     if (!groups.length) return '';
-    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${groups.reduce((n, group) => n + group.tags.length, 0)}</span></h2>${groups.map(group => `<section class="tag-neighborhood"><h3>${esc(group.label)}<span>${group.tags.length}개 태그</span></h3><div class="tag-catalog-grid">${group.tags.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tagParent(tag) ? `<span class="catalog-parent">${esc(tagParent(tag))}</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? `<small>${esc(emptyTaxonomyLabel())}</small>` : ''}</a>`).join('')}</div></section>`).join('')}</section>`;
+    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${groups.reduce((n, group) => n + group.tags.length, 0)}</span></h2>${groups.map(group => `<section class="tag-neighborhood"><h3>${esc(group.label)}<span>${group.tags.length}개 태그</span></h3><div class="tag-catalog-grid">${group.tags.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tagParent(tag) ? `<span class="catalog-parent">${esc(tagParent(tag))}</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? `<small>${esc(emptyTaxonomyLabel())}</small>` : ''}</a>`).join('')}</div></section>`).join('')}</section>`;
   }).join('') : '<div class="empty-state"><strong>일치하는 태그가 없습니다.</strong><p>태그 이름이나 정의, 연관 묶음 이름을 검색해 보세요.</p></div>';
 }
 
@@ -346,10 +348,10 @@ function updateNavigation() {
     const active = link.dataset.navView === activeView;
     link.classList.toggle('is-active', active);
     if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
-    link.href = buildRoute({ view: link.dataset.navView, mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode });
+    link.href = buildRoute({ view: link.dataset.navView, mode: state.route.mode || state.modePreference, sort: state.route.sort });
   });
   const allBookmarksLink = document.querySelector('#palette-all-link');
-  if (allBookmarksLink) allBookmarksLink.href = buildRoute({ view: 'bookmarks', mode: state.route.mode, sort: state.route.sort, tagMode: state.route.tagMode });
+  if (allBookmarksLink) allBookmarksLink.href = buildRoute({ view: 'bookmarks', mode: state.route.mode, sort: state.route.sort });
   const total = document.querySelector('#bookmark-total');
   if (total) total.textContent = bookmarkCount('any');
 }
@@ -451,7 +453,7 @@ function renderQuestion() {
     return;
   }
   document.title = `${question.id} ${question.title} · LEET Atlas`;
-  const sorted = filterQuestions(state.data.questions, { sort: state.route.sort, tagMode: state.route.tagMode });
+  const sorted = filterQuestions(state.data.questions, { sort: state.route.sort });
   const index = sorted.findIndex(item => item.id === question.id);
   const prev = sorted[index - 1];
   const next = sorted[index + 1];
@@ -477,7 +479,13 @@ function render() {
   const redirectedTag = originalTagId !== state.route.id || originalTags !== state.route.tags.join('\n');
   if (!new URLSearchParams(location.hash.split('?')[1] || '').has('mode')) state.route.mode = state.modePreference;
   state.route.tags = state.route.tags.filter(id => state.taxonomy.has(id));
-  if (redirectedTag) history.replaceState(null, '', buildRoute(state.route));
+  const combinedYearCollection = state.route.view === 'tag' && state.taxonomy.get(state.route.id)?.axis === 'year' && state.route.tags.some(id => id !== state.route.id && state.taxonomy.get(id)?.axis === 'year');
+  if (combinedYearCollection) {
+    state.route.tags = [...new Set([state.route.id, ...state.route.tags])];
+    state.route.view = 'list';
+    state.route.id = null;
+  }
+  if (redirectedTag || combinedYearCollection || new URLSearchParams(location.hash.split('?')[1] || '').has('tagMode')) history.replaceState(null, '', buildRoute(state.route));
   const returningToCollection = previousRoute.view === 'question' && state.returnRoute?.view === state.route.view && (state.route.view !== 'tag' || state.returnRoute.id === state.route.id);
   if (['bookmarks', 'tag'].includes(state.route.view) && !returningToCollection && (previousRoute.view !== state.route.view || previousRoute.id !== state.route.id)) {
     state.query = '';
@@ -528,7 +536,7 @@ function renderBookmarkPalette() {
   const colors = bookmarkColors(state.reviews[question.id]);
   document.querySelector('#bookmark-dialog-title').textContent = `${question.id} · 북마크 색 선택`;
   document.querySelector('#bookmark-palette').innerHTML = BOOKMARK_COLORS.map(color => `<button type="button" class="palette-color${colors.includes(color.id) ? ' is-active' : ''}" data-bookmark-color="${color.id}" aria-pressed="${colors.includes(color.id)}"><span class="palette-swatch" style="--bookmark-color:${esc(color.hex)}" aria-hidden="true"></span><strong>${esc(color.label)}</strong><span class="palette-check" aria-hidden="true">${colors.includes(color.id) ? '✓' : '+'}</span></button>`).join('');
-  document.querySelector('#palette-all-link').href = buildRoute({ view: 'bookmarks', mode: state.route.mode || state.modePreference, sort: state.route.sort, tagMode: state.route.tagMode });
+  document.querySelector('#palette-all-link').href = buildRoute({ view: 'bookmarks', mode: state.route.mode || state.modePreference, sort: state.route.sort });
 }
 function showBookmarkPalette(id) {
   if (!state.questions.has(id)) return;
@@ -725,7 +733,6 @@ document.addEventListener('input', event => {
   }
 });
 document.addEventListener('change', event => {
-  if (event.target.id === 'tag-match-mode') navigate(listRoute({ tagMode: event.target.value === 'or' ? 'or' : 'and', page: 1 }), { main: true });
   if (event.target.id === 'local-text-file') { const file = event.target.files?.[0]; if (file) void importLocalTextFile(file); event.target.value = ''; }
   if (event.target.id === 'question-sort') navigate(listRoute({ sort: event.target.value === 'newest' ? 'newest' : 'oldest', page: 1 }), { main: true });
   if (event.target.id === 'review-filter') { state.review = event.target.value; resetListPage(); updateListResults(); }
