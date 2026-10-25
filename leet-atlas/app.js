@@ -1,9 +1,9 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026b';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-safe1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026b';
+const CACHE_VERSION = '20261026-safe1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -189,7 +189,7 @@ function tagButton(tag, question, filter = false) {
   const active = effectiveTags().includes(tag.id);
   const body = `${filter ? '' : '<span class="tag-dot" aria-hidden="true"></span>'}${esc(tag.label)}`;
   const shared = `data-axis="${esc(tag.axis)}" data-tooltip="${esc(tagDescription(tag, question))}" aria-describedby="tag-tooltip"`;
-  return filter ? `<button type="button" class="filter-choice${active ? ' is-active' : ''}" ${shared} data-filter-tag="${esc(tag.id)}" aria-pressed="${active}">${body}</button>` : `<a class="tag-chip${active ? ' is-active' : ''}" ${shared} href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference }))}">${body}</a>`;
+  return filter ? `<button type="button" class="filter-choice${active ? ' is-active' : ''}" ${shared} data-filter-tag="${esc(tag.id)}" aria-pressed="${active}">${body}</button>` : `<a class="tag-chip${active ? ' is-active' : ''}" ${shared} href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort }))}">${body}</a>`;
 }
 function reviewBadge(id) {
   const status = state.reviews[id]?.status;
@@ -206,7 +206,7 @@ function bookmarkButton(id, compact = false) {
 function navigate(route, focus) {
   hideTooltip();
   nextFocus = focus || null;
-  const hash = buildRoute({ mode: state.route.mode || state.modePreference, ...route });
+  const hash = buildRoute({ mode: state.route.mode || state.modePreference, sort: state.route.sort, ...route });
   if (hash === location.hash) render();
   else location.hash = hash;
 }
@@ -233,7 +233,7 @@ function resetFilters() {
   navigate(listRoute({ tags: [], bookmark: state.route.view === 'bookmarks' ? 'any' : 'all' }), { search: true });
 }
 function filteredQuestions() {
-  return filterQuestions(state.data.questions, { query: state.query, tags: effectiveTags(), review: state.review, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
+  return filterQuestions(state.data.questions, { query: state.query, tags: effectiveTags(), review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
 }
 function tagCount(id) { return state.tagCounts.get(id) || 0; }
 function filterPanel() {
@@ -246,7 +246,7 @@ function filterPanel() {
       const selectedCount = tags.filter(tag => effectiveTags().includes(tag.id)).length;
       const choices = `<div class="filter-tags${needsPicker ? ' filter-tags-scroll' : ''}" data-tag-choices="${axis.id}">${tags.map(tag => tagButton(tag, null, true)).join('')}</div>`;
       return tags.length ? `<section class="filter-section"><h3>${axis.label}<span>${selectedCount ? `${selectedCount}개 선택 / ` : ''}${tags.length}</span></h3>${needsPicker ? `<details class="filter-expander"${selectedCount ? ' open' : ''}><summary>${tags.length}개 태그에서 선택 ${icon('down')}</summary><label class="taxonomy-search-label"><span class="sr-only">${axis.label} 태그 검색</span><input class="taxonomy-search" type="search" data-taxonomy-search="${axis.id}" placeholder="${axis.label} 태그 찾기" autocomplete="off"></label>${choices}<p class="tag-search-empty" data-tag-empty="${axis.id}" hidden>일치하는 태그가 없습니다.</p></details>` : choices}</section>` : '';
-    }).join('')}<p class="filter-help">태그와 북마크 색을 함께 고르면 모든 조건을 만족하는 문항을 찾습니다. <a href="#/tags">태그 전체 보기 ↗</a></p></div>
+    }).join('')}<p class="filter-help">태그와 북마크 색을 함께 고르면 모든 조건을 만족하는 문항을 찾습니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
   </aside>`;
 }
 function bookmarkCount(color) {
@@ -272,13 +272,14 @@ function renderList() {
   const title = isBookmarks ? '모든 북마크' : tag ? tag.label : '문항 탐색';
   document.title = `${title} · LEET Atlas`;
   const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '예비시험부터 최신 회차까지, 소재·태그와 분류 이유를 함께 살펴보세요.';
-  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
+  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
   <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="문항번호, 분야, 소재, 본문으로 검색" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
     <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
-    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><span class="sort-note">연도 · 번호 순</span><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
+    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="oldest">오래된순</option><option value="newest">최신순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
     <p class="list-bottom-note">${icon('info')} 회차별 출처와 분류 이유를 문항에서 확인할 수 있습니다. 정답·해설 검토 여부도 각 문항에 표시합니다.</p>
   </section></div>`;
   document.querySelector('#review-filter').value = state.review;
+  document.querySelector('#question-sort').value = state.route.sort;
   updateListResults();
 }
 function questionRoute(question) {
@@ -324,7 +325,7 @@ function renderTagCatalogResults() {
   document.querySelector('#tag-catalog-results').innerHTML = tags.length ? AXES.map(axis => {
     const group = tags.filter(tag => tag.axis === axis.id);
     if (!group.length) return '';
-    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${group.length}</span></h2><div class="tag-catalog-grid">${group.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tagParent(tag) ? `<span class="catalog-parent">${esc(tagParent(tag))}</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? `<small>${esc(emptyTaxonomyLabel())}</small>` : ''}</a>`).join('')}</div></section>`;
+    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${group.length}</span></h2><div class="tag-catalog-grid">${group.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference, sort: state.route.sort }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tagParent(tag) ? `<span class="catalog-parent">${esc(tagParent(tag))}</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? `<small>${esc(emptyTaxonomyLabel())}</small>` : ''}</a>`).join('')}</div></section>`;
   }).join('') : '<div class="empty-state"><strong>일치하는 태그가 없습니다.</strong><p>태그 이름이나 정의의 다른 단어를 검색해 보세요.</p></div>';
 }
 function renderTags() {
@@ -339,8 +340,10 @@ function updateNavigation() {
     const active = link.dataset.navView === activeView;
     link.classList.toggle('is-active', active);
     if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
-    link.href = buildRoute({ view: link.dataset.navView, mode: state.route.mode || state.modePreference });
+    link.href = buildRoute({ view: link.dataset.navView, mode: state.route.mode || state.modePreference, sort: state.route.sort });
   });
+  const allBookmarksLink = document.querySelector('#palette-all-link');
+  if (allBookmarksLink) allBookmarksLink.href = buildRoute({ view: 'bookmarks', mode: state.route.mode, sort: state.route.sort });
   const total = document.querySelector('#bookmark-total');
   if (total) total.textContent = bookmarkCount('any');
 }
@@ -413,7 +416,7 @@ function renderQuestion() {
     return;
   }
   document.title = `${question.id} ${question.title} · LEET Atlas`;
-  const sorted = filterQuestions(state.data.questions);
+  const sorted = filterQuestions(state.data.questions, { sort: state.route.sort });
   const index = sorted.findIndex(item => item.id === question.id);
   const prev = sorted[index - 1];
   const next = sorted[index + 1];
@@ -490,7 +493,7 @@ function renderBookmarkPalette() {
   const colors = bookmarkColors(state.reviews[question.id]);
   document.querySelector('#bookmark-dialog-title').textContent = `${question.id} · 북마크 색 선택`;
   document.querySelector('#bookmark-palette').innerHTML = BOOKMARK_COLORS.map(color => `<button type="button" class="palette-color${colors.includes(color.id) ? ' is-active' : ''}" data-bookmark-color="${color.id}" aria-pressed="${colors.includes(color.id)}"><span class="palette-swatch" style="--bookmark-color:${esc(color.hex)}" aria-hidden="true"></span><strong>${esc(color.label)}</strong><span class="palette-check" aria-hidden="true">${colors.includes(color.id) ? '✓' : '+'}</span></button>`).join('');
-  document.querySelector('#palette-all-link').href = buildRoute({ view: 'bookmarks', mode: state.route.mode || state.modePreference });
+  document.querySelector('#palette-all-link').href = buildRoute({ view: 'bookmarks', mode: state.route.mode || state.modePreference, sort: state.route.sort });
 }
 function showBookmarkPalette(id) {
   if (!state.questions.has(id)) return;
@@ -684,6 +687,7 @@ document.addEventListener('input', event => {
   }
 });
 document.addEventListener('change', event => {
+  if (event.target.id === 'question-sort') navigate(listRoute({ sort: event.target.value === 'newest' ? 'newest' : 'oldest', page: 1 }), { main: true });
   if (event.target.id === 'review-filter') { state.review = event.target.value; resetListPage(); updateListResults(); }
 });
 document.addEventListener('pointerover', event => {

@@ -27,7 +27,7 @@ export function toggleBookmarkColor(review={},color) {
   const colors=BOOKMARK_COLORS.map(c=>c.id).filter(id=>selected.has(id));
   return {...current,bookmarkColors:colors,bookmark:colors.length>0};
 }
-export function filterQuestions(questions, {query='',tags=[],review='all',bookmark='all'}={}, reviews={}) {
+export function filterQuestions(questions, {query='',tags=[],review='all',bookmark='all',sort='oldest'}={}, reviews={}) {
   const terms=String(query||'').normalize('NFKC').trim().toLocaleLowerCase('ko').split(/\s+/).filter(Boolean);
   return questions.filter(q=>{
     const reasons=Object.values(q.tagReasons||{}).map(reason=>typeof reason==='string'?reason:JSON.stringify(reason));
@@ -36,7 +36,10 @@ export function filterQuestions(questions, {query='',tags=[],review='all',bookma
     const matchesReview=review==='all'||(review==='bookmarked'?colors.length>0:review==='unreviewed'?!r.status||r.status==='unreviewed':r.status===review);
     const matchesBookmark=bookmark==='all'||(bookmark==='any'?colors.length>0:colors.includes(bookmark));
     return terms.every(t=>hay.includes(t))&&tags.every(t=>(q.tags||[]).includes(t))&&matchesReview&&matchesBookmark;
-  }).sort((a,b)=>a.year-b.year||(a.examKey==='preliminary'?0:1)-(b.examKey==='preliminary'?0:1)||a.number-b.number);
+  }).sort((a,b)=>{
+    const examOrder=a.year-b.year||(a.examKey==='preliminary'?0:1)-(b.examKey==='preliminary'?0:1);
+    return (sort==='newest'?-examOrder:examOrder)||a.number-b.number;
+  });
 }
 export function paginateQuestions(questions,{page=1,pageSize=10,mode='paged'}={}) {
   const size=Number.isFinite(Number(pageSize)) ? Math.min(100,Math.max(1,Math.floor(Number(pageSize)))) : 10;
@@ -60,13 +63,14 @@ export function parseRoute(hash='') {
   const requestedBookmark=colorIds.has(b)||b==='any'||b==='all'?b:view==='bookmarks'?'any':'all';
   const bookmark=view==='bookmarks'&&requestedBookmark==='all'?'any':requestedBookmark;
   const n=Number(params.get('page')||1);const page=Number.isFinite(n)?Math.max(1,Math.floor(n)):1;
-  return {view,id,tags,bookmark,page,mode:params.get('mode')==='scroll'?'scroll':'paged'};
+  return {view,id,tags,bookmark,page,mode:params.get('mode')==='scroll'?'scroll':'paged',sort:params.get('sort')==='newest'?'newest':'oldest'};
 }
-export function buildRoute({view='list',id=null,tags=[],bookmark,page=1,mode}={}) {
+export function buildRoute({view='list',id=null,tags=[],bookmark,page=1,mode,sort}={}) {
   const params=new URLSearchParams();[...new Set(tags)].forEach(t=>params.append('tag',t));
   const defaultBookmark=view==='bookmarks'?'any':'all';
   if(bookmark && bookmark!==defaultBookmark)params.set('bookmark',bookmark);
   if(mode)params.set('mode',mode==='scroll'?'scroll':'paged');
+  if(sort==='newest')params.set('sort','newest');
   if(Number(page)>1 && mode!=='scroll')params.set('page',Math.floor(Number(page)));
   const path=view==='question'&&id?'/question/'+id:view==='bookmarks'?'/bookmarks':view==='tags'?'/tags':view==='tag'&&id?'/tags/'+encodeURIComponent(id):'/questions';
   return '#'+path+(params.size?'?'+params:'');

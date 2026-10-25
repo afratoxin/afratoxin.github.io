@@ -1,10 +1,23 @@
 import copy
+import json
 import unittest
+from pathlib import Path
 
 from build_explanations_archive import explanations_archive
 
 
 class ExplanationPublicationTests(unittest.TestCase):
+    def test_published_manifest_describes_all_authored_drafts_without_claiming_official_verification(self):
+        root = Path(__file__).resolve().parents[1]
+        data = json.loads((root / 'data/archive.json').read_text())
+        manifest = json.loads((root / 'data/archive-manifest.json').read_text())
+        self.assertEqual(manifest['publicationMode'], data['publicationMode'])
+        self.assertEqual(manifest['draftExplanationQuestionCount'], len(data['questions']))
+        self.assertEqual(manifest['optionExplanationCount'], sum(len(q['options']) for q in data['questions']))
+        self.assertEqual(manifest['preservedSourceQuestionCount'], 40)
+        self.assertEqual(manifest['sourceReferenceQuestionCount'], 715)
+        self.assertIs(manifest['officialAnswerVerificationComplete'], False)
+
     def test_new_questions_publish_authored_analysis_without_original_payload(self):
         source = {'publicationMode': 'full-content', 'exam': {}, 'exams': [{'key': '2020', 'sourcePdf': 'private.pdf'}], 'questions': [{
             'id': '2001', 'examKey': '2020', 'year': 2020, 'number': 1,

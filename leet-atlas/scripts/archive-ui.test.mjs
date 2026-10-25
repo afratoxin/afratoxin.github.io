@@ -44,6 +44,51 @@ async function boot(hash='',reviews={},data=fixture) {
 }
 const rows=html=>[...html.matchAll(/class="row-index"[^>]*>([^<]+)</g)].map(match=>match[1]);
 
+test('newest order applies to questions, bookmarks and tag collections while preserving number order',async()=>{
+ for(const hash of ['#/questions?sort=newest','#/bookmarks?sort=newest','#/tags/field-law?sort=newest']) {
+  const reviews=Object.fromEntries(fixture.questions.map(q=>[q.id,{bookmarkColors:['blue']}]));
+  const {elements}=await boot(hash,reviews);
+  assert.deepEqual(rows(elements.get('#question-list').innerHTML),['2701','0901','0902','0903','0904','0905','0906','0907','0908','0909']);
+  assert.match(elements.get('#main').innerHTML,/id="question-sort"/);
+  assert.equal(elements.get('#question-sort').value,'newest');
+  assert.match(elements.get('#question-list').innerHTML,/sort=newest/);
+ }
+});
+
+test('changing sort resets pagination and retains search, tags and bookmark color',async()=>{
+ const reviews=Object.fromEntries(fixture.questions.map(q=>[q.id,{bookmarkColors:['blue']}]));
+ const {app,events,location,elements}=await boot('#/bookmarks?bookmark=blue&tag=field-law&page=2',reviews);
+ app.state.query='제도';
+ events.get('change')({target:{id:'question-sort',value:'newest'}});
+ app.render();
+ assert.equal(app.state.route.sort,'newest');
+ assert.equal(app.state.route.page,1);
+ assert.equal(app.state.route.bookmark,'blue');
+ assert.deepEqual(app.state.route.tags,['field-law']);
+ assert.equal(app.state.query,'제도');
+ assert.match(location.hash,/sort=newest/);
+ assert.deepEqual(rows(elements.get('#question-list').innerHTML).slice(0,2),['2701','0901']);
+});
+
+test('newest detail navigation and taxonomy links retain the selected order',async()=>{
+ const {elements}=await boot('#/question/0910?sort=newest');
+ const html=elements.get('#main').innerHTML;
+ assert.match(html,/data-question-nav="0909"/);
+ assert.match(html,/data-question-nav="p001"/);
+ assert.match(html,/href="#\/questions\?[^\"]*sort=newest/);
+ assert.match(html,/href="#\/tags\/field-law\?[^\"]*sort=newest/);
+ const catalog=await boot('#/tags?sort=newest');
+ assert.match(catalog.elements.get('#tag-catalog-results').innerHTML,/href="#\/tags\/field-law\?[^\"]*sort=newest/);
+});
+
+test('bookmark palette keeps newest order when opening all bookmarks',async()=>{
+ const {app,elements}=await boot('#/question/2701?sort=newest');
+ app.showBookmarkPalette('2701');
+ const route=core.parseRoute(elements.get('#palette-all-link').href);
+ assert.equal(route.view,'bookmarks');
+ assert.equal(route.sort,'newest');
+});
+
 test('archive loading shows mixed exams in chronological order across ten-card pages',async()=>{
  const first=await boot();
  assert.match(first.requests[0],/^data\/archive\.json\?v=/);

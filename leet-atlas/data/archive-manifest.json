@@ -2444,5 +2444,10 @@
     }
   ],
   "taxonomyCount": 221,
-  "publicationMode": "metadata-only"
+  "publicationMode": "explanations-only",
+  "draftExplanationQuestionCount": 755,
+  "optionExplanationCount": 3775,
+  "preservedSourceQuestionCount": 40,
+  "sourceReferenceQuestionCount": 715,
+  "officialAnswerVerificationComplete": false
 }
