@@ -15,7 +15,7 @@ for q in qs:
  assert '\ufffd' not in q['text']
  assert not any(0xe000<=ord(c)<=0xf8ff for c in q['text']), (q['id'],'PUA in display text')
  assert q['tags'] and set(q['tags'])<=ids
- for field in ['domains','subjects','types','logic']:
+ for field in ['domains','fields','subjects','types','logic']:
   assert q[field], (q['id'],field)
  assert [o['number'] for o in q['options']]==list(range(1,6))
  assert sum(o['correct'] for o in q['options'])==1
@@ -28,13 +28,23 @@ for q in qs:
  assert (ROOT/'data'/f'{q["id"]}.txt').exists()
  for tag in q['logic']:
   assert q['tagReasons'].get(tag), (q['id'],'logic tag without reason',tag)
+ assert q['answerStatus']=='source-and-solution-agree'
  if q['id']=='2708':
-  assert q['answerStatus']=='source-conflict' and q['confidence']=='review'
-  assert [s['label'] for s in q['statements'] if s['verdict']]==['ㄴ']
- else:assert q['answerStatus']=='source-and-solution-agree'
+  assert q['confidence']=='high' and q['answer']==3
+  assert [s['label'] for s in q['statements'] if s['verdict']]==['ㄱ','ㄴ']
+  assert '㉡과 ㉢은 동시에 참일 수' in ' '.join(q['text'].split())
+  assert '㉣은 참이고 ㉤은 거짓이라면' in ' '.join(q['text'].split())
 for t in tax:
  assert t['description']
  assert t['count']==sum(t['id'] in q['tags'] for q in qs)
 assert len({(t['axis'],t['label']) for t in tax})==len(tax)
 print(f'PASS: {len(qs)} questions, {sum(len(q["options"]) for q in qs)} option explanations, {len(tax)} tags, 80 valid images.')
-print('Known source conflict preserved: 2708. Official external answer key comparison: incomplete.')
+assert d['exam'].get('conflictQuestionIds',[])==[]
+for q in qs:
+ for tid in q['tags']:
+  t=next(t for t in tax if t['id']==tid)
+  if t['axis']!='year':assert q['tagReasons'].get(t['label']), (q['id'],t['label'])
+fields=[t for t in tax if t['axis']=='field']
+assert fields and any(t['label']=='정보과학' and t['count']==0 for t in fields)
+assert all(t.get('parentDomain') for t in fields)
+print('Updated 2708: ㄱ·ㄴ true, answer ③. Field catalog and per-tag reasons verified.')

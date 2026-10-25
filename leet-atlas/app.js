@@ -1,19 +1,23 @@
-import { filterQuestions, parseRoute, buildRoute } from './core.mjs';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute } from './core.mjs?v=20261025b';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
+const VIEW_KEY = 'leet-atlas:list-mode';
+const CACHE_VERSION = '20261025b';
 const AXES = [
-  { id: 'year', label: '연도', field: 'year' },
   { id: 'domain', label: '대범주', field: 'domains' },
+  { id: 'field', label: '분야', field: 'fields' },
   { id: 'subject', label: '세부 소재', field: 'subjects' },
   { id: 'type', label: '문항 유형', field: 'types' },
   { id: 'logic', label: '풀이 논리', field: 'logic' },
+  { id: 'year', label: '연도', field: 'year' },
 ];
 const CIRCLED = ['', '①', '②', '③', '④', '⑤'];
-const state = { data: null, taxonomy: new Map(), questions: new Map(), reviews: {}, route: parseRoute(location.hash), query: '', review: 'all', sourceMode: 'image', textSize: 16, filtersOpen: false, storageFailed: false };
+const state = { data: null, taxonomy: new Map(), tagCounts: new Map(), questions: new Map(), reviews: {}, route: parseRoute(location.hash), query: '', review: 'all', sourceMode: 'image', textSize: 16, filtersOpen: false, storageFailed: false, modePreference: 'paged', hasRendered: false, tagQuery: '', tagAxis: 'all', paletteQuestionId: null, returnRoute: null };
 const main = document.querySelector('#main');
 const tooltip = document.querySelector('#tag-tooltip');
 const imageDialog = document.querySelector('#image-dialog');
+const bookmarkDialog = document.querySelector('#bookmark-dialog');
 let tooltipTarget = null;
 let tooltipTimer;
 let toastTimer;
@@ -48,12 +52,17 @@ function asText(value) {
 }
 function safeAsset(path) {
   const value = String(path || '');
-  return /^(?:assets|data)\/[a-zA-Z0-9_.\/-]+$/.test(value) && !value.includes('..') ? value : '';
+  return /^(?:assets|data)\/[a-zA-Z0-9_.\/-]+$/.test(value) && !value.includes('..') ? `${value}?v=${CACHE_VERSION}` : '';
 }
 function loadReviews() {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    state.reviews = stored.reviews && typeof stored.reviews === 'object' ? stored.reviews : {};
+    const previous = stored.reviews && typeof stored.reviews === 'object' ? stored.reviews : {};
+    state.reviews = normalizeReviews(previous);
+    if (JSON.stringify(previous) !== JSON.stringify(state.reviews)) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion: 2, reviews: state.reviews })); } catch { /* Records remain available in this tab. */ }
+    }
+    state.modePreference = localStorage.getItem(VIEW_KEY) === 'scroll' ? 'scroll' : 'paged';
     const size = Number(localStorage.getItem(SIZE_KEY));
     if (size >= 13 && size <= 24) state.textSize = size;
   } catch { state.reviews = {}; }
@@ -62,7 +71,8 @@ function saveReview(id, change) {
   const old = state.reviews[id] || {};
   state.reviews[id] = { ...old, ...change, updatedAt: new Date().toISOString() };
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion: 1, reviews: state.reviews }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ schemaVersion: 2, reviews: state.reviews }));
+    state.storageFailed = false;
     return true;
   } catch {
     state.storageFailed = true;
@@ -92,72 +102,164 @@ function tagDescription(tag, question) {
   const reason = question?.tagReasons?.[tag.label] || question?.tagReasons?.[tag.id];
   return `${tag.label} · ${AXES.find(axis => axis.id === tag.axis)?.label || '분류'}\n${tag.description || '이 분류에 해당하는 문항을 모아 봅니다.'}${reason ? `\n\n이 문항에 붙인 이유\n${asText(reason)}` : ''}\n\n클릭하면 이 태그의 문항 목록으로 이동합니다.`;
 }
+function effectiveTags() {
+  return [...new Set([...(state.route.tags || []), ...(state.route.view === 'tag' && state.route.id ? [state.route.id] : [])])];
+}
 function tagButton(tag, question, filter = false) {
-  const active = state.route.tags.includes(tag.id);
-  return `<button type="button" class="${filter ? 'filter-choice' : 'tag-chip'}${active ? ' is-active' : ''}" data-axis="${esc(tag.axis)}" data-filter-tag="${esc(tag.id)}" data-tooltip="${esc(tagDescription(tag, question))}" aria-describedby="tag-tooltip" aria-pressed="${active}">${filter ? '' : '<span class="tag-dot" aria-hidden="true"></span>'}${esc(tag.label)}</button>`;
+  const active = effectiveTags().includes(tag.id);
+  const body = `${filter ? '' : '<span class="tag-dot" aria-hidden="true"></span>'}${esc(tag.label)}`;
+  const shared = `data-axis="${esc(tag.axis)}" data-tooltip="${esc(tagDescription(tag, question))}" aria-describedby="tag-tooltip"`;
+  return filter ? `<button type="button" class="filter-choice${active ? ' is-active' : ''}" ${shared} data-filter-tag="${esc(tag.id)}" aria-pressed="${active}">${body}</button>` : `<a class="tag-chip${active ? ' is-active' : ''}" ${shared} href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference }))}">${body}</a>`;
 }
 function reviewBadge(id) {
   const status = state.reviews[id]?.status;
   return status === 'done' ? '<span class="review-status done"><i class="review-dot"></i>검수 완료</span>' : status === 'check' ? '<span class="review-status check"><i class="review-dot"></i>재검토</span>' : '';
 }
+function colorDots(colors) {
+  return colors.map(id => { const color = BOOKMARK_COLORS.find(item => item.id === id); return color ? `<i class="bookmark-dot" style="--bookmark-color:${esc(color.hex)}" title="${esc(color.label)}"></i>` : ''; }).join('');
+}
 function bookmarkButton(id, compact = false) {
-  const active = !!state.reviews[id]?.bookmark;
-  return `<button type="button" class="${compact ? 'icon-button' : 'button button-quiet'}${active ? ' is-active' : ''}" data-bookmark="${esc(id)}" aria-pressed="${active}" aria-label="${esc(id)} 북마크 ${active ? '해제' : '추가'}">${icon('bookmark', active)}${compact ? '' : `<span>${active ? '북마크됨' : '북마크'}</span>`}</button>`;
+  const colors = bookmarkColors(state.reviews[id]);
+  const labels = colors.map(id => BOOKMARK_COLORS.find(color => color.id === id)?.label).filter(Boolean).join(', ');
+  return `<button type="button" class="${compact ? 'bookmark-trigger compact' : 'button button-quiet bookmark-trigger'}${colors.length ? ' is-active' : ''}" data-bookmark="${esc(id)}" aria-haspopup="dialog" aria-label="${esc(id)} 북마크 색 선택${labels ? ` · ${esc(labels)}` : ''}">${icon('bookmark', colors.length > 0)}${colors.length ? `<span class="bookmark-dots" aria-hidden="true">${colorDots(colors)}</span>` : ''}${compact ? '' : `<span>${colors.length ? '북마크 색' : '북마크'}</span>`}</button>`;
 }
 function navigate(route, focus) {
   hideTooltip();
   nextFocus = focus || null;
-  const hash = buildRoute(route);
+  const hash = buildRoute({ mode: state.route.mode || state.modePreference, ...route });
   if (hash === location.hash) render();
   else location.hash = hash;
 }
+function listRoute(change = {}) {
+  const view = ['list', 'bookmarks', 'tag'].includes(state.route.view) ? state.route.view : 'list';
+  return { ...state.route, view, page: 1, ...change };
+}
 function toggleTag(id) {
-  const tags = new Set(state.route.view === 'question' ? [] : state.route.tags);
+  if (state.route.view === 'question' || state.route.view === 'tags') {
+    navigate({ view: 'tag', id, page: 1 }, { main: true });
+    return;
+  }
+  if (state.route.view === 'tag' && state.route.id === id) {
+    navigate({ ...listRoute(), view: 'list', id: null, tags: state.route.tags.filter(tag => tag !== id) }, { tag: id });
+    return;
+  }
+  const tags = new Set(state.route.tags);
   if (tags.has(id)) tags.delete(id); else tags.add(id);
-  navigate({ view: 'list', tags: [...tags] }, state.route.view === 'question' ? { main: true } : { tag: id });
+  navigate(listRoute({ tags: [...tags] }), { tag: id });
 }
 function resetFilters() {
   state.query = '';
   state.review = 'all';
-  navigate({ view: 'list', tags: [] }, { search: true });
+  navigate(listRoute({ tags: [], bookmark: state.route.view === 'bookmarks' ? 'any' : 'all' }), { search: true });
 }
 function filteredQuestions() {
-  return filterQuestions(state.data.questions, { query: state.query, tags: state.route.tags, review: state.review }, state.reviews);
+  return filterQuestions(state.data.questions, { query: state.query, tags: effectiveTags(), review: state.review, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
 }
+function tagCount(id) { return state.tagCounts.get(id) || 0; }
 function filterPanel() {
   return `<aside class="filter-panel${state.filtersOpen ? ' is-open' : ''}" aria-label="문항 분류 필터">
-    <button class="filter-toggle" type="button" data-toggle-filters aria-expanded="${state.filtersOpen}" aria-controls="filter-content"><span>${icon('filter')} 분류로 좁혀 보기${state.route.tags.length ? ` · ${state.route.tags.length}개 선택` : ''}</span>${icon('down')}</button>
+    <button class="filter-toggle" type="button" data-toggle-filters aria-expanded="${state.filtersOpen}" aria-controls="filter-content"><span>${icon('filter')} 분류로 좁혀 보기${effectiveTags().length ? ` · ${effectiveTags().length}개 선택` : ''}</span>${icon('down')}</button>
     <div class="filter-heading"><h2>분류로 좁혀 보기</h2><button class="button-text" type="button" data-reset>초기화</button></div>
     <div id="filter-content" class="filter-content">${AXES.map(axis => {
       const tags = [...state.taxonomy.values()].filter(tag => tag.axis === axis.id);
-      const needsPicker = tags.length > 15;
-      const selectedCount = tags.filter(tag => state.route.tags.includes(tag.id)).length;
+      const needsPicker = tags.length > 8;
+      const selectedCount = tags.filter(tag => effectiveTags().includes(tag.id)).length;
       const choices = `<div class="filter-tags${needsPicker ? ' filter-tags-scroll' : ''}" data-tag-choices="${axis.id}">${tags.map(tag => tagButton(tag, null, true)).join('')}</div>`;
       return tags.length ? `<section class="filter-section"><h3>${axis.label}<span>${selectedCount ? `${selectedCount}개 선택 / ` : ''}${tags.length}</span></h3>${needsPicker ? `<details class="filter-expander"${selectedCount ? ' open' : ''}><summary>${tags.length}개 태그에서 선택 ${icon('down')}</summary><label class="taxonomy-search-label"><span class="sr-only">${axis.label} 태그 검색</span><input class="taxonomy-search" type="search" data-taxonomy-search="${axis.id}" placeholder="${axis.label} 태그 찾기" autocomplete="off"></label>${choices}<p class="tag-search-empty" data-tag-empty="${axis.id}" hidden>일치하는 태그가 없습니다.</p></details>` : choices}</section>` : '';
-    }).join('')}<p class="filter-help">선택한 태그를 모두 포함하는 문항을 찾습니다. 태그 위에 머물면 분류 기준을 볼 수 있습니다.</p></div>
+    }).join('')}<p class="filter-help">태그와 북마크 색을 함께 고르면 모든 조건을 만족하는 문항을 찾습니다. <a href="#/tags">태그 전체 보기 ↗</a></p></div>
   </aside>`;
 }
+function bookmarkCount(color) {
+  return state.data.questions.filter(question => { const colors = bookmarkColors(state.reviews[question.id]); return color === 'any' ? colors.length : colors.includes(color); }).length;
+}
+function colorFilters() {
+  const selected = state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all');
+  return `<div class="color-filters" role="group" aria-label="북마크 색 필터">${state.route.view !== 'bookmarks' ? `<button type="button" class="color-filter${selected === 'all' ? ' is-active' : ''}" data-bookmark-filter="all" aria-pressed="${selected === 'all'}">전체 문항</button>` : ''}<button type="button" class="color-filter${selected === 'any' ? ' is-active' : ''}" data-bookmark-filter="any" aria-pressed="${selected === 'any'}">${icon('bookmark')} 모든 북마크 <span>${bookmarkCount('any')}</span></button>${BOOKMARK_COLORS.map(color => `<button type="button" class="color-filter${selected === color.id ? ' is-active' : ''}" data-bookmark-filter="${color.id}" aria-pressed="${selected === color.id}"><i class="bookmark-dot" style="--bookmark-color:${esc(color.hex)}" aria-hidden="true"></i>${esc(color.label)} <span>${bookmarkCount(color.id)}</span></button>`).join('')}</div>`;
+}
+function selectedFilterChips() {
+  const tags = effectiveTags();
+  return `<div id="selected-filters" class="selected-filters"${tags.length ? '' : ' hidden'}>${tags.map(id => { const tag = state.taxonomy.get(id); return `<button type="button" class="selected-filter" data-remove-tag="${esc(id)}" aria-label="${esc(tag?.label || id)} 필터 해제">${esc(tag?.label || id)}${icon('close')}</button>`; }).join('')}<button class="button-text" type="button" data-reset>조건 초기화</button></div>`;
+}
 function renderList() {
-  document.title = '문항 탐색 · LEET Atlas 2027';
-  main.innerHTML = `<div class="page-heading"><div><div class="eyebrow">QUESTION LIBRARY</div><h1>문항 탐색</h1><p>원문을 읽고, 논증의 구조와 해설을 검토하세요.</p></div><div class="page-count"><strong>${state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> 2027학년도</div></div>
-  <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="문항번호, 소재, 본문으로 검색" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="bookmarked">북마크한 문항</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
-    <div id="selected-filters" class="selected-filters"${state.route.tags.length ? '' : ' hidden'}>${state.route.tags.map(id => { const tag = state.taxonomy.get(id); return `<button type="button" class="selected-filter" data-remove-tag="${esc(id)}" aria-label="${esc(tag?.label || id)} 필터 해제">${esc(tag?.label || id)}${icon('close')}</button>`; }).join('')}<button class="button-text" type="button" data-reset>전체 초기화</button></div>
-    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><span class="sort-note">${icon('down')} 연도 · 문항번호 순</span></div><div id="question-list" class="question-list"></div>
+  const isBookmarks = state.route.view === 'bookmarks';
+  const isTag = state.route.view === 'tag';
+  const tag = isTag ? state.taxonomy.get(state.route.id) : null;
+  if (isTag && !tag) {
+    document.title = '태그를 찾을 수 없습니다 · LEET Atlas';
+    main.innerHTML = '<div class="error-state"><h1>태그를 찾을 수 없습니다.</h1><a class="button" href="#/tags">태그 사전으로</a></div>';
+    return;
+  }
+  const title = isBookmarks ? '모든 북마크' : tag ? tag.label : '문항 탐색';
+  document.title = `${title} · LEET Atlas 2027`;
+  const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '원문을 읽고, 논증의 구조와 해설을 검토하세요.';
+  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag?.parentDomain ? `<p class="tag-parent">대범주 · ${esc(tag.parentDomain)}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> 2027학년도</div></div>
+  <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="문항번호, 분야, 소재, 본문으로 검색" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
+    <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
+    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><span class="sort-note">연도 · 번호 순</span><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
     <p class="list-bottom-note">${icon('info')} 원본 회색 강조는 답안 표시입니다. 해설과 분류는 검수용 초안입니다.</p>
   </section></div>`;
   document.querySelector('#review-filter').value = state.review;
   updateListResults();
 }
+function questionRoute(question) {
+  return { ...state.route, view: 'question', id: question.id, tags: effectiveTags() };
+}
+function questionCard(question) {
+  const rowTags = ['domain', 'field', 'type'].flatMap(axis => questionTags(question, axis)).slice(0, 3);
+  const href = buildRoute(questionRoute(question));
+  const activeTag = state.route.view === 'tag' ? state.taxonomy.get(state.route.id) : null;
+  const reason = activeTag ? question.tagReasons?.[activeTag.label] || question.tagReasons?.[activeTag.id] : null;
+  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(question.year)} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb" href="${esc(href)}" aria-label="${esc(question.id)}번 원본과 해설 보기"><img src="${esc(safeAsset(question.thumbnail || question.image))}" alt="" loading="lazy" decoding="async"></a></article>`;
+}
+function paginationMarkup(result) {
+  if (!result.total) return '';
+  if (state.route.mode === 'scroll') return `<div class="pagination-note">${result.total}개 문항을 모두 표시합니다.</div>`;
+  const pages = Array.from({ length: result.pageCount }, (_, i) => i + 1);
+  return `<nav class="list-pagination" aria-label="목록 페이지"><button type="button" class="page-button" data-list-page="${result.page - 1}" ${result.page === 1 ? 'disabled' : ''} aria-label="이전 목록 페이지">${icon('left')}<span>이전</span></button>${pages.map(page => `<button type="button" class="page-button${page === result.page ? ' is-active' : ''}" data-list-page="${page}" ${page === result.page ? 'aria-current="page"' : ''} aria-label="${page}페이지">${page}</button>`).join('')}<button type="button" class="page-button" data-list-page="${result.page + 1}" ${result.page === result.pageCount ? 'disabled' : ''} aria-label="다음 목록 페이지"><span>다음</span>${icon('right')}</button></nav>`;
+}
 function updateListResults() {
   const questions = filteredQuestions();
   const count = document.querySelector('#result-count');
   if (!count) return;
-  count.innerHTML = `<strong>${questions.length}</strong>개 문항${state.query || state.route.tags.length || state.review !== 'all' ? ` <span> / 전체 ${state.data.questions.length}개</span>` : ''}`;
-  document.querySelector('#question-list').innerHTML = questions.length ? questions.map(question => {
-    const rowTags = ['domain', 'type', 'logic'].flatMap(axis => questionTags(question, axis)).slice(0, 4);
-    const href = buildRoute({ view: 'question', id: question.id, tags: state.route.tags });
-    return `<article class="question-row"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}<small>${esc(question.year)} · ${String(question.number).padStart(2, '0')}</small></a><div class="row-content"><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}${icon('arrow')}</a><div class="row-meta"><span>${esc(question.year)}학년도 추리논증</span><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div></div><div class="row-controls">${bookmarkButton(question.id, true)}<a class="row-thumb" href="${esc(href)}" aria-label="${esc(question.id)}번 원본과 해설 보기"><img src="${esc(safeAsset(question.thumbnail || question.image))}" alt="" loading="lazy" decoding="async"></a></div></article>`;
-  }).join('') : '<div class="empty-state"><strong>조건에 맞는 문항이 없습니다.</strong><p>검색어나 태그를 줄여 다시 찾아보세요.</p><button class="button button-sage" type="button" data-reset>필터 초기화</button></div>';
+  const result = paginateQuestions(questions, { page: state.route.page || 1, pageSize: 10, mode: state.route.mode || 'paged' });
+  if (state.route.page !== result.page) {
+    state.route.page = result.page;
+    history.replaceState(null, '', buildRoute(state.route));
+  }
+  count.innerHTML = `<strong>${result.total}</strong>개 문항${result.total ? `<span> · ${result.from}–${result.to} 표시</span>` : ''}`;
+  const zeroBaseTag = state.route.view === 'tag' && tagCount(state.route.id) === 0;
+  document.querySelector('#question-list').innerHTML = result.items.length ? result.items.map(questionCard).join('') : `<div class="empty-state"><strong>${zeroBaseTag ? '현재 2027 자료 없음' : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '아직 북마크한 문항이 없습니다.' : '조건에 맞는 문항이 없습니다.'}</strong><p>${zeroBaseTag ? '향후 연도에 사용할 수 있는 분류입니다. 현재 문항을 임의로 연결하지 않았습니다.' : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '문항의 북마크 버튼에서 원하는 색을 골라 주세요.' : '검색어나 태그, 북마크 색을 줄여 다시 찾아보세요.'}</p><button class="button button-sage" type="button" data-reset>조건 초기화</button></div>`;
+  document.querySelector('#list-pagination').innerHTML = paginationMarkup(result);
+}
+function catalogTags() {
+  const term = state.tagQuery.normalize('NFKC').trim().toLocaleLowerCase('ko');
+  return [...state.taxonomy.values()].filter(tag => (state.tagAxis === 'all' || tag.axis === state.tagAxis) && (!term || `${tag.label} ${tag.description || ''} ${tag.parentDomain || ''}`.normalize('NFKC').toLocaleLowerCase('ko').includes(term)));
+}
+function renderTagCatalogResults() {
+  const tags = catalogTags();
+  document.querySelector('#tag-catalog-count').textContent = `${tags.length}개 태그`;
+  document.querySelector('#tag-catalog-results').innerHTML = tags.length ? AXES.map(axis => {
+    const group = tags.filter(tag => tag.axis === axis.id);
+    if (!group.length) return '';
+    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${group.length}</span></h2><div class="tag-catalog-grid">${group.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tag.parentDomain ? `<span class="catalog-parent">${esc(tag.parentDomain)} 분야</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? '<small>현재 2027 자료 없음</small>' : ''}</a>`).join('')}</div></section>`;
+  }).join('') : '<div class="empty-state"><strong>일치하는 태그가 없습니다.</strong><p>태그 이름이나 정의의 다른 단어를 검색해 보세요.</p></div>';
+}
+function renderTags() {
+  document.title = '태그 사전 · LEET Atlas 2027';
+  main.innerHTML = `<div class="page-heading"><div><div class="eyebrow">TAXONOMY INDEX</div><h1>태그 사전</h1><p>분류의 뜻과 문항별 부여 이유를 살펴보세요. 0건인 분류도 함께 보존합니다.</p></div><div class="page-count"><strong>${state.taxonomy.size}</strong>태그</div></div><section class="tag-catalog" aria-label="태그 전체 목록"><div class="catalog-toolbar"><label class="search-box">${icon('search')}<input id="tag-catalog-search" type="search" value="${esc(state.tagQuery)}" placeholder="태그 이름, 정의, 상위 범주 검색" aria-label="태그 사전 검색" autocomplete="off"></label><span id="tag-catalog-count" role="status" aria-live="polite"></span></div><div class="tag-axis-nav" role="group" aria-label="분류 축 선택"><button type="button" data-tag-axis="all" class="${state.tagAxis === 'all' ? 'is-active' : ''}" aria-pressed="${state.tagAxis === 'all'}">전체</button>${AXES.map(axis => `<button type="button" data-tag-axis="${axis.id}" class="${state.tagAxis === axis.id ? 'is-active' : ''}" aria-pressed="${state.tagAxis === axis.id}">${axis.label}</button>`).join('')}</div><div id="tag-catalog-results"></div></section>`;
+  renderTagCatalogResults();
+}
+function updateNavigation() {
+  const view = state.route.view === 'question' ? state.returnRoute?.view || 'list' : state.route.view;
+  const activeView = ['tag', 'tags'].includes(view) ? 'tags' : view;
+  document.querySelectorAll('[data-nav-view]').forEach(link => {
+    const active = link.dataset.navView === activeView;
+    link.classList.toggle('is-active', active);
+    if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+    link.href = buildRoute({ view: link.dataset.navView, mode: state.route.mode || state.modePreference });
+  });
+  const total = document.querySelector('#bookmark-total');
+  if (total) total.textContent = bookmarkCount('any');
 }
 function renderRibbon(question) {
   return `<div class="taxonomy-ribbon" aria-label="문항 분류 태그">${AXES.map(axis => {
@@ -167,7 +269,7 @@ function renderRibbon(question) {
 }
 function renderAnswer(question) {
   if (question.answerStatus === 'source-conflict') {
-    return `<div class="conflict-alert" role="note"><strong>원본 문항·답안 불일치</strong><p>원본에는 ${esc(CIRCLED[question.answer] || question.answer)}이 강조되어 있습니다. 독립 풀이에서는 ㄴ만 성립하지만, 이에 맞는 선택지가 없습니다. 원본과 표시 답안을 그대로 보존했으며 공식 답안을 확정하지 않았습니다.</p><div class="conflict-source"><span>보존한 원본 표시 답안</span><b>${esc(CIRCLED[question.answer] || question.answer)} · 검토 필요</b></div></div>`;
+    return `<div class="conflict-alert" role="note"><strong>원본 문항·답안 불일치</strong><p>${esc(asText(question.answerIssue || question.answerWarning || question.answerConflict?.message) || '원본 표시 답안과 독립 풀이가 일치하지 않습니다. 보기 판단과 검수 참고를 함께 확인해 주세요. 원본은 그대로 보존했으며 공식 답안을 확정하지 않았습니다.')}</p><div class="conflict-source"><span>보존한 원본 표시 답안</span><b>${esc(CIRCLED[question.answer] || question.answer)} · 검토 필요</b></div></div>`;
   }
   return `<div class="answer-strip"><div><span class="answer-caption">원본 표시 + 독립 풀이 대조</span><strong>정답 ${esc(CIRCLED[question.answer] || '확인 중')}</strong></div><p class="answer-basis">${esc(question.answerBasis || '원본 회색 강조와 독립 풀이를 대조했습니다.')}<br>공식정답 외부 대조 미완료</p></div>`;
 }
@@ -200,7 +302,7 @@ function reviewWorkspace(question) {
   return `<section class="review-workspace" aria-labelledby="review-title"><div class="review-workspace-heading"><h2 id="review-title">나의 검수 기록</h2><span id="save-hint" class="save-hint">이 브라우저에 자동 저장</span></div><div class="review-workspace-controls" role="group" aria-label="검수 상태">${[{ value: '', label: '미검수' }, { value: 'check', label: '재검토' }, { value: 'done', label: '검수 완료' }].map(item => `<button type="button" class="status-choice${(review.status || '') === item.value ? ' is-active' : ''}" data-review-status="${item.value}" aria-pressed="${(review.status || '') === item.value}">${item.label}</button>`).join('')}</div><label class="sr-only" for="review-note">${esc(question.id)}번 검수 메모</label><textarea id="review-note" data-note-for="${esc(question.id)}" placeholder="원문, 분류, 해설에서 확인할 내용을 적어 두세요.">${esc(review.note || '')}</textarea></section>`;
 }
 function questionNav(question, prev, next) {
-  return `<nav class="question-bottom-nav" aria-label="인접 문항">${prev ? `<a class="question-nav-card" href="${esc(buildRoute({ view: 'question', id: prev.id, tags: state.route.tags }))}">${icon('left')}<div><small>이전 문항 · ${esc(prev.id)}</small><strong>${esc(prev.title)}</strong></div></a>` : ''}${next ? `<a class="question-nav-card next" href="${esc(buildRoute({ view: 'question', id: next.id, tags: state.route.tags }))}"><div><small>다음 문항 · ${esc(next.id)}</small><strong>${esc(next.title)}</strong></div>${icon('right')}</a>` : ''}</nav>`;
+  return `<nav class="question-bottom-nav" aria-label="인접 문항">${prev ? `<a class="question-nav-card" href="${esc(buildRoute({ ...state.route, view: 'question', id: prev.id }))}">${icon('left')}<div><small>이전 문항 · ${esc(prev.id)}</small><strong>${esc(prev.title)}</strong></div></a>` : ''}${next ? `<a class="question-nav-card next" href="${esc(buildRoute({ ...state.route, view: 'question', id: next.id }))}"><div><small>다음 문항 · ${esc(next.id)}</small><strong>${esc(next.title)}</strong></div>${icon('right')}</a>` : ''}</nav>`;
 }
 function renderQuestion() {
   const question = state.questions.get(state.route.id);
@@ -213,19 +315,29 @@ function renderQuestion() {
   const index = sorted.findIndex(item => item.id === question.id);
   const prev = sorted[index - 1];
   const next = sorted[index + 1];
-  const listHref = buildRoute({ view: 'list', tags: state.route.tags });
+  const listHref = buildRoute(state.returnRoute || { ...state.route, view: state.route.bookmark && state.route.bookmark !== 'all' ? 'bookmarks' : 'list', id: null });
   main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} 문항 목록 <span aria-hidden="true">/</span> ${esc(question.year)}학년도</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항">${icon('right')}</button></nav></div>
   <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(question.year)}학년도 법학적성시험 · 추리논증 ${esc(question.number)}번 <span aria-hidden="true">·</span> 검수용 초안</div></div></div><div class="question-heading-actions">${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
   ${renderRibbon(question)}<div class="reader-grid">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="문항 해설"><div class="panel-heading"><h2>해설과 논증 구조 <span>ANALYSIS</span></h2><span class="draft-label"><i></i>검수용 초안</span></div><div class="analysis-body">${explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
-  <p class="document-links"><a href="data/2027-original.pdf" target="_blank" rel="noopener">2027 원본 PDF</a><span aria-hidden="true">·</span><a href="data/2027.json" target="_blank" rel="noopener">문항 데이터 JSON</a><span aria-hidden="true">·</span><a href="docs/2026-10-25-design.md" target="_blank" rel="noopener">검수판 안내</a></p>`;
+  <p class="document-links"><a href="data/2027-original.pdf?v=${CACHE_VERSION}" target="_blank" rel="noopener">2027 원본 PDF</a><span aria-hidden="true">·</span><a href="data/2027.json?v=${CACHE_VERSION}" target="_blank" rel="noopener">문항 데이터 JSON</a><span aria-hidden="true">·</span><a href="docs/2026-10-25-design.md" target="_blank" rel="noopener">검수판 안내</a></p>`;
 }
 function render() {
   if (!state.data) return;
   hideTooltip();
   const previousRoute = state.route;
   state.route = parseRoute(location.hash);
+  if (!new URLSearchParams(location.hash.split('?')[1] || '').has('mode')) state.route.mode = state.modePreference;
   state.route.tags = state.route.tags.filter(id => state.taxonomy.has(id));
-  if (state.route.view === 'question') renderQuestion(); else renderList();
+  const returningToCollection = previousRoute.view === 'question' && state.returnRoute?.view === state.route.view && (state.route.view !== 'tag' || state.returnRoute.id === state.route.id);
+  if (['bookmarks', 'tag'].includes(state.route.view) && !returningToCollection && (previousRoute.view !== state.route.view || previousRoute.id !== state.route.id)) {
+    state.query = '';
+    state.review = 'all';
+  }
+  if (state.route.view === 'question' && ['list', 'bookmarks', 'tag'].includes(previousRoute.view)) state.returnRoute = { ...previousRoute };
+  if (state.route.view === 'question') renderQuestion();
+  else if (state.route.view === 'tags') renderTags();
+  else renderList();
+  updateNavigation();
   const focus = nextFocus;
   nextFocus = null;
   if (focus?.main) { window.scrollTo({ top: 0, behavior: 'instant' }); main.focus({ preventScroll: true }); }
@@ -236,11 +348,70 @@ function render() {
     if (details) details.open = true;
     if (button?.getClientRects().length) button.focus({ preventScroll: true });
     else (document.querySelector('.filter-toggle') || main).focus({ preventScroll: true });
-  } else if (lastView !== null && (lastView !== state.route.view || previousRoute.id !== state.route.id)) {
+  } else if (focus?.color) {
+    const button = [...document.querySelectorAll('[data-bookmark-filter]')].find(item => item.dataset.bookmarkFilter === focus.color);
+    button?.focus({ preventScroll: true });
+  } else if (lastView !== null && (lastView !== state.route.view || previousRoute.id !== state.route.id || previousRoute.page !== state.route.page)) {
     window.scrollTo({ top: 0, behavior: 'instant' });
     main.focus({ preventScroll: true });
   }
+  state.hasRendered = true;
   lastView = state.route.view;
+}
+function refreshBookmarkUI() {
+  updateNavigation();
+  if (state.route.view === 'bookmarks') {
+    const count = document.querySelector('#collection-total');
+    if (count) count.textContent = bookmarkCount('any');
+  }
+  const area = document.querySelector('#color-filter-area');
+  if (area) area.innerHTML = colorFilters();
+  if (['list', 'bookmarks', 'tag'].includes(state.route.view)) updateListResults();
+  else if (state.route.view === 'question') {
+    const button = [...document.querySelectorAll('[data-bookmark]')].find(item => item.dataset.bookmark === state.paletteQuestionId);
+    if (button) button.outerHTML = bookmarkButton(state.paletteQuestionId);
+  }
+}
+function renderBookmarkPalette() {
+  const question = state.questions.get(state.paletteQuestionId);
+  if (!question) return;
+  const colors = bookmarkColors(state.reviews[question.id]);
+  document.querySelector('#bookmark-dialog-title').textContent = `${question.id} · 북마크 색 선택`;
+  document.querySelector('#bookmark-palette').innerHTML = BOOKMARK_COLORS.map(color => `<button type="button" class="palette-color${colors.includes(color.id) ? ' is-active' : ''}" data-bookmark-color="${color.id}" aria-pressed="${colors.includes(color.id)}"><span class="palette-swatch" style="--bookmark-color:${esc(color.hex)}" aria-hidden="true"></span><strong>${esc(color.label)}</strong><span class="palette-check" aria-hidden="true">${colors.includes(color.id) ? '✓' : '+'}</span></button>`).join('');
+  document.querySelector('#palette-all-link').href = buildRoute({ view: 'bookmarks', mode: state.route.mode || state.modePreference });
+}
+function showBookmarkPalette(id) {
+  if (!state.questions.has(id)) return;
+  state.paletteQuestionId = id;
+  renderBookmarkPalette();
+  document.querySelector('#bookmark-palette-status').textContent = '색을 선택하면 바로 저장됩니다.';
+  bookmarkDialog.showModal();
+}
+function closeBookmarkPalette() {
+  bookmarkDialog.close();
+  const button = [...document.querySelectorAll('[data-bookmark]')].find(item => item.dataset.bookmark === state.paletteQuestionId);
+  (button || document.querySelector('#question-search') || main).focus({ preventScroll: true });
+}
+function selectBookmarkColor(color, clear = false) {
+  const id = state.paletteQuestionId;
+  if (!id) return;
+  const old = state.reviews[id] || {};
+  const next = clear ? { ...old, bookmarkColors: [], bookmark: false } : toggleBookmarkColor(old, color);
+  saveReview(id, next);
+  refreshBookmarkUI();
+  renderBookmarkPalette();
+  const labels = bookmarkColors(state.reviews[id]).map(id => BOOKMARK_COLORS.find(item => item.id === id)?.label).join(', ');
+  document.querySelector('#bookmark-palette-status').textContent = state.storageFailed ? '브라우저 저장 실패 · 검수 기록을 내보내 주세요.' : labels ? `${labels} 북마크를 저장했습니다.` : '이 문항의 북마크 색을 모두 해제했습니다.';
+  if (!clear) [...document.querySelectorAll('[data-bookmark-color]')].find(button => button.dataset.bookmarkColor === color)?.focus({ preventScroll: true });
+}
+function resetListPage() {
+  state.route.page = 1;
+  history.replaceState(null, '', buildRoute(state.route));
+}
+function changeListMode(mode) {
+  state.modePreference = mode === 'scroll' ? 'scroll' : 'paged';
+  try { localStorage.setItem(VIEW_KEY, state.modePreference); } catch { /* URL still records the selected view. */ }
+  navigate(listRoute({ mode: state.modePreference, page: 1 }), { main: true });
 }
 function changeSourceMode(mode) {
   state.sourceMode = mode;
@@ -287,7 +458,7 @@ async function copyLink() {
   }
 }
 function exportReviews() {
-  const payload = { schemaVersion: 1, app: 'LEET Atlas', examYear: 2027, exportedAt: new Date().toISOString(), reviews: state.reviews };
+  const payload = { schemaVersion: 2, app: 'LEET Atlas', examYear: 2027, exportedAt: new Date().toISOString(), reviews: state.reviews };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -320,6 +491,10 @@ function hideTooltip() {
 document.querySelector('#export-reviews').innerHTML = `${icon('download')}<span>검수 기록 내보내기</span>`;
 document.querySelector('#export-reviews').addEventListener('click', exportReviews);
 document.querySelector('#close-image').addEventListener('click', () => imageDialog.close());
+document.querySelector('#close-bookmarks').addEventListener('click', closeBookmarkPalette);
+bookmarkDialog.addEventListener('click', event => { if (event.target === bookmarkDialog) closeBookmarkPalette(); });
+bookmarkDialog.addEventListener('cancel', event => { event.preventDefault(); closeBookmarkPalette(); });
+document.querySelector('#palette-all-link').addEventListener('click', () => bookmarkDialog.close());
 imageDialog.addEventListener('click', event => { if (event.target === imageDialog) imageDialog.close(); });
 window.addEventListener('hashchange', render);
 window.addEventListener('resize', hideTooltip);
@@ -328,34 +503,35 @@ window.addEventListener('storage', event => {
   if (event.key === STORAGE_KEY) { loadReviews(); render(); }
 });
 document.addEventListener('click', event => {
+  if (event.target.closest('.skip-link')) {
+    event.preventDefault();
+    main.focus();
+    return;
+  }
   const button = event.target.closest('button');
   if (!button) return;
   if (button.hasAttribute('data-filter-tag')) toggleTag(button.dataset.filterTag);
-  else if (button.hasAttribute('data-remove-tag')) navigate({ view: 'list', tags: state.route.tags.filter(tag => tag !== button.dataset.removeTag) });
+  else if (button.hasAttribute('data-remove-tag')) toggleTag(button.dataset.removeTag);
   else if (button.hasAttribute('data-reset')) resetFilters();
   else if (button.hasAttribute('data-toggle-filters')) {
     state.filtersOpen = !state.filtersOpen;
     document.querySelector('.filter-panel')?.classList.toggle('is-open', state.filtersOpen);
     button.setAttribute('aria-expanded', String(state.filtersOpen));
-  } else if (button.hasAttribute('data-question-nav')) navigate({ view: 'question', id: button.dataset.questionNav, tags: state.route.tags });
-  else if (button.hasAttribute('data-bookmark')) {
-    const id = button.dataset.bookmark;
-    const bookmark = !state.reviews[id]?.bookmark;
-    saveReview(id, { bookmark });
-    if (state.route.view === 'list') {
-      updateListResults();
-      if (event.detail === 0) {
-        const replacement = [...document.querySelectorAll('[data-bookmark]')].find(item => item.dataset.bookmark === id);
-        (replacement || document.querySelector('#question-search'))?.focus({ preventScroll: true });
-      }
-    }
-    else {
-      button.classList.toggle('is-active', bookmark);
-      button.setAttribute('aria-pressed', String(bookmark));
-      button.setAttribute('aria-label', `${id} 북마크 ${bookmark ? '해제' : '추가'}`);
-      button.innerHTML = `${icon('bookmark', bookmark)}<span>${bookmark ? '북마크됨' : '북마크'}</span>`;
-    }
-    if (!state.storageFailed) showToast(bookmark ? '북마크에 추가했습니다.' : '북마크를 해제했습니다.');
+  } else if (button.hasAttribute('data-question-nav')) navigate({ ...state.route, view: 'question', id: button.dataset.questionNav });
+  else if (button.hasAttribute('data-bookmark')) showBookmarkPalette(button.dataset.bookmark);
+  else if (button.hasAttribute('data-bookmark-color')) selectBookmarkColor(button.dataset.bookmarkColor);
+  else if (button.hasAttribute('data-clear-bookmarks')) selectBookmarkColor(null, true);
+  else if (button.hasAttribute('data-bookmark-filter')) navigate(listRoute({ bookmark: button.dataset.bookmarkFilter, page: 1 }), { color: button.dataset.bookmarkFilter });
+  else if (button.hasAttribute('data-list-page')) navigate(listRoute({ page: Number(button.dataset.listPage) }), { main: true });
+  else if (button.hasAttribute('data-list-mode')) changeListMode(button.dataset.listMode);
+  else if (button.hasAttribute('data-tag-axis')) {
+    state.tagAxis = button.dataset.tagAxis;
+    document.querySelectorAll('[data-tag-axis]').forEach(item => {
+      const active = item.dataset.tagAxis === state.tagAxis;
+      item.classList.toggle('is-active', active);
+      item.setAttribute('aria-pressed', String(active));
+    });
+    renderTagCatalogResults();
   } else if (button.hasAttribute('data-source-mode')) changeSourceMode(button.dataset.sourceMode);
   else if (button.hasAttribute('data-text-size')) changeTextSize(Number(button.dataset.textSize));
   else if (button.hasAttribute('data-enlarge')) showImage(button.dataset.enlarge);
@@ -383,7 +559,8 @@ document.addEventListener('input', event => {
     });
     document.querySelector(`[data-tag-empty="${axis}"]`).hidden = visible > 0;
     hideTooltip();
-  } else if (event.target.id === 'question-search') { state.query = event.target.value; updateListResults(); }
+  } else if (event.target.id === 'question-search') { state.query = event.target.value; resetListPage(); updateListResults(); }
+  else if (event.target.id === 'tag-catalog-search') { state.tagQuery = event.target.value; renderTagCatalogResults(); }
   else if (event.target.hasAttribute('data-note-for')) {
     const saved = saveReview(event.target.dataset.noteFor, { note: event.target.value });
     const hint = document.querySelector('#save-hint');
@@ -391,7 +568,7 @@ document.addEventListener('input', event => {
   }
 });
 document.addEventListener('change', event => {
-  if (event.target.id === 'review-filter') { state.review = event.target.value; updateListResults(); }
+  if (event.target.id === 'review-filter') { state.review = event.target.value; resetListPage(); updateListResults(); }
 });
 document.addEventListener('pointerover', event => {
   const target = event.target.closest('[data-tooltip]');
@@ -421,11 +598,18 @@ document.addEventListener('error', event => {
 
 loadReviews();
 try {
-  const response = await fetch('data/2027.json');
+  const response = await fetch(`data/2027.json?v=${CACHE_VERSION}`);
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   state.data = await response.json();
   if (!Array.isArray(state.data.questions) || !Array.isArray(state.data.taxonomy)) throw new Error('문항 데이터 형식이 올바르지 않습니다.');
   state.data.taxonomy.forEach(tag => state.taxonomy.set(tag.id, tag));
+  const catalog = Array.isArray(state.data.fieldCatalog) ? state.data.fieldCatalog : [];
+  catalog.forEach(entry => {
+    const label = entry.label || entry.name;
+    const present = [...state.taxonomy.values()].find(tag => tag.axis === 'field' && tag.label === label);
+    if (!present && entry.id && label) state.taxonomy.set(entry.id, { ...entry, axis: 'field', label });
+  });
+  state.data.questions.forEach(question => (question.tags || []).forEach(id => state.tagCounts.set(id, (state.tagCounts.get(id) || 0) + 1)));
   state.data.questions.forEach(question => state.questions.set(String(question.id), question));
   if (!location.hash) history.replaceState(null, '', buildRoute({ view: 'list' }));
   render();

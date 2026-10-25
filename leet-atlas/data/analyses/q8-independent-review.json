@@ -35,12 +35,19 @@
     }
   ],
   "conclusion": {
-    "logicalTrueItems": ["ㄴ"],
+    "logicalTrueItems": [
+      "ㄴ"
+    ],
     "matchingOption": null,
     "providedPdfEmphasis": "③ ㄱ, ㄴ",
     "status": "현재 제공된 문면에는 ㄴ만 옳지만 해당 조합의 선택지가 없어 강조 표시와 논리적 판정이 불일치한다. 원문 오기 또는 강조 표시 오류 여부는 추가 출처 확인이 필요하다.",
     "notOfficialAnswer": true,
     "sourceWasNotModified": true
   },
-  "verification": "ㄱ은 고정 사실을 만족하는 구체적 반례로 검증. ㄴ은 연언의 구성요소 부정으로 검증. ㄷ은 을·병 당일 폭행 여부의 불일치로 검증. 갑·을·병의 당일 폭행 여부에 대한 8개 이진 조합에서도 ㉡과 ㉢의 동시참 조합은 없다."
+  "verification": "ㄱ은 고정 사실을 만족하는 구체적 반례로 검증. ㄴ은 연언의 구성요소 부정으로 검증. ㄷ은 을·병 당일 폭행 여부의 불일치로 검증. 갑·을·병의 당일 폭행 여부에 대한 8개 이진 조합에서도 ㉡과 ㉢의 동시참 조합은 없다.",
+  "status": "superseded",
+  "sourceVersion": "v1",
+  "currentSourceVersion": "v2",
+  "supersededBy": "docs/source-history/2708-v1-v2.md",
+  "notice": "이 기록은 교체 전 원문 v1의 검토다. 현재 v2에서는 ㄱ·ㄴ 참, ③으로 일치한다."
 }
