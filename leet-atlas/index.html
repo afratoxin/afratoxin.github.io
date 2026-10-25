@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#172f3a">
-  <meta name="description" content="2027학년도 LEET 추리논증 40문항의 원문, 분류, 해설을 검토하는 학습 도구">
-  <title>LEET Atlas · 2027 추리논증 검수판</title>
-  <link rel="stylesheet" href="styles.css?v=20261025b">
-  <script type="module" src="app.js?v=20261025b"></script>
+  <meta name="description" content="예비시험부터 2027학년도까지 LEET 추리논증 20회분 755문항의 소재·태그와 분류 이유를 탐색하는 학습 도구">
+  <title>LEET Atlas · 추리논증 전체 아카이브</title>
+  <link rel="stylesheet" href="styles.css?v=20261025d">
+  <script type="module" src="app.js?v=20261025d"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -16,7 +16,7 @@
       <span class="brand-symbol" aria-hidden="true">L<span>·</span>A</span>
       <span class="brand-name">LEET <strong>Atlas</strong><small>추리논증의 구조를 읽다</small></span>
     </a>
-    <div class="header-edition"><span>2027학년도</span><strong>추리논증 <span class="edition-count">40</span></strong></div>
+    <div class="header-edition"><span id="archive-edition">20회분 · 전체 아카이브</span><strong>추리논증 <span id="archive-count" class="edition-count">755</span></strong></div>
     <div class="header-actions"><span class="draft-label"><i></i>검수용 초안</span><button id="export-reviews" class="button button-quiet" type="button">검수 기록 내보내기</button></div>
   </header>
   <nav id="site-tabs" class="site-tabs" aria-label="주요 메뉴">
@@ -24,8 +24,8 @@
     <a href="#/bookmarks" data-nav-view="bookmarks">모든 북마크 <span id="bookmark-total" class="nav-count">0</span></a>
     <a href="#/tags" data-nav-view="tags">태그 사전</a>
   </nav>
-  <main id="main" tabindex="-1"><div class="loading-state"><span class="loading-dot"></span>문항과 해설을 불러오고 있습니다.</div></main>
-  <footer class="site-footer"><span>LEET Atlas · 2027 검수판</span><span>공식정답 외부 대조 미완료 · 원본의 회색 강조를 유지했습니다.</span></footer>
+  <main id="main" tabindex="-1"><div class="loading-state"><span class="loading-dot"></span>문항과 분류를 불러오고 있습니다.</div></main>
+  <footer class="site-footer"><span>LEET Atlas · 추리논증 전체 아카이브</span><span>분류는 검수용 초안입니다. 정답·해설 검토 여부는 각 문항에 표시합니다.</span></footer>
   <div id="tag-tooltip" class="tag-tooltip" role="tooltip" hidden></div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <dialog id="image-dialog" class="image-dialog" aria-labelledby="image-dialog-title">
@@ -41,3 +41,4 @@
   <noscript><p class="error-state">문항 목록과 해설을 보려면 자바스크립트를 켜 주세요.</p></noscript>
 </body>
 </html>
+

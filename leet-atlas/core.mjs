@@ -30,12 +30,13 @@ export function toggleBookmarkColor(review={},color) {
 export function filterQuestions(questions, {query='',tags=[],review='all',bookmark='all'}={}, reviews={}) {
   const terms=String(query||'').normalize('NFKC').trim().toLocaleLowerCase('ko').split(/\s+/).filter(Boolean);
   return questions.filter(q=>{
-    const hay=[q.id,q.year,q.number,q.title,q.text,...(q.domains||[]),...(q.fields||[]),...(q.subjects||[]),...(q.types||[]),...(q.logic||[])].join(' ').normalize('NFKC').toLocaleLowerCase('ko');
+    const reasons=Object.values(q.tagReasons||{}).map(reason=>typeof reason==='string'?reason:JSON.stringify(reason));
+    const hay=[q.id,q.year,q.examLabel,q.examKey,q.number,q.title,q.text,...(q.domains||[]),...(q.fields||[]),...(q.subjects||[]),...(q.types||[]),...(q.logic||[]),...reasons].join(' ').normalize('NFKC').toLocaleLowerCase('ko');
     const r=reviews[q.id]||{};const colors=bookmarkColors(r);
     const matchesReview=review==='all'||(review==='bookmarked'?colors.length>0:review==='unreviewed'?!r.status||r.status==='unreviewed':r.status===review);
     const matchesBookmark=bookmark==='all'||(bookmark==='any'?colors.length>0:colors.includes(bookmark));
     return terms.every(t=>hay.includes(t))&&tags.every(t=>(q.tags||[]).includes(t))&&matchesReview&&matchesBookmark;
-  }).sort((a,b)=>a.year-b.year||a.number-b.number);
+  }).sort((a,b)=>a.year-b.year||(a.examKey==='preliminary'?0:1)-(b.examKey==='preliminary'?0:1)||a.number-b.number);
 }
 export function paginateQuestions(questions,{page=1,pageSize=10,mode='paged'}={}) {
   const size=Number.isFinite(Number(pageSize)) ? Math.min(100,Math.max(1,Math.floor(Number(pageSize)))) : 10;
@@ -50,7 +51,7 @@ export function paginateQuestions(questions,{page=1,pageSize=10,mode='paged'}={}
 export function parseRoute(hash='') {
   const [path,query='']=String(hash).replace(/^#/,'').split('?');
   const params=new URLSearchParams(query);const tags=[...new Set(params.getAll('tag'))];
-  let view='list',id=null;const q=path.match(/^\/question\/(\d{4})\/?$/);const t=path.match(/^\/tags\/([^/]+)\/?$/);
+  let view='list',id=null;const q=path.match(/^\/question\/(\d{4}|p\d{3})\/?$/);const t=path.match(/^\/tags\/([^/]+)\/?$/);
   if(q){view='question';id=q[1];}
   else if(path==='/bookmarks'||path==='/bookmarks/')view='bookmarks';
   else if(path==='/tags'||path==='/tags/')view='tags';
@@ -70,3 +71,4 @@ export function buildRoute({view='list',id=null,tags=[],bookmark,page=1,mode}={}
   const path=view==='question'&&id?'/question/'+id:view==='bookmarks'?'/bookmarks':view==='tags'?'/tags':view==='tag'&&id?'/tags/'+encodeURIComponent(id):'/questions';
   return '#'+path+(params.size?'?'+params:'');
 }
+

@@ -1,13 +1,13 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute } from './core.mjs?v=20261025b';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, filterQuestions, paginateQuestions, parseRoute, buildRoute } from './core.mjs?v=20261025d';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261025b';
+const CACHE_VERSION = '20261025d';
 const AXES = [
   { id: 'domain', label: '대범주', field: 'domains' },
   { id: 'field', label: '분야', field: 'fields' },
-  { id: 'subject', label: '세부 소재', field: 'subjects' },
+  { id: 'subject', label: '소재', field: 'subjects' },
   { id: 'type', label: '문항 유형', field: 'types' },
   { id: 'logic', label: '풀이 논리', field: 'logic' },
   { id: 'year', label: '연도', field: 'year' },
@@ -54,6 +54,23 @@ function safeAsset(path) {
   const value = String(path || '');
   return /^(?:assets|data)\/[a-zA-Z0-9_.\/-]+$/.test(value) && !value.includes('..') ? `${value}?v=${CACHE_VERSION}` : '';
 }
+function examLabel(question) {
+  return question.examLabel || `${question.year}학년도`;
+}
+function archiveScope() {
+  const count = state.data.exam?.examCount || state.data.exams?.length || new Set(state.data.questions.map(question => question.examKey || question.year)).size;
+  return count > 1 ? `${count}회분` : examLabel(state.data.questions[0] || { year: '' });
+}
+function emptyTaxonomyLabel() {
+  return state.data.exams || state.data.exam?.examCount ? '현재 아카이브 자료 없음' : `현재 ${state.data.questions[0]?.year || ''} 자료 없음`;
+}
+function canonicalTagId(id) {
+  return state.data?.tagAliases?.[id] || id;
+}
+function tagParent(tag) {
+  const fields = tag.parentFields?.length ? tag.parentFields : tag.parentField ? [tag.parentField] : [];
+  return fields.length ? `분야 · ${fields.join(' · ')}` : tag.parentDomain ? `대범주 · ${tag.parentDomain}` : '';
+}
 function loadReviews() {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -88,6 +105,7 @@ function showToast(message) {
   toastTimer = setTimeout(() => { toast.hidden = true; }, 3600);
 }
 function findTag(value, axis) {
+  value = canonicalTagId(value);
   if (state.taxonomy.has(value)) return state.taxonomy.get(value);
   return [...state.taxonomy.values()].find(tag => tag.label === value && (!axis || tag.axis === axis));
 }
@@ -100,7 +118,7 @@ function questionTags(question, axis) {
 }
 function tagDescription(tag, question) {
   const reason = question?.tagReasons?.[tag.label] || question?.tagReasons?.[tag.id];
-  return `${tag.label} · ${AXES.find(axis => axis.id === tag.axis)?.label || '분류'}\n${tag.description || '이 분류에 해당하는 문항을 모아 봅니다.'}${reason ? `\n\n이 문항에 붙인 이유\n${asText(reason)}` : ''}\n\n클릭하면 이 태그의 문항 목록으로 이동합니다.`;
+  return `${tag.label} · ${AXES.find(axis => axis.id === tag.axis)?.label || '분류'}${tagParent(tag) ? `\n${tagParent(tag)}` : ''}\n${tag.description || '이 분류에 해당하는 문항을 모아 봅니다.'}${reason ? `\n\n이 문항에 붙인 이유\n${asText(reason)}` : ''}\n\n클릭하면 이 태그의 문항 목록으로 이동합니다.`;
 }
 function effectiveTags() {
   return [...new Set([...(state.route.tags || []), ...(state.route.view === 'tag' && state.route.id ? [state.route.id] : [])])];
@@ -190,13 +208,13 @@ function renderList() {
     return;
   }
   const title = isBookmarks ? '모든 북마크' : tag ? tag.label : '문항 탐색';
-  document.title = `${title} · LEET Atlas 2027`;
-  const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '원문을 읽고, 논증의 구조와 해설을 검토하세요.';
-  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag?.parentDomain ? `<p class="tag-parent">대범주 · ${esc(tag.parentDomain)}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> 2027학년도</div></div>
+  document.title = `${title} · LEET Atlas`;
+  const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '예비시험부터 최신 회차까지, 소재·태그와 분류 이유를 함께 살펴보세요.';
+  main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
   <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="문항번호, 분야, 소재, 본문으로 검색" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
     <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
     <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><span class="sort-note">연도 · 번호 순</span><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
-    <p class="list-bottom-note">${icon('info')} 원본 회색 강조는 답안 표시입니다. 해설과 분류는 검수용 초안입니다.</p>
+    <p class="list-bottom-note">${icon('info')} 회차별 출처와 분류 이유를 문항에서 확인할 수 있습니다. 정답·해설 검토 여부도 각 문항에 표시합니다.</p>
   </section></div>`;
   document.querySelector('#review-filter').value = state.review;
   updateListResults();
@@ -209,13 +227,16 @@ function questionCard(question) {
   const href = buildRoute(questionRoute(question));
   const activeTag = state.route.view === 'tag' ? state.taxonomy.get(state.route.id) : null;
   const reason = activeTag ? question.tagReasons?.[activeTag.label] || question.tagReasons?.[activeTag.id] : null;
-  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(question.year)} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb" href="${esc(href)}" aria-label="${esc(question.id)}번 원본과 해설 보기"><img src="${esc(safeAsset(question.thumbnail || question.image))}" alt="" loading="lazy" decoding="async"></a></article>`;
+  const thumbnail = question.sourceAccess === 'local-only' ? '' : safeAsset(question.thumbnail || question.image);
+  const thumbnailBody = thumbnail ? `<img src="${esc(thumbnail)}" alt="" loading="lazy" decoding="async">` : `<span class="thumbnail-placeholder" aria-hidden="true"><small>문항</small><strong>${esc(String(question.number).padStart(2, '0'))}</strong><span>${esc(question.fields?.[0] || questionTags(question, 'field')[0]?.label || '추리논증')}</span></span>`;
+  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailBody}</a></article>`;
 }
 function paginationMarkup(result) {
   if (!result.total) return '';
   if (state.route.mode === 'scroll') return `<div class="pagination-note">${result.total}개 문항을 모두 표시합니다.</div>`;
-  const pages = Array.from({ length: result.pageCount }, (_, i) => i + 1);
-  return `<nav class="list-pagination" aria-label="목록 페이지"><button type="button" class="page-button" data-list-page="${result.page - 1}" ${result.page === 1 ? 'disabled' : ''} aria-label="이전 목록 페이지">${icon('left')}<span>이전</span></button>${pages.map(page => `<button type="button" class="page-button${page === result.page ? ' is-active' : ''}" data-list-page="${page}" ${page === result.page ? 'aria-current="page"' : ''} aria-label="${page}페이지">${page}</button>`).join('')}<button type="button" class="page-button" data-list-page="${result.page + 1}" ${result.page === result.pageCount ? 'disabled' : ''} aria-label="다음 목록 페이지"><span>다음</span>${icon('right')}</button></nav>`;
+  const nearby = Array.from({ length: result.pageCount }, (_, i) => i + 1).filter(page => result.pageCount <= 7 || page === 1 || page === result.pageCount || Math.abs(page - result.page) <= 2);
+  const pages = nearby.map((page, i) => `${i && page > nearby[i - 1] + 1 ? '<span class="pagination-gap" aria-hidden="true">…</span>' : ''}<button type="button" class="page-button${page === result.page ? ' is-active' : ''}" data-list-page="${page}" ${page === result.page ? 'aria-current="page"' : ''} aria-label="${page}페이지">${page}</button>`).join('');
+  return `<nav class="list-pagination" aria-label="목록 페이지"><button type="button" class="page-button" data-list-page="${result.page - 1}" ${result.page === 1 ? 'disabled' : ''} aria-label="이전 목록 페이지">${icon('left')}<span>이전</span></button>${pages}<button type="button" class="page-button" data-list-page="${result.page + 1}" ${result.page === result.pageCount ? 'disabled' : ''} aria-label="다음 목록 페이지"><span>다음</span>${icon('right')}</button></nav>`;
 }
 function updateListResults() {
   const questions = filteredQuestions();
@@ -228,12 +249,12 @@ function updateListResults() {
   }
   count.innerHTML = `<strong>${result.total}</strong>개 문항${result.total ? `<span> · ${result.from}–${result.to} 표시</span>` : ''}`;
   const zeroBaseTag = state.route.view === 'tag' && tagCount(state.route.id) === 0;
-  document.querySelector('#question-list').innerHTML = result.items.length ? result.items.map(questionCard).join('') : `<div class="empty-state"><strong>${zeroBaseTag ? '현재 2027 자료 없음' : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '아직 북마크한 문항이 없습니다.' : '조건에 맞는 문항이 없습니다.'}</strong><p>${zeroBaseTag ? '향후 연도에 사용할 수 있는 분류입니다. 현재 문항을 임의로 연결하지 않았습니다.' : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '문항의 북마크 버튼에서 원하는 색을 골라 주세요.' : '검색어나 태그, 북마크 색을 줄여 다시 찾아보세요.'}</p><button class="button button-sage" type="button" data-reset>조건 초기화</button></div>`;
+  document.querySelector('#question-list').innerHTML = result.items.length ? result.items.map(questionCard).join('') : `<div class="empty-state"><strong>${zeroBaseTag ? emptyTaxonomyLabel() : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '아직 북마크한 문항이 없습니다.' : '조건에 맞는 문항이 없습니다.'}</strong><p>${zeroBaseTag ? '이 분류에 연결된 문항이 아직 없습니다. 현재 문항을 임의로 연결하지 않았습니다.' : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '문항의 북마크 버튼에서 원하는 색을 골라 주세요.' : '검색어나 태그, 북마크 색을 줄여 다시 찾아보세요.'}</p><button class="button button-sage" type="button" data-reset>조건 초기화</button></div>`;
   document.querySelector('#list-pagination').innerHTML = paginationMarkup(result);
 }
 function catalogTags() {
   const term = state.tagQuery.normalize('NFKC').trim().toLocaleLowerCase('ko');
-  return [...state.taxonomy.values()].filter(tag => (state.tagAxis === 'all' || tag.axis === state.tagAxis) && (!term || `${tag.label} ${tag.description || ''} ${tag.parentDomain || ''}`.normalize('NFKC').toLocaleLowerCase('ko').includes(term)));
+  return [...state.taxonomy.values()].filter(tag => (state.tagAxis === 'all' || tag.axis === state.tagAxis) && (!term || `${tag.label} ${tag.description || ''} ${tag.parentDomain || ''} ${(tag.parentFields || [tag.parentField]).filter(Boolean).join(' ')}`.normalize('NFKC').toLocaleLowerCase('ko').includes(term)));
 }
 function renderTagCatalogResults() {
   const tags = catalogTags();
@@ -241,11 +262,11 @@ function renderTagCatalogResults() {
   document.querySelector('#tag-catalog-results').innerHTML = tags.length ? AXES.map(axis => {
     const group = tags.filter(tag => tag.axis === axis.id);
     if (!group.length) return '';
-    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${group.length}</span></h2><div class="tag-catalog-grid">${group.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tag.parentDomain ? `<span class="catalog-parent">${esc(tag.parentDomain)} 분야</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? '<small>현재 2027 자료 없음</small>' : ''}</a>`).join('')}</div></section>`;
+    return `<section class="tag-catalog-section"><h2>${axis.label}<span>${group.length}</span></h2><div class="tag-catalog-grid">${group.map(tag => `<a class="tag-catalog-card${tagCount(tag.id) ? '' : ' is-empty'}" href="${esc(buildRoute({ view: 'tag', id: tag.id, mode: state.route.mode || state.modePreference }))}"><div class="tag-catalog-card-title"><strong>${esc(tag.label)}</strong><span>${tagCount(tag.id)}문항</span></div>${tagParent(tag) ? `<span class="catalog-parent">${esc(tagParent(tag))}</span>` : ''}<p>${esc(tag.description || '분류 정의를 검토 중입니다.')}</p>${!tagCount(tag.id) ? `<small>${esc(emptyTaxonomyLabel())}</small>` : ''}</a>`).join('')}</div></section>`;
   }).join('') : '<div class="empty-state"><strong>일치하는 태그가 없습니다.</strong><p>태그 이름이나 정의의 다른 단어를 검색해 보세요.</p></div>';
 }
 function renderTags() {
-  document.title = '태그 사전 · LEET Atlas 2027';
+  document.title = '태그 사전 · LEET Atlas';
   main.innerHTML = `<div class="page-heading"><div><div class="eyebrow">TAXONOMY INDEX</div><h1>태그 사전</h1><p>분류의 뜻과 문항별 부여 이유를 살펴보세요. 0건인 분류도 함께 보존합니다.</p></div><div class="page-count"><strong>${state.taxonomy.size}</strong>태그</div></div><section class="tag-catalog" aria-label="태그 전체 목록"><div class="catalog-toolbar"><label class="search-box">${icon('search')}<input id="tag-catalog-search" type="search" value="${esc(state.tagQuery)}" placeholder="태그 이름, 정의, 상위 범주 검색" aria-label="태그 사전 검색" autocomplete="off"></label><span id="tag-catalog-count" role="status" aria-live="polite"></span></div><div class="tag-axis-nav" role="group" aria-label="분류 축 선택"><button type="button" data-tag-axis="all" class="${state.tagAxis === 'all' ? 'is-active' : ''}" aria-pressed="${state.tagAxis === 'all'}">전체</button>${AXES.map(axis => `<button type="button" data-tag-axis="${axis.id}" class="${state.tagAxis === axis.id ? 'is-active' : ''}" aria-pressed="${state.tagAxis === axis.id}">${axis.label}</button>`).join('')}</div><div id="tag-catalog-results"></div></section>`;
   renderTagCatalogResults();
 }
@@ -289,11 +310,30 @@ function explanationSections(question) {
   ${pitfalls.length ? `<section class="explanation-section pitfall-box"><h3 class="section-title">놓치기 쉬운 지점</h3><ul>${pitfalls.map(pitfall => `<li>${esc(asText(pitfall))}</li>`).join('')}</ul></section>` : ''}
   ${reviewNotes.length ? `<section class="review-notes"><h3 class="section-title">검수 참고${question.confidence ? ` · 해설 확신도 ${esc(question.confidence)}` : ''}</h3><ul class="review-notes-list">${reviewNotes.map(note => `<li>${esc(asText(note))}</li>`).join('')}</ul></section>` : ''}`;
 }
+function classificationSections(question) {
+  return `<div class="classification-notice" role="note"><strong>정답·해설 미검토</strong><p>원문을 바탕으로 소재와 태그를 분류했습니다. 정답과 선택지별 해설은 아직 검토하지 않았습니다.</p></div>${AXES.filter(axis => axis.id !== 'year').map(axis => {
+    const tags = questionTags(question, axis.id);
+    if (!tags.length) return '';
+    return `<section class="explanation-section classification-section"><h3 class="section-title">${axis.label}</h3>${tags.map(tag => {
+      const reason = question.tagReasons?.[tag.id] || question.tagReasons?.[tag.label];
+      return `<div class="classification-item">${tagButton(tag, question)}${tagParent(tag) ? `<span class="classification-parent">${esc(tagParent(tag))}</span>` : ''}<p class="classification-definition">${esc(tag.description || '')}</p><p class="classification-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 분류 이유를 검토 중입니다.')}</p></div>`;
+    }).join('')}</section>`;
+  }).join('')}`;
+}
+function documentLinks(question) {
+  const pdf = question.sourceAccess === 'local-only' ? '' : safeAsset(question.sourcePdf === undefined && question.year === 2027 ? 'data/2027-original.pdf' : question.sourcePdf);
+  const page = Number(question.sourcePdfPage || question.sourcePage);
+  const data = safeAsset(question.dataPath || 'data/archive.json');
+  return `<p class="document-links">${pdf ? `<a href="${esc(pdf)}${Number.isInteger(page) && page > 0 ? `#page=${page}` : ''}" target="_blank" rel="noopener">${esc(examLabel(question))} 원본 PDF</a><span aria-hidden="true">·</span>` : ''}<a href="${esc(data)}" target="_blank" rel="noopener">문항 데이터 JSON</a></p>`;
+}
 function readerSource(question) {
+  if (question.sourceAccess === 'local-only') {
+    return `<section class="reader-panel source-panel" aria-label="원문 출처"><div class="panel-heading"><h2>원문 출처 <span>SOURCE REFERENCE</span></h2></div><div class="source-reference"><span class="source-reference-icon" aria-hidden="true">${icon('grid')}</span><h3>${esc(examLabel(question))}<br>추리논증 ${esc(question.number)}번</h3><dl><div><dt>문항 ID</dt><dd>${esc(question.id)}</dd></div>${question.examPage ? `<div><dt>회차 문제지</dt><dd>${esc(question.examPage)}쪽</dd></div>` : ''}${question.sourcePage ? `<div><dt>통합 PDF</dt><dd>${esc(question.sourcePage)}쪽</dd></div>` : ''}</dl><p>원문은 제공받은 PDF에서 확인해 주세요. 이 페이지에서 소재·태그와 문항별 분류 이유를 살펴볼 수 있습니다.</p></div></section>`;
+  }
   const image = safeAsset(question.image);
   const corrections = question.textCorrections || [];
   const correctionNotice = corrections.length ? `<details class="text-corrections"><summary>원본 대조로 복원한 추출 오류 ${corrections.length}곳</summary><ul>${corrections.map(item => `<li><strong>${esc(item.to)}</strong><span>${esc(item.reason)}</span></li>`).join('')}</ul><p>원본 이미지와 복원 전 추출 텍스트는 보존되어 있습니다. 전체 내역은 문항 데이터 JSON에서 확인할 수 있습니다.</p></details>` : '';
-  return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} 원본의 회색 정답 강조를 유지했습니다. 문제지 ${esc(question.examPage)}쪽 · 제공 PDF ${esc(question.sourcePage)}쪽</div>
+  return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} 원본 이미지를 그대로 보존했습니다. 문제지 ${esc(question.examPage)}쪽${question.sourcePdfPage || question.sourcePage ? ` · 제공 PDF ${esc(question.sourcePdfPage || question.sourcePage)}쪽` : ''}</div>
   <div id="source-image-view"${state.sourceMode === 'image' ? '' : ' hidden'}><button type="button" class="source-image-button" data-enlarge="${esc(question.id)}" aria-label="${esc(question.id)}번 원본 확대"><img class="source-image" src="${esc(image)}" alt="${esc(question.id)}번 원본 문항. 원문은 추출 텍스트 보기에서도 읽을 수 있습니다." decoding="async"></button></div>
   <div id="source-text-view"${state.sourceMode === 'text' ? '' : ' hidden'}><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(question.text || question.rawText || '추출 텍스트가 없습니다. 원본 이미지를 확인해 주세요.')}</pre><p class="text-warning">PDF 문자층에서 추출한 텍스트입니다. 공백·줄바꿈·표·수식은 원본과 다를 수 있으므로 원본 이미지를 함께 확인해 주세요.</p>${correctionNotice}</div></section>`;
 }
@@ -307,7 +347,8 @@ function questionNav(question, prev, next) {
 function renderQuestion() {
   const question = state.questions.get(state.route.id);
   if (!question) {
-    main.innerHTML = '<div class="error-state"><h1>문항을 찾을 수 없습니다.</h1><p>2027학년도 문항번호는 2701부터 2740까지입니다.</p><a class="button" href="#/questions">문항 목록으로</a></div>';
+    document.title = '문항을 찾을 수 없습니다 · LEET Atlas';
+    main.innerHTML = '<div class="error-state"><h1>문항을 찾을 수 없습니다.</h1><p>문항 목록에서 회차와 번호를 확인해 주세요.</p><a class="button" href="#/questions">문항 목록으로</a></div>';
     return;
   }
   document.title = `${question.id} ${question.title} · LEET Atlas`;
@@ -315,19 +356,26 @@ function renderQuestion() {
   const index = sorted.findIndex(item => item.id === question.id);
   const prev = sorted[index - 1];
   const next = sorted[index + 1];
+  const unreviewed = question.answerStatus === 'not-reviewed';
   const listHref = buildRoute(state.returnRoute || { ...state.route, view: state.route.bookmark && state.route.bookmark !== 'all' ? 'bookmarks' : 'list', id: null });
-  main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} 문항 목록 <span aria-hidden="true">/</span> ${esc(question.year)}학년도</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항">${icon('right')}</button></nav></div>
-  <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(question.year)}학년도 법학적성시험 · 추리논증 ${esc(question.number)}번 <span aria-hidden="true">·</span> 검수용 초안</div></div></div><div class="question-heading-actions">${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
-  ${renderRibbon(question)}<div class="reader-grid">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="문항 해설"><div class="panel-heading"><h2>해설과 논증 구조 <span>ANALYSIS</span></h2><span class="draft-label"><i></i>검수용 초안</span></div><div class="analysis-body">${explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
-  <p class="document-links"><a href="data/2027-original.pdf?v=${CACHE_VERSION}" target="_blank" rel="noopener">2027 원본 PDF</a><span aria-hidden="true">·</span><a href="data/2027.json?v=${CACHE_VERSION}" target="_blank" rel="noopener">문항 데이터 JSON</a><span aria-hidden="true">·</span><a href="docs/2026-10-25-design.md" target="_blank" rel="noopener">검수판 안내</a></p>`;
+  main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} 문항 목록 <span aria-hidden="true">/</span> ${esc(examLabel(question))}</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항">${icon('right')}</button></nav></div>
+  <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(examLabel(question))} 법학적성시험 · 추리논증 ${esc(question.number)}번 <span aria-hidden="true">·</span> 검수용 초안</div></div></div><div class="question-heading-actions">${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
+  ${renderRibbon(question)}<div class="reader-grid">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="${unreviewed ? '문항 분류 이유' : '문항 해설'}"><div class="panel-heading"><h2>${unreviewed ? '소재와 태그 분류' : '해설과 논증 구조'} <span>${unreviewed ? 'CLASSIFICATION' : 'ANALYSIS'}</span></h2><span class="draft-label"><i></i>검수용 초안</span></div><div class="analysis-body">${unreviewed ? classificationSections(question) : explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
+  ${documentLinks(question)}`;
 }
 function render() {
   if (!state.data) return;
   hideTooltip();
   const previousRoute = state.route;
   state.route = parseRoute(location.hash);
+  const originalTagId = state.route.id;
+  const originalTags = state.route.tags.join('\n');
+  if (state.route.view === 'tag') state.route.id = canonicalTagId(state.route.id);
+  state.route.tags = [...new Set(state.route.tags.map(canonicalTagId))];
+  const redirectedTag = originalTagId !== state.route.id || originalTags !== state.route.tags.join('\n');
   if (!new URLSearchParams(location.hash.split('?')[1] || '').has('mode')) state.route.mode = state.modePreference;
   state.route.tags = state.route.tags.filter(id => state.taxonomy.has(id));
+  if (redirectedTag) history.replaceState(null, '', buildRoute(state.route));
   const returningToCollection = previousRoute.view === 'question' && state.returnRoute?.view === state.route.view && (state.route.view !== 'tag' || state.returnRoute.id === state.route.id);
   if (['bookmarks', 'tag'].includes(state.route.view) && !returningToCollection && (previousRoute.view !== state.route.view || previousRoute.id !== state.route.id)) {
     state.query = '';
@@ -436,7 +484,7 @@ function showImage(id) {
   document.querySelector('#image-dialog-title').textContent = `${question.id} · ${question.title} · 원본 확대`;
   const image = document.querySelector('#enlarged-image');
   image.src = safeAsset(question.image);
-  image.alt = `${question.id}번 문항의 원본 이미지. 회색 답안 강조를 포함합니다.`;
+  image.alt = `${question.id}번 문항의 원본 이미지.`;
   imageDialog.showModal();
   document.querySelector('#close-image').focus();
 }
@@ -458,12 +506,12 @@ async function copyLink() {
   }
 }
 function exportReviews() {
-  const payload = { schemaVersion: 2, app: 'LEET Atlas', examYear: 2027, exportedAt: new Date().toISOString(), reviews: state.reviews };
+  const payload = { schemaVersion: 2, app: 'LEET Atlas', examKeys: state.data.exams?.map(exam => exam.key) || [...new Set(state.data.questions.map(question => question.examKey || String(question.year)))], exportedAt: new Date().toISOString(), reviews: state.reviews };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `leet-atlas-2027-review-${new Date().toISOString().slice(0, 10)}.json`;
+  link.download = `leet-atlas-review-${new Date().toISOString().slice(0, 10)}.json`;
   document.body.append(link);
   link.click();
   link.remove();
@@ -598,10 +646,12 @@ document.addEventListener('error', event => {
 
 loadReviews();
 try {
-  const response = await fetch(`data/2027.json?v=${CACHE_VERSION}`);
+  const response = await fetch(`data/archive.json?v=${CACHE_VERSION}`);
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   state.data = await response.json();
   if (!Array.isArray(state.data.questions) || !Array.isArray(state.data.taxonomy)) throw new Error('문항 데이터 형식이 올바르지 않습니다.');
+  document.querySelector('#archive-edition').textContent = `${archiveScope()} · 전체 아카이브`;
+  document.querySelector('#archive-count').textContent = state.data.questions.length;
   state.data.taxonomy.forEach(tag => state.taxonomy.set(tag.id, tag));
   const catalog = Array.isArray(state.data.fieldCatalog) ? state.data.fieldCatalog : [];
   catalog.forEach(entry => {
@@ -617,3 +667,4 @@ try {
   main.innerHTML = `<div class="error-state"><h1>문항 데이터를 불러오지 못했습니다.</h1><p>잠시 후 새로고침해 주세요. 파일을 직접 열었다면 배포된 웹 주소에서 접속해 주세요.</p><p><code>${esc(error.message)}</code></p><button class="button" type="button" id="reload-data">다시 불러오기</button></div>`;
   document.querySelector('#reload-data').addEventListener('click', () => location.reload());
 }
+
