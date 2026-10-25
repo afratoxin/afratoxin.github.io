@@ -6,6 +6,8 @@ import { readFile } from 'node:fs/promises';
 import * as core from '../core.mjs';
 import * as tagGroups from '../tag-groups.mjs';
 import * as localText from '../local-text.mjs';
+import * as sidebar from '../sidebar.mjs';
+import * as localSources from '../local-sources.mjs';
 
 const source = (await readFile(new URL('../app.js', import.meta.url), 'utf8')).replace(/^import[^\n]+\n/gm, '');
 const caseData = JSON.parse(await readFile(new URL('./fixtures/no-listed-answer.json', import.meta.url), 'utf8'));
@@ -45,7 +47,7 @@ async function boot(hash = '#/question/2305', data = fixture) {
       requests.push(path);
       if (!String(path).startsWith('data/archive.json?')) return { ok: false, status: 404 };
       return { ok: true, json: async () => structuredClone(data) };
-    }, ...core, ...tagGroups, ...localText,
+    }, ...core, ...tagGroups, ...localText, ...sidebar, ...localSources,
   };
   const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
   const app = await new AsyncFunction(...Object.keys(env), source + '\nreturn {state,render};')(...Object.values(env));

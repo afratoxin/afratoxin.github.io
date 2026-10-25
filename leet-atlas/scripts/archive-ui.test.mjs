@@ -6,6 +6,8 @@ import {readFile} from 'node:fs/promises';
 import * as core from '../core.mjs';
 import * as tagGroups from '../tag-groups.mjs';
 import * as localText from '../local-text.mjs';
+import * as sidebar from '../sidebar.mjs';
+import * as localSources from '../local-sources.mjs';
 
 const source=(await readFile(new URL('../app.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
 const current=JSON.parse(await readFile(new URL('../data/2027.json',import.meta.url),'utf8')).questions.find(q=>q.id==='2701');
@@ -40,7 +42,7 @@ async function boot(hash='',reviews={},data=fixture,blockedStorage=false,savedTe
  const memory=new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})]]);
  if(savedTexts!==null) memory.set(localText.LOCAL_TEXT_STORAGE_KEY,savedTexts);
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
- const env={document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>structuredClone(data)}},...core, ...tagGroups, ...localText};
+ const env={document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>structuredClone(data)}},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const previous=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
  if(blockedStorage) {
@@ -95,7 +97,7 @@ test('adding a filter resets page and retains sort, selected years and color',as
 test('filter sidebar and tag catalog show semantic neighborhoods and parent fields',async()=>{
  const list=await boot('#/questions');
  assert.match(list.elements.get('#main').innerHTML,/class="filter-tag-group"/);
- assert.match(list.elements.get('#main').innerHTML,/<h4>법학/);
+ assert.match(list.elements.get('#main').innerHTML,/data-filter-disclosure="field:field-law"/);
  const catalog=await boot('#/tags?tagMode=or');
  assert.match(catalog.elements.get('#tag-catalog-results').innerHTML,/class="tag-neighborhood"/);
  assert.doesNotMatch(catalog.elements.get('#tag-catalog-results').innerHTML,/tagMode=/);
@@ -246,7 +248,7 @@ test('subject catalog and collection show their parent field and archive-wide ze
  assert.ok(catalog.app.catalogTags().some(tag=>tag.id==='subject-law-institutions'));
  const collection=await boot('#/tags/subject-law-institutions');
  assert.match(collection.elements.get('#main').innerHTML,/분야 · 법학/);
- assert.match(collection.elements.get('#main').innerHTML,/>소재</);
+ assert.match(collection.elements.get('#main').innerHTML,/소재 · TAG COLLECTION/);
  const empty=await boot('#/tags/field-empty');
  assert.match(empty.elements.get('#question-list').innerHTML,/현재 아카이브 자료 없음/);
 });
@@ -422,4 +424,22 @@ test('adding and removing year tags preserves puzzle, query, review and bookmark
  app.toggleTag(year2026);app.render();
  assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2512']);
  assert.ok(app.state.route.tags.includes(puzzle));assert.equal(app.state.route.bookmark,'blue');
+});
+
+test('sidebar renders only four collapsible roots and nests fields and subjects under domains',async()=>{
+ const {elements}=await boot('#/questions',{},fullArchive);
+ const html=elements.get('#main').innerHTML;
+ assert.deepEqual([...html.matchAll(/data-filter-root="([^"]+)"/g)].map(m=>m[1]),['domain','type','logic','year']);
+ assert.match(html,/data-filter-disclosure="domain:domain-/);
+ assert.match(html,/data-filter-disclosure="field:field-/);
+ assert.doesNotMatch(html,/data-filter-root="(?:field|subject)"/);
+});
+
+test('manually opened sidebar sections survive filter rerender',async()=>{
+ const {app,events,elements}=await boot('#/questions',{},fullArchive);
+ const toggle=events.get('toggle');assert.equal(typeof toggle,'function');
+ toggle({target:{dataset:{filterDisclosure:'axis:domain'},open:true}});
+ app.render();
+ assert.ok(app.state.filterOpen.has('axis:domain'));
+ assert.match(elements.get('#main').innerHTML,/data-filter-disclosure="axis:domain" open/);
 });

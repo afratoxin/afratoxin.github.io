@@ -1,11 +1,13 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-text1';
-import { groupTags } from './tag-groups.mjs?v=20261026-text1';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-text1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-tree1';
+import { groupTags } from './tag-groups.mjs?v=20261026-tree1';
+import { renderSidebar } from './sidebar.mjs?v=20261026-tree1';
+import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-tree1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-tree1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-text1';
+const CACHE_VERSION = '20261026-tree1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -19,7 +21,7 @@ const AXES = [
   { id: 'year', label: '연도', field: 'year' },
 ];
 const CIRCLED = ['', '①', '②', '③', '④', '⑤'];
-const state = { data: null, taxonomy: new Map(), tagCounts: new Map(), questions: new Map(), reviews: {}, route: parseRoute(location.hash), query: '', review: 'all', sourceMode: 'image', textSize: 16, filtersOpen: false, storageFailed: false, modePreference: 'paged', hasRendered: false, tagQuery: '', tagAxis: 'all', paletteQuestionId: null, returnRoute: null, localTexts: new Map(), neighborhoods: new Map() };
+const state = { data: null, taxonomy: new Map(), tagCounts: new Map(), questions: new Map(), reviews: {}, route: parseRoute(location.hash), query: '', review: 'all', sourceMode: 'image', textSize: 16, filtersOpen: false, storageFailed: false, modePreference: 'paged', hasRendered: false, tagQuery: '', tagAxis: 'all', paletteQuestionId: null, returnRoute: null, localTexts: new Map(), neighborhoods: new Map(), filterOpen: new Set(), localSources: new Map(), sourceLoadFailed: false };
 const main = document.querySelector('#main');
 const tooltip = document.querySelector('#tag-tooltip');
 const imageDialog = document.querySelector('#image-dialog');
@@ -60,10 +62,22 @@ function safeAsset(path) {
   const value = String(path || '');
   return /^(?:assets|data)\/[a-zA-Z0-9_.\/-]+$/.test(value) && !value.includes('..') ? `${value}?v=${CACHE_VERSION}` : '';
 }
+function sourceStorage() {
+  try { return typeof indexedDB === 'undefined' ? undefined : indexedDB; } catch { return undefined; }
+}
+async function ensureSourceSnapshot() {
+  if (!state.sourceLoadFailed) return;
+  const saved = await loadLocalSources(sourceStorage(), state.data.questions, {strict:true});
+  state.localSources = new Map([...saved, ...state.localSources]);
+  state.localSources.forEach(({image, ...record}) => state.localTexts.set(record.id, record));
+  state.sourceLoadFailed = false;
+}
 function usesImageBundle(question) {
   return question.sourceAccess !== 'local-only' && Boolean(question.imageBundle || question.sourceAccess === 'bundled');
 }
 function imageFor(question, thumbnail = false) {
+  const local = state.localSources.get(question.id);
+  if (local) return local.image;
   if (question.sourceAccess === 'local-only') return '';
   return usesImageBundle(question) ? imageBundles.get(question).url : safeAsset(thumbnail ? question.thumbnail || question.image : question.image);
 }
@@ -130,6 +144,12 @@ function updateTextCoverage() {
   const status = document.querySelector('#text-coverage');
   status.textContent = `본문 ${coverage.available}/${coverage.total}`;
   status.title = coverage.exams.map(exam => `${exam.examLabel} ${exam.available}/${exam.total}`).join('\n');
+  const images = state.data.questions.filter(question => state.localSources.has(question.id) || question.sourceAccess !== 'local-only' && (question.image || question.imageBundle));
+  const imageStatus = document.querySelector('#image-coverage');
+  if (imageStatus) {
+    imageStatus.textContent = `이미지 ${images.length}/${coverage.total}`;
+    imageStatus.title = coverage.exams.map(exam => `${exam.examLabel} ${images.filter(question => question.examKey === exam.examKey).length}/${exam.total}`).join('\n');
+  }
 }
 function emptyTaxonomyLabel() {
   return state.data.exams || state.data.exam?.examCount ? '현재 아카이브 자료 없음' : `현재 ${state.data.questions[0]?.year || ''} 자료 없음`;
@@ -138,6 +158,7 @@ function canonicalTagId(id) {
   return state.data?.tagAliases?.[id] || id;
 }
 function tagParent(tag) {
+  if (tag.parentTagId) return `문항 유형 · ${state.taxonomy.get(tag.parentTagId)?.label || tag.parentLabel || ''}`;
   const fields = tag.parentFields?.length ? tag.parentFields : tag.parentField ? [tag.parentField] : [];
   return fields.length ? `분야 · ${fields.join(' · ')}` : tag.parentDomain ? `대범주 · ${tag.parentDomain}` : '';
 }
@@ -249,15 +270,10 @@ function filterPanel() {
   return `<aside class="filter-panel${state.filtersOpen ? ' is-open' : ''}" aria-label="문항 분류 필터">
     <button class="filter-toggle" type="button" data-toggle-filters aria-expanded="${state.filtersOpen}" aria-controls="filter-content"><span>${icon('filter')} 분류로 좁혀 보기${effectiveTags().length ? ` · ${effectiveTags().length}개 선택` : ''}</span>${icon('down')}</button>
     <div class="filter-heading"><h2>분류로 좁혀 보기</h2><button class="button-text" type="button" data-reset>초기화</button></div>
-    <div id="filter-content" class="filter-content"><p class="filter-help"><strong>태그 조건 자동 조합</strong><br>연도끼리는 OR, 나머지 태그는 AND로 적용합니다.<br>예: (2025 또는 2026) 그리고 논리 퍼즐</p>${AXES.map(axis => {
-      const tags = [...state.taxonomy.values()].filter(tag => tag.axis === axis.id);
-      const needsPicker = tags.length > 8;
-      const selectedCount = tags.filter(tag => effectiveTags().includes(tag.id)).length;
-      const choices = `<div class="filter-groups${needsPicker ? ' filter-tags-scroll' : ''}" data-tag-choices="${axis.id}">${groupTags(tags, { axis: axis.id }).map(group => `<section class="filter-tag-group" data-related-group><h4>${esc(group.label)}<span>${group.tags.length}</span></h4><div class="filter-tags">${group.tags.map(tag => tagButton(tag, null, true, group.label)).join('')}</div></section>`).join('')}</div>`;
-      return tags.length ? `<section class="filter-section"><h3>${axis.label}<span>${selectedCount ? `${selectedCount}개 선택 / ` : ''}${tags.length}</span></h3><p class="filter-rule">${axis.id === 'year' ? '선택 연도 중 하나 이상 · OR' : '선택 태그 모두 · AND'}</p>${needsPicker ? `<details class="filter-expander"${selectedCount ? ' open' : ''}><summary>${tags.length}개 태그에서 선택 ${icon('down')}</summary><label class="taxonomy-search-label"><span class="sr-only">${axis.label} 태그 검색</span><input class="taxonomy-search" type="search" data-taxonomy-search="${axis.id}" placeholder="${axis.label} 태그 찾기" autocomplete="off"></label>${choices}<p class="tag-search-empty" data-tag-empty="${axis.id}" hidden>일치하는 태그가 없습니다.</p></details>` : choices}</section>` : '';
-    }).join('')}<p class="filter-help">검색·북마크·검수 상태도 모두 함께 적용합니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
+    <div id="filter-content" class="filter-content"><p class="filter-help">연도끼리는 OR, 나머지 태그는 AND로 적용합니다.<br>대범주를 펼치면 분야와 소재를 고를 수 있습니다.</p>${renderSidebar({taxonomy: state.taxonomy, selectedTags: effectiveTags(), openKeys: state.filterOpen}, (tag, path) => tagButton(tag, null, true, path))}<p class="filter-help">검색·북마크·검수 상태도 모두 함께 적용합니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
   </aside>`;
 }
+
 function bookmarkCount(color) {
   return state.data.questions.filter(question => { const colors = bookmarkColors(state.reviews[question.id]); return color === 'any' ? colors.length : colors.includes(color); }).length;
 }
@@ -304,7 +320,7 @@ function questionCard(question) {
   const activeTag = state.route.view === 'tag' ? state.taxonomy.get(state.route.id) : null;
   const reason = activeTag ? question.tagReasons?.[activeTag.label] || question.tagReasons?.[activeTag.id] : null;
   const thumbnail = imageFor(question, true);
-  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${typeof question.text === 'string' && question.text.trim() ? '<span class="text-available-badge">본문 있음</span>' : ''}${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
+  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${typeof question.text === 'string' && question.text.trim() ? '<span class="text-available-badge">본문 있음</span>' : ''}${imageFor(question, true) || usesImageBundle(question) ? '<span class="text-available-badge">이미지 있음</span>' : ''}${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
 }
 function paginationMarkup(result) {
   if (!result.total) return '';
@@ -406,15 +422,17 @@ function documentLinks(question) {
   return `<p class="document-links">${pdf ? `<a href="${esc(pdf)}${Number.isInteger(page) && page > 0 ? `#page=${page}` : ''}" target="_blank" rel="noopener">${esc(examLabel(question))} 원본 PDF</a><span aria-hidden="true">·</span>` : ''}<a href="${esc(data)}" target="_blank" rel="noopener">문항 데이터 JSON</a></p>`;
 }
 function readerSource(question) {
-  if (question.sourceAccess === 'local-only' && state.localTexts.has(question.id)) return localTextPanel(question);
-  if (question.sourceAccess === 'local-only') {
-    return `<section class="reader-panel source-panel" aria-label="원문 출처"><div class="panel-heading"><h2>원문 출처 <span>SOURCE REFERENCE</span></h2></div><div class="source-reference"><span class="source-reference-icon" aria-hidden="true">${icon('grid')}</span><h3>${esc(examLabel(question))}<br>추리논증 ${esc(question.number)}번</h3><dl><div><dt>문항 ID</dt><dd>${esc(question.id)}</dd></div>${question.examPage ? `<div><dt>회차 문제지</dt><dd>${esc(question.examPage)}쪽</dd></div>` : ''}${question.sourcePage ? `<div><dt>통합 PDF</dt><dd>${esc(question.sourcePage)}쪽</dd></div>` : ''}</dl><p>원문은 제공받은 PDF에서 확인해 주세요. 이 페이지에서 ${question.answerStatus === 'not-reviewed' ? '소재·태그와 문항별 분류 이유' : '자체 해설 초안과 소재·태그'}를 살펴볼 수 있습니다.</p><button type="button" class="button button-sage" data-import-local-text>내 본문 파일 불러오기</button><p class="local-text-hint">불러온 본문은 이 브라우저에만 보관합니다.</p></div></section>`;
+  const localSource = state.localSources.get(question.id);
+  if (question.sourceAccess === 'local-only' && !localSource && state.localTexts.has(question.id)) return localTextPanel(question);
+  if (question.sourceAccess === 'local-only' && !localSource) {
+    return `<section class="reader-panel source-panel" aria-label="원문 출처"><div class="panel-heading"><h2>원문 출처 <span>SOURCE REFERENCE</span></h2></div><div class="source-reference"><span class="source-reference-icon" aria-hidden="true">${icon('grid')}</span><h3>${esc(examLabel(question))}<br>추리논증 ${esc(question.number)}번</h3><dl><div><dt>문항 ID</dt><dd>${esc(question.id)}</dd></div>${question.examPage ? `<div><dt>회차 문제지</dt><dd>${esc(question.examPage)}쪽</dd></div>` : ''}${question.sourcePage ? `<div><dt>통합 PDF</dt><dd>${esc(question.sourcePage)}쪽</dd></div>` : ''}</dl><p>원문은 제공받은 PDF에서 확인해 주세요. 이 페이지에서 ${question.answerStatus === 'not-reviewed' ? '소재·태그와 문항별 분류 이유' : '자체 해설 초안과 소재·태그'}를 살펴볼 수 있습니다.</p><button type="button" class="button button-sage" data-import-local-text>본문·이미지 파일 불러오기</button><p class="local-text-hint">이미지가 포함된 원문 파일을 선택하면 본문과 그림을 함께 볼 수 있습니다. 텍스트 전용 파일도 사용할 수 있습니다.</p></div></section>`;
   }
+  const displayedText = state.localTexts.get(question.id)?.text || question.text || question.rawText || '추출 텍스트가 없습니다. 원본 이미지를 확인해 주세요.';
   const corrections = question.textCorrections || [];
   const correctionNotice = corrections.length ? `<details class="text-corrections"><summary>원본 대조로 복원한 추출 오류 ${corrections.length}곳</summary><ul>${corrections.map(item => `<li><strong>${esc(item.to)}</strong><span>${esc(item.reason)}</span></li>`).join('')}</ul><p>원본 이미지와 복원 전 추출 텍스트는 보존되어 있습니다. 전체 내역은 문항 데이터 JSON에서 확인할 수 있습니다.</p></details>` : '';
-  return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} 원본 이미지를 그대로 보존했습니다. 문제지 ${esc(question.examPage)}쪽${question.sourcePdfPage || question.sourcePage ? ` · 제공 PDF ${esc(question.sourcePdfPage || question.sourcePage)}쪽` : ''}</div>
+  return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} ${localSource ? '이 브라우저에 불러온 원문입니다.' : '원본 이미지를 그대로 보존했습니다.'} 문제지 ${esc(question.examPage)}쪽${localSource ? ` · 통합 PDF ${esc(localSource.sourcePage)}쪽` : question.sourcePdfPage || question.sourcePage ? ` · 제공 PDF ${esc(question.sourcePdfPage || question.sourcePage)}쪽` : ''}</div>
   <div id="source-image-view"${state.sourceMode === 'image' ? '' : ' hidden'}><div ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="source"` : ''}>${sourceImageMarkup(question)}</div></div>
-  <div id="source-text-view"${state.sourceMode === 'text' ? '' : ' hidden'}><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(question.text || question.rawText || '추출 텍스트가 없습니다. 원본 이미지를 확인해 주세요.')}</pre><p class="text-warning">PDF 문자층에서 추출한 텍스트입니다. 공백·줄바꿈·표·수식은 원본과 다를 수 있으므로 원본 이미지를 함께 확인해 주세요.</p>${correctionNotice}</div></section>`;
+  <div id="source-text-view"${state.sourceMode === 'text' ? '' : ' hidden'}><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(displayedText)}</pre><p class="text-warning">PDF 문자층에서 추출한 텍스트입니다. 공백·줄바꿈·표·수식은 원본과 다를 수 있으므로 원본 이미지를 함께 확인해 주세요.</p>${correctionNotice}${localSource ? `<button type="button" class="button-text local-text-more" data-clear-local-source="${esc(question.id)}">이 원문 지우기</button>` : ''}</div></section>`;
 }
 function localTextPanel(question) {
   const record = state.localTexts.get(question.id);
@@ -424,10 +442,15 @@ async function importLocalTextFile(file) {
   try {
     if (file.size > 8 * 1024 * 1024) throw new Error('본문 파일은 8MB까지 불러올 수 있습니다.');
     const records = parseLocalTextPack(await file.text(), state.data.questions);
+    await ensureSourceSnapshot();
     const merged = new Map([...state.localTexts, ...records.map(record => [record.id, record])]);
     parseLocalTextPack({schemaVersion: 1, kind: 'leet-atlas-local-text', questions: [...merged.values()]}, state.data.questions);
+    const updatedSources = new Map(state.localSources);
+    for (const record of records) if (updatedSources.has(record.id)) updatedSources.set(record.id, {...updatedSources.get(record.id), text: record.text});
+    if (records.some(record => updatedSources.has(record.id))) await saveLocalSources(sourceStorage(), [...updatedSources.values()]);
     let persisted = true;
     try { saveLocalTexts(localStorage, [...merged.values()]); } catch { persisted = false; }
+    state.localSources = updatedSources;
     state.localTexts = merged;
     render();
     const coverage = localTextCoverage(state.data.questions, state.localTexts);
@@ -436,6 +459,53 @@ async function importLocalTextFile(file) {
     showToast(`본문을 불러오지 못했습니다. ${error.message}`);
   }
 }
+async function importSourceOrTextFile(file) {
+  try {
+    if (file.size > 64 * 1024 * 1024) throw new Error('원문 파일은 64 MiB까지 불러올 수 있습니다.');
+    const serialized = await file.text();
+    const kind = JSON.parse(serialized).kind;
+    const cached = {size: file.size, text: async () => serialized};
+    if (kind === 'leet-atlas-local-sources') await importLocalSourceFile(cached);
+    else await importLocalTextFile(cached);
+  } catch (error) { showToast(`원문을 불러오지 못했습니다. ${error.message}`); }
+}
+async function importLocalSourceFile(file) {
+  try {
+    if (file.size > 64 * 1024 * 1024) throw new Error('원문 파일은 64 MiB까지 불러올 수 있습니다.');
+    const records = parseLocalSourcePack(await file.text(), state.data.questions);
+    try { await ensureSourceSnapshot(); } catch {
+      const complete = records.length === state.data.questions.filter(question => question.sourceAccess === 'local-only').length;
+      if (!complete) throw new Error('저장된 원문을 읽지 못했습니다. 다시 시도하거나 전체 원문 파일을 선택해 주세요.');
+    }
+    const sources = new Map([...state.localSources, ...records.map(record => [record.id, record])]);
+    const texts = new Map(state.localTexts);
+    records.forEach(({image, ...record}) => texts.set(record.id, record));
+    let imageSaved = true, textSaved = true;
+    try { await saveLocalSources(sourceStorage(), [...sources.values()]); } catch { imageSaved = false; }
+    try { saveLocalTexts(localStorage, [...texts.values()]); } catch { textSaved = false; }
+    state.localSources = sources;
+    if (imageSaved) state.sourceLoadFailed = false;
+    state.localTexts = texts;
+    render();
+    showToast(`${records.length}문항의 본문과 이미지를 불러왔습니다.${imageSaved && textSaved ? ' 이 브라우저에 보관합니다.' : ' 저장하지 못한 원문은 현재 탭에서만 표시합니다.'}`);
+  } catch (error) { showToast(`원문을 불러오지 못했습니다. ${error.message}`); }
+}
+async function clearLocalSource(id) {
+  try { await ensureSourceSnapshot(); }
+  catch { showToast('원문을 지우지 못했습니다. 저장된 원문을 읽을 수 없습니다.'); return; }
+  const sources = new Map(state.localSources), texts = new Map(state.localTexts);
+  sources.delete(id);texts.delete(id);
+  try { saveLocalTexts(localStorage, [...texts.values()]); }
+  catch { showToast('원문을 지우지 못했습니다. 브라우저 저장 공간 접근을 확인해 주세요.'); return; }
+  try { await saveLocalSources(sourceStorage(), [...sources.values()]); }
+  catch {
+    try { saveLocalTexts(localStorage, [...state.localTexts.values()]); } catch { /* The unchanged source database also retains the original body. */ }
+    showToast('원문을 지우지 못했습니다. 브라우저 저장 공간 접근을 확인해 주세요.'); return;
+  }
+  state.localSources = sources;state.localTexts = texts;
+  render();showToast('이 문항의 본문과 이미지를 브라우저에서 지웠습니다.');
+}
+
 function clearLocalText(id) {
   const remaining = new Map(state.localTexts);
   remaining.delete(id);
@@ -598,7 +668,7 @@ function changeTextSize(delta) {
 }
 function showImage(id) {
   const question = state.questions.get(id);
-  if (!question || question.sourceAccess === 'local-only') return;
+  if (!question || question.sourceAccess === 'local-only' && !state.localSources.has(id)) return;
   dialogQuestionId = id;
   document.querySelector('#image-dialog-title').textContent = `${question.id} · ${question.title} · 원본 확대`;
   if (!imageDialog.open) imageDialog.showModal();
@@ -702,6 +772,7 @@ document.addEventListener('click', event => {
     });
     renderTagCatalogResults();
   } else if (button.hasAttribute('data-import-local-text')) document.querySelector('#local-text-file')?.click();
+  else if (button.hasAttribute('data-clear-local-source')) void clearLocalSource(button.dataset.clearLocalSource);
   else if (button.hasAttribute('data-clear-local-text')) clearLocalText(button.dataset.clearLocalText);
   else if (button.hasAttribute('data-source-mode')) changeSourceMode(button.dataset.sourceMode);
   else if (button.hasAttribute('data-text-size')) changeTextSize(Number(button.dataset.textSize));
@@ -719,6 +790,11 @@ document.addEventListener('click', event => {
     if (hint) hint.textContent = state.storageFailed ? '저장 실패 · 기록을 내보내 주세요' : '저장됨 · 이 브라우저에 보관';
   }
 });
+document.addEventListener('toggle', event => {
+  const key = event.target.dataset?.filterDisclosure;
+  if (!key) return;
+  if (event.target.open) state.filterOpen.add(key); else state.filterOpen.delete(key);
+}, true);
 document.addEventListener('input', event => {
   if (event.target.hasAttribute('data-taxonomy-search')) {
     const axis = event.target.dataset.taxonomySearch;
@@ -729,7 +805,7 @@ document.addEventListener('input', event => {
       button.hidden = !match;
       if (match) visible++;
     });
-    document.querySelectorAll(`[data-tag-choices="${axis}"] [data-related-group]`).forEach(group => { group.hidden = ![...group.querySelectorAll('[data-filter-tag]')].some(button => !button.hidden); });
+    document.querySelectorAll(`[data-tag-choices="${axis}"] [data-related-group]`).forEach(group => { group.hidden = ![...group.querySelectorAll('[data-filter-tag]')].some(button => !button.hidden); if (term && !group.hidden && group.matches('details')) group.open = true; });
     document.querySelector(`[data-tag-empty="${axis}"]`).hidden = visible > 0;
     hideTooltip();
   } else if (event.target.id === 'question-search') { state.query = event.target.value; resetListPage(); updateListResults(); }
@@ -741,7 +817,7 @@ document.addEventListener('input', event => {
   }
 });
 document.addEventListener('change', event => {
-  if (event.target.id === 'local-text-file') { const file = event.target.files?.[0]; if (file) void importLocalTextFile(file); event.target.value = ''; }
+  if (event.target.id === 'local-text-file') { const file = event.target.files?.[0]; if (file) void importSourceOrTextFile(file); event.target.value = ''; }
   if (event.target.id === 'question-sort') navigate(listRoute({ sort: event.target.value === 'newest' ? 'newest' : 'oldest', page: 1 }), { main: true });
   if (event.target.id === 'review-filter') { state.review = event.target.value; resetListPage(); updateListResults(); }
 });
@@ -790,9 +866,13 @@ try {
   state.data.questions.forEach(question => state.questions.set(String(question.id), question));
   try { state.localTexts = loadLocalTexts(localStorage, state.data.questions); }
   catch { state.localTexts = new Map(); }
+  try { state.localSources = await loadLocalSources(sourceStorage(), state.data.questions, {strict:true}); }
+  catch { state.localSources = new Map(); state.sourceLoadFailed = Boolean(sourceStorage()); }
+  state.localSources.forEach(({image, ...record}) => state.localTexts.set(record.id, record));
   AXES.forEach(axis => groupTags([...state.taxonomy.values()], { axis: axis.id }).forEach(group => group.tags.forEach(tag => state.neighborhoods.set(tag.id, group.label))));
   if (!location.hash) history.replaceState(null, '', buildRoute({ view: 'list' }));
   render();
+  if (state.sourceLoadFailed) showToast('저장된 원문을 읽지 못했습니다. 원문 파일을 다시 선택하면 복구할 수 있습니다.');
 } catch (error) {
   main.innerHTML = `<div class="error-state"><h1>문항 데이터를 불러오지 못했습니다.</h1><p>잠시 후 새로고침해 주세요. 파일을 직접 열었다면 배포된 웹 주소에서 접속해 주세요.</p><p><code>${esc(error.message)}</code></p><button class="button" type="button" id="reload-data">다시 불러오기</button></div>`;
   document.querySelector('#reload-data').addEventListener('click', () => location.reload());

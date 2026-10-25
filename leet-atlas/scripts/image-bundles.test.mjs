@@ -4,6 +4,8 @@ import {readFile} from 'node:fs/promises';
 import * as core from '../core.mjs';
 import * as tagGroups from '../tag-groups.mjs';
 import * as localText from '../local-text.mjs';
+import * as sidebar from '../sidebar.mjs';
+import * as localSources from '../local-sources.mjs';
 const WEBP='UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
 const URL_IMAGE='data:image/webp;base64,'+WEBP;
 const question=(id='p001',examKey='preliminary')=>({id,examKey,year:examKey==='preliminary'?2009:Number(examKey),number:Number(id.slice(-2)),examLabel:examKey==='preliminary'?'2009학년도 예비시험':`${examKey}학년도`,title:'번들 원문',image:`assets/questions/${id}.webp`,thumbnail:`assets/questions/${id}.webp`,imageBundle:`data/images/${examKey}.json`,sourceAccess:'bundled',sourcePdf:'',text:'추출한 원문',answer:2,answerStatus:'source-and-solution-agree',summary:'실제 해설',options:[1,2,3,4,5].map(number=>({number,correct:number===2,explanation:'선택지 해설'})),tags:[],fields:[],examPage:1,sourcePage:1});
@@ -77,7 +79,7 @@ async function boot(hash='#/questions',respond=async()=>({ok:true,json:async()=>
  }
  const document={querySelector:element,querySelectorAll(selector){return selector==='[data-image-question]'?currentHolders():[]},addEventListener(k,fn){events.set(k,fn)}};
  const location={hash,href:'https://afratoxin.github.io/leet-atlas/'+hash};
- const env={document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem(){return null},setItem(){}},navigator:{},fetch:async path=>{requests.push(path);return path.startsWith('data/archive.json')?{ok:true,json:async()=>structuredClone(data)}:respond(path)},...core, ...tagGroups, ...localText};
+ const env={document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem(){return null},setItem(){}},navigator:{},fetch:async path=>{requests.push(path);return path.startsWith('data/archive.json')?{ok:true,json:async()=>structuredClone(data)}:respond(path)},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const app=await new AsyncFunction(...Object.keys(env),appSource+'\nreturn {state,render,imageFor,hydrateImages,showImage,retryImage,questionCard,readerSource};')(...Object.values(env));
  return {app,elements,location,requests,questions,holders:currentHolders,events};

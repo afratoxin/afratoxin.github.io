@@ -41,3 +41,37 @@ main{max-width:1640px;margin:auto;min-height:calc(100vh - 139px);padding:24px 28
 
 .filter-rule{margin:-3px 0 10px;font-size:10px;color:var(--muted,#6f7e74);line-height:1.6}.filter-expression{flex-basis:100%;display:flex;flex-wrap:wrap;gap:5px 10px;margin:0 0 3px;font-size:11px;line-height:1.8;color:var(--navy);overflow-wrap:anywhere}.filter-expression strong{font-weight:600}.filter-expression span{color:#52694c}
 .text-coverage{font-size:11px;color:var(--sage-dark);white-space:nowrap;font-variant-numeric:tabular-nums}.row-meta .text-available-badge{padding:1px 5px;border-radius:4px;background:#eef4eb;color:#607852;font-size:9px;white-space:nowrap}
+
+/* Four filter roots share native disclosure behavior; category buttons stay in the body. */
+.filter-content>.filter-axis{grid-column:1/-1;min-width:0;padding:0;border-right:0;border-bottom:1px solid var(--line)}
+.filter-axis>summary,.filter-tree-group>summary{display:flex;align-items:center;gap:7px;min-width:0;list-style:none;cursor:pointer;color:var(--navy);font-weight:600;line-height:1.6}
+.filter-axis>summary{padding:12px 13px;font-size:12px;background:#fbfcf9}
+.filter-axis>summary::-webkit-details-marker,.filter-tree-group>summary::-webkit-details-marker{display:none}
+.filter-axis>summary::before,.filter-tree-group>summary::before{content:"";width:6px;height:6px;flex-shrink:0;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .15s;margin-right:2px}
+.filter-axis[open]>summary::before,.filter-tree-group[open]>summary::before{transform:rotate(45deg)}
+.filter-axis>summary:focus-visible,.filter-tree-group>summary:focus-visible{outline:3px solid #7ea790;outline-offset:-3px;border-radius:4px}
+.filter-disclosure-label{min-width:0;overflow-wrap:anywhere}
+.filter-disclosure-count{margin-left:auto;flex-shrink:0;color:var(--muted);font-size:9px;font-weight:400;font-variant-numeric:tabular-nums;text-align:right}
+.filter-axis-body{padding:3px 11px 12px}
+.filter-axis-body>.filter-rule{margin:3px 0 8px}
+.filter-axis-body>.taxonomy-search-label{display:block;margin:0 0 9px}
+.filter-axis .filter-axis-choices{max-height:min(62vh,460px);overflow:auto;padding:1px 2px 2px 0;scrollbar-width:thin;scrollbar-color:#c6d3bf transparent}
+.filter-tree-group{margin:0 0 7px;border:1px solid #e3e9df;border-radius:5px;overflow:hidden}
+.filter-tree-group:last-child{margin-bottom:0}
+.filter-tree-group>summary{padding:7px 8px;background:#f7f9f4;font-size:11px}
+.filter-tree-body{padding:7px}
+.filter-parent-choice{display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.filter-parent-label{font-size:9px;line-height:1.6;padding-top:5px;color:#84917c}
+.filter-parent-choice>.filter-choice{font-weight:600}
+.filter-tree-children{display:flex;flex-direction:column;gap:5px;min-width:0}
+.filter-tree-field{margin-bottom:0;border-color:#e8ece5}
+.filter-tree-field>summary{padding:6px;background:#fcfdfb;font-size:10px}
+.filter-tree-field>.filter-tree-body{padding:7px 6px}
+.filter-tree-leaf{display:flex;min-width:0}
+.filter-tree-leaf>.filter-choice,.filter-parent-choice>.filter-choice{max-width:100%;white-space:normal;text-align:left;overflow-wrap:anywhere}
+.filter-tree-type>.filter-tree-body>.filter-tree-children,.filter-tree-field>.filter-tree-body>.filter-tree-children{flex-direction:row;flex-wrap:wrap;gap:5px}
+.filter-axis-choices>.filter-tree-leaf{margin-bottom:6px}
+.filter-axis-choices>.filter-tag-group>h4{gap:8px}
+.filter-axis .tag-search-empty{padding:8px 0 0}
+@media(max-width:780px){.filter-axis>summary{padding:12px 13px;font-size:12px}.filter-axis-body{padding:2px 13px 13px}.filter-axis .filter-axis-choices{max-height:55vh}.filter-tree-group>summary{font-size:12px}.filter-tree-field>summary{font-size:11px}.filter-disclosure-count{font-size:10px}.filter-parent-label{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.filter-axis>summary::before,.filter-tree-group>summary::before{transition:none}}

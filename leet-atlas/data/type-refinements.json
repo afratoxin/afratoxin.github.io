@@ -1,0 +1,2100 @@
+{
+  "schemaVersion": 1,
+  "description": "자체 작성 분류 근거를 사용한 문제 유형 세분화. 기존 유형·태그·해설·원본 접근 정보를 보존하고 새 분류를 중복 추가한다.",
+  "policy": {
+    "additiveOnly": true,
+    "preserveExistingReasons": true,
+    "diagramIsRootType": true,
+    "experimentExpansionPriorities": [
+      "high",
+      "medium"
+    ],
+    "puzzlePredicateBoundary": "전체/일부의 양화와 속성·이항관계의 모형 추론이 중심인 경우로 한정한다. 단순 조건문 연결 전체를 술어논리에 포함하지 않는다."
+  },
+  "definitions": [
+    {
+      "id": "type-argument-diagram",
+      "axis": "type",
+      "label": "논증 구조도",
+      "description": "발문·본문·선지에 실제로 제시된 도식에서 진술 사이의 근거·지지 관계, 공동 근거의 결합, 중간 결론과 최종 결론의 연결을 직접 선택·판별·해석하는 문제.",
+      "assignmentBoundary": "논증의 구조라는 발문만 있고 선지가 모두 문장인 경우, 실험·계산의 흐름도, 사건의 인과 경로, 상태 전이, 수치 그래프, 공간 배열, 단순 순서·이동·물리 방향 화살표는 제외한다."
+    },
+    {
+      "id": "type-puzzle-truth",
+      "axis": "type",
+      "parentTagId": "type-4536b24c5d",
+      "label": "거짓말 찾기",
+      "description": "발언 내용과 그 발언의 참·거짓, 참말·거짓말의 수 또는 화자의 상태를 함께 제약하여 가능한 사실관계를 찾는다.",
+      "assignmentBoundary": "실제 발언의 내용/진위 대응이 핵심이어야 한다. 명제 A~F의 진리값만 전달하는 추상 조건 연결이나 일반 논증의 옳고 그름은 제외한다.",
+      "parentLabel": "논리 퍼즐"
+    },
+    {
+      "id": "type-puzzle-ordering",
+      "axis": "type",
+      "parentTagId": "type-4536b24c5d",
+      "label": "배열하기",
+      "description": "대상을 시간·순서·좌우·상하·직급·일정의 자리에 놓거나 인접·선후·순환 제약을 만족하도록 배치한다.",
+      "assignmentBoundary": "단순히 결과의 대소나 순위를 계산하는 것, 이미 고정된 배치 위에서 일부를 선택하는 것만으로는 부여하지 않는다.",
+      "parentLabel": "논리 퍼즐"
+    },
+    {
+      "id": "type-puzzle-predicate",
+      "axis": "type",
+      "parentTagId": "type-4536b24c5d",
+      "label": "술어논리",
+      "description": "전체/일부/없음의 양화, 대상의 속성·집합 포함 및 배제, 이항관계에 대한 전칭 규칙의 범위를 해석하여 모형과 귀결을 구한다.",
+      "assignmentBoundary": "유한 인물의 참석 여부 같은 명제변수들을 조건문으로 잇는 문제, 발언이 참이면 다른 발언도 참이라는 관계만 있는 문제는 제외한다. 단순 소재 이름의 직업/색상만으로 부여하지 않는다.",
+      "parentLabel": "논리 퍼즐"
+    },
+    {
+      "id": "type-puzzle-calculation",
+      "axis": "type",
+      "parentTagId": "type-4536b24c5d",
+      "label": "계산하기",
+      "description": "수량·시간·점수·비용을 식이나 범위로 모델링하고 합계·차이·경우의 수·짝홀·최소/최대를 실제로 계산하여 제약을 푼다.",
+      "assignmentBoundary": "인원/가격/점수 등이 등장하거나 정해진 개수만큼 뽑는다는 조건만 있는 경우는 제외한다. 수량 계산 자체가 결론을 가르는 단계여야 한다.",
+      "parentLabel": "논리 퍼즐"
+    },
+    {
+      "id": "type-puzzle-matching",
+      "axis": "type",
+      "parentTagId": "type-4536b24c5d",
+      "label": "대응·분류",
+      "description": "인물·사물·집단 사이의 속성·역할·범주를 짝짓거나 묶음·자원을 대상에 배분하여 가능한 대응표를 구성한다.",
+      "assignmentBoundary": "단일 명제의 참거짓을 대응표처럼 적을 수 있다는 이유만으로 부여하지 않는다. 여러 속성의 대응 또는 실제 집단/자원 분배가 핵심이어야 한다.",
+      "parentLabel": "논리 퍼즐"
+    },
+    {
+      "id": "type-puzzle-relations",
+      "axis": "type",
+      "parentTagId": "type-4536b24c5d",
+      "label": "경로·관계",
+      "description": "대상 사이의 연결·접경·만남·우세·대전·연락 등 이항관계를 그래프로 복원하고 경유·공통 이웃·완전연결·관계 전파를 판단한다.",
+      "assignmentBoundary": "관계나 게임이라는 소재 이름만으로 부여하지 않는다. 실제 연결 구조와 그 제약을 구성하는 풀이여야 한다.",
+      "parentLabel": "논리 퍼즐"
+    },
+    {
+      "id": "type-puzzle-conditions",
+      "axis": "type",
+      "parentTagId": "type-4536b24c5d",
+      "label": "조건 추론",
+      "description": "명제의 조건 연결, 참거짓 조합, 선택 여부, 규칙 검증 또는 순차적으로 갱신되는 지식 상태를 따져 가능한 상태와 필연적 귀결을 구한다.",
+      "assignmentBoundary": "다른 퍼즐에도 조건은 있지만, 이 유형은 조건문/명제 상태 자체의 조합 추론이 핵심일 때만 부여한다. 논증 구조 분석 문제 전체를 이 하위유형에 흡수하지 않는다.",
+      "parentLabel": "논리 퍼즐"
+    },
+    {
+      "id": "type-experiment-social",
+      "axis": "type",
+      "label": "사회과학 실험",
+      "description": "태도·인지·학습·판단·정서·경제적 선택·사회적 상호작용·제도 및 정책 효과에 관한 가설을, 조건 차이에 따른 사람 또는 비교행동 연구 대상의 응답·행동·성과 자료로 분석한다. 현행 부모가 포괄하는 관찰·준실험·실험철학 설문 연구도 포함하되 연구설계 성격을 이유에 밝힌다.",
+      "parentTagId": "type-823b36ade9",
+      "parentLabel": "실험 분석",
+      "assignmentBoundary": {
+        "include": [
+          "사회·인지·발달 및 비교학습 심리",
+          "행동경제·시장 및 분배 선택",
+          "교육·차별·범죄·정책의 인과효과",
+          "설문·시나리오를 이용한 실험철학 및 법심리"
+        ],
+        "exclude": [
+          "사람을 대상으로 한 약효·영양·혈당·신경생리 자체의 검증",
+          "생태·진화 기능이나 세포·분자 기전 검증"
+        ]
+      }
+    },
+    {
+      "id": "type-experiment-natural",
+      "axis": "type",
+      "label": "자연과학 실험",
+      "description": "물질·장치·물리량·생명체의 생리·세포·분자·생태·진화적 기능에 관한 가설과 작동기전을 조작·측정·대조 결과로 분석한다. 의학·영양·인지신경과학·공학의 물리적 성능 실험을 포함한다.",
+      "parentTagId": "type-823b36ade9",
+      "parentLabel": "실험 분석",
+      "assignmentBoundary": {
+        "include": [
+          "물리·화학·재료·측정 장치",
+          "유전·세포·단백질·면역·대사",
+          "인간·동물 대상 임상 및 생리 개입",
+          "생태·진화 기능과 종간 상호작용"
+        ],
+        "exclude": [
+          "검증 목표가 사회적 판단·선호·행동인 연구에 물리적 자극이나 유전 요인이 등장하는 경우",
+          "일반 대조 원리·눈가림·연구윤리만을 묻는 방법론 문제"
+        ]
+      }
+    },
+    {
+      "id": "type-experiment-methodology",
+      "axis": "type",
+      "label": "실험 방법론",
+      "description": "특정 분야의 실질 가설보다 대조사례의 적격성·비교 기준·눈가림과 편향 통제·측정 자료의 신뢰성·연구윤리가 중심 판단 대상인 문항. 분야 일반의 방법론을 자연·사회 어느 한쪽에 억지 배정하지 않기 위한 최소 보완 자식이다.",
+      "parentTagId": "type-823b36ade9",
+      "parentLabel": "실험 분석",
+      "assignmentBoundary": {
+        "include": [
+          "일반 인과 대조의 원리",
+          "위약·동등성 비교 기준과 임상연구 윤리",
+          "실험자·피험자 편향과 눈가림"
+        ],
+        "exclude": [
+          "특정 생화학 검사법의 작동 원리가 핵심인 문제",
+          "대조군·변인 통제가 등장한다는 이유만으로 모든 실험에 중복 부여"
+        ]
+      }
+    }
+  ],
+  "assignments": [
+    {
+      "questionId": "0918",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ⓐ~ⓘ 진술을 화살표와 +로 연결한 논증 구조도이다. 인구·식량에 관한 근거들의 결합과 중간 결론을 거쳐 최종 결론에 이르는 지지 관계를 직접 비교한다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1016",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ⓐ~ⓙ 진술을 화살표와 +로 연결한 논증 구조도이다. 영혼·육체·의식 동일성에 관한 중간 결론과 최종 책임 귀속 결론의 지지 관계를 직접 판별한다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1920",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ⓐ~ⓘ 진술의 지지 관계를 화살표와 +로 도해한다. 행복 추구와 도덕 감정이 보편 윤리의 토대가 될 수 없다는 결론을 지지하는 두 갈래 논증의 연결을 고른다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2020",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ㉠~㉩의 지지 관계를 화살표와 +로 나타낸 구조도이다. 자연적 속성과 형이상학적 속성에 의한 정의를 각각 비판하는 중간 결론들이 선의 정의 불가능성으로 모이는 방식을 직접 묻는다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2236",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ㉠~㉧을 화살표와 +로 연결한 구조도이다. 실험 관찰과 묵가·유가 이론이 각각 어떤 중간 결론을 거쳐 로봇 의인화의 문화선택 설명을 지지하는지 도식으로 비교한다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2319",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ㉠~㉬의 결합·연쇄 지지를 도해한다. 자의식의 내재적·도구적 유용성을 부정하는 여러 근거가 최종 결론으로 모이는 논증 구조를 직접 판별한다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2425",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ㉠~㉧ 진술의 근거·중간 결론·최종 결론을 화살표와 +로 연결한다. 규범의 역사적 우연성, 이성적 도출의 한계, 평가적 태도에 관한 지지 관계를 도식에서 판별한다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2521",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ㉠~㉩ 진술을 화살표와 +로 연결한 구조도이다. 설명 논리와 방법론의 차이를 제시하는 두 논증 갈래가 사회과학·자연과학의 차이라는 최종 결론을 지지하는 구조를 고른다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2623",
+      "tagId": "type-argument-diagram",
+      "reason": "선지 ①~⑤가 ㉠~㉩ 진술의 지지 관계를 화살표와 +로 도해한다. 능력, 비결정성, 인간과의 유비에 관한 근거들이 로봇의 자유의지라는 결론을 지지하는 방식을 직접 비교한다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2723",
+      "tagId": "type-argument-diagram",
+      "reason": "수정된 2027 원본 이미지의 선지 ①~⑤가 ⓐ~ⓝ 진술을 화살표와 +로 연결한 구조도이다. 의미론적·사실적 불일치를 배제하는 중간 결론에서 도덕 원리와 법의 통합으로 나아가는 지지 관계를 직접 묻는다.",
+      "group": "diagram",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p003",
+      "tagId": "type-puzzle-ordering",
+      "reason": "관주-금주와 한주-평주의 연속 묶음, 정과 병의 비인접, 병이 갑보다 먼저라는 조건으로 네 시대의 순서를 배열한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p003",
+      "tagId": "type-puzzle-matching",
+      "reason": "확정한 시대의 네 자리에 갑·을·병·정과 수도 네 곳을 각각 대응시켜 나라-수도 짝을 결정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p013",
+      "tagId": "type-puzzle-calculation",
+      "reason": "가능한 네 옷차림의 인원을 a,b,c,d로 놓고 빨간 모자 5명·같은 색 상하의 6명·빨강 한 가지 7명을 연립하여 하의만 빨강인 d=4를 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p016",
+      "tagId": "type-puzzle-matching",
+      "reason": "각 팀이 선택한 두 논제를 찬반이 반대인 상대 팀에 배정하며 팀당 두 번의 토론을 모두 채운다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p016",
+      "tagId": "type-puzzle-relations",
+      "reason": "A-E 및 C-D의 연결 금지와 팀별 차수 2를 함께 적용하여 A-C·A-B·C-E·B-D·D-E의 토론 관계를 완성한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p031",
+      "tagId": "type-puzzle-predicate",
+      "reason": "음전하이면 반시계 회전이라는 전칭 속성 규칙의 역을 허용하지 않고, 질량·전하 집합의 포함/존재 관계를 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p031",
+      "tagId": "type-puzzle-matching",
+      "reason": "A~H의 질량·전하 속성을 대조하여 m 두 개와 2m 두 개, D 또는 G 포함 등을 만족하는 실제 네 입자 집합을 구성한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p033",
+      "tagId": "type-puzzle-ordering",
+      "reason": "전공 기초→일반→심화와 번호 과목의 선후 관계, 교양의 3학기 마감을 만족하도록 과목을 학기에 배치한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p033",
+      "tagId": "type-puzzle-calculation",
+      "reason": "20과목·학기당 최대 3과목에서 최소 7학기를 구한 뒤 단계별 2·3·2학기와 남은 수강 정원을 계산하여 최소 학기 배치의 필연성을 확인한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p036",
+      "tagId": "type-puzzle-matching",
+      "reason": "그래프의 다섯 (점유율,증가율) 묶음을 기업 A~E와 짝짓는다. D=(5,8), 증가율 차이 1인 B=(30,9)를 먼저 고정하고 나머지 조건으로 C=(40,6)를 정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p037",
+      "tagId": "type-puzzle-truth",
+      "reason": "선발자 두 명의 후보 집합마다 다섯 발언의 내용이 참인지 평가하고 정확히 세 발언만 참인 C·D와 D·G를 남겨 공통 선발자 D를 찾는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p040",
+      "tagId": "type-puzzle-matching",
+      "reason": "A~E 요인을 다섯 공장에 중복 배분하되 요인별 고려 공장 수를 지키는 실제 배치와 반례를 구성한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p040",
+      "tagId": "type-puzzle-calculation",
+      "reason": "고려 횟수 합 2+3+1+1+2=9를 구하고, 한 공장의 고려 수가 0일 때 나머지 네 곳의 수가 같다면 9=4k여야 한다는 불가능성을 사용한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0905",
+      "tagId": "type-puzzle-calculation",
+      "reason": "신발별 속도 배수와 휴식 비율로 첫 구간 시간을 t,5t/6,5t/4로 계산하고 둘째 구간의 같은 시간 조건을 비교하여 우승자를 추론한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0906",
+      "tagId": "type-puzzle-calculation",
+      "reason": "승수 합으로 총 15경기를 구하고, 을-병이 서로 k승이면 갑의 패수와 을-병 경기 수가 모두 2k라는 불변 관계에서 15=7+4k, k=2를 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0912",
+      "tagId": "type-puzzle-calculation",
+      "reason": "인화력 열을 1,0,-1로 고정한 뒤 개인별·영역별 합 0을 만족하는 두 나머지 점수의 가능한 조합을 세어 평가표 네 개를 구한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0913",
+      "tagId": "type-puzzle-matching",
+      "reason": "A~D 각자에게 갑·을에 대한 처분 두 개를 대응시키며 열별 처분 중복 금지, 개인별 같은 처분 금지, 대화의 일치 조건으로 처분표를 완성한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0924",
+      "tagId": "type-puzzle-conditions",
+      "reason": "F가 거짓일 때 C·D가 모두 거짓임을 조건문의 대우로 얻고 A가 참이라는 추가 정보에서 B·E까지 결정되는지를 검토한다. 대상의 속성이나 양화가 아니라 여섯 명제의 진리값 연결이다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0926",
+      "tagId": "type-puzzle-ordering",
+      "reason": "12지 연도별 1·2·3차 시험과 공부 가능한 해를 선후 규칙, 연속 응시 규칙, 실패 후 재시작 규칙에 맞게 일정에 배치한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0926",
+      "tagId": "type-puzzle-calculation",
+      "reason": "후보 합격 연도마다 필요한 공부 연수·응시 연수·최소 한 번의 실패를 합하여 최단 합격 나이 23세와 그때의 과목 수를 구한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1011",
+      "tagId": "type-puzzle-predicate",
+      "reason": "우수 사원·이직 경험자·35세 이상·자녀 보유·대출·무주택 집합 사이의 전칭 포함/배제 관계에 A를 대입하여 나이와 주택 소유를 추론한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1012",
+      "tagId": "type-puzzle-predicate",
+      "reason": "임의의 갑·을·병에 대한 수호천사 관계의 추이 규칙과 자기 자신에 대한 관계를 전제로 하는 역관계 허용 규칙을 적용한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1012",
+      "tagId": "type-puzzle-relations",
+      "reason": "B→C→D→B의 순환이 자기 관계를 만드는 것과 A에서 E까지의 도달 가능성, 출발 간선이 없는 E의 한계를 구분한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1014",
+      "tagId": "type-puzzle-predicate",
+      "reason": "모든 카드에서 음이면 달이라는 전칭 조건의 반례가 음∧해임을 파악하여 음 또는 해가 보이는 카드만 검사 대상으로 삼는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1014",
+      "tagId": "type-puzzle-calculation",
+      "reason": "필수 확인 대상 음 10장+해 3장=13장과 장당 1만 원을 계산하여 12만 원의 보장 불가, 15만 원 이상 필요 주장의 거짓을 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1021",
+      "tagId": "type-puzzle-matching",
+      "reason": "A~C 도시와 위도 구간·자연/계획 형성·원형/정방형·문명 발상 강의 속성을 대조하여 C 자연도시, A·B 계획도시라는 대응을 확정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1029",
+      "tagId": "type-puzzle-matching",
+      "reason": "다섯 징후를 A~E 사건에 대응시키고 각 징후가 나타나는 사건 수의 상한/하한으로 가능한 사건-징후 표를 구성한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1029",
+      "tagId": "type-puzzle-conditions",
+      "reason": "위압 약화↔교섭 증가, 요구 저하→대화 증가, 합의 이행→대화∧교섭을 연결하여 합의 이행이 가능한 사건을 A 하나로 좁힌다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1111",
+      "tagId": "type-puzzle-calculation",
+      "reason": "필수 면제 대상을 중복 없이 12명으로 세고 9급의 작으로 면제하려면 세 집 미성년자 각 한 명을 무료 면제해야 함을 구하여 유료 비용 4·3·2급을 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1133",
+      "tagId": "type-puzzle-relations",
+      "reason": "A·B·C와 D·E·F 사이의 만남을 이분 그래프로 놓고 두 명 이상과의 만남이 만드는 서류 복사 관계를 적용한다. C-D가 없으면 C-E와 C-F가 모두 필요하다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1135",
+      "tagId": "type-puzzle-conditions",
+      "reason": "각 유형의 답변 갱신 규칙을 순서대로 적용하여 갑의 변경을 먼저 확정하고, 변경자가 한 명이라는 조건에서 순종형 병이 찬성을 유지하도록 을·정의 병에 대한 예상을 추론한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1205",
+      "tagId": "type-puzzle-matching",
+      "reason": "동물 치료 허용국과 인간 유전자 치료 금지국이라는 서로 다른 분류를 교차하여 B=(다), A=(나), C=(가)로 나라 이름을 짝짓는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1219",
+      "tagId": "type-puzzle-ordering",
+      "reason": "바로 위·바로 아래·같은 직급에 따른 연락 규칙으로 A, B·C, D·E·F의 직급 층을 정하고 G가 들어갈 수 있는 층을 나눈다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1219",
+      "tagId": "type-puzzle-relations",
+      "reason": "연락을 받은 방향에 따라 다음 수신자가 달라지는 전파 규칙을 적용하여 D→C 뒤 C→A와 C→G가 모두 가능한지를 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1230",
+      "tagId": "type-puzzle-calculation",
+      "reason": "서로 다른 양의 정수 A<B<C와 A+B+C=13을 만족하는 금화 배치를 열거하고 마지막에 B=4가 남아 A+C=9임을 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1230",
+      "tagId": "type-puzzle-conditions",
+      "reason": "세 사람이 차례로 알 수 없다고 말한 것을 각자의 관찰값으로 가능한 배치가 두 개 이상 남는다는 지식 조건으로 번역하여 후보 모형을 순차 소거한다. 참말/거짓말 수를 찾는 문제가 아니다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1232",
+      "tagId": "type-puzzle-predicate",
+      "reason": "국가 전체에 대한 GDP·인구·ILO/WTO·협약·사형제 폐지의 전칭 술어 규칙을 연결하고 개별 국가 A~D에 적용한다. 수치 기준은 속성 구분이며 GDP 자체를 계산하지 않는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1235",
+      "tagId": "type-puzzle-calculation",
+      "reason": "거리와 상류/하류 시간 배수를 가중치로 삼아 갑의 왕복 375, 을의 최소 왕복 380을 계산하여 거리와 시간의 차이를 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1235",
+      "tagId": "type-puzzle-relations",
+      "reason": "보리진·다경진·합관진·단발령·말휘령·만폭동의 수로/육로 연결을 구성하고 을의 귀가 가능한 경로들을 비교한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1307",
+      "tagId": "type-puzzle-matching",
+      "reason": "각국에 고려 요소 두 개와 제외 요소 한 개를 대응시키고, 제외 요소가 나라별로 다르다는 조건으로 A·B·C국의 절차를 복원한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1307",
+      "tagId": "type-puzzle-ordering",
+      "reason": "각국의 고려 요소 안에서 우선순위와 차순위를 정한다. A는 출석>이름, B는 이름>의사, C는 의사>출석이라는 순서가 사례 판정의 핵심이다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1312",
+      "tagId": "type-puzzle-ordering",
+      "reason": "봄~겨울의 네 시기에 시상 분야를 놓되 같은 분야의 연속 수상 금지와 유기·무기 동시 수상 조건을 함께 적용한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1313",
+      "tagId": "type-puzzle-matching",
+      "reason": "신규 과제 묶음 ab·cde와 개별 f·g·h를 기존 과제가 서로 다른 다섯 팀에 배분하여 최대 4개, 총 4개 팀 둘이라는 정원 조건을 만족시키는지 검사한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1314",
+      "tagId": "type-puzzle-truth",
+      "reason": "B의 말과 그 부정인 E의 말 중 하나가 거짓임을 이용하여 A·C·D를 참으로 고정하고 유일한 거짓 발언과 그 내용의 귀결을 찾는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1314",
+      "tagId": "type-puzzle-matching",
+      "reason": "진위가 확정된 발언의 내용을 이용하여 B-수학사, C-미배정, E-조합수학을 대응시키고 A·D의 나머지 강좌는 교환 가능함을 확인한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1315",
+      "tagId": "type-puzzle-conditions",
+      "reason": "평가에서 얻은 C>A>D의 순위를 전제로 D 선발/탈락을 경우 나누어, 어느 쪽이든 A·C가 선발되고 두 명만 선발할 수 없음을 조건문으로 도출한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1316",
+      "tagId": "type-puzzle-calculation",
+      "reason": "각 팀의 총점을 5점 승리·2점 동률·0점 패배의 조합으로 분해하여 A·B는 1승1무1패, C는 2무1패, D는 2승1패임을 구한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1316",
+      "tagId": "type-puzzle-relations",
+      "reason": "네 부서 사이 여섯 쌍의 우세/동률 관계를 복원하며 C의 무승부 상대 A·B, D의 C 상대 승리와 남은 두 가능성을 구별한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1419",
+      "tagId": "type-puzzle-ordering",
+      "reason": "상생과 상극의 오행 순환 고리를 각각 복원하고 한왕조를 시작점으로 현 왕조·직전·다음 왕조의 원소를 순환 위치에 배치한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1420",
+      "tagId": "type-puzzle-conditions",
+      "reason": "D 증언이 거짓이라는 한 정보에서 E참→B거짓, D거짓→A거짓, A∨B∨C→C참을 연결하여 다섯 진리값을 결정한다. 실제 증언의 내용이나 화자-사실 대응은 없고 추상 진리값의 조건 관계만 주어진다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1421",
+      "tagId": "type-puzzle-relations",
+      "reason": "A·B·C와 D·E·F 사이의 우세를 양쪽 차수가 2인 이분 관계로 구성하여 F의 이웃 B·C와 B-E일 때 C-D가 필요한 관계를 도출한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1432",
+      "tagId": "type-puzzle-ordering",
+      "reason": "도로 격자에 황궁과 대칭인 동시·서시를 배치하고 방향별 접한 방과 두 시장 사이 도로의 위치를 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1432",
+      "tagId": "type-puzzle-calculation",
+      "reason": "기본 13×10=130칸에서 황궁 16칸을 하나로 합친 115구역과 최종 113구역의 차이로 시장 크기를 구하고 특정 방향의 방·도로 수를 센다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1433",
+      "tagId": "type-puzzle-truth",
+      "reason": "진우의 두 발언이 모두 참 또는 모두 거짓이라는 동치 조건을 유석·소연의 발언 내용에 적용하여 가능한 발언 진위 모형을 구한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1433",
+      "tagId": "type-puzzle-predicate",
+      "reason": "소연의 모든 같은 층 주민은 피해자를 만났다는 전칭 진술을 개별 주민 유석의 만남 여부와 연결하고, 전칭이 거짓일 때 다른 주민의 반례 존재를 도출한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1435",
+      "tagId": "type-puzzle-calculation",
+      "reason": "승점 3·1·0에서 승무패 구성을 구하고 각 팀 득점·실점 합을 연립하여 네 경기의 스코어를 복원한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1435",
+      "tagId": "type-puzzle-relations",
+      "reason": "팀당 두 경기라는 대전 그래프를 복원하여 유일한 무승부 A-B, 미대결 B-C, 실제 대전 C-D를 구별한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1518",
+      "tagId": "type-puzzle-predicate",
+      "reason": "제품 전체에 대해 A불량→D불량과 C·D 동시 불량 없음이라는 집합 포함/배제 규칙을 연결하여 C불량 제품 중 A불량 제품이 없음을 증명하고 나머지는 반례 제품으로 배제한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1519",
+      "tagId": "type-puzzle-predicate",
+      "reason": "A가 키우는 종류 집합이 B의 부분집합이며 A·C 집합은 서로소라는 포함/배제 관계를 사용하여 B가 안 키우는 토끼를 A에서도 배제한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1519",
+      "tagId": "type-puzzle-matching",
+      "reason": "개·고양이·토끼·닭 네 종을 네 사람에게 배분하되 각자 최소 두 종 조건으로 A={개,닭}, C={고양이,토끼}를 확정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1520",
+      "tagId": "type-puzzle-truth",
+      "reason": "4번과 5번 발언이 공유하는 5번-D 주장이 거짓이면 두 발언이 동시에 거짓이 된다는 점과 유일한 거짓말 조건을 사용한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1520",
+      "tagId": "type-puzzle-matching",
+      "reason": "네 부서의 한 자리씩과 탈락 한 자리를 다섯 지원자에게 대응시켜 5번-D, 1번-탈락, 4번-B를 공통으로 갖는 두 배치를 남긴다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1534",
+      "tagId": "type-puzzle-calculation",
+      "reason": "각 차수의 100표 합계와 엄격한 순위로 B1차 26~29, C2차 31~39 등 득표 범위를 구한 뒤 최종 합계 범위를 비교하여 A3등·D탈락을 정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1631",
+      "tagId": "type-puzzle-relations",
+      "reason": "접경을 그래프로 복원하고 B·D가 보라 및 초록과 접하는 것, A·B·D의 삼각형을 이용하여 가능 색과 최소 색 수를 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1631",
+      "tagId": "type-puzzle-matching",
+      "reason": "접경과 금지 색 조합 조건에 따라 주마다 색을 배정하며 B·D에 빨강·주황을 서로 다르게, E에 남은 파랑을 대응시킨다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1632",
+      "tagId": "type-puzzle-conditions",
+      "reason": "A·B·C의 상품 유무를 명제변수로 두고 조건문과 A·C 동시 비허용을 적용하여 {B},{A,B},{B,C}의 세 상태만 남기는 추론이다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1633",
+      "tagId": "type-puzzle-ordering",
+      "reason": "다섯 사무실의 좌우·정중앙·바로 옆 조건으로 보라 2번과 연두-회색 4·5번, 하늘색 3번을 확정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1633",
+      "tagId": "type-puzzle-matching",
+      "reason": "회사·로고 색·음료·과자·수출국의 서로 다른 속성들을 사무실 위치와 함께 대응시키며 A-하늘색-생수의 연결과 미확정 속성을 구별한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1720",
+      "tagId": "type-puzzle-predicate",
+      "reason": "회계사⊆경영학, 경영학 여성∩회계사=∅, 경영학 남성⊆변호사 및 교집합의 존재를 이용하여 회계사⊆남성∩변호사를 도출한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1721",
+      "tagId": "type-puzzle-ordering",
+      "reason": "마주 보는 두 줄 방의 맞은편·옆방 조건에 일곱 사람과 빈방 세 개를 배치하여 C2-A3-B4, F8, 빈1·7·9를 정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1722",
+      "tagId": "type-puzzle-ordering",
+      "reason": "조각 이틀 뒤 사진이라는 날짜 간격과 요일별 대형 전시실 제약으로 월기획·화조각·수동양·목사진·금서양의 설치 일정을 배치한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1722",
+      "tagId": "type-puzzle-matching",
+      "reason": "다섯 주제와 대형 세 곳·소형 두 곳을 요일에 대응시키고 기획전시가 소형일 때 남은 소형 정원이 사진으로 소진되어 조각이 대형임을 도출한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1810",
+      "tagId": "type-puzzle-conditions",
+      "reason": "위반=P∧Q라는 명제 결합과 각 쟁점 다수결의 집계가 양립하는지 판사별 진리값 표를 구성하고, 판단 변경/추가 상황에서도 모순이 생기는지 검토한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1825",
+      "tagId": "type-puzzle-matching",
+      "reason": "네 사용자에게 네 아이디와 네 패스워드를 각각 일대일 대응시키고 동일 사용자 아이디=패스워드 금지 및 사용자 간 교차 참조로 가능한 표를 구한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1827",
+      "tagId": "type-puzzle-matching",
+      "reason": "각 프로그램이 사용하는 메모리 영역의 부분집합을 배정하고 전 영역 사용·인접 영역 동시 사용 금지·최대 여섯 사용·P2-P4 공유를 만족하는 모형과 반례를 구성한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1828",
+      "tagId": "type-puzzle-matching",
+      "reason": "네 반의 학생을 세 팀에 나누어 넣으면서 팀별 최소 세 반, 한 반 전원 독점 금지라는 구성 조건을 만족하는 실제 분배표를 만든다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1828",
+      "tagId": "type-puzzle-calculation",
+      "reason": "BCD 5명 팀은 B2C2D1을 써야 함을 구하고 남은 비A 학생이 셋뿐이라 두 나머지 팀에 필요한 최소 네 명을 채울 수 없다는 인원 부족을 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1930",
+      "tagId": "type-puzzle-relations",
+      "reason": "그림에서 4의 이웃 {1,5,7}, 8의 이웃 {5,7,9,0}을 읽고 이웃 중 선택 수 제약과 6→9를 적용하여 가능한 숫자 집합을 구한다. 암호의 문자 순서는 묻지 않아 배열 유형은 아니다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1931",
+      "tagId": "type-puzzle-truth",
+      "reason": "네 경기 결과 발언 중 하나만 거짓이라는 조건을 적용하여 A준우승·B결승의 동시 성립과 H우승 발언의 충돌 등을 경우 나눈다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1931",
+      "tagId": "type-puzzle-relations",
+      "reason": "8강-준결승-결승의 토너먼트 가지 구조와 승패에 따른 진출 경로를 복원하여 H의 상대 및 E의 준결승 패배를 도출한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1932",
+      "tagId": "type-puzzle-relations",
+      "reason": "사람별 직접 연결 수와 A·C의 유일한 공통 이웃을 사용하여 SNS 그래프를 복원하고, B·C·F·G의 완전연결 팀과 공통 이웃의 부재를 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2032",
+      "tagId": "type-puzzle-truth",
+      "reason": "범인 구성과 각 피의자 발언의 진리값을 구별하여 丙·丁의 발언은 항상 반대임을 이용하고, 범인 세 명이어도 거짓 발언 하나인 반례를 만든다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2033",
+      "tagId": "type-puzzle-ordering",
+      "reason": "己乙과 甲戊의 인접 묶음, 丙<戊 및 丁<甲·乙의 선후 조건으로 추가 인접 조건이 나머지 연주 순서를 고정하는지 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2121",
+      "tagId": "type-puzzle-ordering",
+      "reason": "12개의 일렬 상자에 구슬 다섯 개를 담아 A-E 인접, B-D 간격 및 모든 쌍의 서로 다른 거리를 동시에 만족하는 배치를 찾는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2121",
+      "tagId": "type-puzzle-calculation",
+      "reason": "거리=번호차-1로 환산한 열 쌍의 거리를 계산해 중복을 배제하며 (5,10,1,12,4) 및 좌우 대칭의 두 배치를 확인한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2123",
+      "tagId": "type-puzzle-ordering",
+      "reason": "정이 병 바로 다음이라는 인접 조건과 경주 번호 조건으로 선발된 주자를 1~4경주에 배치한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2123",
+      "tagId": "type-puzzle-matching",
+      "reason": "을 선발이면 갑 제외라는 선택 제약과 5명 중 4명 선발을 먼저 결합하여 병·정·무를 고정 선발하고 갑/을 두 선발 집단으로 나누어 배치한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2232",
+      "tagId": "type-puzzle-matching",
+      "reason": "여섯 유물을 고구려·백제·신라 범주에 분류하며 C=E, A≠C 및 국가별 유물 수의 대소를 함께 지키는 배치와 반례를 구성한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2234",
+      "tagId": "type-puzzle-truth",
+      "reason": "각 사람의 두 발언이 서로 반대 진리값이어야 한다는 조건으로 범인 여부와 범인 수 주장을 동시에 평가하여 병 단독 또는 네 명 전원이라는 모형을 남긴다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2332",
+      "tagId": "type-puzzle-ordering",
+      "reason": "여섯 층 상자의 색을 배정하며 4층 빨강, 5·6층 같은 색, 흰색 바로 위 파랑, 파랑-빨강의 상하 위치 제약을 만족하는 배열을 구한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2332",
+      "tagId": "type-puzzle-predicate",
+      "reason": "어떤 파랑 하나가 모든 빨강보다 아래라는 ∃파랑∀빨강의 범위를 각각 임의의 파랑이나 일부 빨강으로 바꾸지 않고 적용하며, 또 다른 존재·인접 조건과 결합한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2333",
+      "tagId": "type-puzzle-calculation",
+      "reason": "등급별 지급액과 양 팀 총액의 등식에서 5,000만/5,500만의 가능한 합계를 구하고 갑=C일 때 재무 최대=홍보 최소=5,000만이라는 경계를 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2333",
+      "tagId": "type-puzzle-matching",
+      "reason": "재무·홍보의 여덟 직원에게 A~D 등급을 배정하면서 팀별 A등급 수·정D·무A의 제약을 지키는 실제 등급표와 반례를 구성한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2334",
+      "tagId": "type-puzzle-truth",
+      "reason": "네 주차 발언 중 세 참·한 거짓이라는 조건을 배열과 함께 적용하여 거짓말한 사람과 그 사람의 차 위치를 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2334",
+      "tagId": "type-puzzle-ordering",
+      "reason": "왼쪽 두 번째, 맨 오른쪽, 바로 옆, 바로 양옆이라는 위치 제약을 만족하는 다섯 차의 실제 주차 순서를 세 가지로 좁힌다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2412",
+      "tagId": "type-puzzle-matching",
+      "reason": "각 세대의 항렬에 오행 부수와 돌림자 위치를 대응시키고 형제·사촌 및 외자/두 글자 이름을 분류하여 제안된 이름의 돌림변 일치 여부와 다음 세대 이월을 판정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2433",
+      "tagId": "type-puzzle-calculation",
+      "reason": "갑·을·병의 가능한 {0,2,4}, 정·무의 {0,1,3,5}를 합산하고 상한·홀짝·통과 기준 17을 결합하여 13점과 18점 등 가능한 총점 및 필수 점수를 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2434",
+      "tagId": "type-puzzle-calculation",
+      "reason": "네 전광판의 점등 수를 짝수 합동식으로 놓고 A+B+C=1과 함께 풀어 CDE 또는 CEFG의 두 점등 조합을 얻는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2434",
+      "tagId": "type-puzzle-conditions",
+      "reason": "같은 종류의 전구가 함께 켜지는 이진 상태를 네 전광판에 공통 적용하여 A꺼짐, F와 G의 동치 및 3종 점등이면 D켜짐을 도출한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2512",
+      "tagId": "type-puzzle-ordering",
+      "reason": "서로 다른 날에 제안하는 세 의안의 순서에서 3→1이 필요하며 의안2의 통과 시점을 7월 전후에 맞춰 놓는 일정 제약을 푼다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2512",
+      "tagId": "type-puzzle-conditions",
+      "reason": "개정 당시 대표이사에 대한 적용 배제와 정족수 규칙이 개정될 때 후속 의안에 적용되는 조건이 바뀜을 추적하여 가능한 개정 상태를 판단한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2533",
+      "tagId": "type-puzzle-ordering",
+      "reason": "네 사람의 구금 날짜 6~9일과 석방 날짜 10~13일을 중복 없이 대응시키고 병이 정보다 먼저 구금된 선후 제약을 함께 만족시키는 일정을 찾는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2533",
+      "tagId": "type-puzzle-calculation",
+      "reason": "구금 일수를 석방일-구금일+1로 계산하여 갑 최소, 정 최대, 을=병의 수량 조건을 적용하고 유일한 4·5·5·6일의 배치를 정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2534",
+      "tagId": "type-puzzle-truth",
+      "reason": "사과 1개를 먹으면 참말, 2개면 거짓말이라는 자기 상태-발언 진위 대응을 네 발언과 함께 풀어 을만 참말임을 도출한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2534",
+      "tagId": "type-puzzle-calculation",
+      "reason": "처음 수 4~7의 순열에서 먹은 수를 빼 남은 수를 계산하고 서로 다른 나머지 조건을 적용하여 갑 처음6·나머지4, 을 처음7·나머지6을 구한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2535",
+      "tagId": "type-puzzle-matching",
+      "reason": "네 법인 소속 변호사를 세 팀으로 나누되 팀별 최소 세 법인, S와 R의 동석 금지, S팀의 P 최소 두 명 조건으로 S 전원을 C팀에 배정한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2535",
+      "tagId": "type-puzzle-calculation",
+      "reason": "P 5명 중 C에 3명이 이미 고정된 것과 S 2명을 이용하여 C 최소6명, 총15명에서 다른 팀 최대6명 및 A6일 때 B3을 인원 하한·합계로 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2632",
+      "tagId": "type-puzzle-matching",
+      "reason": "지원자 다섯 명에게 서로 다른 적성·면접 점수를 각각 대응시키고 점수쌍 조건으로 을85·90, 정80·80, 병90·85 및 갑/무의 교환 가능한 두 쌍을 찾는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2632",
+      "tagId": "type-puzzle-calculation",
+      "reason": "평균 80·85와 합격 기준에서 두 점수 합 160·170을 계산하고 점수 차이와 평균을 비교하여 가능한 대응을 걸러낸다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2633",
+      "tagId": "type-puzzle-conditions",
+      "reason": "천문 참석→철학 불참→수학·법학 참석→통계 참석→경제 불참이라는 명제 연쇄와 배타적 참석 조건을 풀어 개인별 참석 상태를 확정한다. 직업은 개인 이름처럼 사용될 뿐 집합 양화는 아니다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2634",
+      "tagId": "type-puzzle-truth",
+      "reason": "혐의가 2개이면 거짓말, 2개가 아니면 참말이라는 자기 수량-진위 대응을 네 사람이 말한 합계 주장과 동시에 적용한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2634",
+      "tagId": "type-puzzle-calculation",
+      "reason": "네 양의 정수의 합 10 및 쌍별 합 5·4의 등식/부등식을 풀어 혐의 수 (2,2,2,4)와 발언 진위의 일치를 확인한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2732",
+      "tagId": "type-puzzle-matching",
+      "reason": "네 변호사·사건 수·전문 분야·배지 색의 세 속성표를 만들고 각 단서의 서로 다른 세 사람과 색/분야 금지 조건을 결합하여 유일한 대응을 찾는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2732",
+      "tagId": "type-puzzle-calculation",
+      "reason": "총 사건 수 10에서 세 사람 합 8·9·7을 빼 제외자의 사건 수 2·1·3을 구한 뒤 분야별 차이 2와 배지별 합 3을 계산한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2733",
+      "tagId": "type-puzzle-truth",
+      "reason": "발표 순서에 관한 네 발언 중 한 사람만 거짓이라는 조건을 적용하여 병의 발언이 참이면 을·정 두 사람의 거짓이 생기는 모순으로 병만 거짓임을 찾는다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2733",
+      "tagId": "type-puzzle-ordering",
+      "reason": "갑4교시 금지, 병2교시 금지, 을<정, 갑·병 비인접 및 참으로 남은 발언을 결합하여 병-을-갑-정 순서로 발표를 배치한다.",
+      "group": "puzzle",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1119",
+      "tagId": "type-puzzle-predicate",
+      "reason": "∀x∃y(각 차별 대우마다 정당화 차이)와 ∃y∀x(모든 대우의 공통 정당화 차이)의 양화 순서 및 함축 방향을 직접 비교한다.",
+      "group": "puzzle",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "논증의 설득력을 평가하기보다 양화식들의 가능한 모형과 반례를 구성하는 순수 형식 추론 문항으로, 기존 술어논리 퍼즐들과 같은 학습 묶음이 유용하다."
+    },
+    {
+      "questionId": "1826",
+      "tagId": "type-puzzle-predicate",
+      "reason": "학생 집합의 인턴·박람회·평점·취업·외국어 속성을 전칭 조건으로 연결하고 개별 학생의 속성을 대입한다.",
+      "group": "puzzle",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "1011·1518과 같은 전칭 속성 조건의 모형 추론인데 현재 내용 추론으로만 되어 있어 부모 범주 중복 추가를 검토할 만하다."
+    },
+    {
+      "questionId": "1929",
+      "tagId": "type-puzzle-predicate",
+      "reason": "부서별 모든/어떤 직원이라는 교차 양화와 두 존재자의 동일성 보장 여부를 엄밀히 구분한다.",
+      "group": "puzzle",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "양화와 이항관계의 유한/일반 모형 구성 문제가 중심이므로 술어논리 및 관계 퍼즐의 명확한 누락 후보다."
+    },
+    {
+      "questionId": "1929",
+      "tagId": "type-puzzle-relations",
+      "reason": "감시 관계의 추이성을 A→B→C, C→A→B 경로에 적용하며 감시 방향의 역추론을 배제한다.",
+      "group": "puzzle",
+      "coverage": "parent-expansion"
+    },
+    {
+      "questionId": "2122",
+      "tagId": "type-puzzle-predicate",
+      "reason": "친절/사업가/논리학자 집합과 모든 불친절한 이를 좋아한다는 이항 술어의 양화, 존재 철학자를 결합하여 귀결을 증명하고 반례를 만든다.",
+      "group": "puzzle",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "논증 구조나 경험적 내용 이해가 아니라 일차 논리 모형과 반례 구성으로 푸는 명확한 형식 논리 문항이다."
+    },
+    {
+      "questionId": "2131",
+      "tagId": "type-puzzle-predicate",
+      "reason": "변수 X,Y,Z에 대한 전칭적 항공편/연결 규칙과 열린/닫힌 세계의 부정 판정 규칙을 적용한다.",
+      "group": "puzzle",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "일반 DB 설명의 암기가 아니라 구체적 관계 모형을 전개해 다섯 질의를 판정하므로 관계 퍼즐 추가 후보이다."
+    },
+    {
+      "questionId": "2131",
+      "tagId": "type-puzzle-relations",
+      "reason": "직접 항공편과 다구간 도달 관계를 구별하고 서울-제주-부산-광주 연결 성분을 구성한다.",
+      "group": "puzzle",
+      "coverage": "parent-expansion"
+    },
+    {
+      "questionId": "2734",
+      "tagId": "type-puzzle-predicate",
+      "reason": "적극성·참여율·외향성·창의력의 전칭 규칙과 비외향·적극 및 비창의 인사팀 직원의 존재를 함께 만족하는 모형/반례를 구성한다.",
+      "group": "puzzle",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "현재 내용 추론으로만 분류되어 있으나 1720 등과 같은 포함·배제·존재 추론으로, 새 술어논리 메뉴에서 함께 학습할 가치가 높다."
+    },
+    {
+      "questionId": "p004",
+      "tagId": "type-experiment-natural",
+      "reason": "간염 환자를 신약·위약 집단에 무작위 배정한 뒤 질환 호전율을 비교한다. 계산 대상은 임상 치료효과이므로 사람이 피험자라는 이유로 사회과학으로 분류하지 않는다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p011",
+      "tagId": "type-experiment-natural",
+      "reason": "권총음의 이동시간을 전기회로와 회전 원통으로 측정할 때 필요한 등속 회전·작동 시차 조건을 판정한다. 물리량인 음속과 장치의 측정오차가 분석 대상이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p032",
+      "tagId": "type-experiment-natural",
+      "reason": "유전자 보유 수가 다른 쥐에 콜레라 독소를 주입한 결과로부터 사람의 생존상 이점까지 추론하기 위한 전제를 찾는다. 유전·염소이온 배출·독소 반응이라는 생물학적 기전과 종간 외삽이 핵심이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0922",
+      "tagId": "type-experiment-natural",
+      "reason": "수은관을 세우거나 기울였을 때의 수은 높이·진공 부피를 이용해 스콜라 및 갈릴레오의 물리적 가설을 반증한다. 조작·관측되는 변수와 설명 대상이 물리현상이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0928",
+      "tagId": "type-experiment-social",
+      "reason": "개에게 종소리와 먹이를 주는 빈도·시차·순서를 바꾼 조건에서 조건형성 학습률을 계산한다. 침 분비의 생화학적 기전이 아니라 자극과 학습의 행동심리학적 관계를 다루므로 비교심리·학습 연구를 포함하는 사회과학 쪽에 둔다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "0929",
+      "tagId": "type-experiment-natural",
+      "reason": "술 동반 섭취와 가열 여부가 다른 세 사람의 악취·미각 상실·백혈구 감소를 비교해 독성 성분의 작용 조건을 추정한다. 계획된 실험이 아닌 우발적 노출 사례이지만 분석 대상은 물질의 내열성·약리작용이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1013",
+      "tagId": "type-experiment-natural",
+      "reason": "줄·프레임 넓이·손잡이 길이·재질의 16개 조합과 테니스채 성능을 대조해 재질과 넓이의 결합 효과를 찾는다. 스포츠 회사가 수행했다는 배경과 무관하게 재료·구조의 물리적 성능을 검증하는 공학 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1023",
+      "tagId": "type-experiment-social",
+      "reason": "일란성·이란성 쌍생아 및 생부·양부의 범죄 기록별 범죄성 비율을 비교하여 유전과 환경을 분리하는 차이법을 식별한다. 유전이 원인 후보여도 설명하려는 결과는 범죄행동이며 기록을 이용한 관찰연구이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1221",
+      "tagId": "type-experiment-natural",
+      "reason": "나비의 날개무늬·발음 부분을 제거하는 조합별 생존율로 포식 회피의 생태적 기능을 판정한다. 동물의 행동이 등장하지만 인간의 인지·사회 행동 모형이 아니라 생존·포식 적응을 설명한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1222",
+      "tagId": "type-experiment-natural",
+      "reason": "조절단백질 X와 효소 Y의 유전자를 각각 제거한 세균에서 과산화수소 분해 능력을 예측한다. 활성·억제와 유전자 결손을 연결하여 분자생물학적 조절기전을 분석한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1527",
+      "tagId": "type-experiment-social",
+      "reason": "자동차 가격 변화의 제시 방식과 무작위 머그잔 소유 배정에 따른 공정성·거래가격 판단을 함께 설명하는 가설을 찾는다. 기준점·소유효과와 경제적 가치평가가 종속변인이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1619",
+      "tagId": "type-experiment-methodology",
+      "reason": "위약시험과 기존 치료와의 동등성시험을 비교하여 효능 평가의 준거와 환자 치료의무를 분석한다. 특정 약물의 생리기전이나 관측된 치료효과 자체보다 비교집단 선택·위약 기준의 안정성·임상연구 윤리가 핵심이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1620",
+      "tagId": "type-experiment-social",
+      "reason": "지원자를 성별 공개 평가와 커튼 평가에 무작위 배정한 것으로 볼 수 있는 자료를 이용해 인적 자본 차이와 채용 차별을 구별한다. 검증 대상은 고용주의 편견 및 성별 채용확률이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1627",
+      "tagId": "type-experiment-natural",
+      "reason": "모기가 섭취하는 혈액의 세포성분과 온도를 따로 또는 함께 변화시켜 혈장 배출의 영양 확보설·냉각설을 평가한다. 생리적 적응의 원인을 분리하는 변인 통제이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1629",
+      "tagId": "type-experiment-natural",
+      "reason": "생쥐에 서로 다른 암세포를 순차 이식한 뒤 암 발생 여부를 면역 기억과 항원 유사성으로 설명한다. 여기서 기억은 학습심리가 아닌 면역반응의 생물학적 특성이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1723",
+      "tagId": "type-experiment-social",
+      "reason": "기온·냉방·주말 혼잡에 따른 경적 및 폭력 행동 자료가 공격성의 온도설과 행동기회설을 어떻게 지지하는지 평가한다. 물리적 온도는 원인 후보이고 결과·설명 목표는 인간의 공격행동이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1726",
+      "tagId": "type-experiment-social",
+      "reason": "동전 발견이라는 상황 차이에 따른 서류 줍기 도움 행동의 차이를 덕윤리 비판의 전제로 연결한다. 규범윤리의 결론을 포함하더라도 사용되는 경험적 증거는 성격과 친사회적 행동에 관한 사회심리 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1727",
+      "tagId": "type-experiment-social",
+      "reason": "최후통첩게임에서 상대의 거부권을 없앤 독재자게임으로 바꾸어 관대한 제안이 이타성인지 전략적 두려움인지 구별한다. 제도적 유인과 분배 선택에 관한 행동경제학 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1732",
+      "tagId": "type-experiment-methodology",
+      "reason": "인과가설을 지지하는 대조사례가 갖추어야 할 유사성·원인 후보의 유무 차이·대안 설명 배제 조건을 적용한다. 질병·식단 사례는 일반적인 인과 식별 기준의 예시여서 특정 분야의 실험으로 강제하지 않는다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1735",
+      "tagId": "type-experiment-natural",
+      "reason": "항체 X의 유무를 대조해 분리되는 단백질을 비교하고 자성·직접 결합·복합체를 통한 간접 결합을 구별한다. 보편적인 연구설계 개론이 아니라 단백질 상호작용 검출의 물질적 기전을 분석한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1823",
+      "tagId": "type-experiment-methodology",
+      "reason": "신약시험에서 플라시보·피험자 보고편향·기대 전달·실험자 보고편향의 경로와 눈가림 예방책을 구별한다. 심리적 요인과 생리적 효과가 함께 등장하지만 핵심 과업은 결과의 내적 타당성을 높이는 일반 실험 통제 방법이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1833",
+      "tagId": "type-experiment-social",
+      "reason": "뇌손상 환자에 관한 이야기에서 말·일상 행동·발언 빈도를 달리 제시하고 응답자의 믿음 귀속 판단을 비교한다. 신경손상은 시나리오 배경이며 실제 측정 대상은 제삼자의 심리적 판단이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1834",
+      "tagId": "type-experiment-natural",
+      "reason": "여러 기능이 선택적으로 결손된 p53 돌연변이와 발현량·암 발생률을 비교해 물질대사 억제 기능의 인과적 역할을 가린다. 기능 제거와 다른 기능의 통제가 분자생물학적 기전 검증에 쓰인다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1917",
+      "tagId": "type-experiment-social",
+      "reason": "행위의 신체 위해 여부와 선악이 다른 이야기에 대해 참가자가 부여하는 객관성 점수를 비교한다. 도덕적 참 자체를 증명하는 문제가 아니라 사람들이 도덕판단을 얼마나 객관적이라고 보는지 검증한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1934",
+      "tagId": "type-experiment-natural",
+      "reason": "저탄수화물·저지방 식단의 6개월·12개월 체중 감소와 섭취 칼로리 통제를 비교한다. 식욕·섭식 행동도 경로에 포함되지만 검증하는 결과는 영양 개입의 생리적 감량효과이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1937",
+      "tagId": "type-experiment-natural",
+      "reason": "분리한 미토콘드리아에 전자전달·ATP 합성 억제제와 이온투과 약물을 처리했을 때 산소 소모·ATP 합성을 예측한다. 단계별 억제와 우회 경로를 이용한 생화학 기전 분석이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1939",
+      "tagId": "type-experiment-natural",
+      "reason": "무균 초파리에 세균과 분비물 X를 단독·혼합 주입해 활성산소·염증·생존을 비교한다. 세균의 직접 작용과 숙주 활성산소를 매개로 한 병독균 억제 기전을 분리한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "1940",
+      "tagId": "type-experiment-natural",
+      "reason": "철 농도에 따른 전사인자·RNA·단백질 생산 경로와 유전자 제거 세포의 반응을 추론한다. 실제 결과표보다 가상 조작의 예측이 중심이지만 기존 부모를 유지하며 분자생물학적 개입 분석으로 분류한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2017",
+      "tagId": "type-experiment-social",
+      "reason": "동전 던지기와 임의 배분을 택한 참가자의 업무 할당 및 과정 공개 변경을 통해 공정성·평판·이기적 동기를 구별한다. 제도적 상황 조작에 따른 인간의 도덕적 선택을 설명한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2025",
+      "tagId": "type-experiment-social",
+      "reason": "실제 과속 운전자의 인종 분포를 적절한 기준으로 설정하고 주야간 식별 차이를 활용해 단속 편견을 평가한다. 인종 차별이라는 사회적 결과의 인과 식별을 위한 관찰·준실험적 설계이며 무작위 처치 실험으로 읽지는 않는다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2026",
+      "tagId": "type-experiment-social",
+      "reason": "과제 수행 중 방해자극의 선명도·난이도·관련성을 바꿨을 때 수행 저하와 주의 억제를 예측한다. 기제라는 표현이 있어도 뇌세포나 생리량이 아니라 인지심리의 정보처리와 행동 수행을 검증한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2038",
+      "tagId": "type-experiment-natural",
+      "reason": "A·B 단백질을 제거·주입한 췌장 세포에서 염소 농도와 시간에 따른 이온 수송을 비교한다. 이온통로의 기능 전환 및 유지라는 세포생리 기전을 찾는다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2125",
+      "tagId": "type-experiment-social",
+      "reason": "영화 관람과 사전조사 유무를 조합한 네 집단의 편견 점수로 태도 변화와 현실 일반화 가능성을 판단한다. 설계의 일반 원리도 중요하지만 흑인에 대한 사회적 편견의 변화가 구체적 검증 대상이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2134",
+      "tagId": "type-experiment-social",
+      "reason": "분배 제안·거부 및 동전 선택의 공개 여부를 바꾸어 기대수익 극대화와 불공정의 은폐 동기를 검증한다. 기대값 계산이 포함되어도 실험의 결과변수는 인간의 경제적·도덕적 선택이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2135",
+      "tagId": "type-experiment-social",
+      "reason": "참새·펭귄 등에 대한 범주판단 반응시간으로 정의특성 합산이라는 개념 처리 이론을 평가한다. 논리적 개념 정의만을 묻는 것이 아니라 인간의 인지 수행시간을 경험적 증거로 삼는 인지심리 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2140",
+      "tagId": "type-experiment-natural",
+      "reason": "여과막 차단·1차 및 2차 항체·효소 신호의 조건을 바꾸었을 때 표적 검출과 배경 신호를 추론한다. 실험 프로토콜이 소재이지만 항체 결합과 검출 신호라는 생화학적 작동 원리가 판단의 핵심이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2219",
+      "tagId": "type-experiment-social",
+      "reason": "철학자와 일반인의 동의 응답 및 문장의 독해 차이를 조사해 참의 객관성에 대한 태도 차이를 설명한다. 철학·언어가 소재라도 경험적 검증 대상은 응답자의 해석과 태도이며 현행 부모 아래의 설문연구 경계 사례이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2228",
+      "tagId": "type-experiment-social",
+      "reason": "모의 배심원에게 VIS 내용과 낭독 감정을 달리 제시하여 평균 형량을 비교한다. 법 제도의 효과를 법규 적용이 아닌 심리적 판단과 인과관계로 검증하는 법심리 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2231",
+      "tagId": "type-experiment-social",
+      "reason": "참가자 소득과 외부 기부액을 바꾼 상황에서 실제 기부 선택을 관찰해 순수·비순수 이타주의를 구별한다. 기부 대체효과와 감정적 효용에 관한 경제행동 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2238",
+      "tagId": "type-experiment-natural",
+      "reason": "장내세균·바이러스 유무가 다른 생쥐에서 분리한 면역세포를 교차 배양하여 IL-17 분비와 자손의 자폐 성향을 분석한다. 행동 증상은 말단 결과이고 핵심 검증은 세균·면역세포·단백질의 생물학적 경로이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2239",
+      "tagId": "type-experiment-natural",
+      "reason": "인간 비만수술 관찰과 쥐의 우회·재연결 개입을 통해 십이지장 유래 항인크레틴의 혈당 조절 경로를 검증한다. 인간 환자를 포함하지만 목표는 소화·호르몬의 생리기전이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2240",
+      "tagId": "type-experiment-natural",
+      "reason": "약물과 조직별 프로모터를 이용한 유전자 표지 후 고지방 식이 전후의 세포 색 비율·크기를 비교한다. 지방세포의 신생과 비대를 구별하는 세포계통 추적 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2321",
+      "tagId": "type-experiment-social",
+      "reason": "결정론적 우주 시나리오를 읽은 사람들의 마음의 인과적 영향 인정과 도덕적 책임 인정 응답의 관련성을 검증한다. 우주의 물리법칙이 아니라 양립론에 관한 인간의 판단을 측정하며 설문에 가까운 실험철학 연구이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2424",
+      "tagId": "type-experiment-social",
+      "reason": "기부 또는 강탈을 지시받는 시나리오를 집단별로 제시하고 자발성·강제성 및 행위자의 도덕성을 묻는다. 서사 조건에 따른 도덕적 귀속 판단을 비교하는 심리 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2427",
+      "tagId": "type-experiment-social",
+      "reason": "증거의 확률 정보가 같은 모의 배심원 집단에 책임을 명시한 증언을 추가했을 때 주관적 확률과 평결률의 차이를 비교한다. 법적 소재를 사용하지만 결과변수는 인간의 증거 평가와 판단이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2428",
+      "tagId": "type-experiment-social",
+      "reason": "광고에서 재료·제품의 제시 순서를 바꾸고 친숙도별 처리 수월성·제품 호감도를 비교한다. 비누는 소재이며 실험 목표는 소비자의 인지 처리와 태도이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2436",
+      "tagId": "type-experiment-natural",
+      "reason": "단백질 영역과 X·Y·Z를 융합한 두 세포의 파란색 검출 반응으로 단백질 결합과 유전자 발현을 추론한다. 관측 신호와 분자 결합의 인과적 연결이 핵심이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2437",
+      "tagId": "type-experiment-natural",
+      "reason": "유전자 변형 생쥐의 부모 유래별 메틸화와 조절 단백질 결합을 비교해 발현 조절 방식을 판정한다. 가족 관계는 유전 기원의 표지이며 사회관계가 아니라 후성유전 기전을 분석한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2440",
+      "tagId": "type-experiment-natural",
+      "reason": "니켈 시료의 산화막 제거·단결정화 이후 관측된 전자 회절이 입자의 파동성을 어떻게 입증하는지 추론한다. 물질 구조와 물리적 측정 결과의 관계가 검증 대상이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2516",
+      "tagId": "type-experiment-social",
+      "reason": "빵 냄새 또는 경품이라는 상황 조작에 따른 행인의 도움 비율을 비교하여 성격·기분·상황의 설명력을 평가한다. 감각 자극이 처치여도 사회적 도움 행동이 결과이므로 사회심리 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2526",
+      "tagId": "type-experiment-natural",
+      "reason": "실제 운동·자기 운동 상상 지시에 따른 보조운동피질 반응을 통해 뇌손상 환자의 최소의식을 진단한다. 인지 과제를 사용하지만 판단의 증거는 신경생리 반응이며 임상 신경과학의 진단 타당성이 핵심이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2528",
+      "tagId": "type-experiment-social",
+      "reason": "학습 얼굴과 검사 얼굴의 정서 표정 및 일치 여부를 조작해 기억률을 비교한다. 정서·기억의 행동 수행 결과로 경쟁 인지 가설을 검증하는 심리 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2529",
+      "tagId": "type-experiment-social",
+      "reason": "여성 가수가 남성들과 합주하는 조건과 혼자 녹음하는 조건을 무작위로 배정해 여성의 창조적 표현 점수를 비교한다. 성별 공동작업 환경이 능력 발휘에 주는 사회심리적 효과가 핵심이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2540",
+      "tagId": "type-experiment-natural",
+      "reason": "식물 호르몬 합성·수용체·신호전달의 각 돌연변이에 BR을 처리해 생장 회복을 비교한다. 외부 보충에 의한 구조와 단계별 기능 결손을 연결하는 생리기전 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2617",
+      "tagId": "type-experiment-social",
+      "reason": "연령별 틀린믿음 과제 수행과 변형 과제 결과를 이용해 마음이론 능력의 발달 및 과제의 구성 타당성을 평가한다. 생물학적 나이가 비교 축이지만 결과는 타인 표상에 대한 아동의 인지·사회적 이해이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2637",
+      "tagId": "type-experiment-natural",
+      "reason": "호박벌의 먹이 상태·잎 손상·타액 처리를 비교해 구멍내기 행동의 생태적 기능과 식물 개화 촉진 기전을 구별한다. 생물 상호작용과 번식·생존 전략에 관한 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2638",
+      "tagId": "type-experiment-natural",
+      "reason": "고추의 캡사이시노이드, 토양 습도와 동물 섭식 후 씨의 발아 가능성을 통해 공진화·항균 적응 가설을 평가한다. 먹이 선택 행동이 들어가도 설명 목표는 생태·진화적 기능이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2640",
+      "tagId": "type-experiment-natural",
+      "reason": "산화물 계면의 원소 치환·산소 결핍 관측을 전하중성 조건과 결합해 Ti의 전자가 및 전도성 가설을 평가한다. 화학 조성과 전자구조라는 재료·물리화학 실험 분석이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2729",
+      "tagId": "type-experiment-social",
+      "reason": "인간·AI·일반 기계 상대의 결제 시나리오를 바꾸어 부당이득 신고 의향과 죄책감·적발 가능성의 매개효과를 비교한다. 기계나 AI의 성능이 아닌 인간의 도덕적 상호작용이 검증 대상이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2730",
+      "tagId": "type-experiment-social",
+      "reason": "종이·고정 페이지 전자책·스크롤 전자책 조건과 글 길이를 달리한 이해도 결과로 인지부하설·전자매체 태도설을 평가한다. 매체 기술은 처치이고 독자의 이해 수행과 태도가 결과이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2737",
+      "tagId": "type-experiment-natural",
+      "reason": "벼의 세대별 저온 스트레스 처리와 대조군을 비교해 DNA 서열·메틸화·발현·내한성의 유전 관계를 검증한다. 환경 적응과 후성유전의 생물학적 기전을 분석한다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "2739",
+      "tagId": "type-experiment-natural",
+      "reason": "대장균 균주의 O항원 합성·연결 효소를 바꾸거나 배지 성분을 조작한 담즙 내성 결과로 R-LPS 가설을 평가한다. 유전자·효소·세포막 구조를 연결한 미생물 기능 실험이다.",
+      "group": "experiment",
+      "coverage": "existing-parent"
+    },
+    {
+      "questionId": "p018",
+      "tagId": "type-experiment-natural",
+      "reason": "자외선·유전자 주입·배양·방사선 조작의 결과와 역학 관찰이 단일 변이 암 가설에 유리·중립·불리한지 직접 판정한다. 이름에 실험이 없어도 조작과 결과에 대한 가설 평가가 명시적이다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "자외선·유전자 주입·배양·방사선 조작의 결과와 역학 관찰이 단일 변이 암 가설에 유리·중립·불리한지 직접 판정한다. 이름에 실험이 없어도 조작과 결과에 대한 가설 평가가 명시적이다."
+    },
+    {
+      "questionId": "p022",
+      "tagId": "type-experiment-natural",
+      "reason": "온도·압력을 고정하고 반응물 기체 부피를 변화시킨 반응 전후 결과표에서 생성물 분자식을 역추론한다. 계산 유형을 유지하면서 실험 자료 해석을 중복 부여할 수 있다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "온도·압력을 고정하고 반응물 기체 부피를 변화시킨 반응 전후 결과표에서 생성물 분자식을 역추론한다. 계산 유형을 유지하면서 실험 자료 해석을 중복 부여할 수 있다."
+    },
+    {
+      "questionId": "1025",
+      "tagId": "type-experiment-natural",
+      "reason": "ㄷ에서 캡사이신을 합성하지 못하는 돌연변이 고추의 급식·씨 발아 실험결과를 진화 가설의 지지 근거로 직접 평가한다. 나머지 두 보기는 관점 비교이므로 실험은 부분 과업이다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "ㄷ에서 캡사이신을 합성하지 못하는 돌연변이 고추의 급식·씨 발아 실험결과를 진화 가설의 지지 근거로 직접 평가한다. 나머지 두 보기는 관점 비교이므로 실험은 부분 과업이다."
+    },
+    {
+      "questionId": "1408",
+      "tagId": "type-experiment-social",
+      "reason": "약물 투여·비투여 집단의 재범률 차이를 비교하고 초범·재범 구성 차이라는 교란이 효과 입증을 약화하는지 판정한다. 약물 소재여도 평가되는 결과는 범죄 재발과 예방정책 효과이다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "약물 투여·비투여 집단의 재범률 차이를 비교하고 초범·재범 구성 차이라는 교란이 효과 입증을 약화하는지 판정한다. 약물 소재여도 평가되는 결과는 범죄 재발과 예방정책 효과이다."
+    },
+    {
+      "questionId": "1832",
+      "tagId": "type-experiment-natural",
+      "reason": "과제에 따른 뇌기능 영상과 감각을 차단한 갈퀴 과제의 결과를 피질 연결·활동전위·신체경계의 신경생리 모형에 대입한다. 일부 보기의 조작·측정 증거가 직접적이나 전체는 신경과학 논증 평가이다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "과제에 따른 뇌기능 영상과 감각을 차단한 갈퀴 과제의 결과를 피질 연결·활동전위·신체경계의 신경생리 모형에 대입한다. 일부 보기의 조작·측정 증거가 직접적이나 전체는 신경과학 논증 평가이다."
+    },
+    {
+      "questionId": "1933",
+      "tagId": "type-experiment-methodology",
+      "reason": "밀리컨 기름방울 실험에서 측정 조건 불량 자료의 제외와 이론에 맞춘 자료 선별을 구별한다. 실험 자료의 신뢰성·측정오차·연구 진실성이 직접 평가되므로 방법론 자식의 추가 후보이다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "밀리컨 기름방울 실험에서 측정 조건 불량 자료의 제외와 이론에 맞춘 자료 선별을 구별한다. 실험 자료의 신뢰성·측정오차·연구 진실성이 직접 평가되므로 방법론 자식의 추가 후보이다."
+    },
+    {
+      "questionId": "2037",
+      "tagId": "type-experiment-natural",
+      "reason": "독성 경험이 없는 닭에게 강·약 독성 먹이를 노출한 뒤 생존·회피 반응을 비교해 의태 진화 가설을 평가한다. 학습이 경로여도 핵심 설명 대상은 종의 의태와 생존 이점이다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "독성 경험이 없는 닭에게 강·약 독성 먹이를 노출한 뒤 생존·회피 반응을 비교해 의태 진화 가설을 평가한다. 학습이 경로여도 핵심 설명 대상은 종의 의태와 생존 이점이다."
+    },
+    {
+      "questionId": "2227",
+      "tagId": "type-experiment-social",
+      "reason": "범죄 예방 프로그램 시행 지역·완충 지역·통제 지역의 사전후 범죄율로 확산과 전이를 계산한다. 원인 귀속과 비교가능성 가정을 명시한 정책 준실험이어서 수리 유형과 함께 사회과학 실험으로 검색될 가치가 있다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "범죄 예방 프로그램 시행 지역·완충 지역·통제 지역의 사전후 범죄율로 확산과 전이를 계산한다. 원인 귀속과 비교가능성 가정을 명시한 정책 준실험이어서 수리 유형과 함께 사회과학 실험으로 검색될 가치가 있다."
+    },
+    {
+      "questionId": "2339",
+      "tagId": "type-experiment-natural",
+      "reason": "시험관을 정해진 높이에서 반복 낙하시켜 시간을 측정하고 중력가속도를 역산한 후 높이·장소·저울 조건의 결과를 비교한다. 실제 측정 절차와 결과 예측이 중심인 물리 실험이다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "시험관을 정해진 높이에서 반복 낙하시켜 시간을 측정하고 중력가속도를 역산한 후 높이·장소·저울 조건의 결과를 비교한다. 실제 측정 절차와 결과 예측이 중심인 물리 실험이다."
+    },
+    {
+      "questionId": "2340",
+      "tagId": "type-experiment-natural",
+      "reason": "투명전극 후보 물질과 두께를 달리하며 측정한 투과율·면저항·성능 결과표를 비교한다. 수리 계산이 주된 풀이지만 재료의 조작 조건과 측정 결과를 직접 해석한다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "투명전극 후보 물질과 두께를 달리하며 측정한 투과율·면저항·성능 결과표를 비교한다. 수리 계산이 주된 풀이지만 재료의 조작 조건과 측정 결과를 직접 해석한다."
+    },
+    {
+      "questionId": "2627",
+      "tagId": "type-experiment-social",
+      "reason": "인터넷 도입 시기가 다른 도시·학년의 성적 차이에서 도시 효과를 차분하여 게임 노출의 인과효과를 식별한다. 무작위 실험은 아니지만 비교집단과 동일효과 가정을 명시한 사회과학 준실험 설계이다.",
+      "group": "experiment",
+      "coverage": "parent-expansion",
+      "parentAdditionReason": "인터넷 도입 시기가 다른 도시·학년의 성적 차이에서 도시 효과를 차분하여 게임 노출의 인과효과를 식별한다. 무작위 실험은 아니지만 비교집단과 동일효과 가정을 명시한 사회과학 준실험 설계이다."
+    }
+  ],
+  "auditCounts": {
+    "corpusQuestions": 755,
+    "examCount": 20,
+    "existingStructureQuestions": 71,
+    "directArgumentDiagramQuestions": 10,
+    "diagramCandidatesResolved": 47,
+    "existingPuzzleQuestions": 77,
+    "puzzleParentAdditions": 6,
+    "refinedPuzzleQuestions": 83,
+    "existingExperimentQuestions": 62,
+    "experimentParentAdditions": 11,
+    "refinedExperimentQuestions": 73,
+    "experimentExcludedLowPriorityCandidates": 1,
+    "newTypeDefinitions": 11,
+    "expectedChildCounts": {
+      "type-argument-diagram": 10,
+      "type-puzzle-ordering": 19,
+      "type-puzzle-matching": 27,
+      "type-puzzle-calculation": 26,
+      "type-puzzle-relations": 14,
+      "type-puzzle-predicate": 16,
+      "type-puzzle-truth": 11,
+      "type-puzzle-conditions": 11,
+      "type-experiment-natural": 38,
+      "type-experiment-social": 31,
+      "type-experiment-methodology": 4
+    },
+    "refinementMemberships": 207,
+    "parentMembershipsAdded": 17,
+    "totalMembershipsAdded": 224
+  },
+  "boundaries": {
+    "diagram": {
+      "include": "실제 전제·결론 지지 도식이 문제 해결의 직접 대상이어야 한다. 화살표·+와 동그라미 친 진술 표지를 사용한 구조도 선지는 포함한다.",
+      "exclude": "논증의 구조라는 발문만 있고 선지가 모두 문장인 경우, 실험·계산의 흐름도, 사건의 인과 경로, 상태 전이, 수치 그래프, 공간 배열, 단순 순서·이동·물리 방향 화살표는 제외한다.",
+      "excludedCandidates": [
+        {
+          "questionId": "p014",
+          "reason": "선지 그림은 시간에 따른 버스 속력을 나타낸 과학 그래프이다. 전제·중간 결론·최종 결론의 지지 구조가 아니다."
+        },
+        {
+          "questionId": "p018",
+          "reason": "가설에 불리한·중립·유리한 사례를 분류하는 표형 선지이다. 지지 관계 구조도를 직접 사용하지 않는다."
+        },
+        {
+          "questionId": "p028",
+          "reason": "물감의 x·y 혼합 비율을 좌표에 표시한 그래프이다."
+        },
+        {
+          "questionId": "p036",
+          "reason": "시장점유율·판매증가율의 자료 그래프이다."
+        },
+        {
+          "questionId": "0924",
+          "reason": "명제들의 조건 관계와 진릿값을 서술한 문장 문제이다. 구조도는 없으며 명제 조건 연쇄 자체가 직접 구조도 문항을 뜻하지 않는다."
+        },
+        {
+          "questionId": "0925",
+          "reason": "입체도형을 투과하는 X선의 방향을 화살표로 표시한다. 화살표가 논거의 지지를 뜻하지 않는다."
+        },
+        {
+          "questionId": "0936",
+          "reason": "생산량·수요량·재고 변화를 나타내는 경제 그래프이다."
+        },
+        {
+          "questionId": "0937",
+          "reason": "정화 비용과 오염 배출 부과금의 경제 그래프이다."
+        },
+        {
+          "questionId": "0938",
+          "reason": "개혁 정도에 따른 총후생·집단 후생을 나타내는 그래프이다."
+        },
+        {
+          "questionId": "1012",
+          "reason": "수호천사 관계의 추이성과 역관계를 적용하는 규칙 문제이다. 근거·결론 지지 관계의 도식이 아니다."
+        },
+        {
+          "questionId": "1026",
+          "reason": "개체군 추정의 전제 조건을 고른다. 본문의 채집→표지→방사→재포획 화살표는 실험 절차 순서이며 근거·결론의 지지 관계가 아니다."
+        },
+        {
+          "questionId": "1030",
+          "reason": "월별 범죄 건수와 두려움 지수를 읽는 통계 그래프이다."
+        },
+        {
+          "questionId": "1116",
+          "reason": "고양이 털 무늬와 유전자 발현을 설명하는 과학 그림이다."
+        },
+        {
+          "questionId": "1132",
+          "reason": "발문에 논증의 구조가 있지만 모든 선지는 근거·결론 관계를 서술한 문장이다. 실제 구조도를 선택하거나 해석하지 않는다."
+        },
+        {
+          "questionId": "1212",
+          "reason": "종교·인종별 묘지 관습의 분포를 비교하는 그림이다."
+        },
+        {
+          "questionId": "1233",
+          "reason": "쌀·쇠고기 구매 조합과 예산의 좌표 그래프이다."
+        },
+        {
+          "questionId": "1234",
+          "reason": "기업 생산량에 따른 편익·어부 피해의 경제 그래프이다."
+        },
+        {
+          "questionId": "1326",
+          "reason": "기대이익과 위험에 대한 선호 곡선이다."
+        },
+        {
+          "questionId": "1411",
+          "reason": "발문에 논증의 구조가 있지만 선지는 ⓐ~ⓕ의 인정·비판·근거 관계를 문장으로 묻는다. 화살표 구조도는 없다."
+        },
+        {
+          "questionId": "1429",
+          "reason": "뮐러라이어 착시 자극과 건물의 모서리를 나타내는 그림이다. 화살표는 시각 자극의 모양이다."
+        },
+        {
+          "questionId": "1517",
+          "reason": "오류 탐지를 설명하는 비트 행렬 그림이다."
+        },
+        {
+          "questionId": "1526",
+          "reason": "실질소득·출생률·사망률의 추세 그래프이다."
+        },
+        {
+          "questionId": "1610",
+          "reason": "검색어 도식은 본문의 무위도식에 포함된 문자열이다. 구조도나 도해가 없다."
+        },
+        {
+          "questionId": "1621",
+          "reason": "시장소득·처분가능소득별 지니계수 비교 그래프이다."
+        },
+        {
+          "questionId": "1624",
+          "reason": "정치성향별 유권자 분포와 후보자 위치를 표시하는 그림이다."
+        },
+        {
+          "questionId": "1634",
+          "reason": "직선거리와 도로거리를 표시하는 공간 도형이다."
+        },
+        {
+          "questionId": "1635",
+          "reason": "라우터의 입출력 포트와 패킷 전달 경로를 나타내는 시스템 그림이다. 논거의 지지 구조가 아니다."
+        },
+        {
+          "questionId": "1719",
+          "reason": "지지 관계를 묻지만 선지는 ㉠~㉨ 사이의 근거 관계를 서술한 문장이다. 실제 화살표 구조도는 없다."
+        },
+        {
+          "questionId": "1907",
+          "reason": "선지가 ㉠·㉡ 등 지문 표시의 조합만 있어 그림 전용 선지 후보에 잡혔지만, 실제 이미지에는 논증 구조도가 없다."
+        },
+        {
+          "questionId": "1928",
+          "reason": "인구에 따른 소득곡선과 생존선의 경제 그래프이다."
+        },
+        {
+          "questionId": "2011",
+          "reason": "검색어 도해는 본문의 과도해서에 포함된 문자열이다. 논증 구조도는 없다."
+        },
+        {
+          "questionId": "2112",
+          "reason": "그림은 매매 대상인 미술 작품을 뜻한다. 논증 도식이나 자료 그래프가 아니다."
+        },
+        {
+          "questionId": "2121",
+          "reason": "12개 상자의 일렬 배치를 보여주는 공간 배열 그림이다."
+        },
+        {
+          "questionId": "2133",
+          "reason": "사건의 인과적 의존과 원인 정의에서 어떤 진술이 도출되는지 문장으로 판단한다. 사건의 인과 연쇄와 논증 지지 구조도를 동일시하지 않는다."
+        },
+        {
+          "questionId": "2330",
+          "reason": "예산 수준에 따른 주민 효용을 보여주는 그래프이다."
+        },
+        {
+          "questionId": "2439",
+          "reason": "전자 산란각과 입자 진행 방향을 설명하는 물리학 그림이다."
+        },
+        {
+          "questionId": "2631",
+          "reason": "튜링기계의 테이프·헤드 그림 및 상태 전이표이다. 계산 절차와 상태 변화이며 논거의 지지 관계가 아니다."
+        }
+      ]
+    },
+    "puzzle": {
+      "uncertainties": [
+        {
+          "id": "1420",
+          "issue": "증언이라는 명칭 때문에 거짓말 찾기로도 검색할 수 있지만 발언 내용은 없고 A~E 진리값 관계만 있다.",
+          "decision": "조건 추론만 배정한다. 거짓말 찾기를 실제 발언 내용-진위 대응 문제로 일관되게 한정한다."
+        },
+        {
+          "id": "2412",
+          "issue": "기존 논리 퍼즐 부모보다는 규칙·사례 적용에 가까운 경계 문항이다.",
+          "decision": "사용자의 기존77 호환 조건에 따라 부모는 보존하고, 세대-돌림자-돌림변의 실제 속성 대응을 이유로 대응·분류를 배정한다. 새 부모 확장 사례로는 쓰지 않는다."
+        },
+        {
+          "id": "1230",
+          "issue": "모든 발언이 참이라고 알려져 있으므로 거짓말 찾기가 아니며 상호 지식의 순차 갱신이 핵심이다.",
+          "decision": "계산하기와 조건 추론으로 포괄한다. 별도 상호지식 태그는 현재 한 문항만으로 지나치게 작아 새로 만들지 않는다."
+        }
+      ]
+    },
+    "experiment": {
+      "assignmentPolicy": [
+        "현행 실험 분석 부모 62개를 모두 보존한다.",
+        "자식은 검증 목표와 종속변인을 먼저 보고 조작 방식·근거의 역할을 함께 살핀다.",
+        "현행 field·domain을 복사하지 않으며 학문 소재와 실제 증거·추론 과업을 구별한다.",
+        "각 문항에 가장 적합한 자식 하나를 우선 부여한다. 학문 경계 자체만으로 중복 라벨을 늘리지 않는다.",
+        "추가 부모 후보는 기존 배정을 바꾸지 않고 optionalParentAdditions에 분리한다. 우선순위는 부모 보완 필요성의 강도이며 정답에 대한 확신도가 아니다."
+      ],
+      "cases": [
+        {
+          "id": "0928",
+          "issue": "동물 학습 / 행동심리",
+          "chosenLabels": [
+            "사회과학 실험"
+          ],
+          "reason": "연구 동물이 개이고 침을 측정하더라도 설명하려는 것은 조건형성의 학습률이다. 이 체계의 사회과학 실험은 인간 사회에만 한정하지 않고 심리학의 비교학습 연구를 포함한다.",
+          "alternativeOrCaution": "자연과학 실험을 생물 대상 전체로 넓히면 겹칠 수 있으나 두 자식의 검색 의미를 살리기 위해 행동심리를 우선한다."
+        },
+        {
+          "id": "1023",
+          "issue": "유전 요인 / 범죄행동 / 관찰연구",
+          "chosenLabels": [
+            "사회과학 실험"
+          ],
+          "reason": "원인 후보는 생물학적 유전이지만 결과는 범죄성이다. 원문은 기록을 조사한 연구이며 유전자를 조작하지 않는다.",
+          "alternativeOrCaution": "부모의 실험이라는 표현을 좁게 정의한다면 관찰연구 재분류 대상이나 본 작업에서는 현행 부모를 유지한다."
+        },
+        {
+          "id": "0929",
+          "issue": "우발적 노출 / 독성 추론",
+          "chosenLabels": [
+            "자연과학 실험"
+          ],
+          "reason": "세 사람이 술·버섯을 달리 섭취한 사건은 무작위나 계획 실험이 아니다. 다만 결과의 차이로 물질의 조건별 약리작용을 추정한다.",
+          "alternativeOrCaution": "현행 부모를 유지하고 자연과학으로 배정하되 계획된 실험이라는 의미를 덧씌우지 않는다."
+        },
+        {
+          "id": "1619",
+          "issue": "임상연구 윤리 / 비교 기준",
+          "chosenLabels": [
+            "실험 방법론"
+          ],
+          "reason": "인간의 증상·약효를 다루지만 질문의 초점은 위약·동등성 비교의 정당성과 평가 기준의 안정성이다.",
+          "alternativeOrCaution": "두 자식만 허용할 경우 자연과학 실험에 두되 임상 방법론·윤리를 설명에 명시하는 대안이 가능하다."
+        },
+        {
+          "id": "1732",
+          "issue": "분야 일반적 인과 식별",
+          "chosenLabels": [
+            "실험 방법론"
+          ],
+          "reason": "흡연·조현병·말라리아·식단은 일반 대조조건을 적용할 예시이다. 질병 소재를 보고 생물 실험으로만 배정하면 실제 과업인 대조사례의 적격성이 가려진다.",
+          "alternativeOrCaution": "추가 방법론 자식이 필요한 가장 분명한 사례이다."
+        },
+        {
+          "id": "1823",
+          "issue": "심리·생리 / 공통 통제 원리",
+          "chosenLabels": [
+            "실험 방법론"
+          ],
+          "reason": "플라시보에는 실제 생리 변화가, 보고편향에는 판단 왜곡이 포함되며 두 영역이 함께 등장한다. 문항은 이들을 통제하는 눈가림의 작용 경로를 묻는다.",
+          "alternativeOrCaution": "서로 다른 분야 실험 두 개가 아니라 일반 방법론이어서 사회·자연 중복 부여로 해결하지 않는다."
+        },
+        {
+          "id": "1833",
+          "issue": "뇌손상 이야기 / 타인의 믿음 판단",
+          "chosenLabels": [
+            "사회과학 실험"
+          ],
+          "reason": "환자의 뇌 반응을 측정하는 연구가 아니다. 일반 참가자에게 주는 이야기의 단서를 조작하여 믿음 귀속을 측정한다.",
+          "alternativeOrCaution": "환자의 병명이나 신경과학 어휘를 분류 근거로 삼지 않는다."
+        },
+        {
+          "id": "1934",
+          "issue": "섭식 행동 / 체중의 임상 결과",
+          "chosenLabels": [
+            "자연과학 실험"
+          ],
+          "reason": "음식 섭취량·식욕은 인과 경로이고 목표 결과는 체중 감소이다. 영양생리 개입의 장단기 효과를 평가한다.",
+          "alternativeOrCaution": "사람의 행동이 중간 변수라는 이유로 사회과학을 자동 추가하지 않는다."
+        },
+        {
+          "id": "2025",
+          "issue": "사회과학 관찰·준실험 설계",
+          "chosenLabels": [
+            "사회과학 실험"
+          ],
+          "reason": "인종 차별과 과속 여부를 분리하는 기준 모집단 및 주야 비교 조건을 묻는다. 무작위 처치 배정은 없다.",
+          "alternativeOrCaution": "부모를 실험·관찰 연구 설계까지 넓게 운용한 현행 범위를 보존한다."
+        },
+        {
+          "id": "2135",
+          "issue": "개념철학 / 인지 반응시간",
+          "chosenLabels": [
+            "사회과학 실험"
+          ],
+          "reason": "개념의 필요충분조건을 설명하지만 이를 평가하는 증거는 사람의 범주판단에 걸린 시간이다.",
+          "alternativeOrCaution": "철학 개념 자체의 정합성만을 분석하는 문항과 구별한다."
+        },
+        {
+          "id": "2140",
+          "issue": "특정 생화학 검출법 / 일반 방법론",
+          "chosenLabels": [
+            "자연과학 실험"
+          ],
+          "reason": "차단·항체·효소 절차는 실험법이지만 정답을 결정하는 것은 단백질의 결합과 신호 생성 기전이다.",
+          "alternativeOrCaution": "방법론을 실험 절차가 조금이라도 있는 모든 문제에 붙이지 않는다."
+        },
+        {
+          "id": "2219",
+          "issue": "실험철학 / 설문",
+          "chosenLabels": [
+            "사회과학 실험"
+          ],
+          "reason": "응답 집단과 문장 독해의 차이로 진리관의 차이를 설명한다. 명시된 무작위 처치는 없고 설문 비교가 중심이다.",
+          "alternativeOrCaution": "철학은 소재 분야로 유지하면서 유형의 구체화는 경험적 태도 연구에 맞춘다."
+        },
+        {
+          "id": "2238",
+          "issue": "자폐 성향 / 면역 분자 기전",
+          "chosenLabels": [
+            "자연과학 실험"
+          ],
+          "reason": "자손 행동은 말단 표현형이고 비교 배양·IL-17 분비·장내세균 존재의 기전을 직접 검증한다.",
+          "alternativeOrCaution": "심리 증상이 등장해도 사회적 태도나 인간 판단 연구로 취급하지 않는다."
+        },
+        {
+          "id": "2321",
+          "issue": "물리적 결정론 / 실험철학 설문",
+          "chosenLabels": [
+            "사회과학 실험"
+          ],
+          "reason": "결정론은 제공된 시나리오이며 관측값은 참가자의 마음 영향 및 책임 인정 응답이다.",
+          "alternativeOrCaution": "동일 시나리오의 두 응답 간 관련성을 묻는 설문형 설계로 명시한다."
+        },
+        {
+          "id": "2526",
+          "issue": "인지과학 / 신경생리 진단",
+          "chosenLabels": [
+            "자연과학 실험"
+          ],
+          "reason": "명령 이해·운동 상상이 인지 과제지만 증거는 보조운동피질의 실제 반응이며 최소의식의 임상적 진단을 목표로 한다.",
+          "alternativeOrCaution": "인지신경과학 경계로 기록하되 현재 문항에서는 자연과학을 주 분류로 삼아 중복 확장을 피한다."
+        },
+        {
+          "id": "2637",
+          "issue": "동물 행동 / 생태·생리",
+          "chosenLabels": [
+            "자연과학 실험"
+          ],
+          "reason": "호박벌의 행동을 설명하나 검증 대상은 먹이 확보와 식물 개화 촉진이라는 생태 기능 및 타액의 생리적 효과이다.",
+          "alternativeOrCaution": "0928의 일반 학습 원리 검증과 구별한다."
+        },
+        {
+          "id": "2729",
+          "issue": "AI / 인간의 도덕적 행동",
+          "chosenLabels": [
+            "사회과학 실험"
+          ],
+          "reason": "AI·키오스크는 상대의 유형을 바꾸는 처치이다. 신고 의향·죄책감·매개효과는 인간 행동의 사회심리 변수이다.",
+          "alternativeOrCaution": "기계가 등장한다는 이유로 정보과학·자연과학 실험을 부여하지 않는다."
+        }
+      ],
+      "screenedButNotAdded": [
+        {
+          "id": "p010",
+          "reason": "극한 환경 박테리아의 배양은 가설의 배경이며, 실제 선택지는 지하에서 발견한 사례의 오염·서식 증거를 평가한다. 직접 실험의 설계나 조작 비교가 중심은 아니다."
+        },
+        {
+          "id": "p031",
+          "reason": "실험에서 얻은 데이터라는 배경이 있어도 과업은 입자 속성에 관한 명제 제약을 만족하는 구성 판정이다. 처치·대조·측정의 타당성이나 실험 결과의 가설 지지 관계를 분석하지 않는다."
+        },
+        {
+          "id": "0902",
+          "reason": "브라운 운동 설명에서 입자 크기·온도 조건에 따른 물리적 결과를 예측하지만, 특정 실험 결과나 대조 설계를 분석하지 않는 일반 내용 추론이다."
+        },
+        {
+          "id": "1026",
+          "reason": "표지재포획 절차의 가정과 표본 포획확률이 핵심이다. 생태학적 조사·측정법으로 검토할 수 있으나 인과 가설을 검증하는 실험과 구별하여 현재는 부모 추가를 권하지 않는다."
+        },
+        {
+          "id": "1117",
+          "reason": "변형 사진이 증거인지 예시인지와 연구자의 기만 여부를 논하지만 실제 처치·대조·측정의 타당성은 다루지 않는다. 자료 진실성 일반까지 부모를 확장할 경우만 추가 검토한다."
+        },
+        {
+          "id": "1132",
+          "reason": "동물 관찰의 장점과 인간 적용을 주장하는 논증의 문장 구조를 묻는다. 공간 크기를 실제로 조작한 연구의 결과·조건을 평가하는 문항은 아니다."
+        },
+        {
+          "id": "1216",
+          "reason": "음주·성향·자극·문화에 관한 설명 간 차이와 예측을 비교한다. 구체적인 실험 자료·조작 설계는 제시되지 않는다."
+        },
+        {
+          "id": "1413",
+          "reason": "상관관계의 대칭성과 인과관계의 비추이성을 개념적으로 추론한다. 흡연·질병 소재 자체로 실험 부모를 부여하지 않는다."
+        },
+        {
+          "id": "1429",
+          "reason": "착시의 시각 경험 가설에 대한 강화 사례를 찾지만, 제시된 주요 근거는 경험이 다른 집단의 관찰 비교이다. 특정 실험 조작과 결과의 종합 분석으로 보기에는 약하다."
+        },
+        {
+          "id": "1524",
+          "reason": "태아 유래 세포와 면역질환의 필요조건을 관찰 사례로 반박한다. 직접 처치나 통제 실험을 분석하지 않는다."
+        },
+        {
+          "id": "1625",
+          "reason": "병원체 회피 적응 가설을 경험적 사례로 강화·약화할 뿐 특정 실험 설계나 결과의 분석은 없다."
+        },
+        {
+          "id": "1725",
+          "reason": "교사 교체·교육경력·동시 측정 관찰이 기대 효과와 예측 정확성에 주는 지지를 평가한다. 명시된 실험 처치나 준실험 식별 설계가 없어 관찰적 인과 논증으로 유지한다."
+        },
+        {
+          "id": "1820",
+          "reason": "시간 거리에 따른 일상 선택 사례를 시간해석이론에 적용한다. 연구 집단·처치·측정 결과가 제시되지 않는다."
+        },
+        {
+          "id": "1918",
+          "reason": "공감과 비공개 믿음에 따른 도움 가능성의 가상 발견을 비교하지만 실제 조작·대조 절차는 없다. 실험 설계보다 조건부 예측의 논증 평가에 가깝다."
+        },
+        {
+          "id": "1936",
+          "reason": "병원균·질병의 필요충분조건에 대한 양화 추론이다. 배양·접종 같은 실제 실험 절차는 제시되지 않는다."
+        },
+        {
+          "id": "2034",
+          "reason": "정의가 과학 연구보다 먼저여야 하는지에 관한 철학적 논증이다. 실험은 선후 관계의 반례로만 등장한다."
+        },
+        {
+          "id": "2235",
+          "reason": "신호탐지의 확률과 반응 보상을 계산하는 수리 모형이다. 현존 연구 설계나 실험 결과의 지지 관계를 검증하지 않는다."
+        },
+        {
+          "id": "2236",
+          "reason": "로봇 자극에 대한 피험자 응답 연구가 근거로 사용되지만 실제 과업은 근거·중간결론·최종결론의 도식화이다. 실험조건·결과의 타당성을 직접 평가하지 않아 추가를 보류한다."
+        },
+        {
+          "id": "2338",
+          "reason": "비열·열용량 정의와 가열 관계를 적용한다. 가열 시간은 법칙을 설명하는 예시이며 특정 실험 설계·오차·경쟁 가설을 분석하지 않는다."
+        },
+        {
+          "id": "2438",
+          "reason": "변수를 바꾼 시뮬레이션 표는 있으나 질문은 정의된 사냥률의 계산과 모형 예측이다. 현행 부모의 실증적 의미를 수치실험 전체로 확장하지 않고 수리 모형으로 유지한다."
+        },
+        {
+          "id": "2439",
+          "reason": "양자 상태함수와 전자 교환 규칙을 적용하여 가상 산란 결과를 계산한다. 실험이라는 명칭만으로 추가하지 않고 법칙 적용·수리 추론으로 유지한다."
+        },
+        {
+          "id": "2527",
+          "reason": "문화 성향과 조망 수용 이론을 부탁 거절 사례에 적용한다. 실험 집단이나 조작·대조 연구는 제시되지 않는다."
+        },
+        {
+          "id": "2628",
+          "reason": "소득 순위를 무작위 제시한 설문이 있지만 질문은 예측선과 실제선의 기울기·높이 해석이다. 무작위 문항 제시를 인과 처치의 무작위 배정으로 오인하지 않는다."
+        },
+        {
+          "id": "2716",
+          "reason": "병이 불안과 합리적 판단능력의 관계를 실험 결과로 뒷받침하지만 질문은 갑·을·병이 처벌 감경의 기준으로 무엇을 공유하는지 묻는다. 실험의 구체적 조건·결과나 설계 타당성을 직접 분석하지 않는다."
+        },
+        {
+          "id": "2727",
+          "reason": "모세·링컨 치환의 예측이 일부 나오나 주된 과업은 지식 간과 사례의 개념 적용 및 두 설명의 비교이다. 구체적 실험 연구가 제시되지 않아 추가를 보류한다."
+        }
+      ],
+      "excludedOptionalCandidates": [
+        {
+          "questionId": "1126",
+          "reason": "ㄴ에서 높은 각성 수준의 기억 실험 결과가 두 이론을 약화하는지 평가한다. 주된 과업은 두 이론의 예측 비교여서 엄격한 실험 설계 중심 분류라면 현행 부모만 유지해도 된다.",
+          "priority": "low"
+        }
+      ]
+    }
+  },
+  "preservation": {
+    "immutableArchiveSha256": "8b12afee05b1f6623497f6d0775ad2ef188f41f592eca4f70e2f3c152eb8d011",
+    "legacyAnnotationsSha256": "f085b29cb14c209205f0525e514e0dec178816dc04d5cf365926c1a91f59ce0c",
+    "legacyTaxonomyMetadataSha256": "d211f7243bb5e34ac53c563d99e6af92e7d78dec88ad06570cbd7749f6cd4beb",
+    "native2027Sha256": "438732665016fbbc87671f703c45d8550b2fb3d51a48eb5f91eb77e0196515ba",
+    "legacyTaxonomyCount": 221,
+    "native2027FileSha256": "a8f479da5c9fb6c3a6e8aa183d45543d57ca6ae3eed341d6b353e25cf77578cc"
+  }
+}
