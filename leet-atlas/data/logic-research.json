@@ -1,0 +1,1122 @@
+{
+  "schemaVersion": 1,
+  "researchedAt": "2026-10-25",
+  "purpose": "LEET 추리논증 문항에 붙일 풀이 논리 태그의 독립 연구 초안",
+  "scope": {
+    "verified": "SDSS 100코드 목록의 번호·명칭·일부 별칭을 검색엔진에 수집된 원문에서 확인. 관련 코드 검색 결과 하위페이지는 아래 sources에 기재한 범위만 확인.",
+    "notVerified": "동적 페이지의 실행 후 DOM, 원시 HTML의 코드 데이터와 JS 파일, 100개 항목 각각의 별도 해설, SDSS가 부여한 LEET 추리논증 문항별 태그는 확인하지 못함.",
+    "accessLimit": "https://sdss.kr/code/100.html open 결과에는 0개 코드. Python urllib와 curl 직접 요청은 403. 웹 검색 결과에는 100개 목록이 노출됨.",
+    "sourceExamScope": [
+      "리트언어",
+      "수능국어",
+      "미트언어"
+    ],
+    "warning": "SDSS 검색 결과를 추리논증의 공식 분류로 표시하지 않는다. appTags는 참고 코드를 응용한 자체 분류이며, 추리논증 각 문항의 실제 풀이를 검토하여 부여해야 한다."
+  },
+  "sources": [
+    {
+      "id": "sdss100",
+      "url": "https://sdss.kr/code/100.html",
+      "mirrorUrl": "https://www.sdss.kr/code/100.html",
+      "title": "스키마(schema)에 기반한 사고력 분석 체계",
+      "retrieval": "검색 캐시 전체 목록",
+      "refs": [
+        "turn3search0",
+        "turn5search0",
+        "turn7search0"
+      ],
+      "verified": "#1~#100 번호·명칭 및 별칭. live open은 코드 0개로 반환."
+    },
+    {
+      "id": "sdss-search",
+      "url": "https://sdss.kr/db/index.html",
+      "title": "리트언어, 수능국어, 미트언어 검색",
+      "retrieval": "검색 캐시",
+      "refs": [
+        "turn10search0"
+      ],
+      "verified": "코드·키워드·시험 검색과 유사 코드 통합검색 안내"
+    },
+    {
+      "id": "necessary",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%ED%95%84%EC%9A%94%EC%A1%B0%EA%B1%B4",
+      "title": "코드 검색 결과: 필요조건",
+      "retrieval": "검색 캐시 결과표",
+      "refs": [
+        "turn6search5",
+        "turn9search0"
+      ],
+      "verified": "표제, 총 79건, 여러 문항 행. 예: 2025 리트언어 13 두 수준 공리주의 이론."
+    },
+    {
+      "id": "iff",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%ED%95%84%EC%9A%94%EC%B6%A9%EB%B6%84%EC%A1%B0%EA%B1%B4",
+      "title": "코드 검색 결과: 필요충분조건",
+      "retrieval": "검색 캐시 결과표",
+      "refs": [
+        "turn9search4"
+      ],
+      "verified": "총 2건: 2018 리트언어 13 칸트의 도덕과 헤겔의 윤리, 2017 리트언어 5 복지에 대한 이론들."
+    },
+    {
+      "id": "conditional",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%EC%A1%B0%EA%B1%B4%EB%AC%B8",
+      "title": "코드 검색 결과: 조건문",
+      "retrieval": "검색 캐시 결과표",
+      "refs": [
+        "turn6search0",
+        "turn7search5"
+      ],
+      "verified": "총 51건과 결과 행. 예: 2026 리트언어 24 행위와 무위의 책임."
+    },
+    {
+      "id": "counterexample",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%EB%B0%98%EC%A6%9D%EC%82%AC%EB%A1%80",
+      "title": "코드 검색 결과: 반증사례",
+      "retrieval": "검색 캐시 결과표",
+      "refs": [
+        "turn7search6"
+      ],
+      "verified": "총 3건: 2012 리트언어 22 분석 법학, 2010 리트언어 24 권위의 역설, 2005 미트예비 16 뇌의 언어 처리와 실어증."
+    },
+    {
+      "id": "control",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%ED%83%80%EB%B3%80%EC%88%98%ED%86%B5%EC%A0%9C",
+      "title": "코드 검색 결과: 타변수통제",
+      "retrieval": "검색 캐시 표제",
+      "refs": [
+        "turn6search2",
+        "turn9search1",
+        "turn11search2"
+      ],
+      "verified": "표제와 총 5건까지만 확인. 결과 행은 이 페이지에서 노출되지 않음. 인과관계 결과표에는 2015 수능국어B형 26 슈퍼문의 원리가 인과관계·타변수통제로 함께 표시됨."
+    },
+    {
+      "id": "cause",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%EC%9D%B8%EA%B3%BC%EA%B4%80%EA%B3%84",
+      "title": "코드 검색 결과: 인과관계",
+      "retrieval": "검색 캐시 결과표",
+      "refs": [
+        "turn9search3",
+        "turn11search5"
+      ],
+      "verified": "총 51건과 결과 행. 예: 2026 리트언어 16 제도 성장론, 2025 리트언어 11 사법심사가 여론에 미치는 영향."
+    },
+    {
+      "id": "argument",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%EB%85%BC%EC%A6%9D%ED%98%95%EC%8B%9D",
+      "title": "코드 검색 결과: 논증형식",
+      "retrieval": "검색 캐시 결과표",
+      "refs": [
+        "turn9search2"
+      ],
+      "verified": "총 28건과 결과 행. 예: 2024 리트언어 25 당위 명제와 존재 명제, 2018 리트언어 25 베나타의 논증."
+    },
+    {
+      "id": "classification",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%EB%B6%84%EB%A5%98",
+      "title": "코드 검색 결과: 분류",
+      "retrieval": "검색 캐시 표제",
+      "refs": [
+        "turn10search1",
+        "turn11search7"
+      ],
+      "verified": "표제와 총 48건까지만 확인. 별도 키워드 결과에는 2013 리트언어 12 의회의 입법 과정이 분류로 표시됨."
+    },
+    {
+      "id": "reductio",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%EA%B7%80%EB%A5%98%EB%B2%95",
+      "title": "코드 검색 결과: 귀류법",
+      "retrieval": "검색 캐시 결과표",
+      "refs": [
+        "turn10search3"
+      ],
+      "verified": "총 3건: 2023 수능국어 14 클라이버의 기초 대사량 연구, 2013 리트언어 19 수성의 내부 구조 가설, 2010 미트언어 21 자연주의적 오류."
+    },
+    {
+      "id": "hypotheses",
+      "url": "https://sdss.kr/db/search.asp?CodeName=%EA%B2%BD%EC%9F%81%EA%B0%80%EC%84%A4",
+      "title": "경쟁가설 질의의 통합검색 결과",
+      "retrieval": "검색 캐시 결과표",
+      "refs": [
+        "turn10search7"
+      ],
+      "verified": "URL은 경쟁가설 질의이나 반환 표제는 경쟁입장, 총 14건. 둘을 동일한 원코드로 합치지 말고 검색 서비스의 통합 결과로 해석."
+    }
+  ],
+  "sourceCodes": [
+    {
+      "number": "#1",
+      "name": "양질"
+    },
+    {
+      "number": "#2",
+      "name": "양상"
+    },
+    {
+      "number": "#3",
+      "name": "선후"
+    },
+    {
+      "number": "#4",
+      "name": "양화"
+    },
+    {
+      "number": "#5",
+      "name": "지속/변화"
+    },
+    {
+      "number": "#6",
+      "name": "선천/후천"
+    },
+    {
+      "number": "#7",
+      "name": "질적차이"
+    },
+    {
+      "number": "#8",
+      "name": "우선순위"
+    },
+    {
+      "number": "#9",
+      "name": "위계"
+    },
+    {
+      "number": "#10",
+      "name": "필요조건"
+    },
+    {
+      "number": "#11",
+      "name": "필요충분조건"
+    },
+    {
+      "number": "#12",
+      "name": "조건문"
+    },
+    {
+      "number": "#13",
+      "name": "양립불가"
+    },
+    {
+      "number": "#14",
+      "name": "양립가능"
+    },
+    {
+      "number": "#15",
+      "name": "기준"
+    },
+    {
+      "number": "#16",
+      "name": "개념분석"
+    },
+    {
+      "number": "#17",
+      "name": "대상범주"
+    },
+    {
+      "number": "#18",
+      "name": "모순"
+    },
+    {
+      "number": "#19",
+      "name": "보충도식"
+    },
+    {
+      "number": "#20",
+      "name": "복수실현"
+    },
+    {
+      "number": "#21",
+      "name": "정의는필충"
+    },
+    {
+      "number": "#22",
+      "name": "속성"
+    },
+    {
+      "number": "#23",
+      "name": "교집합"
+    },
+    {
+      "number": "#24",
+      "name": "원칙/예외"
+    },
+    {
+      "number": "#25",
+      "name": "분류"
+    },
+    {
+      "number": "#26",
+      "name": "이항대립"
+    },
+    {
+      "number": "#27",
+      "name": "외연/내포"
+    },
+    {
+      "number": "#28",
+      "name": "양보"
+    },
+    {
+      "number": "#29",
+      "name": "집합"
+    },
+    {
+      "number": "#30",
+      "name": "합집합"
+    },
+    {
+      "number": "#31",
+      "name": "원소의수/집합의수"
+    },
+    {
+      "number": "#32",
+      "name": "교차관계"
+    },
+    {
+      "number": "#33",
+      "name": "이중부정"
+    },
+    {
+      "number": "#34",
+      "name": "전칭부정"
+    },
+    {
+      "number": "#35",
+      "name": "코드는 조합이 가능하다"
+    },
+    {
+      "number": "#36",
+      "name": "반증사례"
+    },
+    {
+      "number": "#37",
+      "name": "사례찾기"
+    },
+    {
+      "number": "#38",
+      "name": "개체관계"
+    },
+    {
+      "number": "#39",
+      "name": "비교대상"
+    },
+    {
+      "number": "#40",
+      "name": "부분관계"
+    },
+    {
+      "number": "#41",
+      "name": "결합의오류"
+    },
+    {
+      "number": "#42",
+      "name": "내부/외부"
+    },
+    {
+      "number": "#43",
+      "name": "타변수통제"
+    },
+    {
+      "number": "#44",
+      "name": "수단/목적"
+    },
+    {
+      "number": "#45",
+      "name": "함수"
+    },
+    {
+      "number": "#46",
+      "name": "인과관계"
+    },
+    {
+      "number": "#47",
+      "name": "공통원인"
+    },
+    {
+      "number": "#48",
+      "name": "공통효과"
+    },
+    {
+      "number": "#49",
+      "name": "상관관계"
+    },
+    {
+      "number": "#50",
+      "name": "길이막히면뒤로못간다"
+    },
+    {
+      "number": "#51",
+      "name": "원인"
+    },
+    {
+      "number": "#52",
+      "name": "억제의억제는촉진"
+    },
+    {
+      "number": "#53",
+      "name": "차이만이차이를설명한다"
+    },
+    {
+      "number": "#54",
+      "name": "결정"
+    },
+    {
+      "number": "#55",
+      "name": "허위적인과"
+    },
+    {
+      "number": "#56",
+      "name": "설명"
+    },
+    {
+      "number": "#57",
+      "name": "분기점"
+    },
+    {
+      "number": "#58",
+      "name": "공통전제"
+    },
+    {
+      "number": "#59",
+      "name": "문제해결도식"
+    },
+    {
+      "number": "#60",
+      "name": "논증형식"
+    },
+    {
+      "number": "#61",
+      "name": "바람잡이"
+    },
+    {
+      "number": "#62",
+      "name": "관계부정"
+    },
+    {
+      "number": "#63",
+      "name": "강화/약화"
+    },
+    {
+      "number": "#64",
+      "name": "논의영역"
+    },
+    {
+      "number": "#65",
+      "name": "허수아비"
+    },
+    {
+      "number": "#66",
+      "name": "삼단논법"
+    },
+    {
+      "number": "#67",
+      "name": "합류논증"
+    },
+    {
+      "number": "#68",
+      "name": "약화의약화는강화"
+    },
+    {
+      "number": "#69",
+      "name": "유추"
+    },
+    {
+      "number": "#70",
+      "name": "딜레마"
+    },
+    {
+      "number": "#71",
+      "name": "선언지부정식"
+    },
+    {
+      "number": "#72",
+      "name": "양도추론"
+    },
+    {
+      "number": "#73",
+      "name": "전제부정"
+    },
+    {
+      "number": "#74",
+      "name": "경쟁가설"
+    },
+    {
+      "number": "#75",
+      "name": "경쟁입장"
+    },
+    {
+      "number": "#76",
+      "name": "귀류법"
+    },
+    {
+      "number": "#77",
+      "name": "일반화"
+    },
+    {
+      "number": "#78",
+      "name": "행위설명"
+    },
+    {
+      "number": "#79",
+      "name": "규범"
+    },
+    {
+      "number": "#80",
+      "name": "인식론적도식"
+    },
+    {
+      "number": "#81",
+      "name": "존재론"
+    },
+    {
+      "number": "#82",
+      "name": "변증법"
+    },
+    {
+      "number": "#83",
+      "name": "사실/가치"
+    },
+    {
+      "number": "#84",
+      "name": "분수식"
+    },
+    {
+      "number": "#85",
+      "name": "비율은경쟁적"
+    },
+    {
+      "number": "#86",
+      "name": "양적비교"
+    },
+    {
+      "number": "#87",
+      "name": "기울기"
+    },
+    {
+      "number": "#88",
+      "name": "저울질"
+    },
+    {
+      "number": "#89",
+      "name": "차집합"
+    },
+    {
+      "number": "#90",
+      "name": "경우의수"
+    },
+    {
+      "number": "#91",
+      "name": "비례성"
+    },
+    {
+      "number": "#92",
+      "name": "수식"
+    },
+    {
+      "number": "#93",
+      "name": "의사소통"
+    },
+    {
+      "number": "#94",
+      "name": "없어야OO하지"
+    },
+    {
+      "number": "#95",
+      "name": "있어야OO하지"
+    },
+    {
+      "number": "#96",
+      "name": "일상언어"
+    },
+    {
+      "number": "#97",
+      "name": "발화의도"
+    },
+    {
+      "number": "#98",
+      "name": "A의B"
+    },
+    {
+      "number": "#99",
+      "name": "대용표현"
+    },
+    {
+      "number": "#100",
+      "name": "비유"
+    }
+  ],
+  "confirmedRelevantAliases": [
+    {
+      "number": "#11",
+      "aliases": [
+        "필충",
+        "iff"
+      ]
+    },
+    {
+      "number": "#12",
+      "aliases": [
+        "충분조건",
+        "함축",
+        "대우"
+      ]
+    },
+    {
+      "number": "#25",
+      "aliases": [
+        "트리구조"
+      ]
+    },
+    {
+      "number": "#26",
+      "aliases": [
+        "MECE",
+        "겹치지않게빠짐없이"
+      ]
+    },
+    {
+      "number": "#36",
+      "aliases": [
+        "반례",
+        "조건문의부정"
+      ]
+    },
+    {
+      "number": "#43",
+      "aliases": [
+        "세테리스파리부스"
+      ]
+    },
+    {
+      "number": "#60",
+      "aliases": [
+        "논거",
+        "주장",
+        "가정",
+        "논증구조"
+      ]
+    },
+    {
+      "number": "#66",
+      "aliases": [
+        "전건긍정식",
+        "후건부정식"
+      ]
+    },
+    {
+      "number": "#71",
+      "aliases": [
+        "제거법",
+        "소거법"
+      ]
+    },
+    {
+      "number": "#90",
+      "aliases": [
+        "확률",
+        "조합"
+      ]
+    }
+  ],
+  "appTagsNotice": "아래 id는 이 프로젝트용 식별자다. label·definition·useWhen·pitfall은 독립적으로 작성한 응용 설명이며 SDSS의 공식 해설이나 공식 대응표가 아니다. sourceCodes는 원 번호를 보존한 참고 연결이다.",
+  "appTags": [
+    {
+      "id": "logic-conditional",
+      "label": "조건문 연결",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#12",
+        "#66"
+      ],
+      "mapping": "application",
+      "definition": "조건의 방향을 고정하고 여러 함의를 이어 결론을 도출한다.",
+      "useWhen": "A이면 B, B이면 C를 결합하는 것이 풀이의 핵심일 때.",
+      "pitfall": "결과의 성립만으로 원인의 성립을 추론하지 않는다."
+    },
+    {
+      "id": "logic-contrapositive",
+      "label": "대우",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#12",
+        "#66"
+      ],
+      "mapping": "source_alias_application",
+      "definition": "A→B를 ¬B→¬A로 바꾸어 불가능한 대상을 제거한다.",
+      "useWhen": "결과가 성립하지 않는 정보에서 출발 조건의 부정을 얻을 때.",
+      "pitfall": "역 B→A 또는 이 ¬A→¬B와 혼동하지 않는다."
+    },
+    {
+      "id": "logic-necessity",
+      "label": "필요·충분 구별",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#10",
+        "#12",
+        "#20"
+      ],
+      "mapping": "application",
+      "definition": "반드시 갖춰야 하는 요건과 그것만으로 성립을 보장하는 조건을 구별한다.",
+      "useWhen": "'~해야만', '~에 한하여', '~이면'을 기호로 옮기거나 조건 누락을 판별할 때.",
+      "pitfall": "필요조건 충족을 충분조건 충족으로 취급하지 않는다."
+    },
+    {
+      "id": "logic-iff",
+      "label": "필요충분조건",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#11",
+        "#15",
+        "#21"
+      ],
+      "mapping": "application",
+      "definition": "양방향 함의를 각각 확인하여 정의나 판정 기준을 적용한다.",
+      "useWhen": "정의의 충족 여부나 두 조건의 동치를 따져야 할 때.",
+      "pitfall": "한 방향만 성립한 것을 동치로 단정하지 않는다."
+    },
+    {
+      "id": "logic-quantifiers",
+      "label": "양화·부정",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#4",
+        "#33",
+        "#34"
+      ],
+      "mapping": "application",
+      "definition": "모든·일부의 범위를 유지하며 명제의 부정을 정확히 구성한다.",
+      "useWhen": "전칭·존재 문장의 참거짓이나 부정을 판정할 때.",
+      "pitfall": "'모두는 아니다'와 '모두 아니다'를 구별한다."
+    },
+    {
+      "id": "logic-consistency",
+      "label": "모순·양립가능성",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#13",
+        "#14",
+        "#18"
+      ],
+      "mapping": "application",
+      "definition": "여러 진술이 동시에 참인 배치를 만들 수 있는지 확인한다.",
+      "useWhen": "동시에 성립할 수 있는 주장 또는 모순되는 조합을 찾을 때.",
+      "pitfall": "둘 다 거짓일 수 있는 반대관계와 반드시 한쪽만 참인 모순관계를 구별한다."
+    },
+    {
+      "id": "logic-disjunction",
+      "label": "선언·소거",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#71",
+        "#72"
+      ],
+      "mapping": "application",
+      "definition": "가능한 대안을 제시한 뒤 배제된 대안을 지워 남은 결론을 얻는다.",
+      "useWhen": "A 또는 B와 A 아님을 결합하거나 대안마다의 결론을 모을 때.",
+      "pitfall": "'또는'이 포괄적인지 배타적인지 먼저 확인한다."
+    },
+    {
+      "id": "logic-reductio",
+      "label": "귀류법",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#76",
+        "#18"
+      ],
+      "mapping": "application",
+      "definition": "목표 명제의 부정을 가정해 조건 충돌을 도출하고 그 가정을 제거한다.",
+      "useWhen": "직접 추론보다 반대 가정의 불가능성을 밝히는 것이 짧을 때.",
+      "pitfall": "모순은 임의의 배치가 아니라 해당 가정에서 필연적으로 나와야 한다."
+    },
+    {
+      "id": "logic-counterexample",
+      "label": "반례 구성",
+      "group": "명제·조건",
+      "sourceCodes": [
+        "#36",
+        "#37"
+      ],
+      "mapping": "application",
+      "definition": "전제를 만족하면서 결론을 거짓으로 만드는 구체적 사례를 만든다.",
+      "useWhen": "반드시 참인지, 추론이 타당한지, 일반 법칙에 예외가 있는지 판정할 때.",
+      "pitfall": "전제까지 위반하는 사례는 반례가 아니다."
+    },
+    {
+      "id": "logic-set",
+      "label": "집합·포함관계",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#23",
+        "#29",
+        "#30",
+        "#32",
+        "#89"
+      ],
+      "mapping": "application",
+      "definition": "포함·교차·합·차 관계를 집합으로 나타내 대상 범위를 비교한다.",
+      "useWhen": "여러 집단의 공통 대상과 예외 대상을 구별할 때.",
+      "pitfall": "부분집합과 서로 겹치는 집합을 구별한다."
+    },
+    {
+      "id": "logic-definition",
+      "label": "개념·기준 적용",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#15",
+        "#16",
+        "#17",
+        "#21"
+      ],
+      "mapping": "application",
+      "definition": "제시된 정의를 판정 요건으로 나누고 사례의 충족 여부를 대조한다.",
+      "useWhen": "개념 정의에 맞는 사례나 동일 기준의 적용 여부를 고를 때.",
+      "pitfall": "일상적 인상 대신 지문이 정한 의미를 따른다."
+    },
+    {
+      "id": "logic-exception",
+      "label": "원칙·예외 적용",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#24",
+        "#12"
+      ],
+      "mapping": "application",
+      "definition": "일반 규칙과 예외의 발동 조건을 분리하고 적용 순서를 정한다.",
+      "useWhen": "단서·특례·면책·우선 적용 조항 때문에 결론이 달라질 때.",
+      "pitfall": "예외의 존재만 보고 원칙 전체가 폐기된다고 해석하지 않는다."
+    },
+    {
+      "id": "logic-cases",
+      "label": "경우 분류",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#25",
+        "#26",
+        "#57",
+        "#90"
+      ],
+      "mapping": "composition",
+      "definition": "결론을 바꾸는 조건을 기준으로 전체 가능성을 겹치지 않게 나눈다.",
+      "useWhen": "하나의 배치로 결정되지 않아 조건별 가지를 모두 검토해야 할 때.",
+      "pitfall": "분류의 누락·중복을 확인하고 무관한 분기는 줄인다."
+    },
+    {
+      "id": "logic-trichotomy",
+      "label": "삼분법",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#25",
+        "#26",
+        "#57"
+      ],
+      "mapping": "project_extension",
+      "definition": "한 비교 기준에서 가능한 세 상태로 경우를 나누어 각각 결론을 확인한다.",
+      "useWhen": "크다·같다·작다처럼 셋이 전체를 빠짐없이 덮는 구분이 풀이의 핵심일 때.",
+      "pitfall": "원 100코드의 명칭·별칭에 삼분법은 확인되지 않았다. 삼단논법 #66과 다른 자체 태그다."
+    },
+    {
+      "id": "logic-ordering",
+      "label": "순서·우선순위",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#3",
+        "#8",
+        "#9"
+      ],
+      "mapping": "application",
+      "definition": "선후·서열 제약을 연결해 가능한 순서와 확정 위치를 찾는다.",
+      "useWhen": "일정·순위·선정 순서의 상대적 제약을 배치해야 할 때.",
+      "pitfall": "A가 B보다 앞선다는 조건을 바로 앞선다는 조건으로 강화하지 않는다."
+    },
+    {
+      "id": "logic-allocation",
+      "label": "대응·배치",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#38",
+        "#45",
+        "#90"
+      ],
+      "mapping": "project_extension",
+      "definition": "대상과 자리를 대응시키고 수용량·중복·배타 조건을 동시에 충족시킨다.",
+      "useWhen": "사람·팀·장소·역할 등의 배정표를 구성하는 것이 핵심일 때.",
+      "pitfall": "일대일 대응이 명시되지 않았다면 임의로 가정하지 않는다."
+    },
+    {
+      "id": "logic-counting",
+      "label": "경우의 수",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#31",
+        "#90"
+      ],
+      "mapping": "application",
+      "definition": "조건을 만족하는 배치의 수를 중복과 대칭을 고려하여 센다.",
+      "useWhen": "가능한 조합·배열의 수 또는 존재하는 경우의 수가 답을 정할 때.",
+      "pitfall": "대상의 순서가 중요한지와 서로 구별되는지 확인한다."
+    },
+    {
+      "id": "logic-model",
+      "label": "가능 모형 구성",
+      "group": "구조·경우",
+      "sourceCodes": [
+        "#14",
+        "#37",
+        "#90"
+      ],
+      "mapping": "project_extension",
+      "definition": "모든 제약을 만족하는 완성 사례를 만들어 가능 명제와 필연 명제를 구별한다.",
+      "useWhen": "가능한 것·불가능한 것·반드시 참인 것을 배치표로 검증할 때.",
+      "pitfall": "하나의 성공 사례로 필연성을 증명할 수는 없다."
+    },
+    {
+      "id": "logic-argument",
+      "label": "논증구조",
+      "group": "논증 평가",
+      "sourceCodes": [
+        "#56",
+        "#58",
+        "#60",
+        "#66",
+        "#67"
+      ],
+      "mapping": "application",
+      "definition": "주장·근거·중간결론의 역할과 연결 방식을 구분해 논증의 골격을 만든다.",
+      "useWhen": "밑줄 문장의 역할, 논증의 구조, 두 논증의 형식적 대응을 묻는 경우.",
+      "pitfall": "설명 대상 사실과 정당화하려는 결론을 구별한다."
+    },
+    {
+      "id": "logic-assumption",
+      "label": "숨은 전제",
+      "group": "논증 평가",
+      "sourceCodes": [
+        "#58",
+        "#60",
+        "#10"
+      ],
+      "mapping": "composition",
+      "definition": "제시된 근거에서 결론으로 넘어가는 데 필요한 누락된 연결을 찾는다.",
+      "useWhen": "가정·전제·반드시 받아들여야 할 내용을 고를 때.",
+      "pitfall": "결론을 강하게 지지하는 충분조건과 논증에 필요한 전제를 구별한다."
+    },
+    {
+      "id": "logic-strengthen",
+      "label": "강화·약화",
+      "group": "논증 평가",
+      "sourceCodes": [
+        "#63",
+        "#68"
+      ],
+      "mapping": "application",
+      "definition": "추가 정보가 근거에서 결론으로 가는 지지를 늘리는지 줄이는지 평가한다.",
+      "useWhen": "가설이나 주장의 설득력을 바꾸는 추가 사실을 판단할 때.",
+      "pitfall": "결론과 같은 방향의 문장이라는 이유만으로 강화라고 판단하지 않는다."
+    },
+    {
+      "id": "logic-rebuttal",
+      "label": "전제·추론 비판",
+      "group": "논증 평가",
+      "sourceCodes": [
+        "#62",
+        "#73"
+      ],
+      "mapping": "composition",
+      "definition": "비판이 근거의 사실성·수용성을 겨냥하는지 추론의 연결을 겨냥하는지 구분한다.",
+      "useWhen": "반론의 표적이나 비판 방식의 적절성을 판정할 때.",
+      "pitfall": "결론이 거짓이라는 주장만으로 상대 논거의 오류가 입증되는 것은 아니다."
+    },
+    {
+      "id": "logic-relevance",
+      "label": "관련성·중립",
+      "group": "논증 평가",
+      "sourceCodes": [
+        "#61",
+        "#64",
+        "#65"
+      ],
+      "mapping": "composition",
+      "definition": "추가 정보가 실제 논의 대상과 평가하려는 연결에 영향을 주는지 확인한다.",
+      "useWhen": "논점 일탈·허수아비 비판·강화도 약화도 아닌 정보를 구분할 때.",
+      "pitfall": "같은 소재의 정보라도 논증의 핵심 연결에는 무관할 수 있다."
+    },
+    {
+      "id": "logic-analogy",
+      "label": "유추",
+      "group": "논증 평가",
+      "sourceCodes": [
+        "#69",
+        "#39"
+      ],
+      "mapping": "application",
+      "definition": "두 대상의 대응 관계 중 결론에 관련된 구조가 유지되는지 확인한다.",
+      "useWhen": "다른 사례의 결론을 옮기거나 비슷한 추론 구조를 찾을 때.",
+      "pitfall": "표면적 유사성보다 결론을 뒷받침하는 속성의 유사성이 중요하다."
+    },
+    {
+      "id": "logic-generalization",
+      "label": "일반화·표본",
+      "group": "논증 평가",
+      "sourceCodes": [
+        "#77",
+        "#4"
+      ],
+      "mapping": "application",
+      "definition": "관찰된 사례를 더 큰 집단으로 확대할 수 있는지 표본과 범위를 점검한다.",
+      "useWhen": "조사·실험 참가자에서 모집단에 관한 결론을 도출할 때.",
+      "pitfall": "표본 수가 커도 선택 편향이 자동으로 사라지지는 않는다."
+    },
+    {
+      "id": "logic-hypothesis",
+      "label": "경쟁가설 판별",
+      "group": "논증 평가",
+      "sourceCodes": [
+        "#74",
+        "#75",
+        "#57"
+      ],
+      "mapping": "composition",
+      "definition": "서로 다른 설명이 내놓는 예측을 분리하고 한쪽을 가르는 증거를 찾는다.",
+      "useWhen": "두 가설을 구분하거나 공통 증거와 판별 증거를 구별할 때.",
+      "pitfall": "양쪽 모두 예상하는 관찰을 결정적 판별 증거로 쓰지 않는다."
+    },
+    {
+      "id": "logic-causation",
+      "label": "인과·상관 구별",
+      "group": "인과·실험",
+      "sourceCodes": [
+        "#46",
+        "#49",
+        "#51",
+        "#54",
+        "#55"
+      ],
+      "mapping": "composition",
+      "definition": "함께 변한다는 관찰과 한 변수가 다른 변수를 변화시킨다는 주장을 분리한다.",
+      "useWhen": "상관 자료에서 인과를 추론하거나 인과 방향의 대안을 검토할 때.",
+      "pitfall": "시간상 앞섰다는 사실만으로 인과관계가 확정되지는 않는다."
+    },
+    {
+      "id": "logic-confounding",
+      "label": "공통원인·제3변수",
+      "group": "인과·실험",
+      "sourceCodes": [
+        "#47",
+        "#48",
+        "#55"
+      ],
+      "mapping": "composition",
+      "definition": "관찰된 관계를 함께 만들어 내거나 선택 과정에 영향을 주는 다른 변수를 찾는다.",
+      "useWhen": "공통원인·공통효과·선택 편향이 인과 해석을 바꾸는 경우.",
+      "pitfall": "관찰된 두 변수 사이의 직접 영향만을 유일한 설명으로 보지 않는다."
+    },
+    {
+      "id": "logic-control",
+      "label": "변수 통제",
+      "group": "인과·실험",
+      "sourceCodes": [
+        "#43",
+        "#53"
+      ],
+      "mapping": "application",
+      "definition": "비교 집단의 다른 조건을 맞추어 관심 변수의 차이가 결과에 미친 영향을 분리한다.",
+      "useWhen": "대조군·무작위 배정·사전 사후 비교의 적절성을 평가할 때.",
+      "pitfall": "통제가 되었다는 말과 실제 비교에서 교란 요인이 제거되었다는 것을 구별한다."
+    },
+    {
+      "id": "logic-intervention",
+      "label": "개입·경로 추적",
+      "group": "인과·실험",
+      "sourceCodes": [
+        "#45",
+        "#50",
+        "#52"
+      ],
+      "mapping": "composition",
+      "definition": "연쇄 과정에 개입했을 때 전달 경로와 촉진·억제 방향이 어떻게 바뀌는지 추적한다.",
+      "useWhen": "생물학적 기전·회로·정책 경로에서 특정 요소의 중단 효과를 묻는 경우.",
+      "pitfall": "직접 경로가 끊겨도 우회 경로가 남는지 확인한다."
+    },
+    {
+      "id": "logic-difference",
+      "label": "차이 비교",
+      "group": "인과·실험",
+      "sourceCodes": [
+        "#39",
+        "#43",
+        "#53"
+      ],
+      "mapping": "composition",
+      "definition": "공통 조건과 차이 나는 조건을 나누어 결과 차이를 설명하는 후보를 좁힌다.",
+      "useWhen": "두 집단·시점·실험 조건의 차이를 근거로 원인을 판별할 때.",
+      "pitfall": "관찰된 차이를 설명하는 변수가 하나뿐인지 검토한다."
+    },
+    {
+      "id": "logic-norm",
+      "label": "규범·가치 판단",
+      "group": "규범·수리",
+      "sourceCodes": [
+        "#44",
+        "#79",
+        "#83",
+        "#88"
+      ],
+      "mapping": "composition",
+      "definition": "사실 진술과 가치 기준을 분리하고 의무·허용·수단의 정당화 조건을 적용한다.",
+      "useWhen": "정책·행위의 정당성이나 상충하는 가치의 적용을 판단할 때.",
+      "pitfall": "사실의 성립에서 당위가 바로 도출된다고 가정하지 않는다."
+    },
+    {
+      "id": "logic-ratio",
+      "label": "비율·절대량",
+      "group": "규범·수리",
+      "sourceCodes": [
+        "#84",
+        "#85",
+        "#86",
+        "#91",
+        "#92"
+      ],
+      "mapping": "composition",
+      "definition": "비율의 분자·분모와 절대량을 나누어 증감 및 집단 간 비교를 수행한다.",
+      "useWhen": "비중·평균·비율 변화가 전체 수치와 다른 결론을 낳는 경우.",
+      "pitfall": "비율 상승을 해당 대상의 절대량 증가로 단정하지 않는다."
+    },
+    {
+      "id": "logic-probability",
+      "label": "확률·조건부 판단",
+      "group": "규범·수리",
+      "sourceCodes": [
+        "#90",
+        "#92"
+      ],
+      "mapping": "project_extension",
+      "definition": "표본공간과 조건으로 제한된 범위를 구분해 확률을 계산하거나 비교한다.",
+      "useWhen": "조건부 확률·독립성·검사 결과·기초 비율이 결론에 영향을 줄 때.",
+      "pitfall": "P(A|B)와 P(B|A)를 바꾸거나 독립성을 근거 없이 가정하지 않는다."
+    },
+    {
+      "id": "logic-scope",
+      "label": "표현·범위 해석",
+      "group": "언어 해석",
+      "sourceCodes": [
+        "#96",
+        "#97",
+        "#98",
+        "#99"
+      ],
+      "mapping": "composition",
+      "definition": "수식 범위·지시 대상·발화 목적을 고정해 문장의 해석 차이를 제거한다.",
+      "useWhen": "같은 표현의 대상이나 한정 범위가 바뀌어 선지의 참거짓이 달라질 때.",
+      "pitfall": "문맥에서 정한 대상 대신 비슷한 다른 대상을 대입하지 않는다."
+    }
+  ],
+  "recommendedUse": {
+    "display": "풀이 논리와 지문 주제를 다른 필드로 둔다. 한 문항에 핵심 논리 1개와 보조 논리 0~2개를 권장한다.",
+    "questionEvidence": "문항별 태그마다 실제 조건·선지·해설에서 확인한 근거를 한 문장으로 기록한다. 단순 키워드 탐지로 검증 완료 표시를 하지 않는다.",
+    "provenance": "원코드는 sourceCodes.number/name으로 보존하고 자체 태그 id는 logic-*로 분리한다. 출처 연결과 문항에 대한 자체 판단을 구분한다.",
+    "trichotomy": "삼분법은 세 경우를 모두 구분해야 실제 결론이 나오는 문항에만 부여한다. 세 대상이 등장한다는 이유로 부여하지 않는다.",
+    "caseDistinction": "경우 분류는 풀이 방법이고 경우의 수는 계수 대상이다. 모든 배치 문제를 경우의 수로 태그하지 않는다.",
+    "sourceDefinitionLimit": "원목록은 명칭·별칭을 제시한다. 이 조사에서는 SDSS의 장문 개별 코드 해설 페이지를 확인하지 못했으므로 자체 정의를 공식 해설인 것처럼 인용하지 않는다."
+  }
+}
