@@ -27,7 +27,7 @@ function question(id,number,preliminary=false) {
 }
 const fixture={exam:{questionCount:13,examCount:3},exams:[{key:'preliminary',label:'2009학년도 예비시험',questionCount:2,year:2009},{key:'2009',label:'2009학년도',questionCount:10,year:2009},{key:'2027',label:'2027학년도',questionCount:1,year:2027}],taxonomy,tagAliases:{'subject-old-authority':'subject-law-institutions'},questions:[question('0901',1),question('p002',2,true),...Array.from({length:9},(_,i)=>question(`09${String(i+2).padStart(2,'0')}`,i+2)),question('p001',1,true),{...current,examKey:'2027',examLabel:'2027학년도',sourcePdf:'data/2027-original.pdf',sourcePdfPage:current.sourcePage,dataPath:'data/archive.json',tags:['domain-humanities','field-law','subject-law-institutions','year-2027']}]};
 
-async function boot(hash='',reviews={},data=fixture,blockedStorage=false) {
+async function boot(hash='',reviews={},data=fixture,blockedStorage=false,savedTexts=null) {
  const elements=new Map(),events=new Map(),requests=[];
  function element(key) {
   if(!elements.has(key))elements.set(key,{innerHTML:'',textContent:'',hidden:true,open:false,value:'',dataset:{},classList:{add(){},toggle(){}},style:{setProperty(){}},addEventListener(){},focus(){this.focusCount=(this.focusCount||0)+1},setAttribute(){},removeAttribute(){},getClientRects(){return [1]},getBoundingClientRect(){return {left:0,top:0,bottom:10,width:100,height:20}},showModal(){this.open=true},close(){this.open=false}});
@@ -38,6 +38,7 @@ async function boot(hash='',reviews={},data=fixture,blockedStorage=false) {
  const window={addEventListener(){},scrollTo(){},innerWidth:1440,innerHeight:900};
  const history={replaceState(_a,_b,path){location.hash=path}};
  const memory=new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})]]);
+ if(savedTexts!==null) memory.set(localText.LOCAL_TEXT_STORAGE_KEY,savedTexts);
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
  const env={document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>structuredClone(data)}},...core, ...tagGroups, ...localText};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
@@ -48,7 +49,7 @@ async function boot(hash='',reviews={},data=fixture,blockedStorage=false) {
  }
  let app;
  try {
-  app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,toggleTag,resetFilters,filteredQuestions,showBookmarkPalette,selectBookmarkColor,catalogTags,importLocalTextFile:typeof importLocalTextFile === "function" ? importLocalTextFile : null};')(...Object.values(env));
+  app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,toggleTag,resetFilters,filteredQuestions,showBookmarkPalette,selectBookmarkColor,catalogTags,clearLocalText,importLocalTextFile:typeof importLocalTextFile === "function" ? importLocalTextFile : null};')(...Object.values(env));
  } finally {
   if(blockedStorage) { if(previous) Object.defineProperty(globalThis,'localStorage',previous); else delete globalThis.localStorage; }
  }
@@ -331,6 +332,59 @@ test('shared subject collections display every parent field and search by second
 
 const fullArchive=JSON.parse(await readFile(new URL('../data/archive.json',import.meta.url),'utf8'));
 const puzzle='type-4536b24c5d',year2026='year-750655310c',year2025='year-abefd8a26e';
+
+test('full archive shows native coverage and only available question cards carry a text badge',async()=>{
+ const oldest=await boot('#/questions',{},fullArchive);
+ assert.equal(oldest.elements.get('#text-coverage')?.textContent,'본문 40/755');
+ assert.match(oldest.elements.get('#text-coverage').title,/2009학년도 예비시험 0\/40/);
+ assert.match(oldest.elements.get('#text-coverage').title,/2027학년도 본시험 40\/40/);
+ assert.doesNotMatch(oldest.elements.get('#question-list').innerHTML,/본문 있음/);
+ const newest=await boot('#/questions?sort=newest',{},fullArchive);
+ assert.equal((newest.elements.get('#question-list').innerHTML.match(/본문 있음/g)||[]).length,10);
+});
+
+test('all 715 local bodies import across the real 755-question archive, restore, search and preserve review notes',async()=>{
+ const reviews={'p001':{bookmarkColors:['blue'],status:'check',note:'기존 검수 메모'},'2701':{note:'공개 문항 메모'}};
+ const {app,elements,memory,requests,location}=await boot('#/question/p001',reviews,fullArchive);
+ const nativeBefore=app.state.data.questions.filter(question=>question.examKey==='2027').map(question=>question.text);
+ const records=fullArchive.questions.filter(question=>question.sourceAccess==='local-only').map(question=>({
+  id:question.id,examKey:question.examKey,number:question.number,sourcePage:question.sourcePage,
+  text:`로컬전체본문 ${question.id} ${question.examLabel} ${question.number}번\n① 개인용 <본문> & 선택지`,
+ }));
+ assert.equal(records.length,715);
+ const payload=JSON.stringify({schemaVersion:1,kind:'leet-atlas-local-text',questions:records});
+ await app.importLocalTextFile({size:Buffer.byteLength(payload),text:async()=>payload});
+ assert.equal(app.state.localTexts.size,715);
+ assert.equal(elements.get('#text-coverage').textContent,'본문 755/755');
+ assert.match(elements.get('#text-coverage').title,/2009학년도 예비시험 40\/40/);
+ assert.match(elements.get('#text-coverage').title,/2010학년도 본시험 35\/35/);
+ assert.match(elements.get('#toast').textContent,/715문항의 본문을 불러왔습니다/);
+ assert.match(elements.get('#toast').textContent,/본문 755\/755/);
+ assert.match(elements.get('#main').innerHTML,/로컬전체본문 p001/);
+ assert.match(elements.get('#main').innerHTML,/&lt;본문&gt; &amp; 선택지/);
+ assert.equal(app.state.reviews.p001.note,'기존 검수 메모');
+ assert.equal(app.state.reviews['2701'].note,'공개 문항 메모');
+ assert.deepEqual(app.state.data.questions.filter(question=>question.examKey==='2027').map(question=>question.text),nativeBefore);
+ assert.equal(JSON.parse(memory.get(localText.LOCAL_TEXT_STORAGE_KEY)).questions.length,715);
+ assert.equal(JSON.parse(memory.get('leet-atlas:2027:reviews:v1')).reviews.p001.note,'기존 검수 메모');
+ app.state.query='로컬전체본문';
+ assert.equal(app.filteredQuestions().length,715);
+ for(const id of ['p001','0901','1001','2632']) {
+  app.state.query=`로컬전체본문 ${id}`;
+  assert.deepEqual(app.filteredQuestions().map(question=>question.id),[id]);
+ }
+ app.state.query='';location.hash='#/questions';app.render();
+ assert.equal((elements.get('#question-list').innerHTML.match(/본문 있음/g)||[]).length,10);
+ assert.equal(requests.length,1);
+ const restored=await boot('#/question/2632',reviews,fullArchive,false,memory.get(localText.LOCAL_TEXT_STORAGE_KEY));
+ assert.equal(restored.app.state.localTexts.size,715);
+ assert.equal(restored.elements.get('#text-coverage').textContent,'본문 755/755');
+ assert.match(restored.elements.get('#main').innerHTML,/로컬전체본문 2632/);
+ restored.app.clearLocalText('2632');
+ assert.equal(restored.elements.get('#text-coverage').textContent,'본문 754/755');
+ assert.match(restored.elements.get('#main').innerHTML,/원문 출처/);
+ assert.equal(restored.app.state.reviews.p001.note,'기존 검수 메모');
+});
 
 test('real archive applies year AND puzzle even from an old global-OR URL',async()=>{
  const {app,elements,location}=await boot(`#/questions?tag=${year2026}&tag=${puzzle}&tagMode=or`,{},fullArchive);

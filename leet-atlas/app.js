@@ -1,11 +1,11 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-smart1';
-import { groupTags } from './tag-groups.mjs?v=20261026-smart1';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-smart1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-text1';
+import { groupTags } from './tag-groups.mjs?v=20261026-text1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-text1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-smart1';
+const CACHE_VERSION = '20261026-text1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -124,6 +124,12 @@ function examLabel(question) {
 function archiveScope() {
   const count = state.data.exam?.examCount || state.data.exams?.length || new Set(state.data.questions.map(question => question.examKey || question.year)).size;
   return count > 1 ? `${count}회분` : examLabel(state.data.questions[0] || { year: '' });
+}
+function updateTextCoverage() {
+  const coverage = localTextCoverage(state.data.questions, state.localTexts);
+  const status = document.querySelector('#text-coverage');
+  status.textContent = `본문 ${coverage.available}/${coverage.total}`;
+  status.title = coverage.exams.map(exam => `${exam.examLabel} ${exam.available}/${exam.total}`).join('\n');
 }
 function emptyTaxonomyLabel() {
   return state.data.exams || state.data.exam?.examCount ? '현재 아카이브 자료 없음' : `현재 ${state.data.questions[0]?.year || ''} 자료 없음`;
@@ -298,7 +304,7 @@ function questionCard(question) {
   const activeTag = state.route.view === 'tag' ? state.taxonomy.get(state.route.id) : null;
   const reason = activeTag ? question.tagReasons?.[activeTag.label] || question.tagReasons?.[activeTag.id] : null;
   const thumbnail = imageFor(question, true);
-  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
+  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${typeof question.text === 'string' && question.text.trim() ? '<span class="text-available-badge">본문 있음</span>' : ''}${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
 }
 function paginationMarkup(result) {
   if (!result.total) return '';
@@ -424,7 +430,8 @@ async function importLocalTextFile(file) {
     try { saveLocalTexts(localStorage, [...merged.values()]); } catch { persisted = false; }
     state.localTexts = merged;
     render();
-    showToast(`${records.length}문항의 본문을 불러왔습니다.${persisted ? ' 이 브라우저에 보관합니다.' : ' 저장 공간이 부족해 현재 탭에서만 표시합니다.'}`);
+    const coverage = localTextCoverage(state.data.questions, state.localTexts);
+    showToast(`${records.length}문항의 본문을 불러왔습니다. 본문 ${coverage.available}/${coverage.total}.${persisted ? ' 이 브라우저에 보관합니다.' : ' 저장 공간이 부족해 현재 탭에서만 표시합니다.'}`);
   } catch (error) {
     showToast(`본문을 불러오지 못했습니다. ${error.message}`);
   }
@@ -495,6 +502,7 @@ function render() {
   if (state.route.view === 'question') renderQuestion();
   else if (state.route.view === 'tags') renderTags();
   else renderList();
+  updateTextCoverage();
   updateNavigation();
   const focus = nextFocus;
   nextFocus = null;

@@ -40,3 +40,4 @@ main{max-width:1640px;margin:auto;min-height:calc(100vh - 139px);padding:24px 28
 @media(max-width:780px){.header-actions{gap:6px}.header-actions .button{padding:5px 8px;font-size:10px}.tag-match-label .review-select{max-width:270px}.tag-neighborhood>h3{font-size:12px}.filter-tag-group>h4{font-size:11px}}
 
 .filter-rule{margin:-3px 0 10px;font-size:10px;color:var(--muted,#6f7e74);line-height:1.6}.filter-expression{flex-basis:100%;display:flex;flex-wrap:wrap;gap:5px 10px;margin:0 0 3px;font-size:11px;line-height:1.8;color:var(--navy);overflow-wrap:anywhere}.filter-expression strong{font-weight:600}.filter-expression span{color:#52694c}
+.text-coverage{font-size:11px;color:var(--sage-dark);white-space:nowrap;font-variant-numeric:tabular-nums}.row-meta .text-available-badge{padding:1px 5px;border-radius:4px;background:#eef4eb;color:#607852;font-size:9px;white-space:nowrap}
