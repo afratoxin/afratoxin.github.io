@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 // Input, change, click and hashchange events exercise the same handlers as users.
 const runner = fileURLToPath(new URL('./helpers/ui-runner.mjs', import.meta.url));
 for (const [scenario, name] of [
+  ['limits-normal', 'normal sliders map standardized ±3 values to actual bounds and reject direct bypasses'],
+  ['limits-bypass', 'input, bulk, expression, negative-bound and shared-link paths enforce the same public limits'],
   ['structured-subset', 'selected variables alone receive parity and lower or upper bounds'],
   ['structured-custom', 'custom equations survive base sliders and reset back into default sum synchronization'],
   ['structured-hash', 'local groups and shared structures round trip while malicious structures recover safely'],

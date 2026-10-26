@@ -7,13 +7,13 @@ const scenario=process.argv[2];
 if(!scenario)process.exit(0);
 process.env.TEST_NETWORK_FAIL=scenario==='network'?'1':'';
 process.env.TEST_REAL_CATALOG=scenario==='catalog'?'1':'';
-process.env.TEST_HASH=scenario==='hash'?'#lab='+encodeURIComponent(JSON.stringify({family:'normal',params:{mu:1.5,sigma:0.25,n:4,lower:1,upper:2},view:'compare'})):scenario==='malformed'?'#lab='+encodeURIComponent(JSON.stringify({family:'integer-sum',params:null})):'';
+process.env.TEST_HASH=scenario==='hash'?'#lab='+encodeURIComponent(JSON.stringify({family:'normal',params:{mu:1.5,sigma:0.25,n:4,lower:1.25,upper:1.75},view:'compare'})):scenario==='malformed'?'#lab='+encodeURIComponent(JSON.stringify({family:'integer-sum',params:null})):'';
 let randomSeed=137;Math.random=()=>((randomSeed=(randomSeed*1664525+1013904223)>>>0)/2**32);
 let interactionChecksReady=false;
 const viewportWidth=scenario==='layout-phone'?390:1440;
 let actualNavigationActions=0;
 class Element {
-  constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.parentNode=null;this.attrs={};this.dataset={};this.style={setProperty(name,value){this[name]=String(value);}};this.events={};this.hidden=false;this.disabled=false;this._value='';this._text='';this.checked=false;this.selected=false;this.type='';}
+  constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.parentNode=null;this.attrs={};const owner=this;this.dataset=new Proxy({},{set(target,key,value){target[key]=String(value);owner.attrs['data-'+String(key).replace(/[A-Z]/g,c=>'-'+c.toLowerCase())]=String(value);return true;},deleteProperty(target,key){delete target[key];delete owner.attrs['data-'+String(key).replace(/[A-Z]/g,c=>'-'+c.toLowerCase())];return true;}});this.style={setProperty(name,value){this[name]=String(value);}};this.events={};this.hidden=false;this.disabled=false;this._value='';this._text='';this.checked=false;this.selected=false;this.type='';}
   get classList(){const element=this;return {contains(name){return element.className.split(/\s+/).includes(name);},add(...names){element.className=[...new Set([...element.className.split(/\s+/).filter(Boolean),...names])].join(' ');},remove(...names){element.className=element.className.split(/\s+/).filter(name=>!names.includes(name)).join(' ');},toggle(name,force){const on=force??!this.contains(name);on?this.add(name):this.remove(name);return on;}};}
   get parentElement(){return this.parentNode;}
   get firstElementChild(){return this.children.find(e=>e.tagName!=='#TEXT')||null;}
@@ -27,7 +27,7 @@ class Element {
   get value(){if(this.tagName==='SELECT') {const selected=this.children.find(o=>o.selected);return selected?selected.value:(this.children[0]?.value||'');}return this._value;}
   set value(v){v=String(v);this._value=v;if(this.tagName==='SELECT')this.children.forEach(o=>o.selected=o.value===v);}
   get valueAsNumber(){return this.value===''?NaN:Number(this.value);} set valueAsNumber(value){this.value=String(value);}
-  get validity(){const value=Number(this.value),step=Number(this.step||1),min=Number(this.min||0), units=(value-min)/step;return {valid:!(this.required&&this.value==='')&&Number.isFinite(value)&&(this.min===undefined||value>=Number(this.min))&&(this.max===undefined||value<=Number(this.max))&&Math.abs(units-Math.round(units))<1e-7};}
+  get validity(){const value=Number(this.value),step=this.step==='any'?null:Number(this.step||1),min=Number(this.min||0),units=step?(value-min)/step:0;return {valid:!(this.required&&this.value==='')&&Number.isFinite(value)&&(this.min===undefined||value>=Number(this.min))&&(this.max===undefined||value<=Number(this.max))&&(step===null||Math.abs(units-Math.round(units))<1e-7)};}
   append(...nodes){for(let n of nodes){if(typeof n==='string'){const t=new Element('#text');t._text=n;n=t;}n.remove();n.parentNode=this;this.children.push(n);}}
   appendChild(child){this.append(child);return child;}
   removeChild(child){if(child.parentNode!==this)throw new Error('NotFoundError');child.remove();return child;}
@@ -114,6 +114,34 @@ const setField=(id,value,event='input')=>{const element=$(id);assert.ok(element,
 const blankVariable=more=>({domain:'inherit',parity:'any',lower:null,upper:null,...more});
 const structure=(left='a+b+c+d',right='12',more={})=>({enabled:true,left,right,relation:'eq',variables:Array.from({length:4},()=>blankVariable()),conditions:[],...more});
 const savedLink=async()=>{$('link-button').click();await new Promise(resolve=>setTimeout(resolve,0));return JSON.parse(decodeURIComponent(new URL(clipboard).hash.slice(5)));};
+const boundedOutput=()=>{
+  assert.equal(raw('result-status').textContent,'계산 완료');
+  const separatedText=element=>element?[element._text,...element.children.map(separatedText)].join(' '):'';
+  const content=['problem-text','answer-value','steps-list','result-cases','result-chart','result-samples','insight-text','result-warnings'].map(id=>separatedText(raw(id))).join('\n');
+  for(const token of content.match(/[+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:e[+-]?\d+)?/gi)??[])assert.ok(Math.abs(Number(token))<=999,`rendered mathematics exceeds the public limit: ${token}`);
+};
+if(scenario==='limits-normal'){
+  setHash({family:'normal',params:{mu:1.5,sigma:0.25,n:4,lower:1.25,upper:1.75},view:'lab'});
+  const near=(actual,expected)=>assert.ok(Math.abs(Number(actual)-expected)<1e-9,`${actual} ~= ${expected}`);
+  for(const key of ['lower','upper']){assert.equal(raw(`slider-${key}`).min,'-3');assert.equal(raw(`slider-${key}`).max,'3');assert.equal(raw(`slider-${key}`).step,'0.1');assert.equal(raw(`control-${key}`).step,'any');near(raw(`control-${key}`).min,1.125);near(raw(`control-${key}`).max,1.875);}
+  near(raw('slider-lower').value,-2);near(raw('slider-upper').value,2);
+  setField('slider-lower','-3');setField('slider-upper','3');await wait();near(raw('control-lower').value,1.125);near(raw('control-upper').value,1.875);boundedOutput();
+  input('lower','1.2');await wait();near(raw('slider-lower').value,-2.4);boundedOutput();
+  input('lower','1.1249');await wait();assert.equal(raw('result-status').textContent,'조건 확인','typing outside the three-sigma interval is rejected');input('lower','1.25');await wait();
+  input('n','16');await wait();for(const key of ['lower','upper']){near(raw(`control-${key}`).min,1.3125);near(raw(`control-${key}`).max,1.6875);}const saved=await savedLink();assert.ok(saved.params.lower>=1.3125-1e-9&&saved.params.upper<=1.6875+1e-9);boundedOutput();
+  setHash({family:'normal',params:{mu:1000,sigma:1000,n:1000,lower:-1000,upper:1000},view:'lab'});boundedOutput();const recovered=await savedLink();for(const value of Object.values(recovered.params))if(typeof value==='number')assert.ok(Math.abs(value)<=999);assert.ok(raw('toast').textContent.length>0,'hash recovery is explained');
+  console.log('PASS normal standardized [-3,3] sliders / actual numeric bounds / bidirectional decimal mapping / direct outside-bound rejection / dependent n normalization / oversized hash recovery');process.exit(0);
+}
+if(scenario==='limits-bypass'){
+  input('total','1000');await wait();assert.equal(raw('result-status').textContent,'조건 확인');$('reset-button').click();boundedOutput();
+  select('domain',2);await wait();assert.equal(raw('result-status').textContent,'조건 확인');input('lowerOn',true,'change');input('lower','0');input('upperOn',true,'change');input('upper','3');await wait();boundedOutput();assert.equal(raw('answer-value').textContent,'40','an unbounded model can be repaired by adding finite bounds without resetting');$('reset-button').click();
+  setField('structure-bulk-upper-mode','value','change');setField('structure-bulk-upper','1000');$('structure-bulk-apply').click();assert.equal(raw('structure-error').hidden,false);assert.equal(raw('answer-value').textContent,'20','invalid bulk bounds are not partially applied');
+  for(const expression of ['1000','500+500']){setField('structure-main-right',expression);await wait();assert.equal(raw('result-status').textContent,'조건 확인',expression);$('structure-reset-main').click();await wait();boundedOutput();}
+  setField('structure-var-a-lower-mode','value','change');setField('structure-var-a-lower','-1000');await wait();assert.equal(raw('result-status').textContent,'조건 확인');$('reset-button').click();
+  const hostile=structure('a+b+c+d','1000',{variables:[blankVariable({upper:1000}),blankVariable(),blankVariable(),blankVariable()]});
+  setHash({family:'integer-sum',params:{k:4,total:1000,structure:hostile},view:'lab'});boundedOutput();const saved=await savedLink();assert.ok(saved.params.total<=999);assert.ok(saved.params.structure.variables.every(v=>v.upper===null||v.upper<=999));assert.ok(!/(?<!\d)1000(?!\d)/.test(saved.params.structure.right));
+  console.log('PASS public limits through direct inputs / bulk bounds / AST literal and constant folding / negative bounds / shared hash recovery');process.exit(0);
+}
 if(scenario==='layout-tabs'){
   assert.ok(raw('family-select'),'family selection uses the visible native dropdown');
   assert.equal(raw('family-select').options.length,13);
@@ -137,27 +165,27 @@ if(scenario==='layout-tabs'){
   console.log('PASS five accessible adjustment tabs / keyboard navigation / four fields per page / all controls reachable / hidden values counted / paging retains edits / visible native family selection');process.exit(0);
 }
 if(scenario==='layout-structure'){
-  input('k','8');input('total','16');await wait();activate('adjust-tab-variables');activate('structure-variable-mode-single');
+  input('upperOn',true,'change');input('upper','2');input('k','8');input('total','12');await wait();activate('adjust-tab-variables');activate('structure-variable-mode-single');
   assert.equal(raw('structure-variable-current').options.length,8);
   for(let i=0;i<8;i++){
     const current=raw('structure-variable-current');current.value=String(i);current.dispatch('change');
     const letter='abcdefgh'[i];assert.ok(raw(`structure-var-${letter}-domain`));assert.equal(raw('structure-variable-single').querySelectorAll('.variable-card').filter(card=>!isHidden(card)).length,1);
-    setField(`structure-var-${letter}-upper-mode`,'value','change');setField(`structure-var-${letter}-upper`,'16');
+    setField(`structure-var-${letter}-upper-mode`,'value','change');setField(`structure-var-${letter}-upper`,'2');
   }
-  setField('structure-var-a-lower-mode','value','change');setField('structure-var-a-lower','3');await wait();assert.equal(raw('answer-value').textContent,'1716');
-  assert.equal($('structure-var-h-upper').value,'16');assert.equal($('structure-var-a-lower').value,'3','single-card state survives switching through h and back to a');
-  setField('structure-var-a-upper','10001');await wait();assert.equal(raw('result-status').textContent,'조건 확인');setField('structure-var-h-upper','16');await wait();assert.equal(raw('result-status').textContent,'조건 확인','an invalid unmounted a bound cannot disappear while editing h');assert.equal($('structure-var-a-upper').value,'10001');setField('structure-var-a-upper','16');await wait();assert.equal(raw('answer-value').textContent,'1716');
-  activate('structure-variable-mode-bulk');setField('structure-bulk-parity','even','change');$('structure-bulk-apply').click();await wait();assert.equal(raw('answer-value').textContent,'171');
-  for(let i=0;i<12;i++)$('structure-add-expression').click();await wait();assert.equal(raw('answer-value').textContent,'21');
+  setField('structure-var-a-lower-mode','value','change');setField('structure-var-a-lower','2');await wait();assert.equal(raw('answer-value').textContent,'35');
+  assert.equal($('structure-var-h-upper').value,'2');assert.equal($('structure-var-a-lower').value,'2','single-card state survives switching through h and back to a');
+  setField('structure-var-a-upper','1000');await wait();assert.equal(raw('result-status').textContent,'조건 확인');setField('structure-var-h-upper','2');await wait();assert.equal(raw('result-status').textContent,'조건 확인','an invalid unmounted a bound cannot disappear while editing h');assert.equal($('structure-var-a-upper').value,'1000');setField('structure-var-a-upper','2');await wait();assert.equal(raw('answer-value').textContent,'35');
+  activate('structure-variable-mode-bulk');setField('structure-bulk-parity','even','change');$('structure-bulk-apply').click();await wait();assert.equal(raw('answer-value').textContent,'15');
+  for(let i=0;i<12;i++){$('structure-add-expression').click();setField(`structure-condition-${i}-left`,'a+b');setField(`structure-condition-${i}-right`,'4');setField(`structure-condition-${i}-relation`,'le','change');}await wait();assert.equal(raw('answer-value').textContent,'15');
   assert.match(raw('structure-condition-page').textContent,/4\s*\/\s*4/);assert.equal(raw('structure-conditions').querySelectorAll('.structure-condition-row').filter(row=>!isHidden(row)).length,3);
   const before=await savedLink();assert.equal(before.params.structure.conditions.length,12);$('structure-add-expression').click();const after=await savedLink();assert.equal(after.params.structure.conditions.length,12,'condition cap does not silently append an unreachable thirteenth condition');
-  setField('structure-condition-0-right','16');await wait();assert.equal(raw('answer-value').textContent,'0','unchanged constraints on other pages still participate');setField('structure-condition-0-right','12');await wait();assert.equal(raw('answer-value').textContent,'21');
-  setField('structure-condition-0-left','not_a_variable');await wait();assert.equal(raw('result-status').textContent,'조건 확인');setField('structure-condition-11-right','12');await wait();assert.equal(raw('result-status').textContent,'조건 확인','off-page invalid expressions remain invalid');setField('structure-condition-0-left','a*b');await wait();assert.equal(raw('answer-value').textContent,'21');
+  setField('structure-condition-0-right','3');await wait();assert.equal(raw('answer-value').textContent,'0','unchanged constraints on other pages still participate');setField('structure-condition-0-right','4');await wait();assert.equal(raw('answer-value').textContent,'15');
+  setField('structure-condition-0-left','not_a_variable');await wait();assert.equal(raw('result-status').textContent,'조건 확인');setField('structure-condition-11-right','4');await wait();assert.equal(raw('result-status').textContent,'조건 확인','off-page invalid expressions remain invalid');setField('structure-condition-0-left','a+b');await wait();assert.equal(raw('answer-value').textContent,'15');
   for(const index of [11,10,9]){const field=$(`structure-condition-${index}-left`);field.closest('.structure-condition-row').querySelector('.remove-condition').click();}
   assert.match(raw('structure-condition-page').textContent,/3\s*\/\s*3/,'deleting the last page clamps to the remaining final page');
-  const saved=await savedLink();assert.equal(saved.params.structure.variables.length,8);assert.equal(saved.params.structure.variables[0].lower,3);assert.equal(saved.params.structure.variables[7].upper,16);assert.equal(saved.params.structure.conditions.length,9);
+  const saved=await savedLink();assert.equal(saved.params.structure.variables.length,8);assert.equal(saved.params.structure.variables[0].lower,2);assert.equal(saved.params.structure.variables[7].upper,2);assert.equal(saved.params.structure.conditions.length,9);
   family('coefficient');setHash(saved);const restored=await savedLink();assert.deepEqual(restored.params.structure,saved.params.structure);
-  setField('structure-enabled',false,'change');await wait();assert.equal(raw('answer-value').textContent,'6435','turning the structured model off uses the basic sum');setField('structure-enabled',true,'change');await wait();assert.equal(raw('answer-value').textContent,'21','turning it back on restores conditions from every page');
+  setField('structure-enabled',false,'change');await wait();assert.equal(raw('answer-value').textContent,'70','turning the structured model off uses the basic sum');setField('structure-enabled',true,'change');await wait();assert.equal(raw('answer-value').textContent,'15','turning it back on restores conditions from every page');
   console.log('PASS eight reachable single variable cards / retained individual and bulk edits / twelve conditions in three-row pages / hidden conditions counted / deletion clamps pages / hash structure preservation');process.exit(0);
 }
 if(scenario==='layout-phone'){
@@ -199,9 +227,9 @@ if(scenario==='structured-custom'){
   assert.equal($('answer-value').textContent,'142');assert.equal($('structure-sync-status').dataset.mode,'custom');
   for(const key of ['total','relation']){assert.equal($(`control-${key}`).disabled,true);assert.equal($(`slider-${key}`).disabled,true);assert.equal($(`structure-scalar-note-${key}`).hidden,false);}
   // A link can carry an independent base value even while its unrelated slider is disabled.
-  setHash({family:'integer-sum',params:{k:4,total:33,structure:structure('a+b+2*c+d^2','20')},view:'lab'});
+  setHash({family:'integer-sum',params:{k:4,total:16,structure:structure('a+b+2*c+d^2','20')},view:'lab'});
   assert.equal($('structure-main-left').value,'a+b+2*c+d^2');assert.equal($('structure-main-right').value,'20');assert.equal($('answer-value').textContent,'142','base sum must not overwrite a custom expression');
-  const saved=await savedLink();assert.equal(saved.params.structure.left,'a+b+2*c+d^2');assert.equal(saved.params.structure.right,'20');assert.equal(saved.params.total,33);
+  const saved=await savedLink();assert.equal(saved.params.structure.left,'a+b+2*c+d^2');assert.equal(saved.params.structure.right,'20');assert.equal(saved.params.total,16);
   assert.equal($('structure-rhs-controls').hidden,false);assert.equal($('structure-main-right-slider').type,'range');
   const duringRhsDrag=[];
   for(let i=0;i<12;i++){setField('structure-main-right-slider','21');await new Promise(resolve=>setTimeout(resolve,10));duringRhsDrag.push($('answer-value').textContent);}
@@ -211,7 +239,7 @@ if(scenario==='structured-custom'){
   setField('structure-main-right-value','21');await wait();assert.equal($('answer-value').textContent,'164');assert.equal($('structure-main-right-slider').value,'21');
   setField('structure-main-right','a+b');await wait();assert.equal($('structure-rhs-controls').hidden,true,'an expression RHS does not expose an unrelated constant slider');
   setField('structure-main-right','20');await wait();assert.equal($('structure-rhs-controls').hidden,false);
-  $('structure-reset-main').click();await wait();assert.equal($('structure-main-left').value,'a+b+c+d');assert.equal($('structure-main-right').value,'33');assert.equal($('answer-value').textContent,'4960');
+  $('structure-reset-main').click();await wait();assert.equal($('structure-main-left').value,'a+b+c+d');assert.equal($('structure-main-right').value,'16');assert.equal($('answer-value').textContent,'455');
   for(const key of ['total','relation']){assert.equal($(`control-${key}`).disabled,false);assert.equal($(`slider-${key}`).disabled,false);assert.equal($(`structure-scalar-note-${key}`).hidden,true);}
   assert.equal($('structure-sync-status').dataset.mode,'auto');input('total','12');await wait();assert.equal($('structure-main-right').value,'12');assert.equal($('answer-value').textContent,'165');
   $('reset-button').click();assert.equal($('control-total').value,'7');assert.equal($('structure-main-right').value,'7');assert.equal($('answer-value').textContent,'20');assert.equal($('structure-sync-status').dataset.mode,'auto');
@@ -266,27 +294,31 @@ if(scenario==='slider'){
     const slider=$('slider-'+key);
     assert.ok(slider,`slider-${key} must be present`);
     assert.equal(slider.type,'range',`slider-${key} is a native range input`);
-    slider.value=String(value);slider.dispatch('input');return slider;
+    const allowed=slider.getAttribute('data-value-mode')==='allowed'?slider.getAttribute('data-allowed-values'):null;
+    if(allowed){const values=JSON.parse(allowed),index=values.findIndex(candidate=>Math.abs(candidate-Number(value))<1e-9);assert.ok(index>=0,`${key}=${value} is an allowed actual value`);slider.value=String(index);}else slider.value=String(value);
+    slider.dispatch('input');return slider;
   };
   const assertSliders=(spec,params)=>{
-    for(const control of spec.controls){
+    for(const control of (spec.getControls?.(params)??spec.controls)){
       const slider=$('slider-'+control.key);
       assert.ok(slider,`${spec.id}.${control.key} has a slider`);
       assert.equal(slider.type,'range');
       assert.ok(slider.getAttribute('aria-label'),`${spec.id}.${control.key} slider has an accessible name`);
       assert.ok(document.querySelectorAll('label').some(label=>label.htmlFor===slider.id),`${spec.id}.${control.key} label names the slider`);
-      assert.equal(slider.min,String(control.type==='number'?control.min:0));
-      assert.equal(slider.max,String(control.type==='number'?control.max:control.type==='select'?control.options.length-1:1));
-      assert.equal(slider.step,String(control.type==='number'?(control.step??1):1));
-      const expected=control.type==='number'?params[control.key]:control.type==='checkbox'?(params[control.key]?1:0):control.options.findIndex(o=>o.value===params[control.key]);
-      assert.equal(Number(slider.value),Number(expected),`${spec.id}.${control.key} slider matches its companion`);
+      const allowed=control.type==='number'&&!control.normalBound?spec.allowedValues?.(control.key,params)??null:null;
+      const expectedMin=control.normalBound?-3:allowed?0:control.type==='number'?control.min:0;
+      const expectedMax=control.normalBound?3:allowed?Math.max(0,allowed.length-1):control.type==='number'?control.max:control.type==='select'?control.options.length-1:1;
+      assert.equal(slider.min,String(expectedMin));assert.equal(slider.max,String(expectedMax));
+      assert.equal(slider.step,String(control.normalBound?0.1:allowed?1:control.type==='number'?(control.step??1):1));
+      const expected=control.normalBound?(params[control.key]-control.zscore.mu)/control.zscore.se:allowed?allowed.findIndex(value=>Math.abs(value-params[control.key])<1e-9):control.type==='number'?params[control.key]:control.type==='checkbox'?(params[control.key]?1:0):control.options.findIndex(o=>o.value===params[control.key]);
+      assert.ok(Math.abs(Number(slider.value)-Number(expected))<1e-6,`${spec.id}.${control.key} slider matches its actual-value companion`);
       if(control.type==='select')assert.equal(slider.getAttribute('aria-valuetext'),control.options[expected].label);
       if(control.type==='checkbox')assert.equal(slider.getAttribute('aria-valuetext'),params[control.key]?'적용':'미적용');
     }
   };
   // Known answers test the actual drag -> typed parameter -> solve -> render path.
   assert.ok($('slider-total'),'the sum control must have a primary drag slider');
-  assert.equal($('slider-total').value,'7');
+  assert.equal($('control-total').value,'7');
   const duringDrag=[];
   for(let i=0;i<12;i++){
     drag('total',8);await new Promise(resolve=>setTimeout(resolve,10));
@@ -300,28 +332,30 @@ if(scenario==='slider'){
   assert.equal($('answer-value').textContent,'35');
   drag('k',3);assert.equal($('control-k').value,'3');await wait();
   assert.equal($('answer-value').textContent,'21');
-  for(const [index,status,answer] of [[0,'계산 완료','21'],[1,'계산 완료','56'],[2,'계산 완료','35'],[3,'무한히 많음',null],[4,'무한히 많음',null]]){
+  input('lowerOn',true,'change');input('lower','0');input('upperOn',true,'change');input('upper','3');await wait();
+  for(const [index,status,answer] of [[0,'계산 완료','3'],[1,'계산 완료','26'],[2,'계산 완료','23'],[3,'계산 완료','4'],[4,'계산 완료','1']]){
     drag('relation',index);assert.equal($('control-relation').value,String(index));await wait();
     assert.equal($('result-status').textContent,status,`relation option ${index} has its mathematical meaning`);
     if(answer!==null)assert.equal($('answer-value').textContent,answer);
   }
-  select('relation',0);await wait();assert.equal($('slider-relation').value,'0');assert.equal($('answer-value').textContent,'21');
-  for(const [index,answer,status='계산 완료'] of [[0,'21'],[1,'45'],[2,null,'무한히 많음'],[3,'3'],[4,'0'],[5,null,'무한히 많음'],[6,'0']]){
+  select('relation',0);await wait();assert.equal($('slider-relation').value,'0');assert.equal($('answer-value').textContent,'3');
+  const domains=[x=>x>=1,x=>x>=0,()=>true,x=>x>0&&x%2===0,x=>x>0&&x%2!==0,x=>x%2===0,x=>x%2!==0];
+  for(let index=0;index<7;index++){
     drag('domain',index);await wait();assert.equal($('control-domain').value,String(index));
-    assert.equal($('result-status').textContent,status,`domain option ${index} keeps its intended type`);
-    if(answer!==null)assert.equal($('answer-value').textContent,answer);
+    const total=Number($('control-total').value);let expected=0;for(let a=0;a<=3;a++)for(let b=0;b<=3;b++)for(let c=0;c<=3;c++)if([a,b,c].every(domains[index])&&a+b+c===total)expected++;
+    assert.equal($('result-status').textContent,'계산 완료',`finite domain option ${index} keeps its intended type`);assert.equal($('answer-value').textContent,String(expected));
   }
-  select('domain',0);await wait();assert.equal($('slider-domain').value,'0');
+  select('domain',0);input('total','8');await wait();assert.equal($('slider-domain').value,'0');
   drag('upperOn',1);assert.equal($('control-upperOn').checked,true);await wait();
   drag('upper',3);await wait();assert.equal($('answer-value').textContent,'3');
   drag('upperOn',0);assert.equal($('control-upperOn').checked,false);await wait();assert.equal($('answer-value').textContent,'21');
   input('upperOn',true,'change');await wait();assert.equal($('slider-upperOn').value,'1');assert.equal($('answer-value').textContent,'3');
-  input('upperOn',false,'change');input('total','10');await wait();assert.equal($('slider-total').value,'10');
+  input('upperOn',false,'change');input('total','10');await wait();const previousSlider=$('slider-total').value;
   for(const bad of ['10.5','','999']){
     input('total',bad);await wait();assert.equal($('result-status').textContent,'조건 확인');
-    assert.equal($('form-error').hidden,false);assert.equal($('slider-total').value,'10','invalid exact entry must not move or sanitize the slider');
+    assert.equal($('form-error').hidden,false);assert.equal($('slider-total').value,previousSlider,'invalid exact entry must not move or sanitize the slider');
   }
-  input('total','8');await wait();assert.equal($('slider-total').value,'8');assert.equal($('answer-value').textContent,'21');
+  input('total','8');await wait();assert.equal($('answer-value').textContent,'21');
   const integerSpec=specs.find(x=>x.id==='integer-sum');
   $('preset-row').children[1].click();assertSliders(integerSpec,{...integerSpec.defaults,...integerSpec.presets[1].params});
   $('reset-button').click();assertSliders(integerSpec,integerSpec.defaults);
@@ -332,7 +366,7 @@ if(scenario==='slider'){
   assert.equal(saved.params.sigma,0.25);assert.equal(saved.params.mu,1.5);
   const setHash=data=>{location.hash='#lab='+encodeURIComponent(JSON.stringify(data));for(const fn of windowEvents.hashchange||[])fn();};
   for(const data of [{family:'normal',params:{mu:1.5,sigma:0.25,n:4}}, {family:'estimation',params:{confidence:'99',query:'length'}}, {family:'arrangement',params:{circular:true,condition:'apart'}}]){
-    setHash(data);const spec=specs.find(s=>s.id===data.family);assertSliders(spec,{...spec.defaults,...data.params});
+    setHash(data);const spec=specs.find(s=>s.id===data.family);const restored=await savedLink();assertSliders(spec,restored.params);
     assert.equal($('result-status').textContent,'계산 완료');
   }
   // Every control retains its own metadata and resets together with its companion.
@@ -344,12 +378,14 @@ if(process.env.TEST_REAL_CATALOG){
   for(const spec of specs){
     family(spec.id);
     assert.equal($('answer-value').textContent,spec.solve(spec.defaults).answer,spec.id+' defaults');
+    boundedOutput();
     for(let index=0;index<spec.presets.length;index++){
       $('preset-row').children[index].click();
       assert.equal($('answer-value').textContent,spec.solve({...spec.defaults,...spec.presets[index].params}).answer,spec.id+' preset '+index);
       assert.equal($('form-error').hidden,true,spec.id+' preset '+index+' browser validity');
+      boundedOutput();
     }
-    for(let i=0;i<10;i++){$('random-button').click();assert.equal($('result-status').textContent,'계산 완료',spec.id+' random '+i);assert.equal($('form-error').hidden,true,spec.id+' random '+i+' browser validity');}
+    for(let i=0;i<10;i++){$('random-button').click();assert.equal($('result-status').textContent,'계산 완료',spec.id+' random '+i);assert.equal($('form-error').hidden,true,spec.id+' random '+i+' browser validity');boundedOutput();}
     $('link-button').click();await new Promise(resolve=>setTimeout(resolve,0));
     const saved=JSON.parse(decodeURIComponent(new URL(clipboard).hash.slice(5)));
     for(const c of spec.controls)assert.equal(typeof saved.params[c.key],c.type==='number'?'number':c.type==='checkbox'?'boolean':typeof c.options[0].value,spec.id+'.'+c.key+' serialized type');

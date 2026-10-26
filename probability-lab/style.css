@@ -837,3 +837,9 @@ body { height: 100dvh; min-height: 0; overflow: hidden; display: flex; flex-dire
 .large-number-field .drag-meta .range-bound:first-child { grid-column: 1; grid-row: 1; }
 .large-number-field .drag-meta .range-bound:last-child { grid-column: 2; grid-row: 1; text-align: right; }
 .large-number-field .drag-meta .control-value-input { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; }
+
+.dynamic-bound-notice { margin-top: 6px; font-size: 12px; line-height: 1.6; color: #6a8e9b; }
+.normal-bound-field .drag-meta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 5px; }
+.normal-bound-field .drag-meta .range-bound:first-child { grid-column: 1; grid-row: 1; }
+.normal-bound-field .drag-meta .range-bound:last-child { grid-column: 2; grid-row: 1; text-align: right; }
+.normal-bound-field .drag-meta .control-value-input { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; }

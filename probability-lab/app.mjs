@@ -1,5 +1,5 @@
-import { specs } from './engines.mjs?v=20261026-structure';
-import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor } from './structured-editor.mjs?v=20261026-layout';
+import { specs } from './engines.mjs?v=20261026-limits';
+import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor, validateStructureLimits } from './structured-editor.mjs?v=20261026-limits';
 
 const $ = (id) => document.getElementById(id);
 const engineList = Array.isArray(specs) ? specs : Object.values(specs ?? {});
@@ -35,6 +35,7 @@ let dragCalculationTimer;
 let toastTimer;
 let searchTimer;
 let structuredEditor;
+const blockedDraftKeys = new Set();
 
 function node(tag, className, content) {
   const element = document.createElement(tag);
@@ -86,7 +87,11 @@ function safeParams(spec, given = {}) {
     if (control.type === 'checkbox' && typeof value === 'boolean') params[control.key] = value;
     if (control.type === 'select' && (control.options ?? []).some((option) => option.value === value)) params[control.key] = value;
   }
-  if (spec?.id === 'integer-sum') params.structure = sanitizeStructure(given.structure, params);
+  if (spec?.id === 'integer-sum') {
+    const limitError = validateStructureLimits(given.structure);
+    params.structure = sanitizeStructure(given.structure, params);
+    if (limitError) showToast(`${limitError} 구조 조건을 기본값으로 복구했습니다.`);
+  }
   return params;
 }
 
@@ -143,10 +148,141 @@ function selectFamily(id, params, keepMapFilter = false) {
   }
 }
 
+function getSpecControls(spec, params) {
+  return typeof spec?.getControls === 'function' ? spec.getControls(params) : spec?.controls ?? [];
+}
+
+function allowedFor(spec, key, params) {
+  const values = typeof spec?.allowedValues === 'function' ? spec.allowedValues(key, params) : null;
+  return Array.isArray(values) ? values.filter((value) => typeof value === 'number' && Number.isFinite(value)) : null;
+}
+
+function roundBound(value) { return Number(Number(value).toFixed(8)); }
+function formatBound(value) { return Number.isFinite(Number(value)) ? String(roundBound(Number(value))) : String(value ?? ''); }
+
+function numberError(control, value, text, allowed) {
+  const tolerance = control.normalBound ? 1e-7 : 1e-9;
+  if (text.trim() === '' || !Number.isFinite(value)) return `${control.label}에 수를 입력해 주세요.`;
+  if (Math.abs(value) > 999 + tolerance) return `${control.label}: 수치와 계산 결과는 999 이하인 조건만 사용할 수 있습니다.`;
+  if (control.min !== undefined && value < Number(control.min) - tolerance) return `${control.label}: 현재 허용 범위 ${formatBound(control.min)}~${formatBound(control.max)} 안에서 입력해 주세요.`;
+  if (control.max !== undefined && value > Number(control.max) + tolerance) return `${control.label}: 현재 허용 범위 ${formatBound(control.min)}~${formatBound(control.max)} 안에서 입력해 주세요.`;
+  if (allowed && !allowed.some((candidate) => Math.abs(candidate - value) <= tolerance)) return `${control.label}: 경우의 수·분자·분모가 999 이하인 허용값을 선택해 주세요.`;
+  if (control.step !== 'any' && control.type === 'number') {
+    const step = Number(control.step ?? 1);
+    const units = (value - Number(control.min ?? 0)) / step;
+    if (!Number.isFinite(units) || Math.abs(units - Math.round(units)) > 1e-7) return `${control.label}: ${step} 단위의 수를 입력해 주세요.`;
+  }
+  return '';
+}
+
+function refreshControlEntries(params, writeValues = false, changedKey) {
+  const spec = engines.get(state.family);
+  for (const metadata of getSpecControls(spec, params)) {
+    const control = { ...metadata };
+    const entry = controls.get(control.key);
+    if (!entry) continue;
+    const previousControl = entry.control;
+    entry.allowed = control.type === 'number' && !control.normalBound ? allowedFor(spec, control.key, params) : null;
+    if (entry.allowed?.length) { control.min = Math.min(...entry.allowed); control.max = Math.max(...entry.allowed); }
+    entry.control = control;
+    const { input, slider, minLabel, maxLabel, boundNotice } = entry;
+    slider.setAttribute('data-allowed-values', entry.allowed ? JSON.stringify(entry.allowed) : '');
+    slider.dataset.valueMode = control.normalBound ? 'zscore' : entry.allowed ? 'allowed' : 'value';
+    if (control.type === 'select') {
+      const actual = writeValues ? params[control.key] : previousControl.options?.[Number(input.value)]?.value;
+      replace(input, (control.options ?? []).map((option, index) => { const item = new Option(option.label, String(index)); item.selected = option.value === actual; return item; }));
+      slider.min = '0'; slider.max = String(Math.max(0, (control.options?.length ?? 1) - 1)); slider.step = '1';
+      slider.value = input.value; slider.setAttribute('aria-valuetext', control.options?.[Number(input.value)]?.label ?? '');
+    } else if (control.type === 'checkbox') {
+      if (writeValues) input.checked = Boolean(params[control.key]);
+      slider.min = '0'; slider.max = '1'; slider.step = '1'; slider.value = input.checked ? '1' : '0';
+      minLabel.textContent = '미적용'; maxLabel.textContent = '적용'; slider.setAttribute('aria-valuetext', input.checked ? '적용' : '미적용');
+    } else {
+      input.min = String(control.min ?? -999); input.max = String(control.max ?? 999); input.step = String(control.step ?? 1);
+      input.inputMode = control.step === 'any' || !Number.isInteger(Number(control.step ?? 1)) ? 'decimal' : 'numeric';
+      if (writeValues && (changedKey !== control.key || Number(input.value) !== params[control.key])) input.value = String(params[control.key] ?? '');
+      const value = Number(input.value);
+      minLabel.textContent = formatBound(control.min); maxLabel.textContent = formatBound(control.max);
+      boundNotice.hidden = !control.normalBound;
+      if (control.normalBound && control.zscore) {
+        const z = control.zscore;
+        slider.min = String(z.min ?? -3); slider.max = String(z.max ?? 3); slider.step = String(z.step ?? 0.1);
+        if (!numberError(control, value, input.value, null)) slider.value = String(Math.max(-3, Math.min(3, (value - z.mu) / z.se)));
+        slider.setAttribute('aria-valuetext', `${formatBound(value)} (z=${formatBound((value - z.mu) / z.se)})`);
+        boundNotice.textContent = `${Number(params.n) > 1 ? '표본평균: μ ± 3σ/√n' : 'μ ± 3σ'} · ${formatBound(control.min)}~${formatBound(control.max)}`;
+      } else if (entry.allowed) {
+        slider.min = '0'; slider.max = String(Math.max(0, entry.allowed.length - 1)); slider.step = '1';
+        const index = entry.allowed.findIndex((candidate) => Math.abs(candidate - value) < 1e-9);
+        if (index >= 0) slider.value = String(index);
+        slider.setAttribute('aria-valuetext', `${input.value} · 999 이하 조건의 허용값`);
+        if (entry.allowed.length === 0) { boundNotice.hidden = false; boundNotice.textContent = '다른 조건을 줄이면 계산 가능한 값이 나타납니다.'; }
+      } else {
+        slider.min = String(control.min ?? -999); slider.max = String(control.max ?? 999); slider.step = String(control.step ?? 1);
+        if (!numberError(control, value, input.value, null)) slider.value = input.value;
+        slider.setAttribute('aria-valuetext', input.value);
+      }
+    }
+    const span = Number(slider.max) - Number(slider.min);
+    slider.style.setProperty('--range-progress', `${span ? Math.max(0, Math.min(100, (Number(slider.value) - Number(slider.min)) / span * 100)) : 0}%`);
+  }
+}
+
+function readControlDrafts(loose = false) {
+  const params = cloneDefaults(engines.get(state.family));
+  let error = '';
+  for (const { control, input, allowed } of controls.values()) {
+    let value; let message = '';
+    if (control.type === 'checkbox') value = input.checked;
+    else if (control.type === 'select') {
+      const option = control.options?.[Number(input.value)];
+      if (option) value = option.value; else message = `${control.label}의 값을 선택해 주세요.`;
+    } else {
+      value = Number(input.value);
+      message = loose
+        ? input.value.trim() === '' || !Number.isFinite(value) ? `${control.label}에 수를 입력해 주세요.` : Math.abs(value) > 999 ? `${control.label}: 수치는 999 이하로 입력해 주세요.` : ''
+        : numberError(control, value, input.value, allowed);
+    }
+    if (input.disabled && message) { value = state.params[control.key] ?? params[control.key]; message = ''; }
+    input.setAttribute('aria-invalid', String(Boolean(message)));
+    if (message && !error) error = message;
+    params[control.key] = value;
+  }
+  return { params, error };
+}
+
+function editControl(changedKey, mode) {
+  const spec = engines.get(state.family);
+  const editedEntry = controls.get(changedKey);
+  if (editedEntry?.control.type === 'number') {
+    const message = numberError(editedEntry.control, Number(editedEntry.input.value), editedEntry.input.value, editedEntry.allowed);
+    if (message) { blockedDraftKeys.add(changedKey); calculate(); return; }
+  }
+  blockedDraftKeys.delete(changedKey);
+  const draft = readControlDrafts(true);
+  if (draft.error) { calculate(); return; }
+  if (structuredEditor) {
+    const edited = structuredEditor.read(draft.params);
+    if (edited.error) { calculate(); return; }
+    draft.params.structure = edited.structure;
+  }
+  const normalized = typeof spec.normalizeParams === 'function' ? spec.normalizeParams(draft.params, changedKey) : draft.params;
+  for (const key of blockedDraftKeys) if (key !== changedKey) normalized[key] = draft.params[key];
+  const corrected = [...controls.keys()].filter((key) => key !== changedKey && normalized[key] !== draft.params[key]);
+  state.params = normalized;
+  refreshControlEntries(normalized, true, changedKey);
+  if (corrected.length) showToast(`허용 범위에 맞춰 조정했습니다: ${corrected.map((key) => `${controls.get(key).control.label} ${formatBound(normalized[key])}`).join(', ')}`);
+  if (mode === 'immediate') calculate();
+  else if (mode === 'drag') {
+    document.querySelector('.problem-panel').setAttribute('aria-busy', 'true');
+    if (!dragCalculationTimer) dragCalculationTimer = setTimeout(calculate, 45);
+  } else scheduleCalculation();
+}
+
 function renderControls() {
   const family = familyInfo();
   const spec = engines.get(state.family);
   structuredEditor = undefined;
+  blockedDraftKeys.clear();
   $('lab-title').textContent = family.title;
   $('lab-description').textContent = spec?.description ?? family.description ?? '기출에 쓰인 조건과 풀이 구조를 살펴보세요.';
   $('result-category').textContent = spec?.category ?? '기출 구조';
@@ -155,6 +291,7 @@ function renderControls() {
   $('preset-row').replaceChildren();
   $('form-error').hidden = true;
   for (const preset of spec?.presets ?? []) {
+    try { if (spec.solve(safeParams(spec, preset.params)).status !== 'ok') continue; } catch { continue; }
     const button = node('button', 'preset-button', preset.name);
     button.type = 'button';
     button.addEventListener('click', () => {
@@ -163,87 +300,46 @@ function renderControls() {
     });
     $('preset-row').append(button);
   }
-  for (const control of spec?.controls ?? []) {
-    const field = node('div', `control-field${control.type === 'checkbox' ? ' checkbox-field' : ''}`);
-    if (control.type === 'number' && Math.max(Math.abs(control.min ?? 0), Math.abs(control.max ?? 0)) >= 100000) field.className += ' large-number-field';
+  for (const control of getSpecControls(spec, state.params)) {
+    const field = node('div', `control-field${control.type === 'checkbox' ? ' checkbox-field' : ''}${control.normalBound ? ' normal-bound-field' : ''}`);
     field.dataset.control = control.key;
     const id = `control-${control.key}`;
-    const label = node('label', 'control-label', control.label);
-    label.htmlFor = `slider-${control.key}`;
-    let input;
-    if (control.type === 'select') {
-      input = node('select', 'control-input');
-      (control.options ?? []).forEach((option, index) => {
-        const optionNode = node('option', '', option.label);
-        optionNode.value = String(index);
-        optionNode.selected = option.value === state.params[control.key];
-        input.append(optionNode);
-      });
-    } else {
-      input = node('input', control.type === 'checkbox' ? 'control-checkbox' : 'control-input');
-      input.type = control.type === 'checkbox' ? 'checkbox' : 'number';
-      if (control.type === 'checkbox') input.checked = Boolean(state.params[control.key]);
-      else {
-        input.value = String(state.params[control.key] ?? '');
-        input.required = true;
-        if (control.min !== undefined) input.min = String(control.min);
-        if (control.max !== undefined) input.max = String(control.max);
-        input.step = String(control.step ?? 1);
-        input.inputMode = Number.isInteger(control.step ?? 1) ? 'numeric' : 'decimal';
-      }
-    }
-    input.id = id;
-    input.name = control.key;
-    input.autocomplete = 'off';
-    const slider = node('input', 'control-range');
-    slider.type = 'range';
-    slider.id = `slider-${control.key}`;
-    slider.setAttribute('aria-label', `${control.label} 드래그로 조절`);
-    slider.min = String(control.type === 'number' ? control.min : 0);
-    slider.max = String(control.type === 'number' ? control.max : control.type === 'select' ? control.options.length - 1 : 1);
-    slider.step = String(control.type === 'number' ? control.step ?? 1 : 1);
+    const label = node('label', 'control-label', control.label); label.htmlFor = `slider-${control.key}`;
+    const input = node(control.type === 'select' ? 'select' : 'input', control.type === 'checkbox' ? 'control-checkbox' : 'control-input');
+    if (control.type !== 'select') input.type = control.type === 'checkbox' ? 'checkbox' : 'number';
+    input.id = id; input.name = control.key; input.autocomplete = 'off';
     input.setAttribute('aria-label', `${control.label} ${control.type === 'number' ? '직접 입력' : '선택'}`);
-    const syncSlider = () => {
-      if (control.type === 'number' && (input.value.trim() === '' || !input.validity.valid)) return;
-      slider.value = control.type === 'checkbox' ? (input.checked ? '1' : '0') : input.value;
-      const valueText = control.type === 'select' ? control.options[Number(slider.value)]?.label
-        : control.type === 'checkbox' ? (input.checked ? '적용' : '미적용') : input.value;
-      slider.setAttribute('aria-valuetext', valueText ?? '');
-      const span = Number(slider.max) - Number(slider.min);
-      const progress = span ? (Number(slider.value) - Number(slider.min)) / span * 100 : 0;
-      slider.style.setProperty('--range-progress', `${Math.max(0, Math.min(100, progress))}%`);
-    };
-    syncSlider();
+    if (control.type === 'number') { input.required = true; input.className += ' control-value-input'; }
+    const slider = node('input', 'control-range'); slider.type = 'range'; slider.id = `slider-${control.key}`;
+    slider.setAttribute('aria-label', `${control.label} 드래그로 조절`);
     const meta = node('div', `drag-meta drag-meta-${control.type}`);
-    if (control.type === 'number') {
-      input.className += ' control-value-input';
-      meta.append(node('span', 'range-bound', slider.min), input, node('span', 'range-bound', slider.max));
-    } else if (control.type === 'checkbox') {
-      meta.append(node('span', 'range-bound', '미적용'), input, node('span', 'range-bound', '적용'));
-    } else meta.append(input);
+    const minLabel = node('span', 'range-bound'); const maxLabel = node('span', 'range-bound');
+    if (control.type === 'number' || control.type === 'checkbox') meta.append(minLabel, input, maxLabel);
+    else meta.append(input);
     field.append(label, slider, meta);
+    const boundNotice = node('p', 'dynamic-bound-notice'); boundNotice.id = `${id}-range`; boundNotice.hidden = true;
+    field.append(boundNotice);
     if (control.help) {
-      const help = node('p', 'control-hint', control.help);
-      help.id = `${id}-help`;
-      input.setAttribute('aria-describedby', help.id);
-      slider.setAttribute('aria-describedby', help.id);
-      const details = node('details', 'control-help-details');
-      details.append(node('summary', '', '설명'), help);
-      field.append(details);
+      const help = node('p', 'control-hint', control.help); help.id = `${id}-help`;
+      input.setAttribute('aria-describedby', help.id); slider.setAttribute('aria-describedby', help.id);
+      const details = node('details', 'control-help-details'); details.append(node('summary', '', '설명'), help); field.append(details);
     }
-    controls.set(control.key, { control, input, slider, field });
-    input.addEventListener(control.type === 'number' ? 'input' : 'change', () => { syncSlider(); scheduleCalculation(); });
+    controls.set(control.key, { control, input, slider, field, minLabel, maxLabel, boundNotice, allowed: null });
+    input.addEventListener(control.type === 'number' ? 'input' : 'change', () => editControl(control.key, 'typed'));
     slider.addEventListener('input', () => {
-      if (control.type === 'checkbox') input.checked = Number(slider.value) === 1;
+      const entry = controls.get(control.key);
+      const current = entry.control;
+      if (current.type === 'checkbox') input.checked = Number(slider.value) === 1;
+      else if (current.type === 'select') input.value = slider.value;
+      else if (current.normalBound && current.zscore) input.value = String(roundBound(current.zscore.mu + Number(slider.value) * current.zscore.se));
+      else if (entry.allowed) input.value = String(entry.allowed[Math.round(Number(slider.value))] ?? input.value);
       else input.value = slider.value;
-      syncSlider();
-      document.querySelector('.problem-panel').setAttribute('aria-busy', 'true');
-      // Throttle sustained dragging so the solution changes before release.
-      if (!dragCalculationTimer) dragCalculationTimer = setTimeout(calculate, 45);
+      editControl(control.key, 'drag');
     });
-    slider.addEventListener('change', calculate);
+    slider.addEventListener('change', () => editControl(control.key, 'immediate'));
     $('controls').append(field);
   }
+  refreshControlEntries(state.params, true);
   const available = Boolean(spec);
   $('reset-button').disabled = !available;
   $('random-button').disabled = !available;
@@ -261,6 +357,8 @@ function renderControls() {
     state.params.structure = sanitizeStructure(state.params.structure, state.params);
     structuredEditor = createStructuredEditor($('structure-editor'), state.params, (change) => {
       if (change?.presetParams) {
+        const candidate = safeParams(spec, change.presetParams);
+        if (spec.solve(candidate).status !== 'ok') { showToast('이 예제는 999 이하 계산 조건을 만족하지 않습니다. 조건을 줄여 주세요.'); return; }
         state.params = safeParams(spec, change.presetParams);
         renderControls(); calculate();
       } else if (change?.immediate) calculate();
@@ -343,36 +441,18 @@ function setSolutionTab(name, focus = false) {
 }
 
 function readAndValidate() {
-  const params = cloneDefaults(engines.get(state.family));
-  let error = '';
   if (state.family === 'integer-sum' && structuredEditor) updateStructuredScalarAvailability(structuredEditor.mode());
-  for (const { control, input } of controls.values()) {
-    let value;
-    let message = '';
-    if (control.type === 'checkbox') value = input.checked;
-    else if (control.type === 'select') {
-      const option = control.options?.[Number(input.value)];
-      if (!option) message = `${control.label}의 값을 선택해 주세요.`;
-      else value = option.value;
-    } else {
-      value = Number(input.value);
-      if (input.value.trim() === '' || !Number.isFinite(value)) message = `${control.label}에 수를 입력해 주세요.`;
-      else if (control.min !== undefined && value < control.min) message = `${control.label}: ${control.min} 이상으로 입력해 주세요.`;
-      else if (control.max !== undefined && value > control.max) message = `${control.label}: ${control.max} 이하로 입력해 주세요.`;
-      else if (!input.validity.valid) message = `${control.label}: ${control.step ?? 1} 단위의 수를 입력해 주세요.`;
-    }
-    if (input.disabled && message) { value = state.params[control.key] ?? params[control.key]; message = ''; }
-    input.setAttribute('aria-invalid', message ? 'true' : 'false');
-    if (message && !error) error = message;
-    params[control.key] = value;
-  }
-  if (!error && state.family === 'integer-sum' && structuredEditor) {
-    const edited = structuredEditor.read(params);
+  const draft = readControlDrafts();
+  if (draft.error) return draft;
+  if (state.family === 'integer-sum' && structuredEditor) {
+    const edited = structuredEditor.read(draft.params);
     updateStructuredScalarAvailability(edited);
-    if (edited.error) error = edited.error;
-    else params.structure = edited.structure;
+    if (edited.error) return { params: draft.params, error: edited.error };
+    draft.params.structure = edited.structure;
   }
-  return { params, error };
+  refreshControlEntries(draft.params, false);
+  const checked = readControlDrafts();
+  return { params: draft.params, error: checked.error };
 }
 
 function updateStructuredScalarAvailability(edited) {
@@ -439,6 +519,7 @@ function renderResult() {
   renderNormalTable(result.normalTable);
   $('answer-value').textContent = result.answer ?? result.exact ?? '—';
   $('answer-unit').textContent = result.unit ?? '';
+  $('copy-button').disabled = status !== 'ok';
   $('insight-text').textContent = result.insight ?? '';
   $('insight-box').hidden = !result.insight;
   const steps = (result.steps ?? []).map((step, index) => {
@@ -447,7 +528,7 @@ function renderResult() {
     content.append(node('h5', 'step-title', step.title ?? `단계 ${index + 1}`));
     if (step.body) content.append(node('p', 'step-body', step.body));
     if (step.formula) content.append(node('div', 'formula', step.formula));
-    row.append(node('span', 'step-number', String(index + 1).padStart(2, '0')), content);
+    row.append(node('span', 'step-number', String(index + 1).padStart(2, '0')), content, document.createTextNode('\n'));
     return row;
   });
   replace($('steps-list'), steps);
@@ -519,7 +600,7 @@ function renderCases(cases = []) {
   const body = node('tbody');
   for (const item of cases.slice(0, 80)) {
     const tr = node('tr');
-    tr.append(node('td', '', item.label), node('td', 'case-count', item.count), node('td', '', item.detail ?? ''));
+    tr.append(node('td', '', item.label), document.createTextNode(' '), node('td', 'case-count', item.count), document.createTextNode(' '), node('td', '', item.detail ?? ''), document.createTextNode('\n'));
     body.append(tr);
   }
   table.append(caption, head, body);
@@ -542,7 +623,7 @@ function renderChart(values = []) {
     bar.style.width = `${Math.max(0, Math.min(100, Math.abs(entry.value) / max * 100))}%`;
     track.setAttribute('aria-hidden', 'true'); track.append(bar);
     const value = Number.isInteger(entry.value) ? entry.value.toLocaleString('ko-KR') : entry.value.toLocaleString('ko-KR', { maximumFractionDigits: 5 });
-    row.append(node('span', 'chart-label', entry.label), track, node('span', 'chart-value', value)); chart.append(row);
+    row.append(node('span', 'chart-label', entry.label), document.createTextNode(' '), track, node('span', 'chart-value', value), document.createTextNode('\n')); chart.append(row);
   }
   replace($('result-chart'), [node('h4', 'subsection-title', '분포와 경우의 수 살펴보기'), chart]);
 }
@@ -554,10 +635,12 @@ function updateAnswerVisibility() {
   $('answer-button').setAttribute('aria-expanded', String(state.answerVisible));
 }
 
-function randomValue(control, defaults) {
+function randomValue(control, defaults, allowed = null) {
   if (control.type === 'checkbox') return Math.random() < 0.5;
   if (control.type === 'select') return control.options?.[Math.floor(Math.random() * control.options.length)]?.value;
-  const step = Number(control.step ?? 1);
+  if (control.normalBound && control.zscore) return roundBound(control.zscore.mu + (Math.floor(Math.random() * 61) / 10 - 3) * control.zscore.se);
+  if (allowed?.length) return allowed[Math.floor(Math.random() * allowed.length)];
+  const step = control.step === 'any' ? 0.01 : Number(control.step ?? 1);
   const defaultValue = Number(defaults[control.key] ?? control.min ?? 1);
   const min = Number(control.min ?? Math.max(0, defaultValue - 3));
   const max = Number(control.max ?? defaultValue + 5);
@@ -580,8 +663,12 @@ function randomize() {
   const simpleMain = structured && isSimpleMain(current.structure, current);
   let selected;
   for (let attempt = 0; attempt < 15; attempt++) {
-    const params = cloneDefaults(spec);
-    for (const control of spec.controls ?? []) params[control.key] = randomValue(control, spec.defaults);
+    let params = cloneDefaults(spec);
+    for (const key of (spec.controls ?? []).map((control) => control.key)) {
+      const control = getSpecControls(spec, params).find((item) => item.key === key);
+      params[key] = randomValue(control, spec.defaults, control.type === 'number' ? allowedFor(spec, key, params) : null);
+      if (typeof spec.normalizeParams === 'function') params = spec.normalizeParams(params, key);
+    }
     if (structured) {
       if (current.structure.conditions.length || !simpleMain) params.k = current.k;
       if (!simpleMain) { params.total = current.total; params.relation = current.relation; }
@@ -593,7 +680,7 @@ function randomize() {
       if (result.status === 'ok' && !isZero) { selected = params; break; }
     } catch { /* Retry bounded samples; the fallback is an authored preset. */ }
   }
-  if (!selected) selected = structured ? current : safeParams(spec, spec.presets?.[0]?.params ?? spec.defaults);
+  if (!selected) selected = structured && spec.solve(current).status === 'ok' ? current : safeParams(spec, spec.presets?.[0]?.params ?? spec.defaults);
   state.params = selected;
   renderControls(); calculate();
   showToast('새 조건을 적용했습니다. 달라진 풀이를 비교해 보세요.');
@@ -792,7 +879,12 @@ function restoreHash() {
   const data = readHash();
   if (!data) return false;
   if (!engines.has(data.family)) { showToast('이 링크의 유형을 찾지 못했습니다. 기본 유형으로 시작합니다.'); return false; }
-  selectFamily(data.family, data.params);
+  const spec = engines.get(data.family);
+  const candidate = safeParams(spec, data.params);
+  let valid = false;
+  try { valid = spec.solve(candidate).status === 'ok'; } catch { /* Recover unsupported saved conditions to the authored default. */ }
+  selectFamily(data.family, valid ? candidate : undefined);
+  if (!valid) showToast('이 링크의 조건은 999 이하 계산 범위를 벗어나 기본 조건으로 복구했습니다.');
   setView(data.view ?? 'lab');
   return true;
 }
@@ -815,6 +907,7 @@ async function copyText(value, successMessage) {
 function copyLink() {
   const { params, error } = readAndValidate();
   if (error) { showToast('조건의 입력값을 확인한 뒤 링크를 복사해 주세요.'); return; }
+  if (engines.get(state.family).solve(params).status !== 'ok') { showToast('999 이하로 계산할 수 있는 조건만 링크로 저장할 수 있습니다.'); return; }
   const hash = `#lab=${encodeURIComponent(JSON.stringify({ family: state.family, params, view: state.view }))}`;
   const url = new URL(location.href); url.hash = hash;
   history.replaceState(null, '', url);

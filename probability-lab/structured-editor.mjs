@@ -14,8 +14,36 @@ const plain = (value) => value !== null && typeof value === 'object' && !Array.i
 const allowed = (options, value) => options.some(([key]) => key === value);
 const variableCount = (params) => Number.isInteger(params?.k) ? Math.max(2, Math.min(8, params.k)) : 4;
 const blankVariable = () => ({ domain: 'inherit', parity: 'any', lower: null, upper: null });
-const boundedInteger = (value) => typeof value === 'number' && Number.isSafeInteger(value) && Math.abs(value) <= 10000;
+const NUMBER_LIMIT = 999;
+const boundedInteger = (value) => typeof value === 'number' && Number.isSafeInteger(value) && Math.abs(value) <= NUMBER_LIMIT;
 const normalizeExpression = (value) => value.replace(/[×·]/g, '*').replace(/[−–]/g, '-').replace(/²/g, '^2');
+
+export function validateStructureLimits(value) {
+  if (!plain(value)) return '';
+  const expressionLimit = (expression, label) => {
+    if (typeof expression !== 'string') return '';
+    const literals = normalizeExpression(expression).match(/(?:\d+(?:\.\d*)?|\.\d+)/g) ?? [];
+    return literals.some((literal) => !Number.isFinite(Number(literal)) || Math.abs(Number(literal)) > NUMBER_LIMIT)
+      ? `${label}의 상수는 절댓값 999 이하여야 합니다.` : '';
+  };
+  for (const [key, label] of [['left', '주된 왼쪽 식'], ['right', '주된 오른쪽 식']]) {
+    const error = expressionLimit(value[key], label); if (error) return error;
+  }
+  if (Array.isArray(value.variables)) for (const [index, variable] of value.variables.slice(0, 8).entries()) {
+    if (!plain(variable)) continue;
+    for (const [key, label] of [['lower', '하한'], ['upper', '상한']]) {
+      const bound = variable[key];
+      if (bound !== null && bound !== undefined && !boundedInteger(bound)) return `${LETTERS[index]}의 ${label}은 -999부터 999까지의 정수로 입력해 주세요.`;
+    }
+  }
+  if (Array.isArray(value.conditions)) for (const [index, condition] of value.conditions.slice(0, MAX_CONDITIONS).entries()) {
+    if (!plain(condition) || condition.kind !== 'expression') continue;
+    for (const key of ['left', 'right']) {
+      const error = expressionLimit(condition[key], `조건 ${index + 1}`); if (error) return error;
+    }
+  }
+  return '';
+}
 
 function cleanExpression(value, fallback) {
   if (typeof value !== 'string' || value.length > MAX_EXPRESSION) return fallback;
@@ -28,7 +56,7 @@ export function defaultStructure(params = {}) {
     enabled: true,
     left: LETTERS.slice(0, variableCount(params)).split('').join('+'),
     relation: allowed(RELATIONS, params.relation) ? params.relation : 'eq',
-    right: Number.isFinite(params.total) ? String(params.total) : '7',
+    right: boundedInteger(params.total) ? String(params.total) : '7',
     variables: Array.from({ length: variableCount(params) }, blankVariable),
     conditions: [],
   };
@@ -38,6 +66,7 @@ export function defaultStructure(params = {}) {
 export function sanitizeStructure(value, params = {}) {
   const result = defaultStructure(params);
   if (!plain(value)) return result;
+  if (validateStructureLimits(value)) return result;
   if (typeof value.enabled === 'boolean') result.enabled = value.enabled;
   result.left = cleanExpression(value.left, result.left);
   result.right = cleanExpression(value.right, result.right);
@@ -175,7 +204,7 @@ export function createStructuredEditor(container, initialParams, onChange) {
   const rhsLabel = $node('label', 'structure-field-label', '오른쪽 기준값 빠른 조절'); rhsLabel.htmlFor = 'structure-main-right-slider';
   const rhsRange = $node('input', 'control-range'); rhsRange.type = 'range'; rhsRange.id = 'structure-main-right-slider'; rhsRange.min = '-40'; rhsRange.max = '80'; rhsRange.step = '1';
   rhsRange.setAttribute('aria-label', '주된 식 오른쪽 기준값 드래그로 조절');
-  const rhsNumber = $node('input', 'control-input'); rhsNumber.type = 'number'; rhsNumber.id = 'structure-main-right-value'; rhsNumber.min = '-10000'; rhsNumber.max = '10000'; rhsNumber.step = '1'; rhsNumber.setAttribute('aria-label', '주된 식 오른쪽 기준값 직접 입력');
+  const rhsNumber = $node('input', 'control-input'); rhsNumber.type = 'number'; rhsNumber.id = 'structure-main-right-value'; rhsNumber.min = '-999'; rhsNumber.max = '999'; rhsNumber.step = '1'; rhsNumber.setAttribute('aria-label', '주된 식 오른쪽 기준값 직접 입력');
   const editRhsConstant = (value, change) => { structure.right = value; mainRight.value = value; autoMain = false; notify(change); };
   rhsRange.addEventListener('input', () => editRhsConstant(rhsRange.value, { drag: true }));
   rhsRange.addEventListener('change', () => editRhsConstant(rhsRange.value, { immediate: true }));
@@ -191,10 +220,13 @@ export function createStructuredEditor(container, initialParams, onChange) {
   toolbar.append(variableTools, operatorTools);
   const mainFooter = $node('div', 'structure-main-footer');
   mainFooter.append(syncNotice, button('기본 합식으로', 'button button-secondary compact-button', () => {
-    autoMain = true; structure = synchronizeStructure(structure, scalarParams, true); updateMainInputs(); notify();
+    const simple = defaultStructure(scalarParams);
+    autoMain = true;
+    structure.left = simple.left; structure.relation = simple.relation; structure.right = simple.right;
+    updateMainInputs(); notify();
   }));
   mainFooter.children[1].id = 'structure-reset-main';
-  const expressionHelp = $node('p', 'control-hint', '예: a*b, (a-b)^2, a+b+2*c+d^2 · 입력할 칸을 선택한 뒤 버튼을 누르세요. 최대 4차식과 제곱(^2)을 지원합니다. 자연수는 1부터, 정수는 음수와 0도 포함합니다. 식만으로 유한한 범위를 정할 수 없으면 변수별 하한·상한을 추가하세요.');
+  const expressionHelp = $node('p', 'control-hint', '예: a*b, (a-b)^2, a+b+2*c+d^2 · 입력할 칸을 선택한 뒤 버튼을 누르세요. 최대 4차식과 제곱(^2)을 지원하며, 입력하는 수의 절댓값은 999 이하여야 합니다. 자연수는 1부터, 정수는 음수와 0도 포함합니다. 식만으로 유한한 범위를 정할 수 없으면 변수별 하한·상한을 추가하세요.');
   expressionHelp.id = 'structure-expression-help';
   const helpDetails = $node('details', 'structure-help-details');
   helpDetails.append($node('summary', '', '식 입력 도움말'), expressionHelp);
@@ -243,7 +275,7 @@ export function createStructuredEditor(container, initialParams, onChange) {
   const bulkLowerMode = select([['keep', '하한 유지'], ['auto', '자동 / 추가 제한 없음'], ['value', '값 설정']], 'keep', '선택 변수 하한 설정 방식', 'structure-bulk-lower-mode', (value) => { bulkLower.hidden = value !== 'value'; });
   const bulkUpperMode = select([['keep', '상한 유지'], ['auto', '자동 / 추가 제한 없음'], ['value', '값 설정']], 'keep', '선택 변수 상한 설정 방식', 'structure-bulk-upper-mode', (value) => { bulkUpper.hidden = value !== 'value'; });
   const simpleNumber = (id, value, label) => {
-    const input = $node('input', 'control-input'); input.type = 'number'; input.id = id; input.value = String(value); input.min = '-10000'; input.max = '10000'; input.step = '1'; input.setAttribute('aria-label', label); return input;
+    const input = $node('input', 'control-input'); input.type = 'number'; input.id = id; input.value = String(value); input.min = '-999'; input.max = '999'; input.step = '1'; input.setAttribute('aria-label', label); return input;
   };
   const bulkLower = simpleNumber('structure-bulk-lower', 1, '선택 변수의 하한 값'); bulkLower.hidden = true;
   const bulkUpper = simpleNumber('structure-bulk-upper', 10, '선택 변수의 상한 값'); bulkUpper.hidden = true;
@@ -254,7 +286,7 @@ export function createStructuredEditor(container, initialParams, onChange) {
   const bulkActions = $node('div', 'structure-bulk-actions');
   const apply = button('선택 변수에 적용', 'button button-primary', () => {
     for (const [mode, input, label] of [[bulkLowerMode, bulkLower, '하한'], [bulkUpperMode, bulkUpper, '상한']]) {
-      if (mode.value === 'value' && (input.value.trim() === '' || !boundedInteger(Number(input.value)))) { setError(`${label}에 -10000~10000의 정수를 입력해 주세요.`); return; }
+      if (mode.value === 'value' && (input.value.trim() === '' || !boundedInteger(Number(input.value)))) { setError(`${label}에 -999~999의 정수를 입력해 주세요.`); return; }
     }
     applySelected((entry) => {
       if (bulkDomain.value !== 'keep') entry.domain = bulkDomain.value;
@@ -370,13 +402,14 @@ export function createStructuredEditor(container, initialParams, onChange) {
       ? '기본 합식과 자동 동기화 중'
       : '직접 편집 중 · 기준값은 여기서 조절하세요.';
     syncNotice.dataset.mode = autoMain ? 'auto' : 'custom';
-    const integerRight = /^[+-]?\d+$/.test(structure.right.trim()) && boundedInteger(Number(structure.right));
+    const integerRight = /^[+-]?\d+$/.test(structure.right.trim()) && Number.isSafeInteger(Number(structure.right));
     rhsControls.hidden = !integerRight && structure.right.trim() !== '';
     if (integerRight) {
       const right = Number(structure.right);
-      rhsNumber.value = String(right); rhsRange.min = String(Math.min(-40, right)); rhsRange.max = String(Math.max(80, right)); rhsRange.value = String(right);
-      rhsRange.setAttribute('aria-valuetext', String(right));
-      rhsRange.style.setProperty('--range-progress', `${(right - Number(rhsRange.min)) / (Number(rhsRange.max) - Number(rhsRange.min)) * 100}%`);
+      const sliderValue = Math.max(-999, Math.min(999, right));
+      rhsNumber.value = String(right); rhsRange.min = String(Math.max(-999, Math.min(-40, right))); rhsRange.max = String(Math.min(999, Math.max(80, right))); rhsRange.value = String(sliderValue);
+      rhsRange.setAttribute('aria-valuetext', String(sliderValue));
+      rhsRange.style.setProperty('--range-progress', `${(sliderValue - Number(rhsRange.min)) / (Number(rhsRange.max) - Number(rhsRange.min)) * 100}%`);
     }
   }
 
@@ -416,14 +449,14 @@ export function createStructuredEditor(container, initialParams, onChange) {
         const mode = select([['auto', '자동 / 추가 제한 없음'], ['value', '값 설정']], entry[key] === null ? 'auto' : 'value', `${letter}의 ${label} 설정 방식`, `structure-var-${letter}-${key}-mode`, (value) => {
           input.hidden = value === 'auto'; entry[key] = value === 'auto' ? null : Number(input.value); notify();
         });
-        const range = $node('input', 'control-range structure-bound-range'); range.type = 'range'; range.id = `structure-var-${letter}-${key}-slider`; range.min = String(Math.min(-30, Number(input.value))); range.max = String(Math.max(40, Number(input.value))); range.step = '1'; range.value = input.value; range.hidden = input.hidden;
+        const range = $node('input', 'control-range structure-bound-range'); range.type = 'range'; range.id = `structure-var-${letter}-${key}-slider`; range.min = String(Math.max(-999, Math.min(-30, Number(input.value)))); range.max = String(Math.min(999, Math.max(40, Number(input.value)))); range.step = '1'; range.value = String(Math.max(-999, Math.min(999, Number(input.value)))); range.hidden = input.hidden;
         range.setAttribute('aria-label', `${letter}의 ${label} 드래그로 조절`);
         mode.addEventListener('change', () => { range.hidden = mode.value === 'auto'; });
         range.addEventListener('input', () => { input.value = range.value; entry[key] = Number(range.value); notify({ drag: true }); });
         range.addEventListener('change', () => notify({ immediate: true }));
         input.addEventListener('input', () => {
           entry[key] = input.value.trim() === '' ? NaN : Number(input.value);
-          if (Number.isFinite(entry[key])) { range.min = String(Math.min(-30, entry[key])); range.max = String(Math.max(40, entry[key])); range.value = String(entry[key]); }
+          if (Number.isFinite(entry[key])) { range.min = String(Math.max(-999, Math.min(-30, entry[key]))); range.max = String(Math.min(999, Math.max(40, entry[key]))); range.value = String(Math.max(-999, Math.min(999, entry[key]))); }
           notify();
         });
         numericInputs.push({ input, mode, label: `${letter}의 ${label}` });
@@ -485,11 +518,13 @@ export function createStructuredEditor(container, initialParams, onChange) {
         focusedExpression = mainLeft; renderChips(); renderVariableCards(); renderConditions();
       }
       renderPreview();
+      const limitsError = validateStructureLimits(structure);
+      if (limitsError) { setError(limitsError); return { structure: null, error: limitsError, autoMain, enabled: structure.enabled }; }
       if (structure.enabled) {
         for (const [index, variable] of structure.variables.entries()) {
           for (const [key, label] of [['lower', '하한'], ['upper', '상한']]) {
             if (variable[key] !== null && !boundedInteger(variable[key])) {
-              const message = `${LETTERS[index]}의 ${label}에 -10000~10000의 정수를 입력해 주세요.`; setError(message); return { structure: null, error: message, autoMain, enabled: structure.enabled };
+              const message = `${LETTERS[index]}의 ${label}에 -999~999의 정수를 입력해 주세요.`; setError(message); return { structure: null, error: message, autoMain, enabled: structure.enabled };
             }
           }
         }
