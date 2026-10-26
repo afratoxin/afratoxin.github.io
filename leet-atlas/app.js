@@ -5,7 +5,7 @@ import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './loca
 import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-year-analysis1';
 import { rankReferences } from './reference-search.mjs?v=20261026-year-analysis1';
 import { createSemanticSearch } from './semantic-search.mjs?v=20261026-year-analysis1';
-import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-analysis1';
+import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-plane1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
