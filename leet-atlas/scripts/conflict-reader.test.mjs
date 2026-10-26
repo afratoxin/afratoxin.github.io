@@ -174,6 +174,27 @@ test('the complete 755-question archive renders all real readers with preserved 
     const actual = page.app.state.questions.get(q.id);
     assert.deepEqual([actual.answer, actual.sourceMarkedAnswer, actual.derivedAnswer], keys.get(q.id), `${q.id}: keys unchanged by rendering`);
   }
-  assert.ok(conflicts >= 2);
-  assert.ok(noListedAnswers >= 2);
+  assert.equal(conflicts, data.questions.filter(q => q.answerStatus === 'source-conflict').length);
+  assert.equal(noListedAnswers, data.questions.filter(q => q.answerStatus === 'source-conflict' && q.derivedAnswer === null).length);
+});
+
+test('re-solved 1034, 2305 and 2435 show their preserved answers without a conflict warning', async () => {
+  const data = JSON.parse(await readFile(new URL('../data/archive.json', import.meta.url), 'utf8'));
+  const page = await boot('#/question/1034', data);
+  for (const [id, answer] of [['1034', 2], ['2305', 2], ['2435', 1]]) {
+    const q = data.questions.find(q => q.id === id);
+    assert.equal(q.answer, answer, `${id}: original answer`);
+    assert.equal(q.sourceMarkedAnswer, answer, `${id}: original highlight`);
+    assert.equal(q.derivedAnswer, answer, `${id}: re-solved answer`);
+    assert.equal(q.answerStatus, 'source-and-solution-agree', id);
+    assert.deepEqual(q.options.filter(o => o.correct).map(o => o.number), [answer], id);
+    for (const key of ['answerIssue', 'answerWarning', 'answerConflict', 'derivedConclusion']) {
+      assert.ok(!q[key], `${id}: stale ${key}`);
+    }
+    if (id !== '2435') assert.deepEqual(q.statements.map(s => s.verdict), [false, true, false], id);
+    page.location.hash = `#/question/${id}`; page.app.render();
+    assert.match(page.html(), /class="answer-strip"/, id);
+    assert.equal((page.html().match(/option-correct-label/g) || []).length, 1, id);
+    assert.doesNotMatch(page.html(), /class="conflict-alert"|원본 문항·답안 불일치|원본 표시 · 불일치/, id);
+  }
 });

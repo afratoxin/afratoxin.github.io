@@ -2096,7 +2096,14 @@
     "native2027Sha256": "438732665016fbbc87671f703c45d8550b2fb3d51a48eb5f91eb77e0196515ba",
     "legacyTaxonomyCount": 221,
     "native2027FileSha256": "a8f479da5c9fb6c3a6e8aa183d45543d57ca6ae3eed341d6b353e25cf77578cc",
-    "connectedSourceArchiveSha256": "b38c4abfdb2926c6b6c9d52206606df36cb215696d487862799a4817da00ffd0",
-    "sourceConnectionDate": "2026-10-26"
+    "connectedSourceArchiveSha256": "d3ede4e0004e41eb6a48c609125d77dd6138bf55d9c0beda480ed9a551f87c9f",
+    "sourceConnectionDate": "2026-10-26",
+    "beforeSolutionReviewSha256": "b38c4abfdb2926c6b6c9d52206606df36cb215696d487862799a4817da00ffd0",
+    "solutionReviewPath": "data/analyses/review-1034-2305-2435.json",
+    "solutionReviewQuestionIds": [
+      "1034",
+      "2305",
+      "2435"
+    ]
   }
 }
