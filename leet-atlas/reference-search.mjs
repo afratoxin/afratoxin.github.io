@@ -103,7 +103,7 @@ function interpret(query){
   const topic=concepts.map(concept=>({...concept,...mentions(raw,concept.query)})).filter(concept=>concept.positive||concept.negative);
   const negativeWords=topic.filter(concept=>concept.negative&&!concept.positive).flatMap(concept=>concept.query);
   const visual={
-    blank:/(?:빈(?:칸|상자|박스|네모|곳|부분)|공란|(?:박스|상자|칸|네모)(?:안에|에|속에)?(?:들어갈|채우|비어|빈)|(?:㉠|㉡|㉢|ⓐ|ⓑ|ⓒ|ⓓ)(?:에|을|과|와)?(?:들어갈|채울|채우는))/.test(joined),
+    blank:/(?:빈(?:칸|상자|박스|네모)|공란|(?:박스|상자|칸|네모)(?:안에|에|속에)?(?:들어갈|채우|비어|빈)|(?:㉠|㉡|㉢|ⓐ|ⓑ|ⓒ|ⓓ)(?:에|을|과|와)?(?:들어갈|채울|채우는))/.test(joined),
     table:/(?:도표|행렬|기계표|점수표|시간표|조건표|표(?:있는|에서|에|로|의|를|가|는|문제|문항|로부터))/.test(joined),
     diagram:/(?:그림|그래프|도식|순서도|흐름도|배치도|관계도|지도)/.test(joined),
     container:false,

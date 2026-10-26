@@ -3,7 +3,7 @@ import { groupTags } from './tag-groups.mjs?v=20261026-strengthen-release1';
 import { renderSidebar } from './sidebar.mjs?v=20261026-strengthen-release1';
 import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-year-analysis1';
 import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-year-analysis1';
-import { rankReferences } from './reference-search.mjs?v=20261026-search-diversity1';
+import { rankReferences } from './reference-search.mjs?v=20261026-search-diversity2';
 import { createSemanticSearch } from './semantic-search.mjs?v=20261026-year-analysis1';
 import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-plane1';
 
@@ -362,11 +362,12 @@ function resetFilters() {
 function filteredQuestions() {
   const questions = state.data.questions.map(question => state.localTexts.has(question.id) ? { ...question, text: state.localTexts.get(question.id).text } : question);
   const recommend = state.searchMode === 'recommend' && Boolean(state.query.trim());
+  const visualQuery = /(?:빈\s*(?:칸|상자|박스|네모)|공란|(?:㉠|㉡|㉢|ⓐ|ⓑ|ⓒ)(?:에|을)?(?:들어갈|채울)|도표|표\s*(?:있는|에서|에|로|의|를|가|는|문제|문항)|그림|그래프|도식|순서도|흐름도|배치도|관계도|박스|상자|배열|배치|일렬|자리\s*배정)/.test(state.query.normalize('NFKC'));
   const filters = { tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') };
   const candidates = filterQuestions(questions, { ...filters, query: recommend ? '' : state.query }, state.reviews);
   state.searchMatches = new Map();
   state.keywordFallback = false;
-  if (state.searchMode === 'keyword' && state.query.trim() && candidates.length === 0) {
+  if (state.searchMode === 'keyword' && state.query.trim() && (candidates.length === 0 || visualQuery)) {
     const pool = filterQuestions(questions, { ...filters, query: '' }, state.reviews);
     const matches = rankReferences(pool, state.query);
     state.searchMatches = new Map(matches.map(match => [match.id, match]));
