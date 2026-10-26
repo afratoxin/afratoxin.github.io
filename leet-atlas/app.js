@@ -3,7 +3,7 @@ import { groupTags } from './tag-groups.mjs?v=20261026-strengthen-release1';
 import { renderSidebar } from './sidebar.mjs?v=20261026-strengthen-release1';
 import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-year-analysis1';
 import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-year-analysis1';
-import { rankReferences } from './reference-search.mjs?v=20261026-search-diversity3';
+import { rankReferences } from './reference-search.mjs?v=20261026-search-diversity4';
 import { createSemanticSearch } from './semantic-search.mjs?v=20261026-year-analysis1';
 import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-plane1';
 
@@ -113,7 +113,7 @@ function updateSearchStatus() {
   if (!status) return;
   const query = state.query.trim();
   let message;
-  if (state.searchMode === 'keyword' && state.keywordFallback) message = '정확한 단어가 모두 일치하지 않아 빈칸·표·도식 형식과 원문·분류·해설 단서까지 넓혀 찾았습니다.';
+  if (state.searchMode === 'keyword' && state.keywordFallback) message = '정확한 단어가 모두 일치하지 않아 형식·원문·분류·해설 단서까지 넓혀 찾았습니다.';
   else if (state.searchMode === 'keyword') message = '공백으로 나눈 모든 단어가 제목·본문·분류·태그 근거에 포함된 문항을 찾습니다.';
   else if (!query) message = '만들고 싶은 문항을 문장으로 설명해 보세요. 첫 의미 검색에는 모델 약118MB와 실행 자료를 내려받습니다. 검색 문장은 이 기기에서 처리합니다.';
   else if (state.semanticStatus.state === 'ready') message = '본문·분류·문항 형식 단서를 함께 비교했습니다. 각 문항의 추천 근거를 확인하세요.';
@@ -362,7 +362,7 @@ function resetFilters() {
 function filteredQuestions() {
   const questions = state.data.questions.map(question => state.localTexts.has(question.id) ? { ...question, text: state.localTexts.get(question.id).text } : question);
   const recommend = state.searchMode === 'recommend' && Boolean(state.query.trim());
-  const visualQuery = /(?:빈\s*(?:칸|상자|박스|네모)|공란|(?:㉠|㉡|㉢|ⓐ|ⓑ|ⓒ)(?:에|을)?(?:들어갈|채울)|도표|표\s*(?:있는|에서|에|로|의|를|가|는|문제|문항)|그림|그래프|도식|순서도|흐름도|배치도|관계도|박스|상자|배열|배치|일렬|자리\s*배정)/.test(state.query.normalize('NFKC'));
+  const visualQuery = /(?:5\s*지\s*선다|오지선다|다섯\s*지\s*선다|5개\s*(?:선택지|선지)|선택지\s*5개|선지\s*5개|ㄱ\s*ㄴ\s*ㄷ\s*ㄹ|ㄹ\s*(?:선지|항목|까지)|빈\s*(?:칸|상자|박스|네모)|공란|(?:㉠|㉡|㉢|ⓐ|ⓑ|ⓒ)(?:에|을)?(?:들어갈|채울)|도표|표\s*(?:있는|에서|에|로|의|를|가|는|문제|문항)|그림|그래프|도식|순서도|흐름도|배치도|관계도|박스|상자|배열|배치|일렬|자리\s*배정)/.test(state.query.normalize('NFKC'));
   const filters = { tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') };
   const candidates = filterQuestions(questions, { ...filters, query: recommend ? '' : state.query }, state.reviews);
   state.searchMatches = new Map();

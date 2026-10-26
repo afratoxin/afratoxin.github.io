@@ -78,6 +78,8 @@ function featuresOf(q){
     container:/(?:상자|박스)/.test(visualText),
     arrangement:/(?:일렬|배열|배치|배정|자리배정|위치관계)/.test(visualText)
   };
+  const choiceCount=Math.max(...[q.options,q.sourceOptions].map(options=>Array.isArray(options)?options.length:0));
+  const hasRItem=/(?:^|[\s<])ㄹ(?=[.．)〉:])/m.test(visualText);
   const puzzle=(q.types||[]).some(type=>/퍼즐|거짓말 찾기/.test(type));
   // A fictional character inside a speech is not a participant in the discourse.
   const explicitDebate=/논쟁|논박|반박/.test(title+' '+source.slice(0,150));
@@ -86,7 +88,7 @@ function featuresOf(q){
   // A philosophical example of violence alone is not evidence of bodily conflict.
   const physicalTitle=/몸싸움|폭행|상해|주먹|구타|멱살|정당방위/.test(title);
   const physical=physicalTitle||!debate&&/때렸|때려|때리|폭행(?:하|을|한|당|으로)|구타|멱살|주먹|몸싸움/.test(source)&&/형사|형법|상해|정당방위/.test(metadata+' '+text);
-  const feature={source,searchSource,title,labels,labelText,analysis,metadata,text,all,speaker,puzzle,debate,dialogue,physical,visual};
+  const feature={source,searchSource,title,labels,labelText,analysis,metadata,text,all,speaker,puzzle,debate,dialogue,physical,visual,choiceCount,hasRItem};
   featureCache.set(q,feature);
   return feature;
 }
@@ -112,8 +114,13 @@ function interpret(query){
     arrangement:/(?:배열|배치|일렬|자리배정|순서배정|위치관계)/.test(joined)
   };
   visual.container=!visual.blank&&/(?:상자|박스)/.test(joined);
+  const format={
+    fiveChoice:/(?:5지선다|오지선다|다섯지선다|5개선택지|5개선지|선택지5개|선지5개|다섯개의선택지)/.test(joined),
+    rItem:/(?:ㄱ[,·.]*ㄴ[,·.]*ㄷ[,·.]*ㄹ|ㄹ(?:선지|항목|까지|보기))/.test(joined)
+  };
+  const formatIntent=Object.values(format).some(Boolean);
   const visualIntent=Object.values(visual).some(Boolean);
-  return {raw,requestedId,two,physical:physical.positive,excludePhysical:physical.negative,debate:debate.positive&&!physical.positive,excludeDebate:debate.negative,topic,visual,visualIntent,tokens:queryTokens(raw).filter(token=>!negativeWords.some(word=>token.includes(word))&&!(visual.blank&&/^(?:빈|칸|박스|상자|네모|공란|채우기|채우|채울|들어갈)$/.test(token)))};
+  return {raw,requestedId,two,physical:physical.positive,excludePhysical:physical.negative,debate:debate.positive&&!physical.positive,excludeDebate:debate.negative,topic,visual,format,formatIntent,visualIntent,tokens:queryTokens(raw).filter(token=>!negativeWords.some(word=>token.includes(word))&&!(visual.blank&&/^(?:빈|칸|박스|상자|네모|공란|채우기|채우|채울|들어갈)$/.test(token)))};
 }
 
 function snippetFor(feature,terms){
@@ -177,6 +184,10 @@ export function rankReferences(questions,query,{semanticScores=new Map()}={}){
     if(intent.excludePhysical&&feature.physical)score-=50;
     if(intent.excludeDebate&&feature.debate)score-=45;
     const visualEvidence=[];
+    const formatEvidence=[];
+    if(intent.format.fiveChoice&&feature.choiceCount===5){score+=32;evidence++;formatEvidence.push('5지선다');}
+    if(intent.format.rItem&&feature.hasRItem){score+=32;evidence++;formatEvidence.push('ㄹ 항목 포함');}
+    if(formatEvidence.length)reasons.push(`문항 형식: ${formatEvidence.join(' · ')}`);
     if(intent.visual.blank&&feature.visual.blankSlot){score+=34;evidence++;visualEvidence.push(feature.visual.blankKind||'빈칸 형식');terms.push('빈칸');}
     if(intent.visual.table&&feature.visual.table){score+=18;evidence++;visualEvidence.push('표·도표');terms.push('표');}
     if(intent.visual.diagram&&feature.visual.diagram){score+=18;evidence++;visualEvidence.push('그림·도식');terms.push('그림');}
@@ -187,8 +198,8 @@ export function rankReferences(questions,query,{semanticScores=new Map()}={}){
     const strongSemantic=semanticConfident&&semanticCandidates.has(q.id)&&Number.isFinite(raw)&&raw>=maximum-.03;
     if(Number.isFinite(raw)&&semanticUseful)score+=Math.max(0,(raw-.68)*220);
     // Weak generic structural signals alone must not turn an unrelated description into all records.
-    const topicOrWord=intent.topic.some(concept=>concept.positive)||intent.tokens.some(token=>feature.all.includes(token))||visualEvidence.length>0;
-    const structureOnly=intent.tokens.length===0&&(intent.two||intent.debate||intent.physical||intent.visualIntent);
+    const topicOrWord=intent.topic.some(concept=>concept.positive)||intent.tokens.some(token=>feature.all.includes(token))||visualEvidence.length>0||formatEvidence.length>0;
+    const structureOnly=intent.tokens.length===0&&(intent.two||intent.debate||intent.physical||intent.visualIntent||intent.formatIntent);
     if(intent.tokens.length>=3&&!intent.topic.some(concept=>concept.positive)&&!intent.two&&!intent.debate&&!intent.physical&&tokenMatches.length<2&&!strongSemantic)continue;
     if((evidence===0&&!strongSemantic)||(!topicOrWord&&!structureOnly&&!strongSemantic)||score<=0)continue;
     if(reasons.length===0||tokenMatches.length)reasons.push(`제목: ${feature.title||q.id}`);
