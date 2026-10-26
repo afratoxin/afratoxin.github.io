@@ -1,4 +1,130 @@
----
-layout: home
-author_profile: true
----
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#f3f3ee">
+  <meta name="description" content="확률과 통계 기출의 조건과 풀이 구조를 살펴보고, 파라미터를 바꾸며 문항·정답·해설을 함께 실험하는 학습 공간입니다.">
+  <title>확통 구조 실험실</title>
+  <link rel="stylesheet" href="./style.css?v=20261026-challenge-grid">
+  <link rel="stylesheet" href="./design.css?v=20261026-challenge-grid">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;family=Noto+Serif+KR:wght@500;600&amp;display=swap" rel="stylesheet">
+  <script type="module" src="./app.mjs?v=20261026-challenge-grid"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">본문으로 이동</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="확통 구조 실험실 처음으로"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M17 5H7l6 7-6 7h10" stroke-linecap="round" stroke-linejoin="round"></path></svg></span><span class="brand-name">확통 구조 실험실<span class="brand-tagline">조건을 움직이고, 풀이를 발견하세요</span></span></a>
+      <nav class="top-tabs" role="tablist" aria-label="학습 도구">
+        <button class="tab-button" id="tab-lab" type="button" role="tab" aria-selected="true" aria-controls="view-lab" data-view="lab">문항 실험실</button>
+        <button class="tab-button" id="tab-map" type="button" role="tab" aria-selected="false" aria-controls="view-map" tabindex="-1" data-view="map">기출 유형 지도</button>
+        <button class="tab-button" id="tab-compare" type="button" role="tab" aria-selected="false" aria-controls="view-compare" tabindex="-1" data-view="compare">조건 비교</button>
+      </nav>
+      <details class="workbench-help"><summary>안내</summary><div class="help-popover">
+        <h2 id="hero-title">조건을 바꾸면 풀이가 보입니다.</h2><p>유형을 고르고 왼쪽에서 조건을 조정하세요. 가운데 문제와 오른쪽 해설이 함께 갱신됩니다.</p>
+        <div class="hero-stats"><div class="stat"><span class="stat-value" id="stat-exams">17회</span><span class="stat-label">최근 기출</span></div><div class="stat"><span class="stat-value" id="stat-items">136문항</span><span class="stat-label">전체 분류</span></div><div class="stat"><span class="stat-value" id="stat-families">14유형</span><span class="stat-label">구조 실험</span></div></div>
+        <p class="prototype-note">기출 분류와 대표 구조 실험을 제공합니다. 복합 기출 전체의 자동 변형은 아직 지원하지 않습니다.</p><div id="source-documents"></div>
+      </div></details>
+    </div>
+  </header>
+  <div class="app-shell">
+    <div id="catalog-notice" class="notice notice-error" role="status" hidden></div>
+    <div class="workspace">
+      <div class="family-sidebar" hidden><span id="family-count">14</span><div id="family-list"></div></div>
+      <main class="workspace-main" id="main-content" tabindex="-1">
+        <section class="view" id="view-lab" role="tabpanel" aria-labelledby="tab-lab" data-mobile-pane="adjust">
+          <nav class="pane-switch" role="tablist" aria-label="작은 화면 작업 패널">
+            <button id="pane-tab-adjust" class="pane-switch-button" type="button" role="tab" aria-selected="true" aria-controls="adjust-pane" data-pane-target="adjust">조정</button>
+            <button id="pane-tab-problem" class="pane-switch-button" type="button" role="tab" aria-selected="false" aria-controls="problem-pane" data-pane-target="problem" tabindex="-1">문제</button>
+            <button id="pane-tab-solution" class="pane-switch-button" type="button" role="tab" aria-selected="false" aria-controls="solution-pane" data-pane-target="solution" tabindex="-1">해설</button>
+          </nav>
+          <div class="lab-grid">
+            <section class="panel controls-panel workbench-pane" id="adjust-pane" data-active="true" aria-labelledby="controls-title">
+              <div class="adjust-heading"><div class="pane-title-row"><h2 id="controls-title">조건 만들기</h2><span class="pane-caption">조금씩 바꾸며 탐색</span></div><label class="sr-only" for="family-select">풀이 유형 선택</label><select class="control-input family-select" id="family-select" aria-label="풀이 유형 선택"></select></div>
+              <nav class="adjust-tabs" role="tablist" aria-label="조정 항목">
+                <button id="adjust-tab-basic" type="button" class="adjust-tab" role="tab" data-adjust="basic" aria-controls="adjust-panel-basic" aria-selected="true">기본</button>
+                <button id="adjust-tab-expression" type="button" class="adjust-tab" role="tab" data-adjust="expression" aria-controls="adjust-panel-expression" aria-selected="false" tabindex="-1">식</button>
+                <button id="adjust-tab-variables" type="button" class="adjust-tab" role="tab" data-adjust="variables" aria-controls="adjust-panel-variables" aria-selected="false" tabindex="-1">변수</button>
+                <button id="adjust-tab-conditions" type="button" class="adjust-tab" role="tab" data-adjust="conditions" aria-controls="adjust-panel-conditions" aria-selected="false" tabindex="-1">조건</button>
+                <button id="adjust-tab-examples" type="button" class="adjust-tab" role="tab" data-adjust="examples" aria-controls="adjust-panel-examples" aria-selected="false" tabindex="-1">예제</button>
+              </nav>
+              <p id="adjust-description" class="adjust-description"></p>
+              <div id="structure-shared-host" class="structure-shared-host" hidden></div>
+              <div class="adjust-content">
+                <section id="adjust-panel-basic" class="adjust-panel" role="tabpanel" aria-labelledby="adjust-tab-basic">
+                  <form id="controls-form" novalidate><div class="control-grid" id="controls"></div></form>
+                  <nav class="basic-pagination" aria-label="기본 조건 페이지"><button id="basic-prev" class="button button-secondary compact-button" type="button">← 이전</button><span id="basic-page-status" aria-live="polite"></span><button id="basic-next" class="button button-secondary compact-button" type="button">다음 →</button></nav>
+                  <p class="control-footnote">드래그하거나 숫자를 직접 입력하세요.</p>
+                </section>
+                <section id="adjust-panel-expression" class="adjust-panel" role="tabpanel" aria-labelledby="adjust-tab-expression" hidden><div id="adjust-expression-host"></div></section>
+                <section id="adjust-panel-variables" class="adjust-panel" role="tabpanel" aria-labelledby="adjust-tab-variables" hidden><div id="adjust-variables-host"></div></section>
+                <section id="adjust-panel-conditions" class="adjust-panel" role="tabpanel" aria-labelledby="adjust-tab-conditions" hidden><div id="adjust-conditions-host"></div></section>
+                <section id="adjust-panel-examples" class="adjust-panel" role="tabpanel" aria-labelledby="adjust-tab-examples" hidden><p class="adjust-panel-label">대표 조건</p><div id="preset-row" class="preset-row" aria-label="대표 조건"></div><div id="adjust-examples-host"></div></section>
+              </div>
+              <p class="control-error form-error" id="form-error" role="status" hidden></p>
+              <div class="controls-actions"><button type="button" class="button button-secondary" id="reset-button">초기화 ↺</button><button class="button button-primary" id="random-button" type="button">새 조건</button><button class="button button-secondary" id="link-button" type="button">링크 복사</button></div>
+              <div id="structure-panel" hidden><h3 id="structure-title">식·일부 변수 조건 편집기</h3><div id="structure-editor"></div></div><a id="structure-editor-jump" hidden href="#adjust-tab-expression">식 편집</a>
+            </section>
+            <section class="panel problem-panel workbench-pane" id="problem-pane" data-active="false" aria-labelledby="problem-title" aria-busy="false">
+              <div class="pane-header"><div><p class="problem-kicker">02 · 문항</p><h2 id="lab-title">정수해와 분배</h2><h3 class="sr-only" id="problem-title">조건으로 만든 문항</h3><p id="lab-description" class="sr-only"></p></div><span class="live-indicator"><span aria-hidden="true"></span>실시간</span></div>
+              <nav class="question-tabs compact-tabs" role="tablist" aria-label="문제 자료"><button id="question-tab-problem" class="compact-tab" type="button" role="tab" aria-controls="question-panel-problem" data-question-tab="problem" aria-selected="true">문제</button><button id="question-tab-sources" class="compact-tab" type="button" role="tab" aria-controls="question-panel-sources" data-question-tab="sources" aria-selected="false" tabindex="-1">관련 기출</button><span class="compact-tab-caption">대표 구조 실험</span></nav>
+              <section class="question-panel pane-scroll" id="question-panel-problem" role="tabpanel" aria-labelledby="question-tab-problem">
+                <div class="result-meta"><span class="badge" id="result-category">경우의 수</span><span class="status-pill" id="result-status" role="status">계산 준비</span></div>
+                <article class="exam-paper" id="exam-paper" aria-label="생성 문항">
+                  <header class="exam-paper-heading"><span>수학 영역<span class="exam-subject"> (확률과 통계)</span></span><span class="exam-answer-type">연습 문항</span></header>
+                  <div class="exam-question-row"><span class="exam-question-number" aria-label="연습 문항">연습</span><div class="problem-text" id="problem-text">실험을 준비하고 있습니다.</div>
+                  <div id="normal-table-container" class="normal-table-container" aria-label="문제에서 사용할 정규분포표" hidden></div></div>
+                  <div class="exam-working-space" aria-hidden="true"></div>
+                </article>
+                <div id="result-warnings" hidden></div>
+              </section>
+              <section class="question-panel pane-scroll" id="question-panel-sources" role="tabpanel" aria-labelledby="question-tab-sources" hidden>
+                <div class="source-heading"><h3 id="related-title">연결되는 기출</h3><button class="button button-ghost compact-button" type="button" id="all-sources-button">모두 보기 →</button></div><p class="source-explainer">실제 기출의 자체 요약입니다. 이 기출의 수치·조건을 그대로 복원한 프리셋은 아닙니다.</p><div class="source-grid" id="related-sources"></div>
+              </section>
+            </section>
+            <section class="panel solution-panel workbench-pane" id="solution-pane" data-active="false" aria-labelledby="solution-title">
+              <div class="pane-header solution-header"><div><p class="problem-kicker">03 · 풀이 노트</p><h2 id="solution-title">정답과 해설</h2></div><div class="result-toolbar"><button type="button" class="button button-ghost compact-button" id="answer-button" aria-expanded="true" aria-controls="solution-content">정답·해설 숨기기</button><button type="button" class="button button-ghost compact-button" id="copy-button">복사 ↗</button></div></div>
+              <div id="solution-content">
+                <div class="answer-box"><div class="answer-label">정답</div><div class="answer-value" id="answer-value">—</div><div class="answer-unit" id="answer-unit"></div></div>
+                <nav class="solution-tabs compact-tabs" role="tablist" aria-label="해설과 부록"><button id="solution-tab-explanation" class="compact-tab" type="button" role="tab" aria-controls="solution-pane-explanation" data-solution-tab="explanation" aria-selected="true">풀이</button><button id="solution-tab-cases" class="compact-tab" type="button" role="tab" aria-controls="solution-pane-cases" data-solution-tab="cases" aria-selected="false" tabindex="-1">경우표</button><button id="solution-tab-distribution" class="compact-tab" type="button" role="tab" aria-controls="solution-pane-distribution" data-solution-tab="distribution" aria-selected="false" tabindex="-1">분포·예시</button></nav>
+                <div id="solution-pane-explanation" class="solution-subpane pane-scroll" role="tabpanel" aria-labelledby="solution-tab-explanation"><section class="solution-section" aria-labelledby="steps-title"><h4 id="steps-title" class="subsection-title">구조를 따라 푸는 해설</h4><p class="solution-method" id="solution-method" hidden></p><div class="steps-list" id="steps-list"></div></section><div class="insight-box" id="insight-box"><p class="insight-label">이 문항의 핵심</p><p class="insight-body" id="insight-text"></p></div></div>
+                <div id="solution-pane-cases" class="solution-subpane pane-scroll" role="tabpanel" aria-labelledby="solution-tab-cases" hidden><div id="result-cases" hidden></div><p id="cases-empty" class="empty-state" hidden>이 문항은 별도의 경우표가 없습니다. 풀이 탭에서 계산 과정을 확인하세요.</p></div>
+                <div id="solution-pane-distribution" class="solution-subpane pane-scroll" role="tabpanel" aria-labelledby="solution-tab-distribution" hidden><div id="result-chart" hidden></div><div id="result-samples" hidden></div><p id="distribution-empty" class="empty-state" hidden>이 문항은 별도의 분포·예시를 제공하지 않습니다.</p></div>
+              </div>
+              <p class="answer-hidden" id="answer-hidden" hidden>먼저 문제를 풀어 보세요. 위 버튼으로 정답과 해설을 확인할 수 있습니다.</p>
+            </section>
+          </div>
+        </section>
+
+        <section class="view scroll-view" id="view-map" role="tabpanel" aria-labelledby="tab-map" hidden>
+          <div class="section-heading"><div><p class="section-kicker">기출 아카이브</p><h2 class="section-title">기출 유형 지도</h2><p class="section-description">시험과 문항을 오가며 같은 구조가 어떻게 다르게 출제됐는지 살펴보세요.</p></div><span class="section-badge" id="map-total-badge">136문항 분류</span></div>
+          <div class="panel map-filter-panel">
+            <div class="map-toolbar">
+              <div class="filter-field"><label class="filter-label" for="filter-source">자료 범위</label><select class="control-input" id="filter-source"><option value="recent">최근 확통 17회</option><option value="legacy">구 나형 참고</option><option value="all">전체 자료</option></select></div>
+              <div class="filter-field"><label class="filter-label" for="filter-family">풀이 유형</label><select class="control-input" id="filter-family"><option value="all">모든 유형</option></select></div>
+              <div class="filter-field"><label class="filter-label" for="filter-year">학년도</label><select class="control-input" id="filter-year"><option value="all">모든 학년도</option></select></div>
+              <div class="filter-field filter-search"><label class="filter-label" for="filter-search">문항 검색</label><input class="control-input search-input" id="filter-search" type="search" placeholder="시험, 번호, 조건, 핵심어 검색" autocomplete="off"></div>
+            </div>
+          </div>
+          <p class="notice notice-soft" id="legacy-notice" hidden>구교육과정 참고 자료: 현행 범위와 구분하여 활용하세요. 구 나형에는 자연수 분할·모비율 신뢰구간·확률밀도함수 등 구교육과정 소재가 포함되어 있습니다.</p>
+          <div class="catalog-summary"><p id="catalog-count" aria-live="polite">기출 자료를 불러오는 중입니다.</p><button id="filter-clear-button" class="button button-ghost compact-button" type="button">필터 초기화 ↺</button></div>
+          <div class="catalog-list" id="catalog-list"></div>
+          <nav class="pagination" id="pagination" aria-label="기출 목록 페이지"></nav>
+        </section>
+
+        <section class="view scroll-view" id="view-compare" role="tabpanel" aria-labelledby="tab-compare" hidden>
+          <div class="section-heading"><div><p class="section-kicker">조건의 발견</p><h2 class="section-title" id="compare-title">기출 조건과 추가 조건 비교</h2><p class="section-description">실제로 나온 조건과 새롭게 제안하는 변형 축을 분리했습니다.</p></div><label class="sr-only" for="compare-family-select">비교할 유형</label><select id="compare-family-select" class="control-input compare-family-select" aria-label="비교할 유형"></select></div>
+          <div id="compare-content"></div>
+          <section class="source-section"><div class="source-heading"><h3>같은 유형, 다른 조건</h3><button class="button button-ghost compact-button" id="compare-sources-button" type="button">관련 기출 모두 보기 →</button></div><div class="source-grid" id="compare-sources"></div></section>
+        </section>
+
+      </main>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <noscript><div class="notice notice-error">이 실험실을 사용하려면 브라우저의 JavaScript를 켜 주세요.</div></noscript>
+</body>
+</html>
