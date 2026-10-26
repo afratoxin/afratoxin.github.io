@@ -10,7 +10,7 @@ import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-strengthen-release1';
+const CACHE_VERSION = '20261026-readable-content-fit1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -184,7 +184,9 @@ function thumbnailMarkup(question) {
   return url ? `<img src="${esc(url)}" alt="" loading="lazy" decoding="async">` : usesImageBundle(question) ? imagePlaceholder(question, true) : `<span class="thumbnail-placeholder" aria-hidden="true"><small>문항</small><strong>${esc(String(question.number).padStart(2, '0'))}</strong><span>${esc(question.fields?.[0] || questionTags(question, 'field')[0]?.label || '추리논증')}</span></span>`;
 }
 function sourceImageMarkup(question) {
-  const url = imageFor(question);
+  const url = question.id === '2021' && !state.localSources.has(question.id)
+    ? safeAsset('data/images/content/2021-display.webp')
+    : imageFor(question);
   return url ? `<button type="button" class="source-image-button" data-enlarge="${esc(question.id)}" aria-label="${esc(question.id)}번 원본 확대"><img class="source-image" src="${esc(url)}" alt="${esc(question.id)}번 원본 문항. 원문은 추출 텍스트 보기에서도 읽을 수 있습니다." decoding="async"></button>` : imagePlaceholder(question);
 }
 function updateImageHolders() {
