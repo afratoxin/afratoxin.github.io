@@ -1,4 +1,8 @@
 // Presentation only: the engine's question remains the source for copying and solving.
+const CONDITION_LABELS = Array.from('가나다라마바사아자차카타파하');
+export const conditionLabel = index => CONDITION_LABELS[index] ?? String(index + 1);
+export const questionMath = text => String(text ?? '').replaceAll('*', '×');
+
 export function questionBlocks(question) {
   const lines = String(question).split('\n').filter(text => text.trim());
   return lines.map((text, index) => ({
@@ -19,6 +23,7 @@ function element(document, tag, className, text) {
 
 function inlineMath(document, target, text) {
   // Small, lossless typography pass. Never interpret question text as HTML.
+  text = questionMath(text);
   const tokens = /\b\d+\/\d+\b|[A-Za-z]\^[+-]?\d+|[A-Za-zΑ-ω][₀-₉̄]*|[=+≤≥<>−≠]|\*/gu;
   let cursor = 0;
   for (const match of text.matchAll(tokens)) {
@@ -34,7 +39,7 @@ function inlineMath(document, target, text) {
       const power = element(document, 'span', 'exam-power');
       power.append(element(document, 'i', 'exam-variable', base), element(document, 'span', 'sr-only', '^'), element(document, 'sup', '', exponent));
       target.append(power);
-    } else target.append(element(document, 'span', token === '*' ? 'exam-times' : /^[=+≤≥<>−≠]$/.test(token) ? 'exam-operator' : 'exam-variable', token));
+    } else target.append(element(document, 'span', token === '*' ? 'exam-times' : /^[=+≤≥<>−≠]$/.test(token) ? 'exam-operator' : 'exam-variable', token === '*' ? '×' : token));
     cursor = match.index + token.length;
   }
   target.append(document.createTextNode(text.slice(cursor)));
@@ -46,7 +51,6 @@ export function renderExamQuestion(target, question, { valid = true } = {}) {
   target.classList.toggle('exam-question-invalid', !valid);
   let conditions = null;
   let conditionIndex = 0;
-  const labels = '가나다라마바사아자차카타파하';
   for (const block of questionBlocks(question)) {
     if (block.kind === 'condition' && valid) {
       if (!conditions) {
@@ -56,9 +60,9 @@ export function renderExamQuestion(target, question, { valid = true } = {}) {
         target.append(conditions);
       }
       const row = element(document, 'div', 'exam-condition');
-      const label = element(document, 'span', 'exam-condition-label', `(${labels[conditionIndex] ?? conditionIndex + 1})`);
+      const label = element(document, 'span', 'exam-condition-label', `(${conditionLabel(conditionIndex)})`);
       const content = element(document, 'p', 'exam-condition-text');
-      inlineMath(document, content, block.text);
+      inlineMath(document, content, block.text.replace(/^\s*\((?:[가-힣]|\d+)\)\s*/, ''));
       row.append(label, content);
       conditions.append(row);
       conditionIndex++;

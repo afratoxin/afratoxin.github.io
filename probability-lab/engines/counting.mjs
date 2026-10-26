@@ -1,4 +1,5 @@
 // Exact combinatorics engines. Counts stay as BigInt until chart/display conversion.
+import { conditionLabel } from '../exam-paper.mjs?v=20261026-condition-glyphs';
 const N = (key, label, min, max, help) => ({ key, label, type: 'number', min, max, step: 1, ...(help ? { help } : {}) });
 const S = (key, label, options, help) => ({ key, label, type: 'select', options: options.map(([value, label]) => ({ value, label })), ...(help ? { help } : {}) });
 const C = (key, label, help) => ({ key, label, type: 'checkbox', ...(help ? { help } : {}) });
@@ -167,7 +168,7 @@ const functions = makeSpec({
   if(constraint==='onto')functionConditions.push('f는 전사함수이다.');
   if(constraint==='injective')functionConditions.push('f는 일대일함수이다.');
   if(s)functionConditions.push(s===1?'f(1)=1':`f(1)=f(2)=⋯=f(${s})=1`);
-  const question=`집합 X=${setText(n)}, Y=${setText(m)}에 대하여, ${functionConditions.length?'다음 조건을 만족시키는 함수':'함수'} f:X→Y의 개수를 구하시오.${functionConditions.length?`\n${functionConditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`:''}`;
+  const question=`집합 X=${setText(n)}, Y=${setText(m)}에 대하여, ${functionConditions.length?'다음 조건을 만족시키는 함수':'함수'} f:X→Y의 개수를 구하시오.${functionConditions.length?`\n${functionConditions.map((condition,i)=>`(${conditionLabel(i)}) ${condition}`).join('\n')}`:''}`;
   return countResult(question,value,[
     {title:'함수와 추가 조건',body:`각 정의역 원소는 정확히 하나의 상을 갖습니다. ${constraint==='onto'?'전사함수는 공역의 모든 원소를 상으로 사용합니다.':constraint==='injective'?'일대일함수에서는 서로 다른 정의역 원소의 상이 달라야 합니다.':'서로 다른 정의역 원소의 상이 같아도 됩니다.'}`},
     {title:'조건을 반영하여 세기',body:reason,formula},

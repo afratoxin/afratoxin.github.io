@@ -1,4 +1,4 @@
-import { statisticsSpecs } from './statistics.mjs?v=20261026-prompt-style-fix';
+import { statisticsSpecs } from './statistics.mjs?v=20261026-condition-glyphs';
 
 const raw = Object.fromEntries(statisticsSpecs.map(spec => [spec.id, spec]));
 const LIMIT = 999n;

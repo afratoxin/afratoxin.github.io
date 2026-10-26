@@ -1,4 +1,5 @@
-import { structuredSolve } from './structured-integer.mjs?v=20261026-prompt-style-fix';
+import { structuredSolve } from './structured-integer.mjs?v=20261026-condition-glyphs';
+import { conditionLabel } from '../exam-paper.mjs?v=20261026-condition-glyphs';
 
 const options = pairs => pairs.map(([value,label])=>({value,label}));
 const defaults={k:4,total:7,relation:'eq',domain:'natural',lowerOn:false,lower:0,upperOn:false,upper:7,order:'any',distinct:false};
@@ -23,7 +24,7 @@ function basicSolve(input={}) {
   if(p.order!=='any')extras.push(names.join(p.order==='increasing'||p.distinct?' < ':' ≤ '));
   else if(p.distinct)extras.push(`${names.join(', ')}의 값은 서로 다르다.`);
   const conditions=[`${sum} ${relationLabels[p.relation]} ${T}`,...extras];
-  const question=`${d.label} ${names.join(', ')}에 대하여, 다음 조건을 만족시키는 (${names.join(', ')})의 개수를 구하시오.\n${conditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`;
+  const question=`${d.label} ${names.join(', ')}에 대하여, 다음 조건을 만족시키는 (${names.join(', ')})의 개수를 구하시오.\n${conditions.map((condition,i)=>`(${conditionLabel(i)}) ${condition}`).join('\n')}`;
   const base={status:'ok',question,unit:'개',steps:[],insight:'각 변수의 최소값과 홀짝을 먼저 반영하면, 합의 조건을 만족하는 정수해를 세는 문제로 바뀝니다.'};
   const zero=reason=>({...base,answer:'0',exact:'0',numeric:0,steps:[{title:'조건의 양립 가능성 확인',body:reason},{title:'경우의 수',body:'주어진 모든 조건을 동시에 만족시키는 순서쌍은 없다.',formula:'경우의 수 = 0'}],cases:[],samples:[]});
   let L=Math.max(d.low,p.lowerOn?p.lower:-Infinity),U=p.upperOn?p.upper:Infinity;

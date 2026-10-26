@@ -1,4 +1,5 @@
 import { parseExpression, evaluateExpression, polynomial } from './expression-parser.mjs?v=20261026-structure';
+import { questionMath } from '../exam-paper.mjs?v=20261026-condition-glyphs';
 export const COLORS=[['red','빨강'],['blue','파랑'],['yellow','노랑'],['green','초록'],['purple','보라'],['black','검정']];
 export const emptyBallRules=()=>({event:{logic:'and',negate:false,rules:[]},given:{logic:'and',negate:false,rules:[]}});
 export const compare=(a,r,b)=>({eq:a===b,ne:a!==b,ge:a>=b,le:a<=b,gt:a>b,lt:a<b})[r];
@@ -32,7 +33,7 @@ export function compileBallGroup(group,params,distribution=false){
    const left=expression(r.left,distribution?params.boxes:colors.length),right=expression(r.right,distribution?params.boxes:colors.length);
    if(!relations.has(r.relation))throw Error('식의 관계를 확인하세요.');
    const diff=new Map(polynomial(left));for(const[k,v]of polynomial(right))diff.set(k,(diff.get(k)??0)-v);if([...diff.values()].some(v=>Math.abs(v)>999))throw Error('양변을 정리한 식의 계수는 999 이하여야 합니다.');
-   return {text:`${r.left} ${sign[r.relation]} ${r.right}${distribution?` (각 문자는 해당 상자의 ${colorText} 공 수)` : ''}`,test:data=>{
+   return {text:`${questionMath(r.left)} ${sign[r.relation]} ${questionMath(r.right)}${distribution?` (각 문자는 해당 상자의 ${colorText} 공 수)` : ''}`,test:data=>{
     const values=distribution?Array.from({length:params.boxes},(_,j)=>sum(scope.map(i=>data[i][j]))):data;
     const a=evaluateExpression(left,values),b=evaluateExpression(right,values);
     if(Math.abs(a)>999||Math.abs(b)>999)throw Error('문자식의 값이 999를 넘습니다. 수량이나 식을 줄이세요.');

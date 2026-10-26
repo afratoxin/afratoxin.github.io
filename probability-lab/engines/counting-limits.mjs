@@ -1,4 +1,4 @@
-import { countingSpecs } from './counting.mjs?v=20261026-prompt-style-fix';
+import { countingSpecs } from './counting.mjs?v=20261026-condition-glyphs';
 
 // Public examination limits. Raw engines remain available for independent checks.
 const raw = new Map(countingSpecs.map(spec => [spec.id, spec]));

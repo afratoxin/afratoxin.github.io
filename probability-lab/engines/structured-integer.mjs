@@ -1,4 +1,5 @@
 import { parseExpression, polynomial } from './expression-parser.mjs?v=20261026-structure';
+import { conditionLabel, questionMath } from '../exam-paper.mjs?v=20261026-condition-glyphs';
 
 const DOMAINS={natural:{label:'자연수',low:1,step:1,residue:0},nonnegative:{label:'0 이상의 정수',low:0,step:1,residue:0},integer:{label:'정수',low:-Infinity,step:1,residue:0},'positive-even':{label:'양의 짝수',low:2,step:2,residue:0},'positive-odd':{label:'양의 홀수',low:1,step:2,residue:1},'integer-even':{label:'짝수인 정수',low:-Infinity,step:2,residue:0},'integer-odd':{label:'홀수인 정수',low:-Infinity,step:2,residue:1}};
 const LABELS={eq:'=',ne:'≠',lt:'<',le:'≤',gt:'>',ge:'≥'};
@@ -183,7 +184,7 @@ function primeExponentSolution(main,bounds,base){
 }
 function originalQuestion(p,bounds){
  const s=p.structure,names=Array.from({length:p.k},(_,i)=>name(i));
- const conditions=[`${s.left} ${LABELS[s.relation]} ${s.right}`];
+ const conditions=[`${questionMath(s.left)} ${LABELS[s.relation]} ${questionMath(s.right)}`];
  const variableGroups=new Map();
  for(let i=0;i<p.k;i++){
   const data=s.variables[i]??{};let kind=data.domain&&data.domain!=='inherit'?DOMAINS[data.domain].label:DOMAINS[p.domain].label;
@@ -204,10 +205,10 @@ function originalQuestion(p,bounds){
   else if(Number.isFinite(high))parts.push(`${list} ≤ ${high}`);
   conditions.push(parts.join(', 그리고 '));
  }
- for(const c of s.conditions)conditions.push(c.kind==='expression'?`${c.left} ${LABELS[c.relation]} ${c.right}`:c.kind==='distinct'?`${c.variables.map(name).join(', ')}의 값은 서로 다르다.`:c.variables.map(name).join(c.kind==='increasing'?' < ':' ≤ '));
+ for(const c of s.conditions)conditions.push(c.kind==='expression'?`${questionMath(c.left)} ${LABELS[c.relation]} ${questionMath(c.right)}`:c.kind==='distinct'?`${c.variables.map(name).join(', ')}의 값은 서로 다르다.`:c.variables.map(name).join(c.kind==='increasing'?' < ':' ≤ '));
  if(p.order!=='any')conditions.push(names.join(p.order==='increasing'||p.distinct?' < ':' ≤ '));else if(p.distinct)conditions.push(`${names.join(', ')}의 값은 서로 다르다.`);
  const heading=`${DOMAINS[p.domain].label} ${names.join(', ')}에 대하여, 다음 조건을 만족시키는 (${names.join(', ')})의 개수를 구하시오.`;
- return `${heading}\n${conditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`;
+ return `${heading}\n${conditions.map((condition,i)=>`(${conditionLabel(i)}) ${condition}`).join('\n')}`;
 }
 export function structuredSolve(p,basicSolve){
  try{

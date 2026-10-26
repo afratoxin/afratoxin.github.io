@@ -1,7 +1,7 @@
-import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-prompt-style-fix';
-import { createBallEditor } from './ball-editor.mjs?v=20261026-prompt-style-fix';
-import { specs } from './engines.mjs?v=20261026-prompt-style-fix';
-import { renderExamQuestion } from './exam-paper.mjs?v=20261026-exam';
+import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-condition-glyphs';
+import { createBallEditor } from './ball-editor.mjs?v=20261026-condition-glyphs';
+import { specs } from './engines.mjs?v=20261026-condition-glyphs';
+import { renderExamQuestion, questionMath } from './exam-paper.mjs?v=20261026-condition-glyphs';
 import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor, validateStructureLimits } from './structured-editor.mjs?v=20261026-limits';
 
 const $ = (id) => document.getElementById(id);
@@ -48,6 +48,9 @@ function node(tag, className, content) {
   if (content !== undefined && content !== null) element.textContent = String(content);
   return element;
 }
+
+const formatFormulaText = value => String(value ?? '').replace(/[·⋅*]/g, '×');
+const formatInlineMath = value => String(value ?? '').replace(/([A-Za-z0-9₀-₉ᵢⱼ̄)])(?:·|⋅|\*)(?=[A-Za-z0-9₀-₉ᵢⱼ(])/g, '$1×');
 
 function replace(target, children = []) {
   target.replaceChildren(...children.filter(Boolean));
@@ -559,17 +562,17 @@ function renderResult() {
   renderExamQuestion($('problem-text'), result.question ?? '문항을 생성할 조건을 선택해 주세요.', { valid: status === 'ok' });
   $('exam-paper').dataset.status = status;
   renderNormalTable(result.normalTable);
-  $('answer-value').textContent = result.answer ?? result.exact ?? '—';
+  $('answer-value').textContent = formatFormulaText(result.answer ?? result.exact ?? '—');
   $('answer-unit').textContent = result.unit ?? '';
   $('copy-button').disabled = status !== 'ok';
-  $('insight-text').textContent = result.insight ?? '';
+  $('insight-text').textContent = formatInlineMath(result.insight ?? '');
   $('insight-box').hidden = !result.insight;
   const steps = (result.steps ?? []).map((step, index) => {
     const row = node('div', 'step');
     const content = node('div', 'step-content');
     content.append(node('h5', 'step-title', step.title ?? `단계 ${index + 1}`));
-    if (step.body) content.append(node('p', 'step-body', step.body));
-    if (step.formula) content.append(node('div', 'formula', step.formula));
+    if (step.body) content.append(node('p', 'step-body', formatInlineMath(step.body)));
+    if (step.formula) content.append(node('div', 'formula', formatFormulaText(step.formula)));
     row.append(node('span', 'step-number', String(index + 1).padStart(2, '0')), content, document.createTextNode('\n'));
     return row;
   });
@@ -580,7 +583,7 @@ function renderResult() {
   $('solution-method').textContent = method ? `풀이 방법 · ${METHOD_LABELS.get(method) ?? method}` : '';
   const warnings = result.warnings ?? [];
   $('result-warnings').hidden = !warnings.length;
-  replace($('result-warnings'), warnings.map((warning) => node('p', 'result-warning', warning)));
+  replace($('result-warnings'), warnings.map((warning) => node('p', 'result-warning', formatInlineMath(warning))));
   renderCases(result.cases);
   renderChart(result.chart);
   const samples = (result.samples ?? []).slice(0, 16);
@@ -642,7 +645,7 @@ function renderCases(cases = []) {
   const body = node('tbody');
   for (const item of cases.slice(0, 80)) {
     const tr = node('tr');
-    tr.append(node('td', '', item.label), document.createTextNode(' '), node('td', 'case-count', item.count), document.createTextNode(' '), node('td', '', item.detail ?? ''), document.createTextNode('\n'));
+    tr.append(node('td', '', formatInlineMath(item.label)), document.createTextNode(' '), node('td', 'case-count', item.count), document.createTextNode(' '), node('td', '', formatFormulaText(item.detail ?? '')), document.createTextNode('\n'));
     body.append(tr);
   }
   table.append(caption, head, body);
@@ -971,10 +974,10 @@ function copyResult() {
     ...(normalTable.additionalRows?.length ? ['현재 문항의 추가 근삿값', ...normalTable.additionalRows.map((row) => `${row.z}: ${row.probability}`)] : []),
   ] : [];
   const text = [
-    `확통 구조 실험실 · ${familyInfo().title}`, '', result.question ?? '', ...tableText, '', `정답: ${result.answer ?? result.exact ?? ''}`,
+    `확통 구조 실험실 · ${familyInfo().title}`, '', questionMath(result.question ?? ''), ...tableText, '', `정답: ${formatFormulaText(result.answer ?? result.exact ?? '')}`,
     ...(typeof result.solutionMethod === 'string' ? [`풀이 방법: ${METHOD_LABELS.get(result.solutionMethod) ?? result.solutionMethod}`] : []),
-    ...(result.steps ?? []).flatMap((step, index) => ['', `${index + 1}. ${step.title ?? ''}`, step.body ?? '', step.formula ?? '']),
-    '', result.insight ? `핵심: ${result.insight}` : '',
+    ...(result.steps ?? []).flatMap((step, index) => ['', `${index + 1}. ${step.title ?? ''}`, formatInlineMath(step.body ?? ''), formatFormulaText(step.formula ?? '')]),
+    '', result.insight ? `핵심: ${formatInlineMath(result.insight)}` : '',
     '', '대표 구조 실험으로 생성한 문항입니다.',
   ].filter((line) => line !== undefined).join('\n');
   copyText(text, '문항·정답·단계별 해설을 복사했습니다.');
