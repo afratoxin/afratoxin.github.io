@@ -156,7 +156,7 @@ if(scenario==='layout-tabs'){
     for(const field of visible)for(const element of field.querySelectorAll('input,select'))if(element.id.startsWith('control-'))seen.add(element.id);
     if(raw('basic-next').disabled)break;raw('basic-next').click();
   }
-  const {specs}=await import(root+'/engines.mjs');assert.deepEqual([...seen].sort(),specs.find(s=>s.id==='integer-sum').controls.map(c=>'control-'+c.key).sort());
+  const {specs}=await import(pathToFileURL(root+'/engines.mjs').href);assert.deepEqual([...seen].sort(),specs.find(s=>s.id==='integer-sum').controls.map(c=>'control-'+c.key).sort());
   input('total','12');input('lowerOn',true,'change');input('lower','2');input('upperOn',true,'change');input('upper','4');await wait();assert.equal(raw('answer-value').textContent,'19','values from hidden basic pages remain in the calculation');
   activate('adjust-tab-expression');activate('adjust-tab-variables');activate('adjust-tab-conditions');activate('adjust-tab-examples');activate('adjust-tab-basic');
   assert.equal(raw('control-lower').value,'2');assert.equal(raw('control-upper').value,'4');const saved=await savedLink();assert.equal(saved.params.lower,2);assert.equal(saved.params.upper,4);
@@ -331,7 +331,7 @@ if(scenario==='malformed'){
   console.log('PASS malformed/null/scalar hash parameters / invalid encoding / unknown families / prototype pollution rejection');process.exit(0);
 }
 if(scenario==='slider'){
-  const {specs}=await import(root+'/engines.mjs');
+  const {specs}=await import(pathToFileURL(root+'/engines.mjs').href);
   const drag=(key,value)=>{
     const slider=$('slider-'+key);
     assert.ok(slider,`slider-${key} must be present`);
@@ -416,7 +416,7 @@ if(scenario==='slider'){
   console.log('PASS continuous drag before release / immediate final value / drag math answers / relation-domain meanings / checkbox and decimal sync / invalid exact entry / preset-reset-link state / all 14 slider metadata');process.exit(0);
 }
 if(process.env.TEST_REAL_CATALOG){
-  const {specs}=await import(root+'/engines.mjs');
+  const {specs}=await import(pathToFileURL(root+'/engines.mjs').href);
   for(const spec of specs){
     family(spec.id);
     assert.equal($('answer-value').textContent,spec.solve(spec.defaults).answer,spec.id+' defaults');

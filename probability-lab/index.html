@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#172544">
   <meta name="description" content="확률과 통계 기출의 조건과 풀이 구조를 살펴보고, 파라미터를 바꾸며 문항·정답·해설을 함께 실험하는 학습 공간입니다.">
   <title>확통 구조 실험실</title>
-  <link rel="stylesheet" href="./style.css?v=20261026-balls">
-  <script type="module" src="./app.mjs?v=20261026-balls"></script>
+  <link rel="stylesheet" href="./style.css?v=20261026-exam">
+  <script type="module" src="./app.mjs?v=20261026-exam"></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -67,7 +67,14 @@
               <div class="pane-header"><div><p class="problem-kicker">QUESTION</p><h2 id="lab-title">정수해와 분배</h2><h3 class="sr-only" id="problem-title">조건으로 만든 문항</h3><p id="lab-description" class="sr-only"></p></div><span class="live-indicator"><span aria-hidden="true"></span>실시간</span></div>
               <nav class="question-tabs compact-tabs" role="tablist" aria-label="문제 자료"><button id="question-tab-problem" class="compact-tab" type="button" role="tab" aria-controls="question-panel-problem" data-question-tab="problem" aria-selected="true">문제</button><button id="question-tab-sources" class="compact-tab" type="button" role="tab" aria-controls="question-panel-sources" data-question-tab="sources" aria-selected="false" tabindex="-1">관련 기출</button><span class="compact-tab-caption">대표 구조 실험</span></nav>
               <section class="question-panel pane-scroll" id="question-panel-problem" role="tabpanel" aria-labelledby="question-tab-problem">
-                <div class="result-meta"><span class="badge" id="result-category">경우의 수</span><span class="status-pill" id="result-status">계산 준비</span></div><p class="problem-text" id="problem-text">실험을 준비하고 있습니다.</p><div id="normal-table-container" class="normal-table-container" aria-label="문제에서 사용할 정규분포표" hidden></div><div id="result-warnings" hidden></div>
+                <div class="result-meta"><span class="badge" id="result-category">경우의 수</span><span class="status-pill" id="result-status" role="status">계산 준비</span></div>
+                <article class="exam-paper" id="exam-paper" aria-label="생성 문항">
+                  <header class="exam-paper-heading"><span>수학 영역<span class="exam-subject"> (확률과 통계)</span></span><span class="exam-answer-type">단답형</span></header>
+                  <div class="exam-question-row"><span class="exam-question-number" aria-label="문항 번호 30">30.</span><div class="problem-text" id="problem-text">실험을 준비하고 있습니다.</div>
+                  <div id="normal-table-container" class="normal-table-container" aria-label="문제에서 사용할 정규분포표" hidden></div></div>
+                  <div class="exam-working-space" aria-hidden="true"></div>
+                </article>
+                <div id="result-warnings" hidden></div>
               </section>
               <section class="question-panel pane-scroll" id="question-panel-sources" role="tabpanel" aria-labelledby="question-tab-sources" hidden>
                 <div class="source-heading"><h3 id="related-title">연결되는 기출</h3><button class="button button-ghost compact-button" type="button" id="all-sources-button">모두 보기 →</button></div><p class="source-explainer">실제 기출의 자체 요약입니다. 이 기출의 수치·조건을 그대로 복원한 프리셋은 아닙니다.</p><div class="source-grid" id="related-sources"></div>

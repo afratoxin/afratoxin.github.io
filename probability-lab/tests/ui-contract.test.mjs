@@ -24,7 +24,8 @@ for (const [scenario, name] of [
 ]) {
   test(name, () => {
     const result = spawnSync(process.execPath, [runner, scenario], {
-      encoding: 'utf8', timeout: 20000, maxBuffer: 1024 * 1024,
+      // The full catalog visits every preset and 140 random conditions.
+      encoding: 'utf8', timeout: scenario === 'catalog' ? 60000 : 20000, maxBuffer: 1024 * 1024,
     });
     assert.ifError(result.error);
     assert.equal(result.status, 0, `${scenario}: ${result.stderr || result.stdout}`);

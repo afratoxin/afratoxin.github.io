@@ -1,6 +1,7 @@
 import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-balls';
 import { createBallEditor } from './ball-editor.mjs?v=20261026-balls';
 import { specs } from './engines.mjs?v=20261026-balls';
+import { renderExamQuestion } from './exam-paper.mjs?v=20261026-exam';
 import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor, validateStructureLimits } from './structured-editor.mjs?v=20261026-limits';
 
 const $ = (id) => document.getElementById(id);
@@ -533,7 +534,8 @@ function renderResult() {
   const status = result.status ?? 'ok';
   $('result-status').textContent = status === 'ok' ? '계산 완료' : status === 'infinite' ? '무한히 많음' : '조건 확인';
   $('result-status').dataset.status = status;
-  $('problem-text').textContent = result.question ?? '문항을 생성할 조건을 선택해 주세요.';
+  renderExamQuestion($('problem-text'), result.question ?? '문항을 생성할 조건을 선택해 주세요.', { valid: status === 'ok' });
+  $('exam-paper').dataset.status = status;
   renderNormalTable(result.normalTable);
   $('answer-value').textContent = result.answer ?? result.exact ?? '—';
   $('answer-unit').textContent = result.unit ?? '';
