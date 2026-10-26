@@ -3,7 +3,7 @@ import { groupTags } from './tag-groups.mjs?v=20261026-strengthen-release1';
 import { renderSidebar } from './sidebar.mjs?v=20261026-strengthen-release1';
 import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-year-analysis1';
 import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-year-analysis1';
-import { rankReferences } from './reference-search.mjs?v=20261026-year-analysis1';
+import { rankReferences } from './reference-search.mjs?v=20261026-search-diversity1';
 import { createSemanticSearch } from './semantic-search.mjs?v=20261026-year-analysis1';
 import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-plane1';
 
@@ -113,9 +113,10 @@ function updateSearchStatus() {
   if (!status) return;
   const query = state.query.trim();
   let message;
-  if (state.searchMode === 'keyword') message = '공백으로 나눈 모든 단어가 제목·본문·분류·태그 근거에 포함된 문항을 찾습니다.';
+  if (state.searchMode === 'keyword' && state.keywordFallback) message = '정확한 단어가 모두 일치하지 않아 빈칸·표·도식 형식과 원문·분류·해설 단서까지 넓혀 찾았습니다.';
+  else if (state.searchMode === 'keyword') message = '공백으로 나눈 모든 단어가 제목·본문·분류·태그 근거에 포함된 문항을 찾습니다.';
   else if (!query) message = '만들고 싶은 문항을 문장으로 설명해 보세요. 첫 의미 검색에는 모델 약118MB와 실행 자료를 내려받습니다. 검색 문장은 이 기기에서 처리합니다.';
-  else if (state.semanticStatus.state === 'ready') message = '문장 의미·관련 표현·분류·구조를 함께 비교했습니다. 각 문항의 추천 근거를 확인하세요.';
+  else if (state.semanticStatus.state === 'ready') message = '본문·분류·문항 형식 단서를 함께 비교했습니다. 각 문항의 추천 근거를 확인하세요.';
   else if (state.semanticStatus.state === 'exact') message = '문항 번호가 일치하는 자료를 먼저 찾았습니다.';
   else if (state.semanticStatus.state === 'fallback') message = '이 기기에서 의미 비교를 준비하지 못해 관련 표현·분류로 검색했습니다. 키워드 검색도 사용할 수 있습니다.';
   else if (state.semanticStatus.state === 'searching') message = '문장의 뜻을 비교하고 있습니다. 관련 표현·분류로 찾은 결과를 먼저 보여드립니다.';
@@ -361,8 +362,18 @@ function resetFilters() {
 function filteredQuestions() {
   const questions = state.data.questions.map(question => state.localTexts.has(question.id) ? { ...question, text: state.localTexts.get(question.id).text } : question);
   const recommend = state.searchMode === 'recommend' && Boolean(state.query.trim());
-  const candidates = filterQuestions(questions, { query: recommend ? '' : state.query, tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
+  const filters = { tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') };
+  const candidates = filterQuestions(questions, { ...filters, query: recommend ? '' : state.query }, state.reviews);
   state.searchMatches = new Map();
+  state.keywordFallback = false;
+  if (state.searchMode === 'keyword' && state.query.trim() && candidates.length === 0) {
+    const pool = filterQuestions(questions, { ...filters, query: '' }, state.reviews);
+    const matches = rankReferences(pool, state.query);
+    state.searchMatches = new Map(matches.map(match => [match.id, match]));
+    state.keywordFallback = matches.length > 0;
+    const byId = new Map(pool.map(question => [question.id, question]));
+    return matches.map(match => byId.get(match.id)).filter(Boolean);
+  }
   if (!recommend) return candidates;
   const matches = rankReferences(candidates, state.query, {semanticScores:state.semanticQuery === state.query.trim() ? state.semanticScores : new Map()});
   state.searchMatches = new Map(matches.map(match => [match.id, match]));

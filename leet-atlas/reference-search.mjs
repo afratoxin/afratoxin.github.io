@@ -2,9 +2,11 @@
 const clean=value=>String(value??'').normalize('NFKC').replace(/\s+/g,' ').trim();
 const normalized=value=>clean(value).toLocaleLowerCase('ko');
 const compact=value=>normalized(value).replace(/\s/g,'');
+const sourceFields=q=>[q.text,q.sourceText,q.sourceStem,q.rawText,q.sourceOptions].filter(value=>typeof value==='string'&&value.trim()).filter((value,index,all)=>all.indexOf(value)===index);
 const sourceOf=q=>String(q.text||q.sourceText||q.sourceStem||q.rawText||'');
 const labelsOf=q=>[...(q.domains||[]),...(q.fields||[]),...(q.subjects||[]),...(q.types||[]),...(q.logic||[])];
 const values=object=>Object.values(object||{}).filter(value=>typeof value==='string');
+const recordText=value=>Array.isArray(value)?value.map(recordText).join(' '):value&&typeof value==='object'?Object.values(value).map(recordText).join(' '):typeof value==='string'?value:'';
 const concepts=[
   {key:'humanities',query:['인문','철학','인문학'],evidence:['인문','철학','미학','언어학'],weight:12,classification:true},
   {key:'logic',query:['논리학','논리적','논리'],evidence:['논리학','논증'],weight:12,classification:true},
@@ -58,10 +60,22 @@ function speakersOf(source){
 const featureCache=new WeakMap();
 function featuresOf(q){
   if(featureCache.has(q))return featureCache.get(q);
-  const source=sourceOf(q),labels=labelsOf(q),speaker=speakersOf(source);
-  const title=clean(q.title),analysis=clean([q.summary,...(q.steps||[]),...values(q.classificationReasons),...values(q.tagReasons)].join(' '));
+  const source=sourceOf(q),sources=sourceFields(q),searchSource=sources.join(' '),labels=labelsOf(q),speaker=speakersOf(source);
+  const title=clean(q.title);
+  const analysis=clean([q.summary,q.steps,q.statements,q.options,q.pitfalls,q.reviewNotes,q.classificationReasons,q.fieldReasons,q.tagReasons,q.answerBasis,q.answerIssue,q.answerWarning,q.derivedConclusion].map(recordText).join(' '));
   const labelText=normalized(labels.join(' ')),metadata=normalized([q.id,q.examLabel,q.examKey,q.year,q.year?`${q.year}학년도`:'',title,labelText,analysis].join(' '));
-  const text=normalized(source),all=metadata+' '+text;
+  const text=normalized(`${searchSource} ${analysis}`),all=metadata+' '+text;
+  const visualText=normalized(`${searchSource} ${analysis} ${labels.join(' ')}`),compactVisual=compact(visualText);
+  const blankMention=/(?:빈(?:칸|상자|박스|네모)|공란)/.test(compactVisual);
+  const fillMarker=/(?:㉠|㉡|㉢|㉣|㉤|ⓐ|ⓑ|ⓒ|ⓓ|ⓔ|□|▢).{0,18}(?:에)?(?:들어갈|채울|채우는|기입할|작성할|넣을)|(?:들어갈|채울|채우는|기입할|작성할|넣을).{0,18}(?:㉠|㉡|㉢|㉣|㉤|ⓐ|ⓑ|ⓒ|ⓓ|ⓔ|□|▢)/.test(compactVisual);
+  const visual={
+    blankSlot:blankMention||fillMarker,
+    blankKind:blankMention?'빈칸·빈 상자 표기':fillMarker?'채워 넣을 기호':'',
+    table:/(?:도표|기계표|점수표|시간표|조건표|주기율표|(?:^|[\s<(])표\s*(?:에서|에|로|의|를|가|는|와|과|로부터|에따라|에따른))/.test(visualText),
+    diagram:/(?:그림|그래프|도식|순서도|흐름도|배치도|관계도)/.test(visualText),
+    container:/(?:상자|박스)/.test(visualText),
+    arrangement:/(?:일렬|배열|배치|배정|자리배정|위치관계)/.test(visualText)
+  };
   const puzzle=(q.types||[]).some(type=>/퍼즐|거짓말 찾기/.test(type));
   // A fictional character inside a speech is not a participant in the discourse.
   const explicitDebate=/논쟁|논박|반박/.test(title+' '+source.slice(0,150));
@@ -70,12 +84,12 @@ function featuresOf(q){
   // A philosophical example of violence alone is not evidence of bodily conflict.
   const physicalTitle=/몸싸움|폭행|상해|주먹|구타|멱살|정당방위/.test(title);
   const physical=physicalTitle||!debate&&/때렸|때려|때리|폭행(?:하|을|한|당|으로)|구타|멱살|주먹|몸싸움/.test(source)&&/형사|형법|상해|정당방위/.test(metadata+' '+text);
-  const feature={source,title,labels,labelText,analysis,metadata,text,all,speaker,puzzle,debate,dialogue,physical};
+  const feature={source,searchSource,title,labels,labelText,analysis,metadata,text,all,speaker,puzzle,debate,dialogue,physical,visual};
   featureCache.set(q,feature);
   return feature;
 }
 
-const stopWords=new Set(['문항','문제','소재','소재의','사람','사람의','사람이','사람은','사람들','사람들이','서로','두','둘','명이','명','개의','개','것','거','게','수','좀','같은','가지고','관한','대한','에서','하는','되는지','있는','하고','찾아','찾기','추천','내용','이야기','모두','실제로','실제','논쟁','논박','반박','싸우는','대화','말고','제외','없는','않는','아닌','학년도','아무','관련','어떤','누군가','있나','있을까']);
+const stopWords=new Set(['문항','문제','있는','있다','있고','있어','있으며','있는지','있는가','소재','소재의','사람','사람의','사람이','사람은','사람들','사람들이','서로','두','둘','명이','명','개의','개','것','거','게','수','좀','같은','가지고','관한','대한','에서','하는','되는지','있는','하고','찾아','찾기','추천','내용','이야기','모두','실제로','실제','논쟁','논박','반박','싸우는','대화','말고','제외','없는','않는','아닌','학년도','아무','관련','어떤','누군가','있나','있을까']);
 function queryTokens(query){
   const stem=word=>{const stripped=word.replace(/(?:으로부터|에서의|으로|에게|에서|이랑|랑|하고|와|과|의|은|는|을|를|이|가|도)$/u,'');return stripped.length>=2?stripped:word;};
   return [...new Set(normalized(query).split(/[^\p{L}\p{N}]+/u).map(stem).filter(word=>word.length>=2&&!stopWords.has(word)&&!/^\d+$/.test(word)&&!/^(?:(?:2|두|둘)?(?:명|사람|화자)|둘)(?:이|의|가|은|는)?$/.test(word)&&!/^(?:논박|반박|논쟁|대화|싸우|다투|따지)(?:하|하는|하는지|고)?$/.test(word)))];
@@ -88,7 +102,16 @@ function interpret(query){
   const two=/(?:2|두|둘)(?:명|사람|화자|인\b)|둘이/.test(joined);
   const topic=concepts.map(concept=>({...concept,...mentions(raw,concept.query)})).filter(concept=>concept.positive||concept.negative);
   const negativeWords=topic.filter(concept=>concept.negative&&!concept.positive).flatMap(concept=>concept.query);
-  return {raw,requestedId,two,physical:physical.positive,excludePhysical:physical.negative,debate:debate.positive&&!physical.positive,excludeDebate:debate.negative,topic,tokens:queryTokens(raw).filter(token=>!negativeWords.some(word=>token.includes(word)))};
+  const visual={
+    blank:/(?:빈(?:칸|상자|박스|네모|곳|부분)|공란|(?:박스|상자|칸|네모)(?:안에|에|속에)?(?:들어갈|채우|비어|빈)|(?:㉠|㉡|㉢|ⓐ|ⓑ|ⓒ|ⓓ)(?:에|을|과|와)?(?:들어갈|채울|채우는))/.test(joined),
+    table:/(?:도표|행렬|기계표|점수표|시간표|조건표|표(?:있는|에서|에|로|의|를|가|는|문제|문항|로부터))/.test(joined),
+    diagram:/(?:그림|그래프|도식|순서도|흐름도|배치도|관계도|지도)/.test(joined),
+    container:false,
+    arrangement:/(?:배열|배치|일렬|자리배정|순서배정|위치관계)/.test(joined)
+  };
+  visual.container=!visual.blank&&/(?:상자|박스)/.test(joined);
+  const visualIntent=Object.values(visual).some(Boolean);
+  return {raw,requestedId,two,physical:physical.positive,excludePhysical:physical.negative,debate:debate.positive&&!physical.positive,excludeDebate:debate.negative,topic,visual,visualIntent,tokens:queryTokens(raw).filter(token=>!negativeWords.some(word=>token.includes(word))&&!(visual.blank&&/^(?:빈|칸|박스|상자|네모|공란|채우기|채우|채울|들어갈)$/.test(token)))};
 }
 
 function snippetFor(feature,terms){
@@ -151,12 +174,19 @@ export function rankReferences(questions,query,{semanticScores=new Map()}={}){
     }
     if(intent.excludePhysical&&feature.physical)score-=50;
     if(intent.excludeDebate&&feature.debate)score-=45;
+    const visualEvidence=[];
+    if(intent.visual.blank&&feature.visual.blankSlot){score+=34;evidence++;visualEvidence.push(feature.visual.blankKind||'빈칸 형식');terms.push('빈칸');}
+    if(intent.visual.table&&feature.visual.table){score+=18;evidence++;visualEvidence.push('표·도표');terms.push('표');}
+    if(intent.visual.diagram&&feature.visual.diagram){score+=18;evidence++;visualEvidence.push('그림·도식');terms.push('그림');}
+    if(intent.visual.container&&feature.visual.container){score+=20;evidence++;visualEvidence.push('상자·용기');terms.push('상자');}
+    if(intent.visual.arrangement&&feature.visual.arrangement){score+=16;evidence++;visualEvidence.push('배열·배치');terms.push('배치');}
+    if(visualEvidence.length)reasons.push(`문항 형식: ${[...new Set(visualEvidence)].join(' · ')}`);
     const raw=Number(semanticScores.get(q.id));
     const strongSemantic=semanticConfident&&semanticCandidates.has(q.id)&&Number.isFinite(raw)&&raw>=maximum-.03;
     if(Number.isFinite(raw)&&semanticUseful)score+=Math.max(0,(raw-.68)*220);
     // Weak generic structural signals alone must not turn an unrelated description into all records.
-    const topicOrWord=intent.topic.some(concept=>concept.positive)||intent.tokens.some(token=>feature.all.includes(token));
-    const structureOnly=intent.tokens.length===0&&(intent.two||intent.debate||intent.physical);
+    const topicOrWord=intent.topic.some(concept=>concept.positive)||intent.tokens.some(token=>feature.all.includes(token))||visualEvidence.length>0;
+    const structureOnly=intent.tokens.length===0&&(intent.two||intent.debate||intent.physical||intent.visualIntent);
     if(intent.tokens.length>=3&&!intent.topic.some(concept=>concept.positive)&&!intent.two&&!intent.debate&&!intent.physical&&tokenMatches.length<2&&!strongSemantic)continue;
     if((evidence===0&&!strongSemantic)||(!topicOrWord&&!structureOnly&&!strongSemantic)||score<=0)continue;
     if(reasons.length===0||tokenMatches.length)reasons.push(`제목: ${feature.title||q.id}`);
@@ -178,7 +208,7 @@ export function buildSearchDocuments(questions){
     const structure=feature.speaker.names.length?`원문 화자 ${feature.speaker.names.length}명: ${feature.speaker.names.join(', ')}.${feature.debate?' 논박·문답.':''}`:'';
     const metadata=clean([feature.title,...feature.labels,structure].join(' · '));
     const analysis=clean([q.summary,...(q.steps||[])].join(' '));
-    const documents=[...chunks(metadata),...chunks(analysis).map(text=>`${prefix}\n해설: ${text}`),...chunks(clean(feature.source)).map(text=>`${prefix}\n원문: ${text}`)];
+    const documents=[...chunks(metadata),...chunks(analysis).map(text=>`${prefix}\n해설: ${text}`),...chunks(clean(feature.searchSource)).map(text=>`${prefix}\n원문: ${text}`)];
     return [...new Set(documents.filter(Boolean))].map(text=>({id:q.id,text}));
   });
 }
