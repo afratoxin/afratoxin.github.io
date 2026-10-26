@@ -68,9 +68,11 @@ function featuresOf(q){
   const visualText=normalized(`${searchSource} ${analysis} ${labels.join(' ')}`),compactVisual=compact(visualText);
   const blankMention=/(?:빈(?:칸|상자|박스|네모)|공란)/.test(compactVisual);
   const fillMarker=/(?:㉠|㉡|㉢|㉣|㉤|ⓐ|ⓑ|ⓒ|ⓓ|ⓔ|□|▢).{0,18}(?:에)?(?:들어갈|채울|채우는|기입할|작성할|넣을)|(?:들어갈|채울|채우는|기입할|작성할|넣을).{0,18}(?:㉠|㉡|㉢|㉣|㉤|ⓐ|ⓑ|ⓒ|ⓓ|ⓔ|□|▢)/.test(compactVisual);
+  const answerMarker=/(?:㉠|㉡|㉢|㉣|㉤|ⓐ|ⓑ|ⓒ|ⓓ|ⓔ|□|▢|\[[A-Z가-힣ㄱ-ㅎ]\])/i.test(visualText);
+  const answerSlot=answerMarker&&/(?:들어갈|채울|채우는|기입할|작성할|넣을|빈칸|빈\s*칸)/.test(visualText);
   const visual={
-    blankSlot:blankMention||fillMarker,
-    blankKind:blankMention?'빈칸·빈 상자 표기':fillMarker?'채워 넣을 기호':'',
+    blankSlot:blankMention||fillMarker||answerSlot,
+    blankKind:blankMention?'빈칸·빈 상자 표기':fillMarker||answerSlot?'답안이 들어갈 자리':'',
     table:/(?:도표|기계표|점수표|시간표|조건표|주기율표|(?:^|[\s<(])표\s*(?:에서|에|로|의|를|가|는|와|과|로부터|에따라|에따른))/.test(visualText),
     diagram:/(?:그림|그래프|도식|순서도|흐름도|배치도|관계도)/.test(visualText),
     container:/(?:상자|박스)/.test(visualText),

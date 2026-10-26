@@ -3,7 +3,7 @@ import { groupTags } from './tag-groups.mjs?v=20261026-strengthen-release1';
 import { renderSidebar } from './sidebar.mjs?v=20261026-strengthen-release1';
 import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-year-analysis1';
 import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-year-analysis1';
-import { rankReferences } from './reference-search.mjs?v=20261026-search-diversity2';
+import { rankReferences } from './reference-search.mjs?v=20261026-search-diversity3';
 import { createSemanticSearch } from './semantic-search.mjs?v=20261026-year-analysis1';
 import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-plane1';
 
