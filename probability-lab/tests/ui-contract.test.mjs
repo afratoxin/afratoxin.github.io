@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 // Input, change, click and hashchange events exercise the same handlers as users.
 const runner = fileURLToPath(new URL('./helpers/ui-runner.mjs', import.meta.url));
 for (const [scenario, name] of [
+  ['slider', 'drag sliders preserve mathematical meanings and synchronize typed companions, presets and links'],
   ['basic', 'inputs, presets, resetting, hidden answers, copying, filters and keyboard tabs work'],
   ['catalog', 'all 13 engines, every preset, seeded random conditions and 253 catalog records render'],
   ['network', 'catalog network failure leaves the experiment engines usable'],

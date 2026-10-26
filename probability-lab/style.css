@@ -103,6 +103,18 @@ select.control-input { padding-right: 28px; text-overflow: ellipsis; }
 .control-input[aria-invalid="true"] { border-color: #ca6565; background: #fff7f7; }
 input[type="number"].control-input { font-variant-numeric: tabular-nums; }
 .control-hint { color: var(--faint); font-size: 10px; line-height: 1.65; margin-top: 6px; }
+.control-range { display: block; width: 100%; min-width: 0; height: 40px; margin: 0; padding: 0; appearance: none; -webkit-appearance: none; background: transparent; cursor: grab; touch-action: pan-y; }
+.control-range:active { cursor: grabbing; }
+.control-range::-webkit-slider-runnable-track { height: 6px; border-radius: 6px; background: linear-gradient(to right, var(--teal) 0%, var(--teal) var(--range-progress, 0%), #dfe7ee var(--range-progress, 0%), #dfe7ee 100%); }
+.control-range::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 25px; height: 25px; margin-top: -9.5px; border: 3px solid white; border-radius: 50%; background: var(--teal); box-shadow: 0 1px 5px #17254435; }
+.control-range::-moz-range-track { height: 6px; border-radius: 6px; background: #dfe7ee; }
+.control-range::-moz-range-progress { height: 6px; border-radius: 6px; background: var(--teal); }
+.control-range::-moz-range-thumb { width: 19px; height: 19px; border: 3px solid white; border-radius: 50%; background: var(--teal); box-shadow: 0 1px 5px #17254435; }
+.drag-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.range-bound { color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.drag-meta .control-value-input { width: 90px; max-width: 55%; min-height: 34px; padding: 5px 8px; text-align: center; font-weight: 700; color: var(--teal-dark); background: var(--teal-soft); }
+.drag-meta-select .control-input { min-height: 34px; padding-top: 5px; padding-bottom: 5px; font-size: 11px; }
+.drag-meta-checkbox .control-checkbox { margin: 0; }
 .check-row { display: flex; align-items: flex-start; gap: 9px; border-radius: 8px; border: 1px solid var(--line); padding: 11px; background: #fafbfd; }
 .check-row label { margin-bottom: 0; font-size: 11px; cursor: pointer; }
 .control-checkbox { width: 15px; height: 15px; margin: 2px 0 0; accent-color: var(--teal); flex-shrink: 0; }

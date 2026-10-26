@@ -10,12 +10,13 @@ process.env.TEST_REAL_CATALOG=scenario==='catalog'?'1':'';
 process.env.TEST_HASH=scenario==='hash'?'#lab='+encodeURIComponent(JSON.stringify({family:'normal',params:{mu:1.5,sigma:0.25,n:4,lower:1,upper:2},view:'compare'})):scenario==='malformed'?'#lab='+encodeURIComponent(JSON.stringify({family:'integer-sum',params:null})):'';
 let randomSeed=137;Math.random=()=>((randomSeed=(randomSeed*1664525+1013904223)>>>0)/2**32);
 class Element {
-  constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.parentNode=null;this.attrs={};this.dataset={};this.style={};this.events={};this.hidden=false;this.disabled=false;this._value='';this._text='';this.checked=false;this.selected=false;this.type='';}
+  constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.parentNode=null;this.attrs={};this.dataset={};this.style={setProperty(name,value){this[name]=String(value);}};this.events={};this.hidden=false;this.disabled=false;this._value='';this._text='';this.checked=false;this.selected=false;this.type='';}
   get id(){return this.attrs.id||'';} set id(v){this.attrs.id=String(v);}
   get className(){return this.attrs.class||'';} set className(v){this.attrs.class=String(v);}
   get textContent(){return this._text+this.children.map(x=>x.textContent).join('');} set textContent(v){this.replaceChildren();this._text=String(v);}
   get value(){if(this.tagName==='SELECT') {const selected=this.children.find(o=>o.selected);return selected?selected.value:(this.children[0]?.value||'');}return this._value;}
   set value(v){v=String(v);this._value=v;if(this.tagName==='SELECT')this.children.forEach(o=>o.selected=o.value===v);}
+  get valueAsNumber(){return this.value===''?NaN:Number(this.value);} set valueAsNumber(value){this.value=String(value);}
   get validity(){const value=Number(this.value),step=Number(this.step||1),min=Number(this.min||0), units=(value-min)/step;return {valid:!(this.required&&this.value==='')&&Number.isFinite(value)&&(this.min===undefined||value>=Number(this.min))&&(this.max===undefined||value<=Number(this.max))&&Math.abs(units-Math.round(units))<1e-7};}
   append(...nodes){for(let n of nodes){if(typeof n==='string'){const t=new Element('#text');t._text=n;n=t;}n.remove();n.parentNode=this;this.children.push(n);}}
   prepend(...nodes){for(const n of [...nodes].reverse()){n.remove();n.parentNode=this;this.children.unshift(n);}}
@@ -68,6 +69,85 @@ if(scenario==='malformed'){
   for(const family of ['__proto__','constructor','unknown-family']){setHash({family,params:malicious});assert.equal($('result-status').textContent,'계산 완료');}
   for(const hash of ['#lab=%ZZ','#lab=%7B']){location.hash=hash;for(const fn of windowEvents.hashchange||[])fn();assert.equal($('result-status').textContent,'계산 완료');}
   console.log('PASS malformed/null/scalar hash parameters / invalid encoding / unknown families / prototype pollution rejection');process.exit(0);
+}
+if(scenario==='slider'){
+  const {specs}=await import(root+'/engines.mjs');
+  const drag=(key,value)=>{
+    const slider=$('slider-'+key);
+    assert.ok(slider,`slider-${key} must be present`);
+    assert.equal(slider.type,'range',`slider-${key} is a native range input`);
+    slider.value=String(value);slider.dispatch('input');return slider;
+  };
+  const assertSliders=(spec,params)=>{
+    for(const control of spec.controls){
+      const slider=$('slider-'+control.key);
+      assert.ok(slider,`${spec.id}.${control.key} has a slider`);
+      assert.equal(slider.type,'range');
+      assert.ok(slider.getAttribute('aria-label'),`${spec.id}.${control.key} slider has an accessible name`);
+      assert.ok(document.querySelectorAll('label').some(label=>label.htmlFor===slider.id),`${spec.id}.${control.key} label names the slider`);
+      assert.equal(slider.min,String(control.type==='number'?control.min:0));
+      assert.equal(slider.max,String(control.type==='number'?control.max:control.type==='select'?control.options.length-1:1));
+      assert.equal(slider.step,String(control.type==='number'?(control.step??1):1));
+      const expected=control.type==='number'?params[control.key]:control.type==='checkbox'?(params[control.key]?1:0):control.options.findIndex(o=>o.value===params[control.key]);
+      assert.equal(Number(slider.value),Number(expected),`${spec.id}.${control.key} slider matches its companion`);
+      if(control.type==='select')assert.equal(slider.getAttribute('aria-valuetext'),control.options[expected].label);
+      if(control.type==='checkbox')assert.equal(slider.getAttribute('aria-valuetext'),params[control.key]?'적용':'미적용');
+    }
+  };
+  // Known answers test the actual drag -> typed parameter -> solve -> render path.
+  assert.ok($('slider-total'),'the sum control must have a primary drag slider');
+  assert.equal($('slider-total').value,'7');
+  const duringDrag=[];
+  for(let i=0;i<12;i++){
+    drag('total',8);await new Promise(resolve=>setTimeout(resolve,10));
+    duringDrag.push($('answer-value').textContent);
+  }
+  assert.ok(duringDrag.includes('35'),'a sustained stream of input events must update the solution before any release/change event');
+  drag('total',9).dispatch('change');
+  assert.equal($('answer-value').textContent,'56','release/change must show the final value immediately');
+  $('reset-button').click();
+  drag('total',8);assert.equal($('control-total').value,'8');await wait();
+  assert.equal($('answer-value').textContent,'35');
+  drag('k',3);assert.equal($('control-k').value,'3');await wait();
+  assert.equal($('answer-value').textContent,'21');
+  for(const [index,status,answer] of [[0,'계산 완료','21'],[1,'계산 완료','56'],[2,'계산 완료','35'],[3,'무한히 많음',null],[4,'무한히 많음',null]]){
+    drag('relation',index);assert.equal($('control-relation').value,String(index));await wait();
+    assert.equal($('result-status').textContent,status,`relation option ${index} has its mathematical meaning`);
+    if(answer!==null)assert.equal($('answer-value').textContent,answer);
+  }
+  select('relation',0);await wait();assert.equal($('slider-relation').value,'0');assert.equal($('answer-value').textContent,'21');
+  for(const [index,answer,status='계산 완료'] of [[0,'21'],[1,'45'],[2,null,'무한히 많음'],[3,'3'],[4,'0'],[5,null,'무한히 많음'],[6,'0']]){
+    drag('domain',index);await wait();assert.equal($('control-domain').value,String(index));
+    assert.equal($('result-status').textContent,status,`domain option ${index} keeps its intended type`);
+    if(answer!==null)assert.equal($('answer-value').textContent,answer);
+  }
+  select('domain',0);await wait();assert.equal($('slider-domain').value,'0');
+  drag('upperOn',1);assert.equal($('control-upperOn').checked,true);await wait();
+  drag('upper',3);await wait();assert.equal($('answer-value').textContent,'3');
+  drag('upperOn',0);assert.equal($('control-upperOn').checked,false);await wait();assert.equal($('answer-value').textContent,'21');
+  input('upperOn',true,'change');await wait();assert.equal($('slider-upperOn').value,'1');assert.equal($('answer-value').textContent,'3');
+  input('upperOn',false,'change');input('total','10');await wait();assert.equal($('slider-total').value,'10');
+  for(const bad of ['10.5','','999']){
+    input('total',bad);await wait();assert.equal($('result-status').textContent,'조건 확인');
+    assert.equal($('form-error').hidden,false);assert.equal($('slider-total').value,'10','invalid exact entry must not move or sanitize the slider');
+  }
+  input('total','8');await wait();assert.equal($('slider-total').value,'8');assert.equal($('answer-value').textContent,'21');
+  const integerSpec=specs.find(x=>x.id==='integer-sum');
+  $('preset-row').children[1].click();assertSliders(integerSpec,{...integerSpec.defaults,...integerSpec.presets[1].params});
+  $('reset-button').click();assertSliders(integerSpec,integerSpec.defaults);
+  family('normal');drag('sigma',0.25);await wait();assert.equal($('control-sigma').value,'0.25');
+  assert.equal($('result-status').textContent,'계산 완료');input('mu','1.5');await wait();assert.equal($('slider-mu').value,'1.5');
+  $('link-button').click();await new Promise(resolve=>setTimeout(resolve,0));
+  const saved=JSON.parse(decodeURIComponent(new URL(clipboard).hash.slice(5)));
+  assert.equal(saved.params.sigma,0.25);assert.equal(saved.params.mu,1.5);
+  const setHash=data=>{location.hash='#lab='+encodeURIComponent(JSON.stringify(data));for(const fn of windowEvents.hashchange||[])fn();};
+  for(const data of [{family:'normal',params:{mu:1.5,sigma:0.25,n:4}}, {family:'estimation',params:{confidence:'99',query:'length'}}, {family:'arrangement',params:{circular:true,condition:'apart'}}]){
+    setHash(data);const spec=specs.find(s=>s.id===data.family);assertSliders(spec,{...spec.defaults,...data.params});
+    assert.equal($('result-status').textContent,'계산 완료');
+  }
+  // Every control retains its own metadata and resets together with its companion.
+  for(const spec of specs){family(spec.id);assertSliders(spec,spec.defaults);}
+  console.log('PASS continuous drag before release / immediate final value / drag math answers / relation-domain meanings / checkbox and decimal sync / invalid exact entry / preset-reset-link state / all 13 slider metadata');process.exit(0);
 }
 if(process.env.TEST_REAL_CATALOG){
   const {specs}=await import(root+'/engines.mjs');

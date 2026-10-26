@@ -21,6 +21,7 @@ const state = {
 const PAGE_SIZE = 12;
 let controls = new Map();
 let calculationTimer;
+let dragCalculationTimer;
 let toastTimer;
 let searchTimer;
 
@@ -145,7 +146,7 @@ function renderControls() {
     const field = node('div', `control-field${control.type === 'checkbox' ? ' checkbox-field' : ''}`);
     const id = `control-${control.key}`;
     const label = node('label', 'control-label', control.label);
-    label.htmlFor = id;
+    label.htmlFor = `slider-${control.key}`;
     let input;
     if (control.type === 'select') {
       input = node('select', 'control-input');
@@ -171,19 +172,51 @@ function renderControls() {
     input.id = id;
     input.name = control.key;
     input.autocomplete = 'off';
+    const slider = node('input', 'control-range');
+    slider.type = 'range';
+    slider.id = `slider-${control.key}`;
+    slider.setAttribute('aria-label', `${control.label} 드래그로 조절`);
+    slider.min = String(control.type === 'number' ? control.min : 0);
+    slider.max = String(control.type === 'number' ? control.max : control.type === 'select' ? control.options.length - 1 : 1);
+    slider.step = String(control.type === 'number' ? control.step ?? 1 : 1);
+    input.setAttribute('aria-label', `${control.label} ${control.type === 'number' ? '직접 입력' : '선택'}`);
+    const syncSlider = () => {
+      if (control.type === 'number' && (input.value.trim() === '' || !input.validity.valid)) return;
+      slider.value = control.type === 'checkbox' ? (input.checked ? '1' : '0') : input.value;
+      const valueText = control.type === 'select' ? control.options[Number(slider.value)]?.label
+        : control.type === 'checkbox' ? (input.checked ? '적용' : '미적용') : input.value;
+      slider.setAttribute('aria-valuetext', valueText ?? '');
+      const span = Number(slider.max) - Number(slider.min);
+      const progress = span ? (Number(slider.value) - Number(slider.min)) / span * 100 : 0;
+      slider.style.setProperty('--range-progress', `${Math.max(0, Math.min(100, progress))}%`);
+    };
+    syncSlider();
+    const meta = node('div', `drag-meta drag-meta-${control.type}`);
+    if (control.type === 'number') {
+      input.className += ' control-value-input';
+      meta.append(node('span', 'range-bound', slider.min), input, node('span', 'range-bound', slider.max));
+    } else if (control.type === 'checkbox') {
+      meta.append(node('span', 'range-bound', '미적용'), input, node('span', 'range-bound', '적용'));
+    } else meta.append(input);
+    field.append(label, slider, meta);
     if (control.help) {
       const help = node('p', 'control-hint', control.help);
       help.id = `${id}-help`;
       input.setAttribute('aria-describedby', help.id);
-      field.append(label, input, help);
-    } else field.append(label, input);
-    if (control.type === 'checkbox') {
-      const row = node('div', 'check-row');
-      row.append(input, label);
-      field.prepend(row);
+      slider.setAttribute('aria-describedby', help.id);
+      field.append(help);
     }
-    controls.set(control.key, { control, input });
-    input.addEventListener(control.type === 'number' ? 'input' : 'change', scheduleCalculation);
+    controls.set(control.key, { control, input, slider });
+    input.addEventListener(control.type === 'number' ? 'input' : 'change', () => { syncSlider(); scheduleCalculation(); });
+    slider.addEventListener('input', () => {
+      if (control.type === 'checkbox') input.checked = Number(slider.value) === 1;
+      else input.value = slider.value;
+      syncSlider();
+      document.querySelector('.problem-panel').setAttribute('aria-busy', 'true');
+      // Throttle sustained dragging so the solution changes before release.
+      if (!dragCalculationTimer) dragCalculationTimer = setTimeout(calculate, 45);
+    });
+    slider.addEventListener('change', calculate);
     $('controls').append(field);
   }
   const available = Boolean(spec);
@@ -230,6 +263,8 @@ function scheduleCalculation() {
 
 function calculate() {
   clearTimeout(calculationTimer);
+  clearTimeout(dragCalculationTimer);
+  dragCalculationTimer = undefined;
   const panel = document.querySelector('.problem-panel');
   panel.setAttribute('aria-busy', 'false');
   const spec = engines.get(state.family);
