@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172544">
+  <meta name="description" content="확률과 통계 기출의 조건과 풀이 구조를 살펴보고, 파라미터를 바꾸며 문항·정답·해설을 함께 실험하는 학습 공간입니다.">
+  <title>확통 구조 실험실</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">본문으로 이동</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="확통 구조 실험실 처음으로">
+        <span class="brand-mark" aria-hidden="true">P<span>∑</span></span>
+        <span><span class="brand-name">확통 구조 실험실</span><span class="brand-subtitle">CONDITIONS → STRUCTURE → SOLUTION</span></span>
+      </a>
+      <span class="header-tag"><span class="count-dot" aria-hidden="true"></span>기출에서 구조로</span>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-intro">
+        <p class="eyebrow">확률과 통계 · 문항 탐구 워크벤치</p>
+        <h1 class="hero-title" id="hero-title">조건을 바꾸면,<br class="mobile-break"> 풀이가 보입니다.</h1>
+        <p class="hero-copy">기출의 공통 구조를 찾고, 숫자와 조건을 바꾸며 직접 확인하세요.</p>
+      </div>
+      <div class="hero-stats" aria-label="자료 범위">
+        <div class="stat"><span class="stat-value" id="stat-exams">17<span>회</span></span><span class="stat-label">최근 기출</span></div>
+        <div class="stat"><span class="stat-value" id="stat-items">136<span>문항</span></span><span class="stat-label">23–30번 전체 분류</span></div>
+        <div class="stat"><span class="stat-value" id="stat-families">13<span>유형</span></span><span class="stat-label">대표 구조 실험</span></div>
+      </div>
+    </section>
+
+    <nav class="top-tabs" role="tablist" aria-label="학습 도구">
+      <button class="tab-button" id="tab-lab" type="button" role="tab" aria-selected="true" aria-controls="view-lab" data-view="lab"><span class="tab-index">01</span>문항 실험실</button>
+      <button class="tab-button" id="tab-map" type="button" role="tab" aria-selected="false" aria-controls="view-map" tabindex="-1" data-view="map"><span class="tab-index">02</span>기출 유형 지도</button>
+      <button class="tab-button" id="tab-compare" type="button" role="tab" aria-selected="false" aria-controls="view-compare" tabindex="-1" data-view="compare"><span class="tab-index">03</span>조건 비교</button>
+    </nav>
+
+    <div id="catalog-notice" class="notice notice-error" role="status" hidden></div>
+    <div class="workspace">
+      <aside class="family-sidebar" aria-label="유형 선택">
+        <div class="sidebar-heading"><span>풀이 구조</span><span class="sidebar-count" id="family-count">13</span></div>
+        <div class="family-list" id="family-list"></div>
+        <p class="sidebar-note">유형을 선택하고<br>조건의 역할을 살펴보세요.</p>
+      </aside>
+
+      <main class="workspace-main" id="main-content" tabindex="-1">
+        <section class="view" id="view-lab" role="tabpanel" aria-labelledby="tab-lab">
+          <div class="section-heading">
+            <div><p class="section-kicker">PARAMETER WORKBENCH</p><h2 class="section-title" id="lab-title">정수해와 분배</h2><p class="section-description" id="lab-description">조건을 바꾸면 문항과 단계별 풀이가 함께 달라집니다.</p></div>
+            <span class="section-badge">대표 구조 실험</span>
+          </div>
+          <div class="lab-grid">
+            <section class="panel controls-panel" aria-labelledby="controls-title">
+              <div class="panel-heading"><div><p class="small-label">SET YOUR CONDITIONS</p><h3 id="controls-title">조건 설정</h3></div><button type="button" class="button button-ghost compact-button" id="reset-button">초기화 ↺</button></div>
+              <div id="preset-row" class="preset-row" aria-label="대표 조건"></div>
+              <form id="controls-form" novalidate><div class="control-grid" id="controls"></div></form>
+              <p class="control-error form-error" id="form-error" role="status" hidden></p>
+              <div class="controls-actions"><button class="button button-primary" id="random-button" type="button"><span aria-hidden="true">⤨</span>새 조건 뽑기</button><button class="button button-secondary" id="link-button" type="button">현재 조건 링크 복사</button></div>
+              <p class="control-footnote">입력한 조건은 오른쪽 문항과 해설에 바로 반영됩니다.</p>
+            </section>
+
+            <section class="panel problem-panel" aria-labelledby="problem-title" aria-busy="false">
+              <div class="problem-heading"><div><p class="problem-kicker">GENERATED EXAMPLE</p><h3 id="problem-title">조건으로 만든 문항</h3></div><span class="live-indicator"><span aria-hidden="true"></span>실시간 갱신</span></div>
+              <div class="result-meta"><span class="badge" id="result-category">경우의 수</span><span class="status-pill" id="result-status">계산 준비</span></div>
+              <p class="problem-text" id="problem-text">실험을 준비하고 있습니다.</p>
+              <div class="result-toolbar"><button type="button" class="button button-ghost compact-button" id="answer-button" aria-expanded="true" aria-controls="solution-content">정답·해설 숨기기</button><button type="button" class="button button-ghost compact-button" id="copy-button">결과 복사 ↗</button></div>
+              <div id="result-warnings" hidden></div>
+              <div id="solution-content">
+                <div class="answer-box"><div class="answer-label">정답</div><div class="answer-value" id="answer-value">—</div><div class="answer-unit" id="answer-unit"></div></div>
+                <section class="solution-section" aria-labelledby="steps-title"><h4 id="steps-title" class="subsection-title">구조를 따라 푸는 해설</h4><div class="steps-list" id="steps-list"></div></section>
+                <div id="result-cases" hidden></div>
+                <div id="result-chart" hidden></div>
+                <div id="result-samples" hidden></div>
+                <div class="insight-box" id="insight-box"><p class="insight-label">이 문항의 핵심</p><p class="insight-body" id="insight-text"></p></div>
+              </div>
+              <p class="answer-hidden" id="answer-hidden" hidden>먼저 문항을 풀어 보세요. 위 버튼으로 정답과 해설을 확인할 수 있습니다.</p>
+            </section>
+          </div>
+          <section class="source-section" aria-labelledby="related-title">
+            <div class="source-heading"><div><p class="section-kicker">BACK TO THE EXAMS</p><h3 id="related-title">이 구조와 연결되는 기출</h3></div><button class="button button-ghost compact-button" type="button" id="all-sources-button">유형 지도에서 모두 보기 →</button></div>
+            <p class="source-explainer">아래는 실제 기출을 읽고 작성한 자체 요약입니다. 위 실험은 대표 구조를 다루며, 이 기출의 수치·조건을 그대로 복원한 프리셋은 아닙니다.</p>
+            <div class="source-grid" id="related-sources"></div>
+          </section>
+        </section>
+
+        <section class="view" id="view-map" role="tabpanel" aria-labelledby="tab-map" hidden>
+          <div class="section-heading"><div><p class="section-kicker">EXAM STRUCTURE ATLAS</p><h2 class="section-title">기출 유형 지도</h2><p class="section-description">시험과 문항을 오가며 같은 구조가 어떻게 다르게 출제됐는지 살펴보세요.</p></div><span class="section-badge" id="map-total-badge">136문항 분류</span></div>
+          <div class="panel map-filter-panel">
+            <div class="map-toolbar">
+              <div class="filter-field"><label class="filter-label" for="filter-source">자료 범위</label><select class="control-input" id="filter-source"><option value="recent">최근 확통 17회</option><option value="legacy">구 나형 참고</option><option value="all">전체 자료</option></select></div>
+              <div class="filter-field"><label class="filter-label" for="filter-family">풀이 유형</label><select class="control-input" id="filter-family"><option value="all">모든 유형</option></select></div>
+              <div class="filter-field"><label class="filter-label" for="filter-year">학년도</label><select class="control-input" id="filter-year"><option value="all">모든 학년도</option></select></div>
+              <div class="filter-field filter-search"><label class="filter-label" for="filter-search">문항 검색</label><input class="control-input search-input" id="filter-search" type="search" placeholder="시험, 번호, 조건, 핵심어 검색" autocomplete="off"></div>
+            </div>
+          </div>
+          <p class="notice notice-soft" id="legacy-notice" hidden>구교육과정 참고 자료: 현행 범위와 구분하여 활용하세요. 구 나형에는 자연수 분할·모비율 신뢰구간·확률밀도함수 등 구교육과정 소재가 포함되어 있습니다.</p>
+          <div class="catalog-summary"><p id="catalog-count" aria-live="polite">기출 자료를 불러오는 중입니다.</p><span>원문 전재가 아닌 자체 요약</span></div>
+          <div class="catalog-list" id="catalog-list"></div>
+          <nav class="pagination" id="pagination" aria-label="기출 목록 페이지"></nav>
+        </section>
+
+        <section class="view" id="view-compare" role="tabpanel" aria-labelledby="tab-compare" hidden>
+          <div class="section-heading"><div><p class="section-kicker">OBSERVED & PROPOSED</p><h2 class="section-title" id="compare-title">기출 조건과 추가 조건 비교</h2><p class="section-description">실제로 나온 조건과 새롭게 제안하는 변형 축을 분리했습니다.</p></div><span class="section-badge">기출 ↔ 변형</span></div>
+          <div id="compare-content"></div>
+          <section class="source-section"><div class="source-heading"><h3>같은 유형, 다른 조건</h3><button class="button button-ghost compact-button" id="compare-sources-button" type="button">관련 기출 모두 보기 →</button></div><div class="source-grid" id="compare-sources"></div></section>
+        </section>
+
+        <p class="prototype-note"><span aria-hidden="true">ⓘ</span> 기출 분류와 대표 구조 실험을 제공합니다. 복합 기출 전체의 자동 변형은 아직 지원하지 않습니다.</p>
+      </main>
+    </div>
+    <footer class="site-footer"><p>확통 구조 실험실 <span>·</span> 조건을 이해하고, 구조를 발견하는 공부</p><div id="source-documents"></div></footer>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <noscript><div class="notice notice-error">이 실험실을 사용하려면 브라우저의 JavaScript를 켜 주세요.</div></noscript>
+</body>
+</html>

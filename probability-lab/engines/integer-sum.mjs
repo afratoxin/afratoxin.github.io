@@ -1,0 +1,120 @@
+const options = pairs => pairs.map(([value,label])=>({value,label}));
+const defaults={k:4,total:7,relation:'eq',domain:'natural',lowerOn:false,lower:0,upperOn:false,upper:7,order:'any',distinct:false};
+const domains={natural:{label:'자연수',low:1,step:1,residue:0},nonnegative:{label:'0 이상의 정수',low:0,step:1,residue:0},integer:{label:'정수',low:-Infinity,step:1,residue:0},'positive-even':{label:'양의 짝수',low:2,step:2,residue:0},'positive-odd':{label:'양의 홀수',low:1,step:2,residue:1},'integer-even':{label:'짝수인 정수',low:-Infinity,step:2,residue:0},'integer-odd':{label:'홀수인 정수',low:-Infinity,step:2,residue:1}};
+const relationLabels={eq:'=',le:'≤',lt:'<',ge:'≥',gt:'>'};
+const mod=(x,m)=>((x%m)+m)%m;
+const factorial=n=>{let a=1n;for(let i=2;i<=n;i++)a*=BigInt(i);return a;};
+const choose=(n,r)=>{if(n<r||r<0)return 0n;let a=1n;for(let i=1;i<=r;i++)a=a*BigInt(n-r+i)/BigInt(i);return a;};
+const fail=message=>({status:'invalid',question:'입력한 조건을 확인하세요.',answer:'계산할 수 없음',numeric:null,unit:'',steps:[],insight:message,warnings:[message]});
+
+function solve(input={}) {
+  if(!input||typeof input!=='object'||Array.isArray(input))return fail('입력은 매개변수 객체여야 합니다.');
+  const p={...defaults,...input};
+  for(const [key,lo,hi] of [['k',2,8],['total',-40,80],['lower',-30,40],['upper',-30,40]])if(!Number.isInteger(p[key])||p[key]<lo||p[key]>hi)return fail(`${key}의 값을 ${lo}~${hi} 사이의 정수로 입력하세요.`);
+  if(!Object.hasOwn(domains,p.domain)||!Object.hasOwn(relationLabels,p.relation)||!['any','nondecreasing','increasing'].includes(p.order))return fail('정의역·부등호·순서 조건을 확인하세요.');
+  if(['lowerOn','upperOn','distinct'].some(k=>typeof p[k]!=='boolean'))return fail('조건 선택값이 올바르지 않습니다.');
+  const {k,total:T}=p,d=domains[p.domain],sub=['₁','₂','₃','₄','₅','₆','₇','₈'];
+  const names=Array.from({length:k},(_,i)=>`x${sub[i]}`),sum=names.join(' + ');
+  const extras=[];
+  if(p.lowerOn)extras.push(`각 변수는 ${p.lower} 이상이다.`);
+  if(p.upperOn)extras.push(`각 변수는 ${p.upper} 이하이다.`);
+  if(p.order!=='any')extras.push(`${names.join(p.order==='increasing'?' < ':' ≤ ')}이다.`);
+  if(p.distinct)extras.push('각 변수의 값은 서로 다르다.');
+  const question=`${k}개의 ${d.label} ${names.join(', ')}에 대하여\n${sum} ${relationLabels[p.relation]} ${T}\n를 만족시키는 순서쌍 (${names.join(', ')})의 개수를 구하시오.${extras.length?'\n'+extras.join('\n'):''}`;
+  const base={status:'ok',question,unit:'개',steps:[],insight:'각 변수의 최소값과 홀짝을 먼저 반영하면, 합의 조건을 만족하는 정수해를 세는 문제로 바뀝니다.'};
+  const zero=reason=>({...base,answer:'0',exact:'0',numeric:0,steps:[{title:'조건의 양립 가능성 확인',body:reason},{title:'경우의 수',body:'주어진 모든 조건을 동시에 만족시키는 순서쌍은 없다.',formula:'경우의 수 = 0'}],cases:[],samples:[]});
+  let L=Math.max(d.low,p.lowerOn?p.lower:-Infinity),U=p.upperOn?p.upper:Infinity;
+  if(Number.isFinite(L))L+=mod(d.residue-L,d.step);
+  if(Number.isFinite(U))U-=mod(U-d.residue,d.step);
+  if(L>U)return zero('하한과 상한 사이에 정의역에 속하는 정수가 없다.');
+  if(p.relation==='eq'&&mod(T-k*d.residue,d.step)!==0)return zero(`각 변수의 홀짝 조건 때문에 합은 ${d.step}로 나눈 나머지가 ${mod(k*d.residue,d.step)}이어야 한다. ${T}은 이 조건에 맞지 않는다.`);
+  let lowSum=-Infinity,highSum=Infinity;
+  if(p.relation==='eq')lowSum=highSum=T;
+  else if(p.relation==='le')highSum=T;
+  else if(p.relation==='lt')highSum=T-1;
+  else if(p.relation==='ge')lowSum=T;
+  else lowSum=T+1;
+  if(Number.isFinite(L)&&k*L>highSum)return zero(`각 변수의 최소값은 ${L}이므로 합은 적어도 ${k*L}이다. 합의 상한 ${highSum}과 양립하지 않는다.`);
+  if(Number.isFinite(U)&&k*U<lowSum)return zero(`각 변수의 최대값은 ${U}이므로 합은 최대 ${k*U}이다. 합의 하한 ${lowSum}과 양립하지 않는다.`);
+  if(!Number.isFinite(U)&&Number.isFinite(L)&&Number.isFinite(highSum))U=highSum-(k-1)*L;
+  if(!Number.isFinite(L)&&Number.isFinite(U)&&Number.isFinite(lowSum))L=lowSum-(k-1)*U;
+  if(!Number.isFinite(L)||!Number.isFinite(U)){
+    const freeBoth=!Number.isFinite(L)&&!Number.isFinite(U);
+    const body=freeBoth&&p.relation==='eq'
+      ?'합을 고정해도 한 변수는 작게, 다른 변수는 크게 움직일 수 있다. 순서 조건이 있으면 값을 정렬하고, 서로 다름 조건이 있으면 충분히 떨어진 값을 선택할 수 있으므로 가능한 순서쌍은 계속 만들어진다.'
+      :'합의 조건을 만족하는 값을 잡은 뒤, 제한이 없는 방향으로 변수의 값을 계속 바꿀 수 있다. 순서나 서로 다름 조건이 있으면 간격을 충분히 크게 유지하면 된다.';
+    return {...base,status:'infinite',answer:'무한히 많음',numeric:null,unit:'',steps:[{title:'정의역 확인',body:`각 변수의 범위는 ${Number.isFinite(L)?L:'아래로 무한'}부터 ${Number.isFinite(U)?U:'위로 무한'}까지이다.`},{title:'유한 여부 판단',body}],insight:'정수 조건을 넣을 때에는 먼저 해의 개수가 유한한지 확인해야 합니다.',warnings:['유한한 경우의 수를 얻으려면 상한·하한 또는 합의 부등호를 조정하세요.']};
+  }
+  L+=mod(d.residue-L,d.step);U-=mod(U-d.residue,d.step);
+  if(L>U)return zero('합과 경계 조건을 함께 반영하면 가능한 변수 값이 남지 않는다.');
+  const values=[];for(let v=L;v<=U;v+=d.step)values.push(v);
+  const unique=p.distinct||p.order==='increasing',sorted=p.order!=='any'||unique;
+  if(unique&&values.length<k)return zero(`가능한 서로 다른 값은 ${values.length}개뿐이므로 ${k}개를 선택할 수 없다.`);
+  let distribution;
+  if(!sorted){
+    let dp=new Map([[0,1n]]);
+    for(let i=0;i<k;i++){
+      const next=new Map();
+      for(const [sum,count] of dp)for(const v of values){
+        const s=sum+v,remain=k-i-1;
+        if(s+remain*L>highSum||s+remain*U<lowSum)continue;
+        next.set(s,(next.get(s)||0n)+count);
+      }
+      dp=next;
+    }
+    distribution=dp;
+  }else{
+    // A generating-function table indexed by number selected and total sum.
+    let dp=Array.from({length:k+1},()=>new Map());dp[0].set(0,1n);
+    for(const v of values){
+      const next=Array.from({length:k+1},()=>new Map());
+      for(let used=0;used<=k;used++)for(const [sum,count]of dp[used])for(let take=0;take<=Math.min(unique?1:k,k-used);take++){
+        const s=sum+v*take;next[used+take].set(s,(next[used+take].get(s)||0n)+count);
+      }
+      dp=next;
+    }
+    distribution=dp[k];
+    if(unique&&p.order==='any')for(const [s,c]of distribution)distribution.set(s,c*factorial(k));
+  }
+  const valid=[...distribution].filter(([s])=>s>=lowSum&&s<=highSum).sort((a,b)=>a[0]-b[0]);
+  const count=valid.reduce((acc,[,c])=>acc+c,0n);
+  const steps=[{title:'변수가 가질 수 있는 값부터 정하기',body:`정의역·경계·합 조건을 반영하면 각 변수는 ${L}부터 ${U}까지의 ${d.step===2?'같은 홀짝의 정수':'정수'}이다. ${p.order==='any'?'변수의 위치는 서로 구별한다.':'주어진 크기 순서를 유지한다.'}`}];
+  const noExtraOrder=!unique&&p.order==='any';
+  const originalLower=Math.max(d.low,p.lowerOn?p.lower:-Infinity);
+  if(noExtraOrder&&!p.upperOn&&Number.isFinite(originalLower)&&Number.isFinite(highSum)){
+    const M=Math.floor((highSum-k*L)/d.step);
+    steps.push({title:'최소값과 홀짝을 치환으로 흡수하기',body:`각 i에 대하여 xᵢ = ${L} + ${d.step===1?'yᵢ':`${d.step}yᵢ`}로 놓으면 yᵢ는 0 이상의 정수이다.`,formula:`y₁ + … + y${sub[k-1]} ${p.relation==='eq'?'=':'≤'} ${M}`});
+    const n=p.relation==='eq'?M+k-1:M+k,r=p.relation==='eq'?k-1:k;
+    steps.push({title:p.relation==='eq'?'중복조합으로 세기':'남는 양을 새 변수로 두기',body:p.relation==='eq'?'합이 정해진 0 이상의 정수해는 별과 막대로 일대일 대응시킨다.':'남는 양을 0 이상의 정수인 새 변수로 두면 등식 하나로 바뀐다. 이를 중복조합으로 센다.',formula:`C(${n}, ${r}) = ${choose(n,r)}`});
+  }else{
+    steps.push({title:sorted?'값을 크기순으로 선택하여 중복 방지':'합별로 경우를 분류하기',body:sorted?`작은 값부터 ${k}개를 ${unique?'중복 없이':'중복을 허용하여'} 고른다. ${unique&&p.order==='any'?`각 선택은 서로 다른 ${k}!개의 순서쌍을 만든다.`:'각 선택은 주어진 크기 순서의 순서쌍 하나에 대응한다.'}`:'Dⱼ(s)를 앞의 j개 변수의 합이 s인 경우의 수라고 하자. 마지막 변수 값을 하나씩 고정하면 서로 겹치지 않는 경우로 나뉜다.',formula:sorted?'선택한 개수와 합을 함께 기록하며 합산':`Dⱼ(s) = Σ Dⱼ₋₁(s − v)  (v는 가능한 변수 값)`});
+    steps.push({title:'합 조건을 만족하는 경우만 합하기',body:`${Number.isFinite(lowSum)&&Number.isFinite(highSum)&&lowSum===highSum?`합이 ${lowSum}인 경우`:Number.isFinite(highSum)?`합이 ${highSum} 이하인 경우`:`합이 ${lowSum} 이상인 경우`}를 모두 합한다. 정의역·순서·서로 다름 조건은 앞 단계에서 함께 반영했다.`,formula:`경우의 수 = ${count}`});
+  }
+  const samples=[];let visits=0;
+  function sample(xs,s){
+    if(samples.length>=8||++visits>25000)return;
+    if(xs.length===k){if(s>=lowSum&&s<=highSum)samples.push(`(${xs.join(', ')})`);return;}
+    for(const v of values){
+      if(p.order==='nondecreasing'&&xs.length&&v<xs.at(-1))continue;
+      if(p.order==='increasing'&&xs.length&&v<=xs.at(-1))continue;
+      if(p.distinct&&xs.includes(v))continue;
+      const remain=k-xs.length-1;if(s+v+remain*L>highSum||s+v+remain*U<lowSum)continue;
+      sample([...xs,v],s+v);if(samples.length>=8||visits>25000)return;
+    }
+  }
+  if(count>0n)sample([],0);
+  return {...base,answer:String(count),exact:String(count),numeric:Number(count),steps,samples,cases:valid.slice(0,20).map(([s,c])=>({label:`합 = ${s}`,count:String(c)})),warnings:valid.length>20?['합별 표에는 앞의 20개 합만 표시했습니다. 정답에는 모든 합을 반영했습니다.']:[],chart:valid.slice(0,12).map(([s,c])=>({label:String(s),value:Number(c)}))};
+}
+
+export const integerSumSpec={id:'integer-sum',title:'정수해 · 같은 공의 분배',category:'경우의 수',description:'문자의 수, 합, 부등호, 정의역과 순서 조건을 함께 바꾸어 봅니다.',defaults,controls:[
+  {key:'k',label:'문자의 수',type:'number',min:2,max:8,step:1},
+  {key:'total',label:'합의 기준값',type:'number',min:-40,max:80,step:1},
+  {key:'relation',label:'합의 관계',type:'select',options:options([['eq','='],['le','≤'],['lt','<'],['ge','≥'],['gt','>']])},
+  {key:'domain',label:'각 변수의 범위',type:'select',options:options(Object.entries(domains).map(([k,v])=>[k,v.label]))},
+  {key:'lowerOn',label:'공통 하한 추가',type:'checkbox'},
+  {key:'lower',label:'각 변수의 하한',type:'number',min:-30,max:40,step:1},
+  {key:'upperOn',label:'공통 상한 추가',type:'checkbox'},
+  {key:'upper',label:'각 변수의 상한',type:'number',min:-30,max:40,step:1},
+  {key:'order',label:'크기 순서',type:'select',options:options([['any','제한 없음'],['nondecreasing','작거나 같다 (오름차순)'],['increasing','엄격히 작다']])},
+  {key:'distinct',label:'변수의 값이 모두 다름',type:'checkbox'}
+],presets:[{name:'시작 예제: 자연수 4개의 합이 7',params:{...defaults}},{name:'홀수 조건을 치환으로',params:{...defaults,k:3,total:9,domain:'positive-odd'}},{name:'등호를 부등호로',params:{...defaults,k:3,total:7,relation:'le'}},{name:'정수로 바꾸면 무한?',params:{...defaults,domain:'integer'}},{name:'상한과 크기 순서',params:{...defaults,k:3,total:9,upperOn:true,upper:5,order:'nondecreasing'}}],solve};
