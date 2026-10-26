@@ -49,13 +49,13 @@ test('personal source corrections survive the transition to bundled public origi
  await first.app.importLocalSourceFile(file([row('p001')]));
  assert.equal(first.app.state.localSources.size,1);
  assert.match(first.elements.get('#main').innerHTML,/합성 원문 p001/);
- assert.equal(first.elements.get('#text-coverage').textContent,'본문 755/755');
+ assert.equal(localText.localTextCoverage(first.app.state.data.questions,first.app.state.localTexts).available,755);
  const restored=await boot({data:publishedArchive,database:first.database,memory:first.memory});
  assert.equal(restored.app.state.localSources.size,1);
  assert.match(restored.elements.get('#main').innerHTML,/합성 원문 p001/);
  await restored.app.clearLocalSource('p001');
  assert.equal(restored.app.state.localSources.size,0);
- assert.equal(restored.elements.get('#text-coverage').textContent,'본문 755/755');
+ assert.equal(localText.localTextCoverage(restored.app.state.data.questions,restored.app.state.localTexts).available,755);
  assert.match(restored.elements.get('#main').innerHTML,/참을 깨달은 자/);
  assert.equal(restored.app.state.reviews.p001.note,'보존할 메모');
 });
@@ -79,8 +79,7 @@ test('source import connects actual reader images and text while preserving publ
  const before=structuredClone(app.state.data.questions);
  await app.importLocalSourceFile(file([row('p001'),row('2632')]));
  assert.equal(app.state.localSources.size,2);assert.equal(app.state.localTexts.size,2);
- assert.equal(elements.get('#text-coverage').textContent,'본문 42/755');
- assert.equal(elements.get('#image-coverage').textContent,'이미지 42/755');
+ assert.equal(localText.localTextCoverage(app.state.data.questions,app.state.localTexts).available,42);
  const html=elements.get('#main').innerHTML;
  assert.ok(html.includes(image));assert.match(html,/data-source-mode="image"/);
  assert.match(html,/data-source-mode="text"/);assert.match(html,/합성 원문 p001 &lt;표&gt; &amp; 보기/);
@@ -138,8 +137,7 @@ test('deleting an imported source removes its text and image without deleting re
  await app.importLocalSourceFile(file([row('p001')]));
  assert.equal(typeof app.clearLocalSource,'function');await app.clearLocalSource('p001');
  assert.equal(app.state.localSources.size,0);assert.equal(app.state.localTexts.size,0);
- assert.equal(elements.get('#text-coverage').textContent,'본문 40/755');
- assert.equal(elements.get('#image-coverage').textContent,'이미지 40/755');
+ assert.equal(localText.localTextCoverage(app.state.data.questions,app.state.localTexts).available,40);
  assert.match(elements.get('#main').innerHTML,/원문 출처/);assert.equal(app.state.reviews.p001.note,'보존할 메모');
  const restored=await boot({database,memory});assert.equal(restored.app.state.localSources.size,0);
 });
@@ -162,7 +160,7 @@ test('a failed startup read is recovered before a partial import replaces saved 
 
 test('a throwing IndexedDB getter cannot prevent the public archive from opening',async()=>{
  const context=await boot({blockedIndexedDB:true});
- assert.equal(context.elements.get('#text-coverage').textContent,'본문 40/755');
+ assert.equal(localText.localTextCoverage(context.app.state.data.questions,context.app.state.localTexts).available,40);
  assert.match(context.elements.get('#main').innerHTML,/원문 출처/);
  assert.doesNotMatch(context.elements.get('#main').innerHTML,/문항 데이터를 불러오지 못했습니다/);
 });

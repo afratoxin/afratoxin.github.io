@@ -1,3 +1,4 @@
+import {questionSearchText} from './search-documents.mjs?v=20261026-general-search2';
 export const BOOKMARK_COLORS = Object.freeze([
   {id:'red',label:'빨강',hex:'#c44444'},
   {id:'orange',label:'주황',hex:'#c46d19'},
@@ -57,7 +58,8 @@ function relevanceScorer(query,terms) {
       const coverage=words.length ? words.filter(word=>text.includes(word)).length/words.length : 0;
       return (text.includes(phrase)?4:0)+2*coverage+similarity;
     };
-    return 3*fieldScore(question.title)+fieldScore(question.text||question.sourceStem);
+    const originalScore=3*fieldScore(question.title)+fieldScore(question.text||question.sourceStem);
+    return originalScore||.1*fieldScore(questionSearchText(question));
   };
 }
 export function keywordSearchScore(question, query='') {
@@ -69,7 +71,7 @@ export function filterQuestions(questions, {query='',tags=[],taxonomy=[],require
   const groups=tagFilterGroups(tags,taxonomy);
   const matched=questions.filter(q=>{
     const reasons=Object.values(q.tagReasons||{}).map(reason=>typeof reason==='string'?reason:JSON.stringify(reason));
-    const hay=[q.id,q.year,q.examLabel,q.examKey,q.number,q.title,q.text,...(q.domains||[]),...(q.fields||[]),...(q.subjects||[]),...(q.types||[]),...(q.logic||[]),...reasons].join(' ').normalize('NFKC').toLocaleLowerCase('ko');
+    const hay=terms.length?[q.id,q.year,q.examLabel,q.examKey,q.number,q.title,q.text,...(q.domains||[]),...(q.fields||[]),...(q.subjects||[]),...(q.types||[]),...(q.logic||[]),...reasons,questionSearchText(q)].join(' ').normalize('NFKC').toLocaleLowerCase('ko'):'';
     const r=reviews[q.id]||{};const colors=bookmarkColors(r);
     const matchesReview=review==='all'||(review==='bookmarked'?colors.length>0:review==='unreviewed'?!r.status||r.status==='unreviewed':r.status===review);
     const matchesBookmark=bookmark==='all'||(bookmark==='any'?colors.length>0:colors.includes(bookmark));

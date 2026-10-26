@@ -12,7 +12,7 @@ const status = (state, extra = {}) => self.postMessage({type: 'status', requestI
 
 async function initialize() {
   if (!resources) resources = (async () => {
-    const {SEMANTIC_MODEL, SEMANTIC_RUNTIME, validateSemanticManifest, validateSemanticIndex, scoreSemanticIndex} = await scoringModule;
+    const {SEMANTIC_MODEL, SEMANTIC_RUNTIME, validateSemanticManifest, validateSemanticIndex, scoreSemanticEvidence} = await scoringModule;
     status('loading', {message: '처음 한 번 약118MB 모델과 실행 자료를 내려받습니다. 다음에는 브라우저 캐시를 사용합니다.'});
     const manifestResponse = await fetch(assetUrl('./data/reference-search-manifest.json'));
     if (!manifestResponse.ok) throw new Error('Search manifest unavailable');
@@ -38,7 +38,7 @@ async function initialize() {
         if (event.status === 'progress' && event.file?.endsWith('.onnx')) status('loading', {progress: event.progress});
       }
     });
-    return {index, embed, model:SEMANTIC_MODEL, score:scoreSemanticIndex};
+    return {index, embed, model:SEMANTIC_MODEL, score:scoreSemanticEvidence};
   })();
   return resources;
 }
@@ -55,8 +55,8 @@ async function drain() {
       status('searching');
       const result = await embed(model.queryPrefix + request.query, {pooling: model.pooling, normalize: model.normalize, truncation: true, max_length: 512});
       if (request.requestId !== latestRequestId) continue;
-      const scores = score(index, result.data);
-      self.postMessage({type: 'result', requestId: request.requestId, scores: [...scores]});
+      const {scores,evidence} = score(index, result.data);
+      self.postMessage({type: 'result', requestId: request.requestId, scores: [...scores],evidence:[...evidence]});
     }
   } catch {
     self.postMessage({type: 'error', requestId: latestRequestId});

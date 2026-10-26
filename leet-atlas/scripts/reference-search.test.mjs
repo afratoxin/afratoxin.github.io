@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {rankReferences,buildSearchDocuments} from '../reference-search.mjs';
+import {questionForm} from '../search-documents.mjs';
 
 const archive=JSON.parse(readFileSync(new URL('../data/archive.json',import.meta.url),'utf8')).questions;
 const ids=(questions,query,options)=>rankReferences(questions,query,options).map(match=>match.id);
@@ -116,6 +117,55 @@ test('exact IDs dominate semantic similarities and ranking never expands filtere
   assert.equal(ids(filtered,'2218번',{semanticScores:scores})[0],'2218');
   assert.ok(ids(filtered,'인문 두 사람 논쟁',{semanticScores:scores}).every(id=>filtered.some(q=>q.id===id)));
   assert.deepEqual(ids(filtered,'2318'),[]);
+  assert.deepEqual(ids(archive,'로컬전체본문 p001'),['p001']);
+  assert.deepEqual(ids(archive,'로컬전체본문 0901'),['0901']);
+  assert.deepEqual(ids(archive,'법률 문제 2022년도 기출처럼 계산이 들어가면 좋겠어').filter(id=>id==='2022'),[]);
+  assert.deepEqual(ids(archive,'2022'),['2022']);
+  assert.deepEqual(ids(archive,'2022번'),['2022']);
+});
+
+test('unregistered semantic candidates are not discarded for lacking known lexical or topic evidence',()=>{
+  const questions=Array.from({length:80},(_,i)=>fixture(String(i).padStart(4,'0'),{title:'서로 다른 자료 '+i}));
+  const scores=new Map(questions.map((q,i)=>[q.id,.88-i*.0006]));
+  const matches=rankReferences(questions,'경험한 장면과 기억의 차이를 묻고 싶어요',{semanticScores:scores});
+  assert.ok(matches.some(m=>m.id==='0035'));
+});
+
+test('known form negations improve ranking without preventing other arbitrary semantic descriptions',()=>{
+ const matches=rankReferences(archive,'합답형 말고 독립선택지형 문항');
+ assert.ok(matches.length>0);
+ for(const match of matches.slice(0,10))assert.equal(questionForm(archive.find(q=>q.id===match.id)).choice,'statements',match.id);
+ assert.ok(!matches.some(match=>match.id==='0912'));
+ const numeric=archive.find(q=>q.id==='0912');assert.equal(questionForm(numeric).choice,'values');
+ assert.ok(!rankReferences([numeric],'독립선택지형').some(match=>match.reasons.some(reason=>reason.includes('독립 선택지형'))));
+ const computation=rankReferences(archive,'법률 문항인데 계산은 거의 필요 없는 글');
+ assert.ok(computation.length>0);
+ assert.ok(computation.slice(0,5).every(match=>!archive.find(q=>q.id===match.id).logic.includes('수식 계산')));
+});
+
+test('choice-count and ㄹ-item format descriptions search source-backed forms',()=>{
+  const five=rankReferences(archive,'5개 선택지를 둔 오지선다 문항');
+  assert.ok(five.length>0);
+  assert.ok(five.every(match=>match.reasons.some(reason=>reason.includes('5지선다'))));
+  const rItem=rankReferences([fixture('r',{sourceStem:'ㄱ. 조건 하나\nㄴ. 조건 둘\nㄷ. 조건 셋\nㄹ. 조건 넷'}),fixture('no-r',{sourceStem:'ㄱ. 조건 하나\nㄴ. 조건 둘\nㄷ. 조건 셋'})],'ㄱ, ㄴ, ㄷ, ㄹ 항목까지 있는 선택지');
+  assert.deepEqual(rItem.map(match=>match.id),['r']);
+  assert.ok(rItem[0].reasons.some(reason=>reason.includes('ㄹ 항목 포함')));
+});
+
+test('bracketed answer slots count as completion evidence only when the source asks to fill them',()=>{
+  const completion=fixture('box',{sourceStem:'□에 들어갈 표현을 고르시오.',text:'다음 □에 들어갈 내용을 찾으시오.'});
+  const incidental=fixture('aside',{sourceStem:'빈칸이 있었던 사례를 소개한다.',text:'이야기에서 빈칸은 이미 채워져 있다.'});
+  const matches=rankReferences([completion,incidental],'빈칸에 들어갈 말을 선택하는 문제');
+  assert.equal(matches[0].id,'box');
+  assert.ok(matches[0].reasons.some(reason=>reason.includes('빈칸')));
+});
+
+test('a circled source annotation and an unrelated “몰아넣을” verb are not an answer slot',()=>{
+  const question=archive.find(q=>q.id==='2113');
+  const scores=new Map([['2113',.93],['2112',.70]]);
+  const [match]=rankReferences([question], '빈칸에 들어갈 말을 선택하는 문제', {semanticScores:scores});
+  assert.ok(match);
+  assert.ok(!match.reasons.some(reason=>reason.includes('답안이 들어갈 자리')||reason.includes('빈칸')));
 });
 
 test('unseen paraphrases can be found by meaningful raw E5 scores without lexical overlap',()=>{
@@ -124,6 +174,30 @@ test('unseen paraphrases can be found by meaningful raw E5 scores without lexica
   assert.equal(matches[0].id,'x');
   assert.ok(matches[0].snippet.length>0);
   assert.ok(matches[0].reasons.every(reason=>!reason.includes('행복을 바꾼다')));
+});
+
+test('semantic-only recommendations show the matching evidence even when it is a non-answer option',()=>{
+  const questions=[fixture('x',{title:'관찰과 가설',options:[{number:2,correct:false,explanation:'서로 다른 가설이 모두 예측하는 관찰이므로 판별할 수 없다.'}]}),fixture('y',{title:'행성'})];
+  const scores=new Map([['x',.91],['y',.70]]);
+  scores.evidence=new Map([['x',{kind:'option',label:'2번 ② 선택지와 해설',text:questions[0].options[0].explanation,score:.92}]]);
+  const [match]=rankReferences(questions,'양쪽 이야기에 다 들어맞는 관찰로 우열을 매기는 오류',{semanticScores:scores});
+  assert.equal(match.id,'x');
+  assert.ok(match.snippet.includes('판별할 수 없다'));
+  assert.equal(match.evidenceLabel,'2번 ② 선택지와 해설');
+});
+
+test('natural-law field is not labelled law and a year in a sentence is not an exact question request',()=>{
+  const questions=[fixture('1332',{title:'높이뛰기',fields:['운동법칙'],domains:['과학·기술']}),fixture('1807',{title:'휴업 보상금',domains:['법률'],fields:['공법']})];
+  assert.equal(rankReferences(questions,'법률 문항')[0].id,'1807');
+  assert.deepEqual(rankReferences(questions.slice(0,1),'법률 문항'),[]);
+  const matches=rankReferences(archive,'2022 학년도 두 사람 논쟁');
+  assert.ok(matches.some(m=>m.id==='2218'));
+  for(const query of ['법률 문제 2022년도 기출처럼 계산이 들어가면 좋겠어','법률 계산 2022']){
+    const results=rankReferences(archive,query);
+    assert.ok(results.some(match=>match.id==='1022'),query);
+    assert.ok(results.some(match=>match.id==='2307'),query);
+    assert.ok(!results.some(match=>match.id==='2022'&&match.reasons.some(reason=>reason.startsWith('문항번호:'))),query);
+  }
 });
 
 test('empty, gibberish and unrelated input do not return arbitrary archive records',()=>{

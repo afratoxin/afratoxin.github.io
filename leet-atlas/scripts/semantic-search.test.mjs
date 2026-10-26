@@ -220,9 +220,51 @@ test('cosine aggregation retains matching tail passages and returns per-question
   assert.throws(() => indexModule.scoreSemanticIndex(decoded, [1, 0]));
 });
 
+test('semantic evidence retains the real matching option explanation and validates document alignment',()=>{
+  const {index,manifest}=indexFixture();
+  index.passages=[
+    {id:'1321',kind:'metadata',label:'문항 분류',text:'제목과 분류'},
+    {id:'1321',kind:'profile',label:'문항 특징 분석',text:'두 가설 모두와 양립하여 차별 평가할 수 없다.',support:[{label:'2번 선택지 해설',text:'차별 평가할 수 없다.'}]},
+    {id:'2318',kind:'source',label:'원문',text:'다른 원문'}
+  ];
+  assert.equal(typeof indexModule.scoreSemanticEvidence,'function');
+  const decoded=indexModule.validateSemanticIndex(index,manifest);
+  const query=new Float32Array(384);query[1]=1;
+  const {scores,evidence}=indexModule.scoreSemanticEvidence(decoded,query);
+  assert.ok(scores.get('1321')>.8);
+  assert.equal(evidence.get('1321').label,'문항 특징 분석');
+  assert.equal(evidence.get('1321').text,index.passages[1].text);
+  assert.deepEqual(evidence.get('1321').support,index.passages[1].support);
+  index.passages[1].id='2318';
+  assert.throws(()=>indexModule.validateSemanticIndex(index,manifest));
+});
+
+test('abstract question profiles can contribute without being diluted by an incidental topic title',()=>{
+ const {index,manifest}=indexFixture();
+ index.passages=[{id:'1321',kind:'metadata',label:'분류',text:'구체적 소재'},{id:'1321',kind:'profile',label:'추론 과정 분석',text:'공통 증거와 판별 증거의 구별'},{id:'2318',kind:'source',label:'원문',text:'다른 원문'}];
+ const decoded=indexModule.validateSemanticIndex(index,manifest),query=new Float32Array(384);query[1]=1;
+ const {scores,evidence}=indexModule.scoreSemanticEvidence(decoded,query);
+ assert.ok(scores.get('1321')>=.96);assert.equal(evidence.get('1321').kind,'profile');
+});
+
+test('worker result evidence is attached to scores and malformed passages are rejected',async()=>{
+  const worker=fakeWorker();const service=create({workerFactory:()=>worker});
+  const pending=service.search('처음 보는 임의의 질문');
+  const passage={kind:'option',label:'5번 ⑤ 선택지 해설',text:'판단을 혼동하는 고유한 근거',score:.89};
+  worker.emit({type:'result',requestId:worker.messages.at(-1).requestId,scores:[['1321',.88]],evidence:[['1321',passage]]});
+  const scores=await pending;
+  assert.deepEqual(scores.evidence.get('1321'),passage);
+  service.dispose();
+  const bad=fakeWorker(),fallback=[];const other=create({workerFactory:()=>bad,onStatus:s=>fallback.push(s.state)});
+  const invalid=other.search('임의의 문장');
+  bad.emit({type:'result',requestId:bad.messages.at(-1).requestId,scores:[['1321',.88]],evidence:[['2318',passage]]});
+  assert.deepEqual(await invalid,new Map());
+  assert.equal(fallback.at(-1),'fallback');other.dispose();
+});
+
 test('full archive sized base64 can be validated without regular expression stack overflow', () => {
   const {index, manifest} = indexFixture();
-  const count = 6000;
+  const count = 16000;
   const bytes = new Int8Array(384 * count);
   for (let row = 0; row < count; row++) bytes[row * 384] = 127;
   manifest.documentCount = index.documentCount = count;

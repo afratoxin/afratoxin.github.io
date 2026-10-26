@@ -47,13 +47,13 @@ if (options.includes('--evaluate-only')) {
   for (const document of documents) {
     if (!byId.has(document.id)) byId.set(document.id, []);
     if (typeof document.text !== 'string' || !document.text.trim()) throw new Error(`Empty document ${document.id}`);
-    byId.get(document.id).push(document.text);
+    byId.get(document.id).push(document);
   }
   if (questions.length !== 755 || byId.size !== questions.length || questions.some(q => !byId.has(q.id))) throw new Error('Index must cover all755 public questions');
   const grouped = [], records = [];
-  for (const [id, texts] of byId) {
-    records.push({id, start: grouped.length, count: texts.length});
-    grouped.push(...texts.map(text => ({id, text})));
+  for (const [id, passages] of byId) {
+    records.push({id, start: grouped.length, count: passages.length});
+    grouped.push(...passages);
   }
   const sourceSha256 = hash(sourceBytes), documentSha256 = hash(JSON.stringify(grouped));
   const checkpointBase = join(work, `embeddings-${SEMANTIC_MODEL.revision.slice(0, 12)}-${documentSha256.slice(0, 16)}`);
@@ -68,8 +68,21 @@ if (options.includes('--evaluate-only')) {
     await writeFile(checkpointBase + '.bin', new Uint8Array());
   }
   console.log(`Embedding ${grouped.length} documents / ${questions.length} questions; resume at${completed}; batch${batchSize}`);
-  for (let offset = completed; offset < grouped.length; offset += batchSize) {
-    const batch = grouped.slice(offset, offset + batchSize);
+  const reusable=new Map();let reused=0;
+  try{
+    const old=JSON.parse(await readFile(indexPath,'utf8')),oldManifest=JSON.parse(await readFile(manifestPath,'utf8'));
+    const checked=validateSemanticIndex(old,oldManifest);
+    for(const [row,passage] of (old.passages||[]).entries())reusable.set(passage.text,checked.vectors.subarray(row*SEMANTIC_MODEL.dimensions,(row+1)*SEMANTIC_MODEL.dimensions));
+  }catch{/* A missing or incompatible old index is simply not reused. */}
+  // Length-bucket a small window to avoid padding short explanations to long
+  // source passages. Store vectors in original order so passage provenance stays exact.
+  const windowSize=batchSize*8;
+  for (let offset = completed; offset < grouped.length; offset += windowSize) {
+    const window=grouped.slice(offset,offset+windowSize).map((document,local)=>({...document,local})).sort((a,b)=>a.text.length-b.text.length);
+    const quantizedWindow=new Int8Array(window.length*SEMANTIC_MODEL.dimensions);
+    const missing=window.filter(document=>{const vector=reusable.get(document.text);if(!vector)return true;quantizedWindow.set(vector,document.local*SEMANTIC_MODEL.dimensions);reused++;return false;});
+    for(let within=0;within<missing.length;within+=batchSize){
+    const batch = missing.slice(within,within+batchSize);
     const tensor = await embed(batch.map(document => SEMANTIC_MODEL.passagePrefix + document.text), {pooling: SEMANTIC_MODEL.pooling, normalize: SEMANTIC_MODEL.normalize, truncation: true, max_length: 512});
     if (tensor.dims[0] !== batch.length || tensor.dims[1] !== SEMANTIC_MODEL.dimensions) throw new Error('Embedding shape mismatch');
     const quantized = new Int8Array(tensor.data.length);
@@ -84,15 +97,18 @@ if (options.includes('--evaluate-only')) {
       if (maximum === 0) throw new Error('Zero embedding');
       for (let col = 0; col < SEMANTIC_MODEL.dimensions; col++) quantized[base + col] = Math.round(tensor.data[base + col] / maximum * 127);
     }
-    await appendFile(checkpointBase + '.bin', quantized);
-    completed = offset + batch.length;
+    for(let row=0;row<batch.length;row++)quantizedWindow.set(quantized.subarray(row*SEMANTIC_MODEL.dimensions,(row+1)*SEMANTIC_MODEL.dimensions),batch[row].local*SEMANTIC_MODEL.dimensions);
+    }
+    await appendFile(checkpointBase + '.bin', quantizedWindow);
+    completed = offset + window.length;
     await writeFile(checkpointBase + '.json', JSON.stringify({completed, documentSha256}));
     if (Math.floor(offset / 100) !== Math.floor(completed / 100) || completed === grouped.length) console.log(`${completed}/${grouped.length} documents; ${((Date.now() - started) / 1000).toFixed(1)}s`);
   }
   const vectors = (await readFile(checkpointBase + '.bin')).toString('base64');
-  index = {formatVersion: 1, modelRevision: SEMANTIC_MODEL.revision, dimensions: SEMANTIC_MODEL.dimensions, encoding: 'int8-base64', questionCount: questions.length, documentCount: grouped.length, sourceSha256, documentSha256, records, vectors};
+  console.log(`Reused ${reused} unchanged passage vectors`);
+  index = {formatVersion: 1, modelRevision: SEMANTIC_MODEL.revision, dimensions: SEMANTIC_MODEL.dimensions, encoding: 'int8-base64', questionCount: questions.length, documentCount: grouped.length, sourceSha256, documentSha256, records, vectors,passages:grouped};
   const indexBytes = JSON.stringify(index);
-  manifest = {formatVersion: 1, runtime: SEMANTIC_RUNTIME, model: SEMANTIC_MODEL, encoding: index.encoding, questionCount: questions.length, documentCount: grouped.length, sourceSha256, documentSha256, indexSha256: hash(indexBytes), indexBytes: Buffer.byteLength(indexBytes), builtAt: new Date().toISOString(), buildSeconds: Number(((Date.now() - started) / 1000).toFixed(1)), buildCommand: 'node scripts/build-search-index.mjs --runtime ../.search-work/semantic-runtime/node_modules/@huggingface/transformers/dist/transformers.node.mjs --evaluate', chunking: {sourceCharacters: 500, strideCharacters: 400, metadataFirst: true}, vectorQuantization: 'Per-vector max-absolute int8; cosine renormalizes stored vectors.'};
+  manifest = {formatVersion: 1, evidenceVersion:1, runtime: SEMANTIC_RUNTIME, model: SEMANTIC_MODEL, encoding: index.encoding, questionCount: questions.length, documentCount: grouped.length, sourceSha256, documentSha256, indexSha256: hash(indexBytes), indexBytes: Buffer.byteLength(indexBytes), builtAt: new Date().toISOString(), buildSeconds: Number(((Date.now() - started) / 1000).toFixed(1)), buildCommand: 'node scripts/build-search-index.mjs --runtime ../.search-work/semantic-runtime/node_modules/@huggingface/transformers/dist/transformers.node.mjs --evaluate', chunking: {sourceCharacters: 500, strideCharacters: 380, metadataFirst: true}, vectorQuantization: 'Per-vector max-absolute int8; cosine renormalizes stored vectors.'};
   validateSemanticIndex(index, manifest);
   await writeFile(indexPath, indexBytes);
   await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');

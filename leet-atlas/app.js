@@ -1,16 +1,16 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-year-analysis1';
-import { groupTags } from './tag-groups.mjs?v=20261026-strengthen-release1';
-import { renderSidebar } from './sidebar.mjs?v=20261026-strengthen-release1';
-import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-year-analysis1';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-year-analysis1';
-import { rankReferences } from './reference-search.mjs?v=20261026-search-diversity4';
-import { createSemanticSearch } from './semantic-search.mjs?v=20261026-year-analysis1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-general-search4';
+import { groupTags } from './tag-groups.mjs?v=20261026-general-search4';
+import { renderSidebar } from './sidebar.mjs?v=20261026-general-search4';
+import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-general-search4';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-general-search4';
+import { rankReferences } from './reference-search.mjs?v=20261026-general-search4';
+import { createSemanticSearch } from './semantic-search.mjs?v=20261026-general-search4';
 import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-plane1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-readable-content-fit1';
+const CACHE_VERSION = '20261026-general-search4';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -44,7 +44,29 @@ let semanticSearchClient;
 let semanticSequence = 0;
 let semanticStatusSequence = 0;
 let semanticTimer;
-Object.assign(state, {searchMode:'recommend', searchSort:state.route.sort === 'accuracy' ? 'accuracy' : 'relevance', searchMatches:new Map(), semanticQuery:'', semanticScores:new Map(), semanticStatus:{state:'idle'}});
+Object.assign(state, {searchMode:'recommend',searchDrafts:{recommend:'',keyword:''},searchQueries:{recommend:'',keyword:''},searchDirty:false, searchSort:state.route.sort === 'accuracy' ? 'accuracy' : 'relevance', searchMatches:new Map(), semanticQuery:'', semanticScores:new Map(), semanticStatus:{state:'idle'}});
+
+function changeSearchMode(mode){
+  mode=mode==='keyword'?'keyword':'recommend';
+  if(mode===state.searchMode)return;
+  state.searchQueries[state.searchMode]=state.query;
+  cancelSemanticSearch();
+  state.searchMode=mode;
+  state.query=state.searchQueries[mode];
+  state.searchDirty=mode==='recommend'&&state.searchDrafts.recommend!==state.query;
+  state.searchSort='relevance';
+  resetListPage();render();
+  document.querySelector(mode==='recommend'?'#recommendation-query':'#question-search')?.focus();
+  if(mode==='recommend'&&!state.searchDirty&&state.query.trim())scheduleSemanticSearch();
+}
+async function submitSearch(){
+  state.query=state.searchDrafts[state.searchMode].trim();
+  state.searchQueries[state.searchMode]=state.query;
+  state.searchDirty=false;
+  state.searchSort='relevance';
+  cancelSemanticSearch();resetListPage();updateListResults();
+  if(state.searchMode==='recommend'&&state.query)await refreshSemanticSearch();
+}
 
 function cancelSemanticSearch() {
   clearTimeout(semanticTimer);
@@ -67,7 +89,7 @@ async function refreshSemanticSearch() {
   const sequence = ++semanticSequence;
   semanticStatusSequence = 0;
   const query = state.query.trim();
-  if (state.searchMode !== 'recommend' || !query) return;
+  if (state.searchMode !== 'recommend' || !query || state.searchDirty) return;
   if (/^(?:p\d{3}|\d{4})$/i.test(query)) {
     void semanticSearchClient?.search('');
     state.semanticStatus = {state:'exact'};
@@ -113,10 +135,10 @@ function updateSearchStatus() {
   if (!status) return;
   const query = state.query.trim();
   let message;
-  if (state.searchMode === 'keyword' && state.keywordFallback) message = '정확한 단어가 모두 일치하지 않아 형식·원문·분류·해설 단서까지 넓혀 찾았습니다.';
-  else if (state.searchMode === 'keyword') message = '공백으로 나눈 모든 단어가 제목·본문·분류·태그 근거에 포함된 문항을 찾습니다.';
-  else if (!query) message = '만들고 싶은 문항을 문장으로 설명해 보세요. 첫 의미 검색에는 모델 약118MB와 실행 자료를 내려받습니다. 검색 문장은 이 기기에서 처리합니다.';
-  else if (state.semanticStatus.state === 'ready') message = '본문·분류·문항 형식 단서를 함께 비교했습니다. 각 문항의 추천 근거를 확인하세요.';
+  if (state.searchMode === 'keyword') message = '공백으로 나눈 모든 단어가 제목·본문·분류·해설에 실제로 포함된 문항을 찾습니다.';
+  else if(state.searchDirty)message='내용을 수정했습니다. ‘참고 문항 찾기’를 눌러 새 문장으로 검색을 실행하세요.';
+  else if (!query) message = '어떤 문장이든 입력할 수 있습니다. 전체 문항의 원문·선택지·해설과 의미를 비교합니다.';
+  else if (state.semanticStatus.state === 'ready') message = '문장 의미와 실제 근거 문단을 비교한 관련성순입니다. 문항별 관련 부분을 확인하세요.';
   else if (state.semanticStatus.state === 'exact') message = '문항 번호가 일치하는 자료를 먼저 찾았습니다.';
   else if (state.semanticStatus.state === 'fallback') message = '이 기기에서 의미 비교를 준비하지 못해 관련 표현·분류로 검색했습니다. 키워드 검색도 사용할 수 있습니다.';
   else if (state.semanticStatus.state === 'searching') message = '문장의 뜻을 비교하고 있습니다. 관련 표현·분류로 찾은 결과를 먼저 보여드립니다.';
@@ -355,6 +377,7 @@ function toggleTag(id) {
 }
 function resetFilters() {
   state.query = '';
+  state.searchDrafts={recommend:'',keyword:''};state.searchQueries={recommend:'',keyword:''};state.searchDirty=false;
   cancelSemanticSearch();
   state.review = 'all';
   navigate(listRoute({ tags: [], bookmark: state.route.view === 'bookmarks' ? 'any' : 'all' }), { search: true });
@@ -362,19 +385,9 @@ function resetFilters() {
 function filteredQuestions() {
   const questions = state.data.questions.map(question => state.localTexts.has(question.id) ? { ...question, text: state.localTexts.get(question.id).text } : question);
   const recommend = state.searchMode === 'recommend' && Boolean(state.query.trim());
-  const visualQuery = /(?:5\s*지\s*선다|오지선다|다섯\s*지\s*선다|5개\s*(?:선택지|선지)|선택지\s*5개|선지\s*5개|ㄱ\s*ㄴ\s*ㄷ\s*ㄹ|ㄹ\s*(?:선지|항목|까지)|빈\s*(?:칸|상자|박스|네모)|공란|(?:㉠|㉡|㉢|ⓐ|ⓑ|ⓒ)(?:에|을)?(?:들어갈|채울)|도표|표\s*(?:있는|에서|에|로|의|를|가|는|문제|문항)|그림|그래프|도식|순서도|흐름도|배치도|관계도|박스|상자|배열|배치|일렬|자리\s*배정)/.test(state.query.normalize('NFKC'));
   const filters = { tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') };
   const candidates = filterQuestions(questions, { ...filters, query: recommend ? '' : state.query }, state.reviews);
   state.searchMatches = new Map();
-  state.keywordFallback = false;
-  if (state.searchMode === 'keyword' && state.query.trim() && (candidates.length === 0 || visualQuery)) {
-    const pool = filterQuestions(questions, { ...filters, query: '' }, state.reviews);
-    const matches = rankReferences(pool, state.query);
-    state.searchMatches = new Map(matches.map(match => [match.id, match]));
-    state.keywordFallback = matches.length > 0;
-    const byId = new Map(pool.map(question => [question.id, question]));
-    return matches.map(match => byId.get(match.id)).filter(Boolean);
-  }
   if (!recommend) return candidates;
   const matches = rankReferences(candidates, state.query, {semanticScores:state.semanticQuery === state.query.trim() ? state.semanticScores : new Map()});
   state.searchMatches = new Map(matches.map(match => [match.id, match]));
@@ -413,6 +426,20 @@ function selectedFilterChips() {
   }).join(' 그리고 ');
   return `<div id="selected-filters" class="selected-filters"${tags.length ? '' : ' hidden'}><p class="filter-expression"><strong>적용 중인 조건</strong><span>${esc(expression)}</span></p>${tags.map(id => { const tag = state.taxonomy.get(id); return `<button type="button" class="selected-filter" data-remove-tag="${esc(id)}" aria-label="${esc(tag?.label || id)} 필터 해제">${esc(tag?.label || id)}${icon('close')}</button>`; }).join('')}<button class="button-text" type="button" data-reset>조건 초기화</button></div>`;
 }
+const searchExamples=[
+  ['두 사람의 논쟁','인문 논리학 소재의, 2명이 서로 싸우는 문항'],
+  ['증거를 잘못 평가한 강화·약화','강화약화 문항인데, A와 B 모두가 동의하는 근거로 잘못 약화나 강화를 친 경우'],
+  ['계산이 있는 법률','법률 문항인데 계산이 어느정도 들어감'],
+  ['독립 선택지형','단일 정답 문항'],
+  ['빈칸 채우기','문항에 빈칸 박스가 존재해서, 그걸 채우는 느낌']
+];
+function searchControls(){
+  const recommend=state.searchMode==='recommend';
+  const draft=state.searchDrafts[state.searchMode];
+  return `<section class="search-workbench" aria-label="문항 검색"><div class="search-modes" role="group" aria-label="문항 찾는 방법"><button type="button" data-search-mode="recommend" aria-pressed="${recommend}"><strong>설명으로 추천받기</strong><span>문장의 뜻과 가까운 참고 문항 찾기</span></button><button type="button" data-search-mode="keyword" aria-pressed="${!recommend}"><strong>단어로 검색하기</strong><span>입력한 단어가 실제로 포함된 문항 찾기</span></button></div>
+  ${recommend?`<label class="search-field-label" for="recommendation-query">찾고 싶은 문항의 특징</label><textarea id="recommendation-query" rows="3" placeholder="소재, 풀이 방식, 논증의 함정 등 원하는 특징을 자유롭게 설명해 주세요." aria-describedby="search-input-help search-status">${esc(draft)}</textarea><p id="search-input-help" class="search-input-help">정해진 검색어 없이 자유롭게 입력하세요. Ctrl/⌘ + Enter로도 찾을 수 있습니다.</p><div class="search-actions"><span class="search-local-note">첫 의미 검색: 모델 약118MB와 실행 자료 다운로드 · 별도 이용료 없음 · 이 기기에서 처리</span><button class="button search-submit" type="button" data-submit-search>참고 문항 찾기 ${icon('arrow')}</button></div><div class="search-examples" aria-label="추천 문장 예시"><span>입력 예시</span>${searchExamples.map(([label,text])=>`<button type="button" data-search-example="${esc(text)}" aria-label="예시: ${esc(text)}">${esc(label)}</button>`).join('')}</div>`:`<label class="search-field-label" for="question-search">검색할 단어 또는 문항번호</label><div class="keyword-entry"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(draft)}" placeholder="예: 채권 소멸시효 또는 1225" aria-label="검색할 단어 또는 문항번호" aria-describedby="search-input-help search-status" autocomplete="off"></label><button class="button search-submit" type="button" data-submit-search>단어로 검색</button></div><p id="search-input-help" class="search-input-help">문항번호나 기억나는 표현을 정확히 알고 있을 때 사용하세요.</p>`}
+  <p id="search-status" class="search-status" role="status" aria-live="polite"></p></section>`;
+}
 function renderList() {
   const isBookmarks = state.route.view === 'bookmarks';
   const isTag = state.route.view === 'tag';
@@ -426,18 +453,30 @@ function renderList() {
   document.title = `${title} · LEET Atlas`;
   const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '만들고 싶은 문항을 설명하고, 참고할 기출문항과 추천 근거를 찾아보세요.';
   main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
-  <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-mode-label"><span class="sr-only">검색 방식</span><select id="search-mode" class="review-select" aria-label="검색 방식"><option value="recommend">참고 문항 추천</option><option value="keyword">키워드 검색</option></select></label><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="${state.searchMode === 'keyword' ? '문항번호, 분야, 소재, 본문으로 검색' : '예: 인문 논리학 소재의, 두 사람이 서로 논박하는 문항'}" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
-    <p id="search-status" class="search-status" role="status" aria-live="polite"></p><button type="button" class="search-example button-text" data-search-example>예시: 인문 논리학 소재의, 2명이 서로 싸우는 문항</button>
-    <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
+  <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록">${searchControls()}
+    <div class="collection-filter-row"><div id="color-filter-area">${colorFilters()}</div><label class="review-filter-label">검수 상태<select id="review-filter" class="review-select"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></label></div>${selectedFilterChips()}
     <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="relevance">관련성순</option><option value="oldest">오래된순</option><option value="newest">최신순</option><option value="accuracy">정확도 순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
       </section></div>`;
   document.querySelector('#review-filter').value = state.review;
-  document.querySelector('#search-mode').value = state.searchMode;
   document.querySelector('#question-sort').value = state.searchMode === 'recommend' && state.query.trim() && state.searchSort === 'relevance' ? 'relevance' : state.route.sort;
   updateListResults();
 }
 function questionRoute(question) {
   return { ...state.route, view: 'question', id: question.id, tags: effectiveTags() };
+}
+function referenceEvidenceDetails(question,match){
+  if(match.evidenceSupport?.length)return `<details class="reference-evidence-detail"><summary>분석의 근거 보기</summary>${match.evidenceSupport.map(item=>`<p><strong>${esc(item.label)}</strong><br>${esc(item.text)}</p>`).join('')}</details>`;
+  if(['option','explanation'].includes(match.evidenceKind)){
+    const number=Number(match.evidenceLabel?.match(/^(\d+)번/)?.[1]);
+    const source=question.sourceOptions?.find(option=>option.number===number)?.text;
+    const explanation=question.options?.find(option=>option.number===number)?.explanation;
+    return `<details class="reference-evidence-detail"><summary>관련 선택지·해설 확인</summary>${source?`<p><strong>${esc(CIRCLED[number]||number)} 선택지</strong><br>${esc(source)}</p>`:''}<p><strong>해설</strong><br>${esc(explanation||match.evidenceText||match.snippet)}</p></details>`;
+  }
+  if(match.evidenceKind==='statement'){
+    const statement=question.statements?.find(item=>match.evidenceLabel===`${item.label} 보기 판단`);
+    return `<details class="reference-evidence-detail"><summary>관련 보기 판단 확인</summary><p>${esc(statement?.explanation||match.evidenceText||match.snippet)}</p></details>`;
+  }
+  return '';
 }
 function questionCard(question) {
   const rowTags = ['domain', 'field', 'type'].flatMap(axis => questionTags(question, axis)).slice(0, 3);
@@ -446,7 +485,7 @@ function questionCard(question) {
   const reason = activeTag ? question.tagReasons?.[activeTag.label] || question.tagReasons?.[activeTag.id] : null;
   const thumbnail = imageFor(question, true);
   const match = state.searchMatches.get(question.id);
-  const recommendation = match ? `<div class="reference-match"><p class="reference-reasons"><strong>추천 근거</strong> ${esc(match.reasons.length ? match.reasons.slice(0,3).join(' · ') : '문장 의미가 비슷한 후보')}</p>${match.snippet ? `<p class="reference-snippet">${esc(match.snippet)}</p>` : ''}</div>` : '';
+  const recommendation = match ? `<div class="reference-match"><p class="reference-reasons"><strong>추천 근거</strong> ${esc(match.reasons.length ? match.reasons.slice(0,3).join(' · ') : '문장 의미가 비슷한 후보')}</p>${match.evidenceLabel?`<p class="reference-evidence-label">관련 부분 · ${esc(match.evidenceLabel)}</p>`:''}${match.snippet ? `<p class="reference-snippet">${esc(match.snippet)}</p>` : ''}${referenceEvidenceDetails(question,match)}</div>` : '';
   return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${recommendation}${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
 }
 function paginationMarkup(result) {
@@ -457,12 +496,15 @@ function paginationMarkup(result) {
   return `<nav class="list-pagination" aria-label="목록 페이지"><button type="button" class="page-button" data-list-page="${result.page - 1}" ${result.page === 1 ? 'disabled' : ''} aria-label="이전 목록 페이지">${icon('left')}<span>이전</span></button>${pages}<button type="button" class="page-button" data-list-page="${result.page + 1}" ${result.page === result.pageCount ? 'disabled' : ''} aria-label="다음 목록 페이지"><span>다음</span>${icon('right')}</button></nav>`;
 }
 function updateListResults() {
-  const questions = filteredQuestions();
   updateSearchStatus();
   const sorting = document.querySelector('#question-sort');
   if (sorting) sorting.value = state.searchMode === 'recommend' && state.query.trim() && state.searchSort === 'relevance' ? 'relevance' : state.route.sort;
   const count = document.querySelector('#result-count');
   if (!count) return;
+  const pendingDraft=state.searchMode==='recommend'&&state.searchDirty;
+  document.querySelector('#question-list').hidden=pendingDraft;
+  if(pendingDraft){count.textContent='새 문장으로 검색을 실행하면 결과가 표시됩니다.';document.querySelector('#list-pagination').innerHTML='';return;}
+  const questions = filteredQuestions();
   const result = paginateQuestions(questions, { page: state.route.page || 1, pageSize: 10, mode: state.route.mode || 'paged' });
   if (state.route.page !== result.page) {
     state.route.page = result.page;
@@ -746,7 +788,7 @@ function render() {
   const focus = nextFocus;
   nextFocus = null;
   if (focus?.main) { window.scrollTo({ top: 0, behavior: 'instant' }); main.focus({ preventScroll: true }); }
-  else if (focus?.search) document.querySelector('#question-search')?.focus();
+  else if (focus?.search) document.querySelector(state.searchMode==='recommend'?'#recommendation-query':'#question-search')?.focus();
   else if (focus?.tag) {
     const button = [...document.querySelectorAll('[data-filter-tag]')].find(item => item.dataset.filterTag === focus.tag);
     const details = button?.closest('details');
@@ -795,7 +837,7 @@ function showBookmarkPalette(id) {
 function closeBookmarkPalette() {
   bookmarkDialog.close();
   const button = [...document.querySelectorAll('[data-bookmark]')].find(item => item.dataset.bookmark === state.paletteQuestionId);
-  (button || document.querySelector('#question-search') || main).focus({ preventScroll: true });
+  (button || document.querySelector(state.searchMode==='recommend'?'#recommendation-query':'#question-search') || main).focus({ preventScroll: true });
 }
 function selectBookmarkColor(color, clear = false) {
   const id = state.paletteQuestionId;
@@ -941,7 +983,9 @@ document.addEventListener('click', event => {
       item.setAttribute('aria-pressed', String(active));
     });
     renderTagCatalogResults();
-  } else if (button.hasAttribute('data-search-example')) { state.query = '인문 논리학 소재의, 2명이 서로 싸우는 문항'; state.searchMode = 'recommend'; state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); render(); }
+  } else if(button.hasAttribute('data-search-mode'))changeSearchMode(button.dataset.searchMode);
+  else if(button.hasAttribute('data-submit-search'))void submitSearch();
+  else if (button.hasAttribute('data-search-example')) { state.searchMode='recommend';state.searchDrafts.recommend=button.dataset.searchExample||searchExamples[0][1];void submitSearch();render(); }
   else if (button.hasAttribute('data-import-local-text')) document.querySelector('#local-text-file')?.click();
   else if (button.hasAttribute('data-clear-local-source')) void clearLocalSource(button.dataset.clearLocalSource);
   else if (button.hasAttribute('data-clear-local-text')) clearLocalText(button.dataset.clearLocalText);
@@ -979,7 +1023,8 @@ document.addEventListener('input', event => {
     document.querySelectorAll(`[data-tag-choices="${axis}"] [data-related-group]`).forEach(group => { group.hidden = ![...group.querySelectorAll('[data-filter-tag]')].some(button => !button.hidden); if (term && !group.hidden && group.matches('details')) group.open = true; });
     document.querySelector(`[data-tag-empty="${axis}"]`).hidden = visible > 0;
     hideTooltip();
-  } else if (event.target.id === 'question-search') { state.query = event.target.value; state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); updateListResults(); }
+  } else if(event.target.id==='recommendation-query'){state.searchDrafts.recommend=event.target.value;state.searchDirty=state.searchDrafts.recommend!==state.query;cancelSemanticSearch();updateListResults();}
+  else if (event.target.id === 'question-search') { state.searchDrafts.keyword=event.target.value;state.searchQueries.keyword=event.target.value;state.query = event.target.value; state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); updateListResults(); }
   else if (event.target.id === 'tag-catalog-search') { state.tagQuery = event.target.value; renderTagCatalogResults(); }
   else if (event.target.hasAttribute('data-note-for')) {
     const saved = saveReview(event.target.dataset.noteFor, { note: event.target.value });
@@ -1017,6 +1062,7 @@ document.addEventListener('focusin', event => {
 });
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') hideTooltip();
+  if(event.key==='Enter'&&!event.isComposing&&(event.target.id==='question-search'||event.target.id==='recommendation-query'&&(event.ctrlKey||event.metaKey))){event.preventDefault();void submitSearch();}
   if (!['ArrowLeft', 'ArrowRight'].includes(event.key) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.isComposing) return;
   if (event.target.closest?.('input, textarea, select, [contenteditable], [role="textbox"]') || document.querySelector('dialog[open]')) return;
   if (moveQuestionByArrow(event.key === 'ArrowLeft' ? -1 : 1)) event.preventDefault();

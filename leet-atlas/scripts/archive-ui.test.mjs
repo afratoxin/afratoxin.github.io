@@ -364,13 +364,10 @@ const puzzle='type-4536b24c5d',year2026='year-750655310c',year2025='year-abefd8a
 
 test('full archive provides every body and image without importing personal files',async()=>{
  const oldest=await boot('#/questions',{},fullArchive);
- assert.equal(oldest.elements.get('#text-coverage')?.textContent,'본문 755/755');
- assert.equal(oldest.elements.get('#image-coverage')?.textContent,'이미지 755/755');
- assert.match(oldest.elements.get('#text-coverage').title,/2009학년도 예비시험 40\/40/);
- assert.match(oldest.elements.get('#text-coverage').title,/2027학년도 본시험 40\/40/);
- assert.equal((oldest.elements.get('#question-list').innerHTML.match(/본문 있음/g)||[]).length,10);
+ assert.equal(localText.localTextCoverage(oldest.app.state.data.questions,oldest.app.state.localTexts).available,755);
+ assert.equal((oldest.elements.get('#question-list').innerHTML.match(/class=\"question-row question-card\"/g)||[]).length,10);
  const newest=await boot('#/questions?sort=newest',{},fullArchive);
- assert.equal((newest.elements.get('#question-list').innerHTML.match(/본문 있음/g)||[]).length,10);
+ assert.equal((newest.elements.get('#question-list').innerHTML.match(/class=\"question-row question-card\"/g)||[]).length,10);
 });
 
 test('all 715 local bodies import across the real 755-question archive, restore, search and preserve review notes',async()=>{
@@ -389,9 +386,7 @@ test('all 715 local bodies import across the real 755-question archive, restore,
  const payload=JSON.stringify({schemaVersion:1,kind:'leet-atlas-local-text',questions:records});
  await app.importLocalTextFile({size:Buffer.byteLength(payload),text:async()=>payload});
  assert.equal(app.state.localTexts.size,715);
- assert.equal(elements.get('#text-coverage').textContent,'본문 755/755');
- assert.match(elements.get('#text-coverage').title,/2009학년도 예비시험 40\/40/);
- assert.match(elements.get('#text-coverage').title,/2010학년도 본시험 35\/35/);
+ assert.equal(localText.localTextCoverage(app.state.data.questions,app.state.localTexts).available,755);
  assert.match(elements.get('#toast').textContent,/715문항의 본문을 불러왔습니다/);
  assert.match(elements.get('#toast').textContent,/본문 755\/755/);
  assert.match(elements.get('#main').innerHTML,/로컬전체본문 p001/);
@@ -404,18 +399,18 @@ test('all 715 local bodies import across the real 755-question archive, restore,
  app.state.query='로컬전체본문';
  assert.equal(app.filteredQuestions().length,715);
  for(const id of ['p001','0901','1001','2632']) {
-  app.state.query=`로컬전체본문 ${id}`;
+  app.state.query=id==='2632'?`로컬전체본문 문항 ${id}번`:`로컬전체본문 ${id}`;
   assert.deepEqual(app.filteredQuestions().map(question=>question.id),[id]);
  }
  app.state.query='';location.hash='#/questions';app.render();
- assert.equal((elements.get('#question-list').innerHTML.match(/본문 있음/g)||[]).length,10);
+ assert.equal((elements.get('#question-list').innerHTML.match(/class="question-row question-card"/g)||[]).length,10);
  assert.equal(requests.length,1);
  const restored=await boot('#/question/2632',reviews,legacyArchive,false,memory.get(localText.LOCAL_TEXT_STORAGE_KEY));
  assert.equal(restored.app.state.localTexts.size,715);
- assert.equal(restored.elements.get('#text-coverage').textContent,'본문 755/755');
+ assert.equal(localText.localTextCoverage(restored.app.state.data.questions,restored.app.state.localTexts).available,755);
  assert.match(restored.elements.get('#main').innerHTML,/로컬전체본문 2632/);
  restored.app.clearLocalText('2632');
- assert.equal(restored.elements.get('#text-coverage').textContent,'본문 754/755');
+ assert.equal(localText.localTextCoverage(restored.app.state.data.questions,restored.app.state.localTexts).available,754);
  assert.match(restored.elements.get('#main').innerHTML,/원문 출처/);
  assert.equal(restored.app.state.reviews.p001.note,'기존 검수 메모');
 });

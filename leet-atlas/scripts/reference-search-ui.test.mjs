@@ -20,13 +20,16 @@ async function boot({hash='#/questions',createSemanticSearch=()=>({search:async(
  const location={hash,href:'https://afratoxin.github.io/leet-atlas/'+hash};
  const env={document:{querySelector:element,querySelectorAll:()=>[],addEventListener:(k,f)=>events.set(k,f)},location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)},navigator:{},fetch:async()=>({ok:true,json:async()=>structuredClone(archive)}),...core,...tagGroups,...localText,...localSources,...sidebar,...references,createSemanticSearch};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
- const app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,filteredQuestions,refreshSemanticSearch:typeof refreshSemanticSearch === "function" ? refreshSemanticSearch : null};')(...Object.values(env));
+ const app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,filteredQuestions,refreshSemanticSearch:typeof refreshSemanticSearch === "function" ? refreshSemanticSearch : null,changeSearchMode:typeof changeSearchMode === "function"?changeSearchMode:null,submitSearch:typeof submitSearch === "function"?submitSearch:null};')(...Object.values(env));
  return {app,elements,events,location};
 }
 
 test('recommendation search exposes two modes and explains actual reference matches',async()=>{
  const {app,elements}=await boot();
- assert.match(elements.get('#main').innerHTML,/id="search-mode"/);
+ assert.match(elements.get('#main').innerHTML,/설명으로 추천받기/);
+ assert.match(elements.get('#main').innerHTML,/단어로 검색하기/);
+ assert.match(elements.get('#main').innerHTML,/찾고 싶은 문항의 특징/);
+ assert.doesNotMatch(elements.get('#main').innerHTML,/<select id="search-mode"/);
  assert.equal(app.state.searchMode,'recommend');
  app.state.query=example;app.render();
  const ids=app.filteredQuestions().slice(0,10).map(q=>q.id);
@@ -35,6 +38,52 @@ test('recommendation search exposes two modes and explains actual reference matc
  assert.match(elements.get('#search-status').textContent,/관련 표현|문장/);
  app.state.searchMode='keyword';
  assert.equal(app.filteredQuestions().length,0);
+});
+
+test('free recommendation drafts and literal keywords are kept separately and only a submitted description runs',async()=>{
+ let calls=0;
+ const {app,events,elements}=await boot({createSemanticSearch:()=>({search:async q=>{if(q)calls++;return new Map()},dispose(){}})});
+ const input=value=>events.get('input')({target:{id:'recommendation-query',value,hasAttribute:()=>false}});
+ input('사전에 없던 문장으로도 관련 문항을 찾아줘');
+ assert.equal(app.state.query,'');assert.equal(calls,0);
+ assert.match(elements.get('#search-status').textContent,/찾기.*누르|실행/);
+ assert.equal(typeof app.changeSearchMode,'function');assert.equal(typeof app.submitSearch,'function');
+ app.changeSearchMode('keyword');
+ events.get('input')({target:{id:'question-search',value:'2218',hasAttribute:()=>false}});
+ assert.equal(app.state.query,'2218');
+ assert.equal(calls,0);
+ app.changeSearchMode('recommend');
+ assert.equal(app.state.searchDrafts.recommend,'사전에 없던 문장으로도 관련 문항을 찾아줘');
+ assert.equal(app.state.query,'');
+ await app.submitSearch();
+ assert.equal(app.state.query,'사전에 없던 문장으로도 관련 문항을 찾아줘');assert.equal(calls,1);
+});
+
+test('editing a submitted recommendation cancels its ownership and marks results as pending',async()=>{
+ const {app,events,elements}=await boot();
+ events.get('input')({target:{id:'recommendation-query',value:'두 사람의 논쟁',hasAttribute:()=>false}});
+ await app.submitSearch();
+ events.get('input')({target:{id:'recommendation-query',value:'전혀 다른 질문',hasAttribute:()=>false}});
+ assert.equal(app.state.searchDirty,true);
+ assert.match(elements.get('#search-status').textContent,/찾기.*누르|실행/);
+ assert.equal(elements.get('#question-list').hidden,true);
+});
+
+test('actual semantic evidence labels and non-answer explanations are safely rendered',async()=>{
+ const scores=new Map([['1225',.93]]);scores.evidence=new Map([['1225',{kind:'option',label:'1번 ① 선택지와 해설',text:'<script>unsafe</script> 두 가설을 차별 평가할 수 없다.',score:.94}]]);
+ const {app,elements}=await boot({createSemanticSearch:()=>({search:async()=>scores,dispose(){}})});
+ app.state.searchDrafts.recommend='양쪽에 다 맞는 사실을 잘못 평가한 문제';
+ await app.submitSearch();
+ const html=elements.get('#question-list').innerHTML;
+ assert.match(html,/1번 ① 선택지와 해설/);
+ assert.match(html,/&lt;script&gt;/);assert.doesNotMatch(html,/<script>/);
+});
+
+test('source-backed general descriptions expose their quotes rather than presenting generated explanations as originals',async()=>{
+ const scores=new Map([['1225',.94]]);scores.evidence=new Map([['1225',{kind:'profile',label:'문항 특징 분석',text:'두 가설이 공유하는 관찰의 판별력을 평가한다.',score:.95,support:[{label:'1번 선택지 해설',text:'두 가설 모두 얼굴 인식 영역의 정상 작동과 양립하므로 유명인 인식만으로 둘을 차별 평가할 수 없다.'}]}]]);
+ const {app,elements}=await boot({createSemanticSearch:()=>({search:async()=>scores,dispose(){}})});
+ app.state.searchDrafts.recommend='서로 다른 설명이 같은 관찰을 예상하는 문제';await app.submitSearch();
+ const html=elements.get('#question-list').innerHTML;assert.match(html,/분석의 근거 보기/);assert.match(html,/1번 선택지 해설/);assert.match(html,/차별 평가할 수 없다/);
 });
 
 test('recommendations keep explicitly selected taxonomy filters strict',async()=>{

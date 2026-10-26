@@ -32,7 +32,16 @@ export function validateSemanticIndex(index, manifest) {
     offset += record.count;
   }
   requireValid(offset === manifest.documentCount, 'missing documents');
-  requireValid(typeof index.vectors === 'string' && index.vectors.length % 4 === 0 && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(index.vectors), 'base64');
+  if(index.passages!==undefined||manifest.evidenceVersion===1){
+    requireValid(Array.isArray(index.passages)&&index.passages.length===manifest.documentCount,'passage count');
+    for(const record of index.records)for(let row=record.start;row<record.start+record.count;row++){
+      const passage=index.passages[row];
+      requireValid(passage?.id===record.id&&typeof passage.kind==='string'&&passage.kind.length>0&&passage.kind.length<=40&&typeof passage.label==='string'&&passage.label.length>0&&passage.label.length<=120&&typeof passage.text==='string'&&passage.text.length>0&&passage.text.length<=800,'passage evidence');
+      requireValid(passage.support===undefined||Array.isArray(passage.support)&&passage.support.length<=8&&passage.support.every(item=>typeof item?.label==='string'&&item.label.length<=120&&typeof item.text==='string'&&item.text.length>0&&item.text.length<=1200),'profile support');
+    }
+  }
+  // Repeating capture groups can exhaust the JS regex stack on a large corpus.
+  requireValid(typeof index.vectors==='string'&&index.vectors.length>0&&index.vectors.length%4===0&&!/[^A-Za-z0-9+/]/.test(index.vectors.replace(/={1,2}$/, '')), 'base64');
   const binary = atob(index.vectors);
   requireValid(binary.length === manifest.documentCount * SEMANTIC_MODEL.dimensions, 'vector bytes');
   const vectors = new Int8Array(binary.length);
@@ -44,25 +53,37 @@ export function validateSemanticIndex(index, manifest) {
     requireValid(square > 0, 'zero vector');
     inverseNorms[row] = 1 / Math.sqrt(square);
   }
-  return {records: index.records, vectors, inverseNorms, dimensions: index.dimensions};
+  return {records: index.records, vectors, inverseNorms, dimensions: index.dimensions, passages:index.passages};
 }
 
 /** E5 raw cosine: retain the best source passage while giving metadata a small vote. */
 export function scoreSemanticIndex(index, query) {
+  return scoreSemanticEvidence(index,query).scores;
+}
+
+/** Keep the highest-scoring real passage; no query-specific explanation is generated. */
+export function scoreSemanticEvidence(index,query){
   requireValid(query?.length === index.dimensions && Array.from(query).every(Number.isFinite), 'query dimensions');
   const norm = Math.sqrt(Array.from(query).reduce((sum, value) => sum + value * value, 0));
   requireValid(norm > 0, 'zero query');
-  const scores = new Map();
+  const scores = new Map(),evidence=new Map();
   for (const {id, start, count} of index.records) {
-    let maximum = -1, metadata = 0;
+    let maximum = -1, metadata = 0,best=start,profileMaximum=-1,profileRow=start;
     for (let row = start; row < start + count; row++) {
       let dot = 0;
       for (let col = 0; col < index.dimensions; col++) dot += query[col] * index.vectors[row * index.dimensions + col];
       const cosine = Math.max(-1, Math.min(1, dot * index.inverseNorms[row] / norm));
       if (row === start) metadata = cosine;
-      maximum = Math.max(maximum, cosine);
+      if(cosine>maximum){maximum=cosine;best=row;}
+      if(index.passages?.[row]?.kind==='profile'&&cosine>profileMaximum){profileMaximum=cosine;profileRow=row;}
     }
-    scores.set(id, 0.85 * maximum + 0.15 * metadata);
+    const sourceScore=.85*maximum+.15*metadata,profileScore=.97*profileMaximum+.03*metadata;
+    scores.set(id,Math.max(sourceScore,profileScore));
+    if(profileScore>sourceScore)best=profileRow;
+    if(index.passages?.[best]){
+      const {kind,label,text,support}=index.passages[best];
+      evidence.set(id,{kind,label,text,score:best===profileRow&&profileScore>sourceScore?profileMaximum:maximum,...(support?{support}:{})});
+    }
   }
-  return scores;
+  return {scores,evidence};
 }
