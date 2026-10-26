@@ -1,5 +1,5 @@
 import { specs } from './engines.mjs?v=20261026-structure';
-import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor } from './structured-editor.mjs?v=20261026-structure';
+import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor } from './structured-editor.mjs?v=20261026-layout';
 
 const $ = (id) => document.getElementById(id);
 const engineList = Array.isArray(specs) ? specs : Object.values(specs ?? {});
@@ -18,8 +18,10 @@ const state = {
   family: engines.has('integer-sum') ? 'integer-sum' : engineList[0]?.id ?? 'integer-sum',
   view: 'lab', params: {}, result: null, answerVisible: true,
   catalog: null, catalogError: false, mapFamily: 'all', source: 'recent', year: 'all', search: '', page: 1,
+  adjustTab: 'basic', basicPage: 1, mobilePane: 'adjust', questionTab: 'problem', solutionTab: 'explanation',
 };
 const PAGE_SIZE = 12;
+const BASIC_PAGE_SIZE = 4;
 const METHOD_LABELS = new Map([
   ['stars-bars', '하한·홀짝 치환과 중복조합'], ['gap-substitution', '차이 변수로 치환'],
   ['inclusion-exclusion', '포함배제'], ['prime-exponents', '소인수의 지수 분배'],
@@ -116,12 +118,18 @@ function renderFamilies() {
   });
   replace($('family-list'), buttons);
   $('family-count').textContent = String(buttons.length);
+  for (const id of ['family-select', 'compare-family-select']) {
+    const select = $(id);
+    replace(select, allFamilies().map((family) => new Option(family.title, family.id)));
+    select.value = state.family;
+  }
 }
 
 function selectFamily(id, params, keepMapFilter = false) {
   if (!allFamilies().some((family) => family.id === id)) return;
   clearTimeout(calculationTimer);
   state.family = id;
+  state.adjustTab = 'basic'; state.basicPage = 1;
   state.params = safeParams(engines.get(id), params);
   if (state.view === 'map' && !keepMapFilter) { state.mapFamily = id; state.page = 1; }
   renderFamilies();
@@ -157,6 +165,8 @@ function renderControls() {
   }
   for (const control of spec?.controls ?? []) {
     const field = node('div', `control-field${control.type === 'checkbox' ? ' checkbox-field' : ''}`);
+    if (control.type === 'number' && Math.max(Math.abs(control.min ?? 0), Math.abs(control.max ?? 0)) >= 100000) field.className += ' large-number-field';
+    field.dataset.control = control.key;
     const id = `control-${control.key}`;
     const label = node('label', 'control-label', control.label);
     label.htmlFor = `slider-${control.key}`;
@@ -217,7 +227,9 @@ function renderControls() {
       help.id = `${id}-help`;
       input.setAttribute('aria-describedby', help.id);
       slider.setAttribute('aria-describedby', help.id);
-      field.append(help);
+      const details = node('details', 'control-help-details');
+      details.append(node('summary', '', '설명'), help);
+      field.append(details);
     }
     controls.set(control.key, { control, input, slider, field });
     input.addEventListener(control.type === 'number' ? 'input' : 'change', () => { syncSlider(); scheduleCalculation(); });
@@ -240,8 +252,10 @@ function renderControls() {
   $('answer-button').disabled = !available;
   if (!available) $('controls').append(node('p', 'empty-state', '이 유형은 기출 분류를 제공합니다. 연결된 기출과 조건 비교를 확인해 주세요.'));
   const usesStructure = state.family === 'integer-sum';
-  $('structure-panel').hidden = !usesStructure;
-  $('structure-editor-jump').hidden = !usesStructure;
+  $('structure-panel').hidden = true;
+  $('structure-editor-jump').hidden = true;
+  $('structure-shared-host').hidden = !usesStructure;
+  for (const id of ['structure-shared-host', 'adjust-expression-host', 'adjust-variables-host', 'adjust-conditions-host', 'adjust-examples-host']) $(id).replaceChildren();
   $('structure-editor').replaceChildren();
   if (usesStructure) {
     state.params.structure = sanitizeStructure(state.params.structure, state.params);
@@ -259,7 +273,73 @@ function renderControls() {
         }
       } else scheduleCalculation();
     });
+    const panels = structuredEditor.panels();
+    $('structure-shared-host').append(panels.shared);
+    for (const name of ['expression', 'variables', 'conditions', 'examples']) $(`adjust-${name}-host`).append(panels[name]);
   }
+  for (const name of ['expression', 'variables', 'conditions']) $(`adjust-tab-${name}`).disabled = !usesStructure;
+  if (!usesStructure && !['basic', 'examples'].includes(state.adjustTab)) state.adjustTab = 'basic';
+  renderBasicPage(); setAdjustTab(state.adjustTab);
+}
+
+function renderBasicPage() {
+  const fields = [...controls.values()];
+  const pages = Math.max(1, Math.ceil(fields.length / BASIC_PAGE_SIZE));
+  state.basicPage = Math.max(1, Math.min(pages, state.basicPage));
+  fields.forEach(({ field }, index) => {
+    const page = Math.floor(index / BASIC_PAGE_SIZE) + 1;
+    field.dataset.basicPage = String(page);
+    field.hidden = page !== state.basicPage;
+  });
+  $('basic-prev').disabled = state.basicPage === 1;
+  $('basic-next').disabled = state.basicPage === pages;
+  $('basic-page-status').textContent = `${state.basicPage} / ${pages}`;
+  $('basic-page-status').setAttribute('aria-label', `기본 조건 ${pages}페이지 중 ${state.basicPage}페이지`);
+}
+
+function setAdjustTab(name, focus = false) {
+  const names = ['basic', 'expression', 'variables', 'conditions', 'examples'];
+  if (!names.includes(name) || $(`adjust-tab-${name}`).disabled) return;
+  state.adjustTab = name;
+  for (const tab of names) {
+    $(`adjust-panel-${tab}`).hidden = name !== tab;
+    $(`adjust-tab-${tab}`).setAttribute('aria-selected', String(name === tab));
+    $(`adjust-tab-${tab}`).tabIndex = name === tab ? 0 : -1;
+  }
+  if (focus) $(`adjust-tab-${name}`).focus();
+}
+
+function setPane(name, focus = false) {
+  if (!['adjust', 'problem', 'solution'].includes(name)) return;
+  state.mobilePane = name; $('view-lab').dataset.mobilePane = name;
+  for (const pane of ['adjust', 'problem', 'solution']) {
+    $(`${pane}-pane`).dataset.active = String(name === pane);
+    $(`pane-tab-${pane}`).setAttribute('aria-selected', String(name === pane));
+    $(`pane-tab-${pane}`).tabIndex = name === pane ? 0 : -1;
+  }
+  if (focus) $(`pane-tab-${name}`).focus();
+}
+
+function setQuestionTab(name, focus = false) {
+  if (!['problem', 'sources'].includes(name)) return;
+  state.questionTab = name;
+  for (const tab of ['problem', 'sources']) {
+    $(`question-panel-${tab}`).hidden = name !== tab;
+    $(`question-tab-${tab}`).setAttribute('aria-selected', String(name === tab));
+    $(`question-tab-${tab}`).tabIndex = name === tab ? 0 : -1;
+  }
+  if (focus) $(`question-tab-${name}`).focus();
+}
+
+function setSolutionTab(name, focus = false) {
+  if (!['explanation', 'cases', 'distribution'].includes(name)) return;
+  state.solutionTab = name;
+  for (const tab of ['explanation', 'cases', 'distribution']) {
+    $(`solution-pane-${tab}`).hidden = name !== tab;
+    $(`solution-tab-${tab}`).setAttribute('aria-selected', String(name === tab));
+    $(`solution-tab-${tab}`).tabIndex = name === tab ? 0 : -1;
+  }
+  if (focus) $(`solution-tab-${name}`).focus();
 }
 
 function readAndValidate() {
@@ -304,7 +384,7 @@ function updateStructuredScalarAvailability(edited) {
     field.field.dataset.ignored = String(ignored);
     let note = $(`structure-scalar-note-${key}`);
     if (!note) {
-      note = node('p', 'structure-scalar-note', '직접 편집한 주된 식을 사용 중입니다. 아래 식 편집기에서 기준값·관계를 바꾸세요.');
+      note = node('p', 'structure-scalar-note', '직접 편집 중 · 식 탭에서 조절하세요.');
       note.id = `structure-scalar-note-${key}`; field.field.append(note);
       const description = [field.input.getAttribute('aria-describedby'), note.id].filter(Boolean).join(' ');
       field.input.setAttribute('aria-describedby', description); field.slider.setAttribute('aria-describedby', description);
@@ -383,6 +463,8 @@ function renderResult() {
   const samples = (result.samples ?? []).slice(0, 16);
   $('result-samples').hidden = !samples.length;
   replace($('result-samples'), samples.length ? [node('h4', 'subsection-title', '작은 예로 확인'), list(samples, 'sample-list')] : []);
+  $('cases-empty').hidden = Boolean(result.cases?.length);
+  $('distribution-empty').hidden = Boolean(result.chart?.length || samples.length);
   updateAnswerVisibility();
 }
 
@@ -556,7 +638,7 @@ function sourceCard(item, expanded = false) {
   if (engines.has(item.family)) {
     const button = node('button', 'button button-ghost source-link', '이 유형의 대표 구조 실험 →');
     button.type = 'button';
-    button.addEventListener('click', () => { selectFamily(item.family, undefined, true); setView('lab'); $('lab-title').scrollIntoView({ block: 'start', behavior: 'smooth' }); });
+    button.addEventListener('click', () => { selectFamily(item.family, undefined, true); setView('lab'); setPane('problem'); setQuestionTab('problem'); });
     details.append(button, node('p', 'control-hint', '이 기출의 수치·조건을 그대로 복원한 프리셋은 아닙니다.'));
   }
   article.append(details);
@@ -767,6 +849,30 @@ function openRelatedMap() {
 }
 
 function bindEvents() {
+  $('family-select').addEventListener('change', (event) => selectFamily(event.target.value));
+  $('compare-family-select').addEventListener('change', (event) => selectFamily(event.target.value, undefined, true));
+  $('basic-prev').addEventListener('click', () => { state.basicPage--; renderBasicPage(); });
+  $('basic-next').addEventListener('click', () => { state.basicPage++; renderBasicPage(); });
+  function bindTabs(selector, dataKey, activate) {
+    const buttons = [...document.querySelectorAll(selector)];
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => activate(button.dataset[dataKey]));
+      button.addEventListener('keydown', (event) => {
+        const available = buttons.filter((item) => !item.disabled);
+        const index = available.indexOf(button);
+        let next;
+        if (event.key === 'ArrowRight') next = (index + 1) % available.length;
+        if (event.key === 'ArrowLeft') next = (index - 1 + available.length) % available.length;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = available.length - 1;
+        if (next !== undefined && available[next]) { event.preventDefault(); activate(available[next].dataset[dataKey], true); }
+      });
+    });
+  }
+  bindTabs('[data-adjust]', 'adjust', setAdjustTab);
+  bindTabs('[data-pane-target]', 'paneTarget', setPane);
+  bindTabs('[data-question-tab]', 'questionTab', setQuestionTab);
+  bindTabs('[data-solution-tab]', 'solutionTab', setSolutionTab);
   $('controls-form').addEventListener('submit', (event) => { event.preventDefault(); calculate(); });
   $('reset-button').addEventListener('click', () => { state.params = cloneDefaults(engines.get(state.family)); renderControls(); calculate(); showToast('기본 조건으로 돌아왔습니다.'); });
   $('random-button').addEventListener('click', randomize);

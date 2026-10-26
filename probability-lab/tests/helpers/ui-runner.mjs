@@ -9,6 +9,9 @@ process.env.TEST_NETWORK_FAIL=scenario==='network'?'1':'';
 process.env.TEST_REAL_CATALOG=scenario==='catalog'?'1':'';
 process.env.TEST_HASH=scenario==='hash'?'#lab='+encodeURIComponent(JSON.stringify({family:'normal',params:{mu:1.5,sigma:0.25,n:4,lower:1,upper:2},view:'compare'})):scenario==='malformed'?'#lab='+encodeURIComponent(JSON.stringify({family:'integer-sum',params:null})):'';
 let randomSeed=137;Math.random=()=>((randomSeed=(randomSeed*1664525+1013904223)>>>0)/2**32);
+let interactionChecksReady=false;
+const viewportWidth=scenario==='layout-phone'?390:1440;
+let actualNavigationActions=0;
 class Element {
   constructor(tag='div'){this.tagName=tag.toUpperCase();this.children=[];this.parentNode=null;this.attrs={};this.dataset={};this.style={setProperty(name,value){this[name]=String(value);}};this.events={};this.hidden=false;this.disabled=false;this._value='';this._text='';this.checked=false;this.selected=false;this.type='';}
   get classList(){const element=this;return {contains(name){return element.className.split(/\s+/).includes(name);},add(...names){element.className=[...new Set([...element.className.split(/\s+/).filter(Boolean),...names])].join(' ');},remove(...names){element.className=element.className.split(/\s+/).filter(name=>!names.includes(name)).join(' ');},toggle(name,force){const on=force??!this.contains(name);on?this.add(name):this.remove(name);return on;}};}
@@ -37,8 +40,8 @@ class Element {
   hasAttribute(k){return Object.hasOwn(this.attrs,k);}
   removeAttribute(k){delete this.attrs[k];if(k==='hidden')this.hidden=false;if(k==='disabled')this.disabled=false;if(k==='required')this.required=false;}
   addEventListener(name,fn){(this.events[name]??=[]).push(fn);}
-  dispatch(name,extra={}){if(this.disabled&&name==='click')return;const event={type:name,target:this,currentTarget:this,preventDefault(){},...extra};for(const fn of this.events[name]||[])fn(event);}
-  click(){if(this.disabled)return;if(this.type==='checkbox')this.checked=!this.checked;this.dispatch('click');if(this.type==='checkbox'){this.dispatch('input');this.dispatch('change');}}
+  dispatch(name,extra={}){if(this.disabled&&name==='click')return;if(interactionChecksReady&&['input','change','click','keydown'].includes(name)){const fresh=ensureAccess(this);if(fresh!==this){if(['input','change'].includes(name)){fresh.value=this.value;fresh.checked=this.checked;}return fresh.dispatch(name,extra);}assert.equal(isHidden(this),false,`cannot ${name} hidden control ${this.id||this.className}`);}const event={type:name,target:this,currentTarget:this,preventDefault(){},...extra};for(const fn of this.events[name]||[])fn(event);}
+  click(){if(this.disabled)return;if(interactionChecksReady){const fresh=ensureAccess(this);if(fresh!==this)return fresh.click();}if(this.type==='checkbox')this.checked=!this.checked;this.dispatch('click');if(this.type==='checkbox'){this.dispatch('input');this.dispatch('change');}}
   focus(){document.activeElement=this;} scrollIntoView(){} select(){}
   contains(other){return this===other||descend(this).includes(other);}
   closest(selector){let current=this;while(current){if(matches(current,selector))return current;current=current.parentNode;}return null;}
@@ -61,7 +64,8 @@ const document=new Element('document'); document.createElement=tag=>new Element(
 const source=fs.readFileSync(root+'/index.html','utf8');const stack=[document];const voids=new Set(['META','LINK','INPUT','BR','HR','IMG']);
 for(const token of source.match(/<[^>]+>|[^<]+/g)||[]){if(token.startsWith('<!'))continue;if(token.startsWith('</')){const tag=token.slice(2,-1).trim().toUpperCase(),index=stack.findLastIndex(e=>e.tagName===tag);if(index>0)stack.splice(index);continue;}if(token.startsWith('<')){const match=token.match(/^<([\w-]+)/);if(!match)continue;const e=new Element(match[1]);for(const m of token.matchAll(/([\w:-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g)){if(m.index<=1)continue;e.setAttribute(m[1],m[2]??m[3]??m[4]??'');}stack.at(-1).append(e);if(!voids.has(e.tagName))stack.push(e);}else{const t=document.createTextNode(token);stack.at(-1).append(t);}}
 document.body=document.querySelector('body');
-const windowEvents={};const window={addEventListener(name,fn){(windowEvents[name]??=[]).push(fn);}};
+document.documentElement=document.querySelector('html');
+const windowEvents={};const window={innerWidth:viewportWidth,innerHeight:900,addEventListener(name,fn){(windowEvents[name]??=[]).push(fn);},matchMedia(query){const matches=[...query.matchAll(/(min|max)-width\s*:\s*(\d+)px/g)].every(([,side,value])=>side==='min'?viewportWidth>=Number(value):viewportWidth<=Number(value));return{media:query,matches,addEventListener(){},removeEventListener(){},addListener(){},removeListener(){}};}};
 const location=new URL('https://example.test/probability-lab/'+(process.env.TEST_HASH||''));let clipboard='';
 Object.assign(globalThis,{document,window,location,Option:function(text,value){const o=new Element('option');o.textContent=text;o.value=value;return o;},history:{replaceState(_a,_b,url){location.href=String(url);}}});
 Object.defineProperty(globalThis,'navigator',{configurable:true,value:{clipboard:{async writeText(v){clipboard=v;}}}});
@@ -70,8 +74,39 @@ globalThis.fetch=async()=>{if(process.env.TEST_NETWORK_FAIL)throw Error('test-ne
 const warnings=[];console.warn=(...args)=>warnings.push(args);
 await import(pathToFileURL(root+'/app.mjs').href+'?test='+Date.now());
 await new Promise(resolve=>setTimeout(resolve,0));
-const $=id=>document.getElementById(id);const wait=()=>new Promise(resolve=>setTimeout(resolve,120));
-const family=id=>{$('family-list').children.find(e=>e.dataset.family===id).click();};
+const raw=id=>document.getElementById(id);
+function $(id){
+  let found=raw(id);if(found)return found;
+  const variable=id.match(/^structure-var-([a-h])-/);
+  if(variable&&raw('structure-variable-current')){
+    activate('adjust-tab-variables');activate('structure-variable-mode-single');
+    const current=raw('structure-variable-current');ensureAccess(current);current.value=String(variable[1].charCodeAt(0)-97);current.dispatch('change');found=raw(id);
+  }
+  const condition=id.match(/^structure-condition-(\d+)-(?:left|right|relation|kind)$/);
+  if(!found&&condition&&raw('structure-condition-next')){activate('adjust-tab-conditions');pageTo(Number(condition[1])/3|0,'structure-condition-prev','structure-condition-next');found=raw(id);}
+  return found;
+}
+function isHidden(element){for(let node=element;node;node=node.parentNode){if(node.hidden||node.getAttribute('aria-hidden')==='true')return true;if(viewportWidth<=1023&&['adjust-pane','problem-pane','solution-pane'].includes(node.id)&&node.dataset.active==='false')return true;}return false;}
+function activate(id){const button=raw(id);if(button&&button.getAttribute('aria-selected')!=='true'){actualNavigationActions++;button.click();}}
+function pageTo(page,previousId,nextId){const previous=raw(previousId),next=raw(nextId);if(!previous||!next)return;for(let n=0;n<20&&!previous.disabled;n++){actualNavigationActions++;previous.click();}for(let n=0;n<page&&!next.disabled;n++){actualNavigationActions++;next.click();}}
+function ensureAccess(element){
+  if(!interactionChecksReady)return element;
+  if(element.closest('#view-map'))activate('tab-map');else if(element.closest('#view-compare'))activate('tab-compare');else if(element.closest('#view-lab'))activate('tab-lab');
+  const pane=element.closest('#adjust-pane,#problem-pane,#solution-pane');if(pane&&viewportWidth<=1023)activate(`pane-tab-${pane.id.replace('-pane','')}`);
+  for(const name of ['basic','expression','variables','conditions','examples'])if(element.closest(`#adjust-panel-${name}`))activate(`adjust-tab-${name}`);
+  for(const name of ['problem','sources'])if(element.closest(`#question-panel-${name}`))activate(`question-tab-${name}`);
+  for(const name of ['explanation','cases','distribution'])if(element.closest(`#solution-pane-${name}`))activate(`solution-tab-${name}`);
+  if(element.closest('#structure-variable-bulk'))activate('structure-variable-mode-bulk');
+  if(element.closest('#structure-variable-single'))activate('structure-variable-mode-single');
+  const field=element.closest('.control-field');
+  if(field?.hidden&&raw('basic-next')){pageTo(0,'basic-prev','basic-next');for(let n=0;n<8&&field.hidden&&!raw('basic-next').disabled;n++){actualNavigationActions++;raw('basic-next').click();}}
+  const current=element.id?raw(element.id):element;
+  assert.ok(current&&document.contains(current),`interaction target ${element.id||element.className} must remain mounted after navigation`);
+  return current;
+}
+interactionChecksReady=true;
+const wait=()=>new Promise(resolve=>setTimeout(resolve,120));
+const family=id=>{if(raw('family-select')){const selector=raw('family-select');ensureAccess(selector);selector.value=id;selector.dispatch('change');}else $('family-list').children.find(e=>e.dataset.family===id).click();};
 const input=(key,value,event='input')=>{const e=$('control-'+key);if(e.type==='checkbox')e.checked=value;else e.value=value;e.dispatch(event);return e;};
 const select=(key,index)=>input(key,String(index),'change');
 const setHash=data=>{location.hash='#lab='+encodeURIComponent(JSON.stringify(data));for(const fn of windowEvents.hashchange||[])fn();};
@@ -79,6 +114,67 @@ const setField=(id,value,event='input')=>{const element=$(id);assert.ok(element,
 const blankVariable=more=>({domain:'inherit',parity:'any',lower:null,upper:null,...more});
 const structure=(left='a+b+c+d',right='12',more={})=>({enabled:true,left,right,relation:'eq',variables:Array.from({length:4},()=>blankVariable()),conditions:[],...more});
 const savedLink=async()=>{$('link-button').click();await new Promise(resolve=>setTimeout(resolve,0));return JSON.parse(decodeURIComponent(new URL(clipboard).hash.slice(5)));};
+if(scenario==='layout-tabs'){
+  assert.ok(raw('family-select'),'family selection uses the visible native dropdown');
+  assert.equal(raw('family-select').options.length,13);
+  const tabs=['basic','expression','variables','conditions','examples'];
+  for(const name of tabs){const tab=raw(`adjust-tab-${name}`);assert.ok(tab,`${name} tab is always mounted`);assert.equal(isHidden(tab),false);assert.equal(tab.getAttribute('role'),'tab');tab.click();assert.equal(tab.getAttribute('aria-selected'),'true');assert.equal(raw(`adjust-panel-${name}`).hidden,false);}
+  activate('adjust-tab-basic');raw('adjust-tab-basic').dispatch('keydown',{key:'ArrowRight'});assert.equal(raw('adjust-tab-expression').getAttribute('aria-selected'),'true');assert.equal(document.activeElement.id,'adjust-tab-expression');
+  raw('adjust-tab-expression').dispatch('keydown',{key:'End'});assert.equal(raw('adjust-tab-examples').getAttribute('aria-selected'),'true');raw('adjust-tab-examples').dispatch('keydown',{key:'Home'});assert.equal(raw('adjust-tab-basic').getAttribute('aria-selected'),'true');
+  const seen=new Set();pageTo(0,'basic-prev','basic-next');
+  for(let page=0;page<8;page++){
+    const visible=raw('controls').querySelectorAll('.control-field').filter(field=>!isHidden(field));assert.ok(visible.length>0&&visible.length<=4,'each basic page shows at most four fields');
+    for(const field of visible)for(const element of field.querySelectorAll('input,select'))if(element.id.startsWith('control-'))seen.add(element.id);
+    if(raw('basic-next').disabled)break;raw('basic-next').click();
+  }
+  const {specs}=await import(root+'/engines.mjs');assert.deepEqual([...seen].sort(),specs.find(s=>s.id==='integer-sum').controls.map(c=>'control-'+c.key).sort());
+  input('total','12');input('lowerOn',true,'change');input('lower','2');input('upperOn',true,'change');input('upper','4');await wait();assert.equal(raw('answer-value').textContent,'19','values from hidden basic pages remain in the calculation');
+  activate('adjust-tab-expression');activate('adjust-tab-variables');activate('adjust-tab-conditions');activate('adjust-tab-examples');activate('adjust-tab-basic');
+  assert.equal(raw('control-lower').value,'2');assert.equal(raw('control-upper').value,'4');const saved=await savedLink();assert.equal(saved.params.lower,2);assert.equal(saved.params.upper,4);
+  input('k','2.5');await wait();assert.equal(raw('result-status').textContent,'조건 확인');input('distinct',false,'change');await wait();assert.equal(raw('result-status').textContent,'조건 확인','paging away cannot sanitize an invalid hidden basic input');input('k','4');await wait();assert.equal(raw('answer-value').textContent,'19');
+  family('coefficient');input('a','3');input('n','4');await wait();assert.equal(raw('answer-value').textContent,'12');assert.equal(raw('control-a').value,'3','paging preserves a value while editing n elsewhere');
+  assert.ok(actualNavigationActions>=8,'interactions actually navigate tabs and pages');
+  console.log('PASS five accessible adjustment tabs / keyboard navigation / four fields per page / all controls reachable / hidden values counted / paging retains edits / visible native family selection');process.exit(0);
+}
+if(scenario==='layout-structure'){
+  input('k','8');input('total','16');await wait();activate('adjust-tab-variables');activate('structure-variable-mode-single');
+  assert.equal(raw('structure-variable-current').options.length,8);
+  for(let i=0;i<8;i++){
+    const current=raw('structure-variable-current');current.value=String(i);current.dispatch('change');
+    const letter='abcdefgh'[i];assert.ok(raw(`structure-var-${letter}-domain`));assert.equal(raw('structure-variable-single').querySelectorAll('.variable-card').filter(card=>!isHidden(card)).length,1);
+    setField(`structure-var-${letter}-upper-mode`,'value','change');setField(`structure-var-${letter}-upper`,'16');
+  }
+  setField('structure-var-a-lower-mode','value','change');setField('structure-var-a-lower','3');await wait();assert.equal(raw('answer-value').textContent,'1716');
+  assert.equal($('structure-var-h-upper').value,'16');assert.equal($('structure-var-a-lower').value,'3','single-card state survives switching through h and back to a');
+  setField('structure-var-a-upper','10001');await wait();assert.equal(raw('result-status').textContent,'조건 확인');setField('structure-var-h-upper','16');await wait();assert.equal(raw('result-status').textContent,'조건 확인','an invalid unmounted a bound cannot disappear while editing h');assert.equal($('structure-var-a-upper').value,'10001');setField('structure-var-a-upper','16');await wait();assert.equal(raw('answer-value').textContent,'1716');
+  activate('structure-variable-mode-bulk');setField('structure-bulk-parity','even','change');$('structure-bulk-apply').click();await wait();assert.equal(raw('answer-value').textContent,'171');
+  for(let i=0;i<12;i++)$('structure-add-expression').click();await wait();assert.equal(raw('answer-value').textContent,'21');
+  assert.match(raw('structure-condition-page').textContent,/4\s*\/\s*4/);assert.equal(raw('structure-conditions').querySelectorAll('.structure-condition-row').filter(row=>!isHidden(row)).length,3);
+  const before=await savedLink();assert.equal(before.params.structure.conditions.length,12);$('structure-add-expression').click();const after=await savedLink();assert.equal(after.params.structure.conditions.length,12,'condition cap does not silently append an unreachable thirteenth condition');
+  setField('structure-condition-0-right','16');await wait();assert.equal(raw('answer-value').textContent,'0','unchanged constraints on other pages still participate');setField('structure-condition-0-right','12');await wait();assert.equal(raw('answer-value').textContent,'21');
+  setField('structure-condition-0-left','not_a_variable');await wait();assert.equal(raw('result-status').textContent,'조건 확인');setField('structure-condition-11-right','12');await wait();assert.equal(raw('result-status').textContent,'조건 확인','off-page invalid expressions remain invalid');setField('structure-condition-0-left','a*b');await wait();assert.equal(raw('answer-value').textContent,'21');
+  for(const index of [11,10,9]){const field=$(`structure-condition-${index}-left`);field.closest('.structure-condition-row').querySelector('.remove-condition').click();}
+  assert.match(raw('structure-condition-page').textContent,/3\s*\/\s*3/,'deleting the last page clamps to the remaining final page');
+  const saved=await savedLink();assert.equal(saved.params.structure.variables.length,8);assert.equal(saved.params.structure.variables[0].lower,3);assert.equal(saved.params.structure.variables[7].upper,16);assert.equal(saved.params.structure.conditions.length,9);
+  family('coefficient');setHash(saved);const restored=await savedLink();assert.deepEqual(restored.params.structure,saved.params.structure);
+  setField('structure-enabled',false,'change');await wait();assert.equal(raw('answer-value').textContent,'6435','turning the structured model off uses the basic sum');setField('structure-enabled',true,'change');await wait();assert.equal(raw('answer-value').textContent,'21','turning it back on restores conditions from every page');
+  console.log('PASS eight reachable single variable cards / retained individual and bulk edits / twelve conditions in three-row pages / hidden conditions counted / deletion clamps pages / hash structure preservation');process.exit(0);
+}
+if(scenario==='layout-phone'){
+  const panes=['adjust','problem','solution'];
+  const active=()=>panes.filter(name=>raw(`${name}-pane`).dataset.active==='true');
+  for(const name of panes){assert.ok(raw(`pane-tab-${name}`));assert.equal(isHidden(raw(`pane-tab-${name}`)),false);}
+  assert.deepEqual(active(),['adjust']);input('total','12');await wait();
+  raw('pane-tab-problem').click();assert.deepEqual(active(),['problem']);assert.match(raw('problem-text').textContent,/12/);assert.equal(isHidden(raw('adjust-pane')),true);
+  raw('pane-tab-solution').click();assert.deepEqual(active(),['solution']);assert.equal(raw('answer-value').textContent,'165');
+  for(const name of ['explanation','cases','distribution']){raw(`solution-tab-${name}`).click();assert.equal(raw(`solution-tab-${name}`).getAttribute('aria-selected'),'true');assert.equal(raw(`solution-pane-${name}`).hidden,false);}
+  raw('pane-tab-solution').dispatch('keydown',{key:'Home'});assert.deepEqual(active(),['adjust']);assert.equal(document.activeElement.id,'pane-tab-adjust');assert.equal(raw('control-total').value,'12');
+  raw('pane-tab-adjust').dispatch('keydown',{key:'ArrowLeft'});assert.deepEqual(active(),['solution']);assert.equal(document.activeElement.id,'pane-tab-solution');
+  family('normal');raw('pane-tab-problem').click();raw('question-tab-sources').click();assert.equal(raw('question-panel-sources').hidden,false);raw('question-tab-problem').click();assert.equal(raw('normal-table-container').hidden,false);
+  $('answer-button').click();assert.equal(raw('solution-content').hidden,true);raw('pane-tab-problem').click();assert.equal(isHidden(raw('normal-table-container')),false,'question table remains available while the separate solution is hidden');
+  raw('tab-map').click();assert.equal(raw('view-map').hidden,false);raw('tab-lab').click();assert.equal(raw('control-mu').value,'50');assert.ok(raw('normal-table-container').querySelector('table'));
+  console.log('PASS phone pane replacement rather than vertical stacking / pane and appendix tabs / keyboard focus / preserved values / source and problem switching / normal table independent of hidden solution / map round trip');process.exit(0);
+}
 if(scenario==='structured-subset'){
   assert.ok($('structure-editor'),'structured editor must be mounted for integer solutions');
   input('total','12');await wait();

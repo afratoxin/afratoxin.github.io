@@ -92,6 +92,10 @@ export function createStructuredEditor(container, initialParams, onChange) {
   let structure = sanitizeStructure(initialParams.structure, initialParams);
   let autoMain = isSimpleMain(structure, initialParams);
   let selected = new Set([0, 1].filter((index) => index < structure.variables.length));
+  let currentVariable = 0;
+  let variableMode = 'single';
+  let conditionPage = 0;
+  const CONDITION_PAGE_SIZE = 3;
   let focusedExpression;
   const expressionInputs = [];
   const numericInputs = [];
@@ -120,7 +124,7 @@ export function createStructuredEditor(container, initialParams, onChange) {
   };
   const error = $node('p', 'control-error structure-error'); error.id = 'structure-error'; error.hidden = true; error.setAttribute('role', 'status');
   const body = $node('div', 'structure-body'); body.id = 'structure-body';
-  const preview = $node('div', 'structure-preview'); preview.id = 'structure-preview';
+  const preview = $node('details', 'structure-preview'); preview.id = 'structure-preview';
   const mainPreview = $node('p', 'structure-preview-main');
   const commonPreview = $node('p', 'structure-preview-common'); commonPreview.id = 'structure-common-summary';
   const extraPreview = $node('ul', 'structure-preview-conditions');
@@ -129,6 +133,7 @@ export function createStructuredEditor(container, initialParams, onChange) {
   const variableCards = $node('div', 'variable-cards'); variableCards.id = 'structure-variable-rows';
   const conditionRows = $node('div', 'structure-condition-rows'); conditionRows.id = 'structure-conditions';
   const selectionSummary = $node('span', 'selection-summary'); selectionSummary.id = 'structure-selection-summary';
+  const groupSelectionSummary = $node('p', 'structure-group-selection'); groupSelectionSummary.id = 'structure-group-selection';
   const setError = (message = '') => { error.textContent = message; error.hidden = !message; };
   const notify = (change) => { setError(); renderPreview(); onChange(change); };
   const expressionField = (value, label, id, handler) => {
@@ -159,7 +164,8 @@ export function createStructuredEditor(container, initialParams, onChange) {
     if (description) header.append($node('p', '', description)); return header;
   };
   const mainSection = $node('section', 'structure-section');
-  mainSection.append(sectionTitle('1. 주된 식', '합·곱·차·상수배·제곱과 괄호를 조합할 수 있습니다. 우변에도 식을 입력할 수 있습니다.'));
+  mainSection.id = 'structure-section-expression';
+  mainSection.append(sectionTitle('주된 식', '합·곱·차·상수배·제곱을 조합하세요.'));
   const mainRow = $node('div', 'expression-row main-expression-row');
   const mainLeft = expressionField(structure.left, '주된 식의 왼쪽', 'structure-main-left', (value) => { structure.left = value; autoMain = false; });
   const mainRelation = select(RELATIONS, structure.relation, '주된 식의 관계', 'structure-main-relation', (value) => { structure.relation = value; autoMain = false; notify(); });
@@ -190,10 +196,32 @@ export function createStructuredEditor(container, initialParams, onChange) {
   mainFooter.children[1].id = 'structure-reset-main';
   const expressionHelp = $node('p', 'control-hint', '예: a*b, (a-b)^2, a+b+2*c+d^2 · 입력할 칸을 선택한 뒤 버튼을 누르세요. 최대 4차식과 제곱(^2)을 지원합니다. 자연수는 1부터, 정수는 음수와 0도 포함합니다. 식만으로 유한한 범위를 정할 수 없으면 변수별 하한·상한을 추가하세요.');
   expressionHelp.id = 'structure-expression-help';
-  mainSection.append(mainRow, rhsControls, toolbar, expressionHelp, mainFooter);
+  const helpDetails = $node('details', 'structure-help-details');
+  helpDetails.append($node('summary', '', '식 입력 도움말'), expressionHelp);
+  mainSection.append(mainRow, rhsControls, toolbar, mainFooter, helpDetails);
 
   const variableSection = $node('section', 'structure-section');
-  variableSection.append(sectionTitle('2. 일부 변수만 골라 조건 적용', '칩으로 대상을 선택한 다음 조건을 적용하세요. 아래 변수별 카드에서 적용된 범위를 확인하거나 직접 바꿀 수 있습니다.'));
+  variableSection.id = 'structure-section-variables';
+  variableSection.append(sectionTitle('변수별 범위와 홀짝', '한 변수씩 편집하거나 선택한 변수에 함께 적용하세요.'));
+  const variableModes = $node('div', 'structure-variable-modes'); variableModes.setAttribute('role', 'tablist'); variableModes.setAttribute('aria-label', '변수 편집 방식');
+  const singlePanel = $node('div', 'structure-variable-mode-panel'); singlePanel.id = 'structure-variable-single'; singlePanel.setAttribute('role', 'tabpanel'); singlePanel.setAttribute('aria-labelledby', 'structure-variable-mode-single');
+  const bulkPanel = $node('div', 'structure-variable-mode-panel'); bulkPanel.id = 'structure-variable-bulk'; bulkPanel.setAttribute('role', 'tabpanel'); bulkPanel.setAttribute('aria-labelledby', 'structure-variable-mode-bulk');
+  const setVariableMode = (mode, focus = false) => {
+    variableMode = mode;
+    singlePanel.hidden = mode !== 'single'; bulkPanel.hidden = mode !== 'bulk';
+    singleMode.setAttribute('aria-selected', String(mode === 'single')); singleMode.tabIndex = mode === 'single' ? 0 : -1;
+    bulkMode.setAttribute('aria-selected', String(mode === 'bulk')); bulkMode.tabIndex = mode === 'bulk' ? 0 : -1;
+    if (focus) (mode === 'single' ? singleMode : bulkMode).focus();
+  };
+  const singleMode = button('한 변수', 'structure-mode-button', () => setVariableMode('single')); singleMode.id = 'structure-variable-mode-single'; singleMode.setAttribute('role', 'tab'); singleMode.setAttribute('aria-controls', singlePanel.id);
+  const bulkMode = button('일괄 적용', 'structure-mode-button', () => setVariableMode('bulk')); bulkMode.id = 'structure-variable-mode-bulk'; bulkMode.setAttribute('role', 'tab'); bulkMode.setAttribute('aria-controls', bulkPanel.id);
+  for (const modeButton of [singleMode, bulkMode]) modeButton.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault(); setVariableMode(event.key === 'Home' ? 'single' : event.key === 'End' ? 'bulk' : variableMode === 'single' ? 'bulk' : 'single', true);
+  });
+  variableModes.append(singleMode, bulkMode);
+  const currentVariableSelect = select([], '0', '편집할 변수', 'structure-variable-current', (value) => { currentVariable = Number(value); renderVariableCards(); });
+  singlePanel.append(labelled('편집할 변수', currentVariableSelect), variableCards);
   const selectionBar = $node('div', 'variable-selection-bar');
   const selectionActions = $node('div', 'selection-actions');
   selectionActions.append(button('전체 선택', 'button button-ghost compact-button', () => { selected = new Set(structure.variables.map((_, i) => i)); renderChips(); }), button('선택 해제', 'button button-ghost compact-button', () => { selected.clear(); renderChips(); }));
@@ -237,14 +265,17 @@ export function createStructuredEditor(container, initialParams, onChange) {
   }); apply.id = 'structure-bulk-apply';
   bulkActions.append(selectionSummary, apply);
   bulk.append(quick, bulkFields, bulkActions);
-  variableSection.append(selectionBar, bulk, variableCards);
+  bulkPanel.append(selectionBar, bulk);
+  variableSection.append(variableModes, singlePanel, bulkPanel);
+  setVariableMode('single');
 
   const conditionsSection = $node('section', 'structure-section');
-  conditionsSection.append(sectionTitle('3. 함께 만족할 조건', '식 조건을 여러 개 추가하거나, 선택한 변수끼리만 서로 다름·크기 순서를 지정할 수 있습니다.'));
+  conditionsSection.id = 'structure-section-conditions';
+  conditionsSection.append(sectionTitle('함께 만족할 조건', '식과 일부 변수의 그룹 조건을 추가하세요.'));
   const addActions = $node('div', 'structure-add-actions');
   const addCondition = (condition) => {
     if (structure.conditions.length >= MAX_CONDITIONS) { setError('추가 조건은 최대 12개까지 사용할 수 있습니다.'); return; }
-    structure.conditions.push(condition); renderConditions(); notify();
+    structure.conditions.push(condition); conditionPage = Math.floor((structure.conditions.length - 1) / CONDITION_PAGE_SIZE); renderConditions(); notify();
   };
   const addExpression = button('+ 식 조건 추가', 'button button-secondary', () => addCondition({ kind: 'expression', left: 'a*b', relation: 'eq', right: '12' }));
   addExpression.id = 'structure-add-expression'; addActions.append(addExpression);
@@ -254,10 +285,18 @@ export function createStructuredEditor(container, initialParams, onChange) {
       addCondition({ kind, variables: [...selected].sort((a, b) => a - b) });
     }); addGroup.id = `structure-add-${kind}`; addActions.append(addGroup);
   }
-  conditionsSection.append(addActions, conditionRows);
+  const conditionPagination = $node('nav', 'structure-condition-pagination'); conditionPagination.setAttribute('aria-label', '추가 조건 페이지');
+  const previousConditionPage = button('← 이전', 'button button-ghost compact-button', () => { conditionPage -= 1; focusedExpression = mainLeft; renderConditions(); }); previousConditionPage.id = 'structure-condition-prev';
+  const nextConditionPage = button('다음 →', 'button button-ghost compact-button', () => { conditionPage += 1; focusedExpression = mainLeft; renderConditions(); }); nextConditionPage.id = 'structure-condition-next';
+  const conditionPageLabel = $node('span', 'structure-condition-page-label'); conditionPageLabel.id = 'structure-condition-page'; conditionPageLabel.setAttribute('aria-live', 'polite');
+  conditionPagination.append(previousConditionPage, conditionPageLabel, nextConditionPage);
+  conditionsSection.append(addActions, groupSelectionSummary, conditionRows, conditionPagination);
 
-  preview.append($node('p', 'structure-preview-label', '현재 식과 조건'), mainPreview, commonPreview, extraPreview);
+  const previewBody = $node('div', 'structure-preview-body'); previewBody.append(mainPreview, commonPreview, extraPreview);
+  preview.append($node('summary', 'structure-preview-label', '현재 식·조건 모아 보기'), previewBody);
+  mainSection.append(preview);
   const presets = $node('div', 'structure-presets');
+  presets.id = 'structure-section-examples';
   const presetHeader = $node('p', 'structure-field-label', '복합 구조 바로 실험');
   presets.append(presetHeader);
   const presetDefinitions = [
@@ -273,16 +312,29 @@ export function createStructuredEditor(container, initialParams, onChange) {
       onChange({ presetParams: params });
     }); presetButton.id = `structure-preset-${index + 1}`; presets.append(presetButton);
   });
-  body.append(presets, mainSection, variableSection, conditionsSection, error, preview);
+  const wrapPanel = (section, id) => {
+    const content = $node('div', 'structure-panel-content'); content.id = id;
+    content.append(...Array.from(section.children)); section.append(content); return content;
+  };
+  const mainContent = wrapPanel(mainSection, 'structure-expression-body');
+  const variableContent = wrapPanel(variableSection, 'structure-variables-body');
+  const conditionsContent = wrapPanel(conditionsSection, 'structure-conditions-body');
+  body.append(presets, mainSection, variableSection, conditionsSection);
+  const shared = $node('div', 'structure-shared'); shared.id = 'structure-shared';
   const toggleRow = $node('div', 'structure-enable-row');
   const enable = $node('input', 'control-checkbox'); enable.type = 'checkbox'; enable.id = 'structure-enabled'; enable.checked = structure.enabled;
   const enableLabel = $node('label', '', '식·일부 변수 조건 사용'); enableLabel.htmlFor = enable.id;
-  const disabledNote = $node('p', 'control-hint', '편집기를 끄면 위의 공통 범위·기본 합식·전체 순서 조건만으로 계산합니다.'); disabledNote.id = 'structure-disabled-note';
-  enable.setAttribute('aria-controls', 'structure-body');
-  enable.addEventListener('change', () => { structure.enabled = enable.checked; body.hidden = !enable.checked; enable.setAttribute('aria-expanded', String(enable.checked)); notify(); });
+  const disabledNote = $node('p', 'control-hint', '현재 기본 합식과 공통 조건만 사용합니다. 식·변수·추가 조건은 보존됩니다.'); disabledNote.id = 'structure-disabled-note';
+  enable.setAttribute('aria-controls', 'structure-expression-body structure-variables-body structure-conditions-body');
+  const updateEnabledPresentation = () => {
+    for (const content of [mainContent, variableContent, conditionsContent]) content.hidden = !structure.enabled;
+    disabledNote.hidden = structure.enabled; enable.setAttribute('aria-expanded', String(structure.enabled));
+  };
+  enable.addEventListener('change', () => { structure.enabled = enable.checked; updateEnabledPresentation(); notify(); });
   toggleRow.append(enable, enableLabel);
-  container.replaceChildren(toggleRow, disabledNote, body);
-  body.hidden = !structure.enabled; enable.setAttribute('aria-expanded', String(structure.enabled));
+  shared.append(toggleRow, disabledNote, error);
+  container.replaceChildren(shared, body);
+  updateEnabledPresentation();
 
   function updateMainInputs() {
     mainLeft.value = structure.left; mainRelation.value = structure.relation; mainRight.value = structure.right;
@@ -315,8 +367,8 @@ export function createStructuredEditor(container, initialParams, onChange) {
       extraPreview.append($node('li', '', text));
     }
     syncNotice.textContent = autoMain
-      ? '기본 합식과 동기화 중 · 위 문자의 수·합의 기준값·합의 관계를 바꾸면 주된 식도 함께 바뀝니다.'
-      : '직접 편집 중 · 위 합의 기준값·합의 관계 슬라이더는 이 식을 바꾸지 않습니다. 기준값은 여기 오른쪽 식에서 수정하세요.';
+      ? '기본 합식과 자동 동기화 중'
+      : '직접 편집 중 · 기준값은 여기서 조절하세요.';
     syncNotice.dataset.mode = autoMain ? 'auto' : 'custom';
     const integerRight = /^[+-]?\d+$/.test(structure.right.trim()) && boundedInteger(Number(structure.right));
     rhsControls.hidden = !integerRight && structure.right.trim() !== '';
@@ -330,7 +382,10 @@ export function createStructuredEditor(container, initialParams, onChange) {
 
   function renderChips() {
     variableChips.replaceChildren(); variableTools.replaceChildren();
+    currentVariable = Math.min(currentVariable, structure.variables.length - 1);
+    currentVariableSelect.replaceChildren();
     for (let index = 0; index < structure.variables.length; index++) {
+      const option = $node('option', '', `${LETTERS[index]} 변수`); option.value = String(index); option.selected = index === currentVariable; currentVariableSelect.append(option);
       const chip = button(LETTERS[index], 'variable-chip', () => {
         if (selected.has(index)) selected.delete(index); else selected.add(index);
         renderChips();
@@ -340,11 +395,13 @@ export function createStructuredEditor(container, initialParams, onChange) {
       variableTools.append(button(LETTERS[index], 'expression-tool expression-variable', () => insert(LETTERS[index])));
     }
     selectionSummary.textContent = selected.size ? `적용 대상: ${[...selected].sort((a, b) => a - b).map((index) => LETTERS[index]).join(', ')}` : '적용 대상을 선택하세요';
+    groupSelectionSummary.textContent = selected.size ? `그룹 대상: ${[...selected].sort((a, b) => a - b).map((index) => LETTERS[index]).join(', ')} · 변수의 일괄 적용에서 선택` : '그룹 대상은 변수 → 일괄 적용에서 선택하세요.';
   }
 
   function renderVariableCards() {
     variableCards.replaceChildren(); numericInputs.length = 0;
     structure.variables.forEach((entry, index) => {
+      if (index !== currentVariable) return;
       const letter = LETTERS[index];
       const card = $node('section', 'variable-card'); card.dataset.variable = String(index);
       const header = $node('div', 'variable-card-heading'); header.append($node('h5', 'variable-letter', letter));
@@ -380,7 +437,14 @@ export function createStructuredEditor(container, initialParams, onChange) {
     conditionRows.replaceChildren();
     // Remove references to expression inputs whose rows are being rebuilt.
     expressionInputs.splice(2);
+    const pages = Math.max(1, Math.ceil(structure.conditions.length / CONDITION_PAGE_SIZE));
+    conditionPage = Math.max(0, Math.min(pages - 1, conditionPage));
+    previousConditionPage.disabled = conditionPage === 0;
+    nextConditionPage.disabled = conditionPage === pages - 1;
+    conditionPageLabel.textContent = `${conditionPage + 1} / ${pages} · 총 ${structure.conditions.length}개`;
+    conditionPagination.hidden = structure.conditions.length === 0;
     structure.conditions.forEach((condition, index) => {
+      if (Math.floor(index / CONDITION_PAGE_SIZE) !== conditionPage) return;
       const row = $node('div', 'structure-condition-row'); row.dataset.condition = String(index);
       const header = $node('div', 'structure-condition-heading');
       header.append($node('span', 'structure-condition-index', `조건 ${index + 1}`), button('삭제', 'button button-ghost compact-button remove-condition', () => { structure.conditions.splice(index, 1); focusedExpression = mainLeft; renderConditions(); notify(); }));
@@ -402,11 +466,12 @@ export function createStructuredEditor(container, initialParams, onChange) {
       }
       conditionRows.append(row);
     });
-    if (!structure.conditions.length) conditionRows.append($node('p', 'structure-no-conditions', '추가 조건이 없습니다. 위 버튼으로 곱·차·제곱 조건이나 일부 변수의 그룹 조건을 더해 보세요.'));
+    if (!structure.conditions.length) conditionRows.append($node('p', 'structure-no-conditions', '추가 조건이 없습니다. 식 또는 그룹 조건을 추가하세요.'));
   }
 
   renderChips(); renderVariableCards(); renderConditions(); renderPreview();
   return {
+    panels() { return { expression: mainSection, variables: variableSection, conditions: conditionsSection, examples: presets, shared }; },
     mode() { return { autoMain, enabled: structure.enabled }; },
     read(params) {
       const oldCount = structure.variables.length;
@@ -421,18 +486,21 @@ export function createStructuredEditor(container, initialParams, onChange) {
       }
       renderPreview();
       if (structure.enabled) {
-        for (const { input, mode, label } of numericInputs) {
-          if (mode.value === 'value' && (input.value.trim() === '' || !boundedInteger(Number(input.value)))) {
-            const message = `${label}에 -10000~10000의 정수를 입력해 주세요.`; setError(message); return { structure: null, error: message, autoMain, enabled: structure.enabled };
+        for (const [index, variable] of structure.variables.entries()) {
+          for (const [key, label] of [['lower', '하한'], ['upper', '상한']]) {
+            if (variable[key] !== null && !boundedInteger(variable[key])) {
+              const message = `${LETTERS[index]}의 ${label}에 -10000~10000의 정수를 입력해 주세요.`; setError(message); return { structure: null, error: message, autoMain, enabled: structure.enabled };
+            }
           }
         }
-        for (const input of expressionInputs) {
-          const value = normalizeExpression(input.value);
+        const allExpressions = [structure.left, structure.right, ...structure.conditions.filter((condition) => condition.kind === 'expression').flatMap((condition) => [condition.left, condition.right])];
+        for (const expression of allExpressions) {
+          const value = normalizeExpression(expression);
           let message = '';
           if (!value.trim()) message = '식의 양쪽을 모두 입력해 주세요.';
           else if (value.length > MAX_EXPRESSION || !/^[a-h0-9+*^().\s-]+$/.test(value)) message = '식에는 변수 a~h, 수, + − ×, 제곱(^), 괄호를 사용해 주세요.';
           else if ([...value.matchAll(/[a-h]/g)].some((match) => LETTERS.indexOf(match[0]) >= simple.variables.length)) message = '현재 문자의 수에 포함된 변수만 사용해 주세요.';
-          input.setAttribute('aria-invalid', String(Boolean(message)));
+          for (const input of expressionInputs) if (normalizeExpression(input.value) === value) input.setAttribute('aria-invalid', String(Boolean(message)));
           if (message) { setError(message); return { structure: null, error: message, autoMain, enabled: structure.enabled }; }
         }
       }
