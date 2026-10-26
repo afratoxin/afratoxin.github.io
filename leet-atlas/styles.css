@@ -115,3 +115,14 @@ main{max-width:1640px;margin:auto;min-height:calc(100vh - 139px);padding:24px 28
 .conflict-alert{background:#fff;border-color:#bd4b44;border-left-color:#a3312e;color:#6d2a27}.conflict-alert>strong{color:#a3312e}
 .review-workspace{background:#fff;border-color:#cbd3d5}.review-workspace-heading h2{font-weight:700}
 .site-footer{color:#5d696e}.text-available-badge{display:none}
+
+
+/* Focus selected taxonomy values and separate the category groups. */
+.taxonomy-ribbon{gap:8px 0}
+.taxonomy-group + .taxonomy-group{border-left:1px solid #b8c3c5;padding-left:13px;margin-left:2px}
+.taxonomy-label{font-size:10px;font-weight:700;color:#46565c;margin-right:5px;white-space:nowrap}
+.taxonomy-ribbon .tag-chip.is-active,.tag-chip.is-active{background:#28563a;border-color:#28563a;color:#fff;outline:none;font-weight:700}
+.tag-chip.is-active:hover,.taxonomy-ribbon .tag-chip.is-active:hover{background:#1f452e;border-color:#1f452e;color:#fff}
+.tag-chip.is-active .tag-dot{background:#fff;opacity:.95}
+.verdict-item.is-true{background:#f0f7f0}
+.verdict-item.is-false{background:#fff1ef}
