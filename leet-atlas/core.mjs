@@ -100,6 +100,7 @@ export function parseRoute(hash='') {
   const params=new URLSearchParams(query);const tags=[...new Set(params.getAll('tag'))];
   let view='list',id=null;const q=path.match(/^\/question\/(\d{4}|p\d{3})\/?$/);const t=path.match(/^\/tags\/([^/]+)\/?$/);
   if(q){view='question';id=q[1];}
+  else if(/^\/analysis(?:\/(preliminary|20\d{2}))?\/?$/.test(path)){view='analysis';id=path.match(/^\/analysis\/(preliminary|20\d{2})/)?.[1]||null;}
   else if(path==='/bookmarks'||path==='/bookmarks/')view='bookmarks';
   else if(path==='/tags'||path==='/tags/')view='tags';
   else if(t){try{id=decodeURIComponent(t[1]);view='tag';}catch{view='tags';}}
@@ -116,7 +117,7 @@ export function buildRoute({view='list',id=null,tags=[],bookmark,page=1,mode,sor
   if(mode)params.set('mode',mode==='scroll'?'scroll':'paged');
   if(['oldest','newest','accuracy'].includes(sort))params.set('sort',sort);
   if(Number(page)>1 && mode!=='scroll')params.set('page',Math.floor(Number(page)));
-  const path=view==='question'&&id?'/question/'+id:view==='bookmarks'?'/bookmarks':view==='tags'?'/tags':view==='tag'&&id?'/tags/'+encodeURIComponent(id):'/questions';
+  const path=view==='analysis'?'/analysis'+(id?'/'+encodeURIComponent(id):''):view==='question'&&id?'/question/'+id:view==='bookmarks'?'/bookmarks':view==='tags'?'/tags':view==='tag'&&id?'/tags/'+encodeURIComponent(id):'/questions';
   return '#'+path+(params.size?'?'+params:'');
 }
 

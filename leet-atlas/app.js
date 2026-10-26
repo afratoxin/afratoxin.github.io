@@ -1,15 +1,16 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-reference1';
-import { groupTags } from './tag-groups.mjs?v=20261026-reference1';
-import { renderSidebar } from './sidebar.mjs?v=20261026-reference1';
-import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-reference1';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-reference1';
-import { rankReferences } from './reference-search.mjs?v=20261026-reference1';
-import { createSemanticSearch } from './semantic-search.mjs?v=20261026-reference1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-year-analysis1';
+import { groupTags } from './tag-groups.mjs?v=20261026-year-analysis1';
+import { renderSidebar } from './sidebar.mjs?v=20261026-year-analysis1';
+import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-year-analysis1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-year-analysis1';
+import { rankReferences } from './reference-search.mjs?v=20261026-year-analysis1';
+import { createSemanticSearch } from './semantic-search.mjs?v=20261026-year-analysis1';
+import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-analysis1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-reference1';
+const CACHE_VERSION = '20261026-year-analysis1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -33,6 +34,11 @@ let tooltipTimer;
 let toastTimer;
 let nextFocus = null;
 let lastView = null;
+let yearContentPromise = null;
+let yearContent = null;
+let yearStatistics = null;
+let yearContentError = false;
+let yearComparison = 'all';
 let semanticSearchClient;
 let semanticSequence = 0;
 let semanticStatusSequence = 0;
@@ -479,7 +485,7 @@ function updateNavigation() {
     const active = link.dataset.navView === activeView;
     link.classList.toggle('is-active', active);
     if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
-    link.href = buildRoute({ view: link.dataset.navView, mode: state.route.mode || state.modePreference, sort: state.route.sort });
+    link.href = buildRoute({ view: link.dataset.navView, id: link.dataset.navView === 'analysis' ? (state.route.view === 'analysis' ? state.route.id : state.returnRoute?.view === 'analysis' ? state.returnRoute.id : null) : null, mode: state.route.mode || state.modePreference, sort: state.route.sort });
   });
   const allBookmarksLink = document.querySelector('#palette-all-link');
   if (allBookmarksLink) allBookmarksLink.href = buildRoute({ view: 'bookmarks', mode: state.route.mode, sort: state.route.sort });
@@ -648,11 +654,43 @@ function renderQuestion() {
   const next = sorted[index + 1];
   const unreviewed = question.answerStatus === 'not-reviewed';
   const listHref = buildRoute(state.returnRoute || { ...state.route, view: state.route.bookmark && state.route.bookmark !== 'all' ? 'bookmarks' : 'list', id: null });
-  main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} 문항 목록 <span aria-hidden="true">/</span> ${esc(examLabel(question))}</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항">${icon('right')}</button></nav></div>
+  main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} ${state.returnRoute?.view === 'analysis' ? '연도별 분석' : '문항 목록'} <span aria-hidden="true">/</span> ${esc(examLabel(question))}</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항">${icon('right')}</button></nav></div>
   <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(examLabel(question))} 법학적성시험 · 추리논증 ${esc(question.number)}번 <span aria-hidden="true">·</span> 검수용 초안</div></div></div><div class="question-heading-actions">${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
   ${renderRibbon(question)}<div class="reader-grid">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="${unreviewed ? '문항 분류 이유' : '문항 해설'}"><div class="panel-heading"><h2>${unreviewed ? '소재와 태그 분류' : '해설과 논증 구조'} <span>${unreviewed ? 'CLASSIFICATION' : 'ANALYSIS'}</span></h2><span class="draft-label"><i></i>검수용 초안</span></div><div class="analysis-body">${unreviewed ? classificationSections(question) : explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
   ${documentLinks(question)}`;
   void hydrateImages([question]);
+}
+function loadYearContent(retry = false) {
+  if (yearContent) return Promise.resolve();
+  if (yearContentPromise) return yearContentPromise;
+  if (yearContentError && !retry) return Promise.resolve();
+  yearContentError = false;
+  yearContentPromise = (async () => {
+    try {
+      const response = await fetch(`data/year-analysis.json?v=${CACHE_VERSION}`);
+      if (!response.ok) throw new Error('Year analysis unavailable');
+      const content = await response.json();
+      if (content.schemaVersion !== 1 || !Array.isArray(content.profiles) || !Array.isArray(content.sources) || !Array.isArray(content.questionRates) || validateYearContent(content, state.data.questions).length) throw new Error('Invalid year analysis data');
+      yearContent = content;
+    } catch { yearContentError = true; }
+    finally {
+      yearContentPromise = null;
+      if (state.route.view === 'analysis') renderAnnualPage();
+    }
+  })();
+  return yearContentPromise;
+}
+function renderAnnualPage() {
+  document.title = '연도별 출제 분석 · LEET Atlas';
+  if (!yearContent) {
+    main.innerHTML = `<div class="page-heading"><div><div class="eyebrow">EXAM YEAR INSIGHTS</div><h1>연도별 출제 분석</h1></div></div>${yearContentError ? '<div class="error-state" role="alert"><p>연도별 분석 자료를 불러오지 못했습니다.</p><button class="button button-sage" type="button" data-retry-year-analysis>다시 불러오기</button></div>' : '<div class="loading-state" role="status">연도별 분석 자료를 불러오고 있습니다.</div>'}`;
+    if (!yearContentError) void loadYearContent();
+    return;
+  }
+  if (!yearStatistics) yearStatistics = analyzeArchive(state.data.questions);
+  const selectedExam = yearStatistics.byExam.get(state.route.id) || yearStatistics.exams.at(-1);
+  if (selectedExam) document.title = `${selectedExam.label} 연도별 출제 분석 · LEET Atlas`;
+  main.innerHTML = renderYearAnalysis({ archive: state.data, analysis: yearStatistics, content: yearContent, examKey: state.route.id, comparisonKey: yearComparison });
 }
 function render() {
   if (!state.data) return;
@@ -681,8 +719,9 @@ function render() {
     state.query = '';
     state.review = 'all';
   }
-  if (state.route.view === 'question' && ['list', 'bookmarks', 'tag'].includes(previousRoute.view)) state.returnRoute = { ...previousRoute };
+  if (state.route.view === 'question' && ['list', 'bookmarks', 'tag', 'analysis'].includes(previousRoute.view)) state.returnRoute = { ...previousRoute };
   if (state.route.view === 'question') renderQuestion();
+  else if (state.route.view === 'analysis') renderAnnualPage();
   else if (state.route.view === 'tags') renderTags();
   else renderList();
   updateTextCoverage();
@@ -862,7 +901,8 @@ document.addEventListener('click', event => {
   }
   const button = event.target.closest('button');
   if (!button) return;
-  if (button.hasAttribute('data-filter-tag')) toggleTag(button.dataset.filterTag);
+  if (button.hasAttribute('data-retry-year-analysis')) { void loadYearContent(true); renderAnnualPage(); }
+  else if (button.hasAttribute('data-filter-tag')) toggleTag(button.dataset.filterTag);
   else if (button.hasAttribute('data-remove-tag')) toggleTag(button.dataset.removeTag);
   else if (button.hasAttribute('data-reset')) resetFilters();
   else if (button.hasAttribute('data-toggle-filters')) {
@@ -931,6 +971,8 @@ document.addEventListener('input', event => {
   }
 });
 document.addEventListener('change', event => {
+  if (event.target.id === 'analysis-year') { if (yearComparison === event.target.value) yearComparison = 'all'; navigate({ view: 'analysis', id: event.target.value }, { main: true }); }
+  if (event.target.id === 'analysis-compare') { yearComparison = event.target.value; renderAnnualPage(); document.querySelector('#analysis-compare')?.focus(); }
   if (event.target.id === 'local-text-file') { const file = event.target.files?.[0]; if (file) void importSourceOrTextFile(file); event.target.value = ''; }
   if (event.target.id === 'search-mode') { state.searchMode = event.target.value === 'keyword' ? 'keyword' : 'recommend'; state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); render(); }
   if (event.target.id === 'question-sort') {
