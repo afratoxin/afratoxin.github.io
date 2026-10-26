@@ -389,31 +389,19 @@ function renderAnswer(question) {
   }
   return `<div class="answer-strip"><div><span class="answer-caption">원본 표시 + 독립 풀이 대조</span><strong>정답 ${esc(CIRCLED[question.answer] || '확인 중')}</strong></div><p class="answer-basis">${esc(question.answerBasis || '원본 회색 강조와 독립 풀이를 대조했습니다.')}<br>공식정답 외부 대조 미완료</p></div>`;
 }
-function isSimpleStatementCombination(question) {
-  const statements = question.statements || [];
-  if (!statements.length || statements.some(s => !/^[ㄱㄴㄷㄹㅁㅂㅅ]$/.test(s.label) || typeof s.verdict !== 'boolean' || !s.explanation?.trim())) return false;
-  const text = question.text || '';
-  if (!/<\s*보\s*기\s*>/.test(text)) return false;
-  // Require comma-separated sets, not columns assigning statements to roles.
-  const choices = text.match(/①([\s\S]*?)②([\s\S]*?)③([\s\S]*?)④([\s\S]*?)⑤([\s\S]*)$/);
-  if (!choices) return false;
-  const labels = new Set(statements.map(s => s.label));
-  return choices.slice(1).every((choice, i) => {
-    const content = (i === 4 ? choice.split(/\*\s*확인\s*사항/)[0] : choice).trim();
-    return /^[ㄱㄴㄷㄹㅁㅂㅅ](?:\s*[,·ㆍ]\s*[ㄱㄴㄷㄹㅁㅂㅅ])*$/.test(content)
-      && content.split(/\s*[,·ㆍ]\s*/).every(label => labels.has(label));
-  });
-}
 function explanationSections(question) {
   const steps = question.steps || [];
   const statements = question.statements || [];
-  const options = isSimpleStatementCombination(question) ? [] : question.options || [];
+  const allOptions = question.options || [];
+  const correctOptions = allOptions.filter(option => option.correct === true);
+  const verifiedSingleAnswer = question.answerStatus !== 'source-conflict' && correctOptions.length === 1;
+  const options = verifiedSingleAnswer ? correctOptions : allOptions;
   const pitfalls = question.pitfalls || [];
   const reviewNotes = question.reviewNotes || [];
   return `${renderAnswer(question)}<section class="explanation-section"><h3 class="section-title"><span class="section-marker">01</span>핵심 해설</h3><p class="summary-text">${esc(question.summary || '이 문항의 해설은 준비 중입니다.')}</p></section>
   ${steps.length ? `<section class="explanation-section"><h3 class="section-title"><span class="section-marker">02</span>풀이의 흐름</h3><ol class="steps-list">${steps.map((step, i) => `<li><span class="step-number">${i + 1}</span><div>${typeof step === 'object' && step.title ? `<strong>${esc(step.title)}</strong>` : ''}${esc(asText(step))}</div></li>`).join('')}</ol></section>` : ''}
   ${statements.length ? `<section class="explanation-section"><h3 class="section-title"><span class="section-marker">03</span>보기 판단</h3><div class="verdict-list">${statements.map(statement => `<div class="verdict-item${statement.verdict === true ? ' is-true' : statement.verdict === false ? ' is-false' : ''}"><div class="verdict-heading"><span class="verdict-label">${esc(statement.label)}</span><span class="verdict-token">${statement.verdict === true ? '옳음' : statement.verdict === false ? '옳지 않음' : '검토 필요'}</span></div><p>${esc(statement.explanation)}</p></div>`).join('')}</div></section>` : ''}
-  ${options.length ? `<section class="explanation-section"><h3 class="section-title"><span class="section-marker">${statements.length ? '04' : '03'}</span>선택지별 해설</h3><div class="option-list">${options.map(option => {
+  ${options.length ? `<section class="explanation-section"><h3 class="section-title"><span class="section-marker">${statements.length ? '04' : '03'}</span>${verifiedSingleAnswer ? '정답 선택지 해설' : '선택지별 해설'}</h3><div class="option-list">${options.map(option => {
     const conflict = question.answerStatus === 'source-conflict';
     return `<div class="option-row${option.correct && !conflict ? ' is-correct' : ''}${conflict && Number(option.number) === Number(question.answer) ? ' source-conflict' : ''}"><span class="option-number">${esc(CIRCLED[option.number] || option.number)}</span><div>${option.correct && !conflict ? '<span class="option-correct-label">정답</span>' : ''}${conflict && Number(option.number) === Number(question.answer) ? '<span class="conflict-badge">원본 표시 · 불일치</span> ' : ''}${esc(option.explanation)}</div></div>`;
   }).join('')}</div></section>` : ''}

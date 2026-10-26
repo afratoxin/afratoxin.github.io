@@ -2,6 +2,8 @@
 
 예비시험과 2009~2027학년도 본시험의 **20회분 755문항**에 자체 작성 해설 초안과 **3,775개 선택지별 해설**을 제공합니다. 전체 문항의 소재·문항 유형·풀이 논리 및 분류 이유를 탐색할 수 있습니다.
 
+문항 상세에서는 정답 선택지의 해설만 표시합니다. `<보기>` 문항은 ㄱ·ㄴ·ㄷ 등의 개별 판단과 정답 선택지의 설명을 함께 확인할 수 있습니다. 원본 선택지별 해설 데이터는 보존합니다.
+
 - [문항 탐색](https://afratoxin.github.io/leet-atlas/#/questions)
 - [7색 북마크 모아보기](https://afratoxin.github.io/leet-atlas/#/bookmarks)
 - [태그 사전](https://afratoxin.github.io/leet-atlas/#/tags)
