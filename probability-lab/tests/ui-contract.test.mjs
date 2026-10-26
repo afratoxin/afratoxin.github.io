@@ -9,6 +9,7 @@ const runner = fileURLToPath(new URL('./helpers/ui-runner.mjs', import.meta.url)
 for (const [scenario, name] of [
   ['limits-normal', 'normal sliders map standardized ±3 values to actual bounds and reject direct bypasses'],
   ['limits-bypass', 'input, bulk, expression, negative-bound and shared-link paths enforce the same public limits'],
+  ['friendly-ui', 'fine adjustments, contextual help and filter reset remain predictable'],
   ['ball-rule-ranges', 'rule sliders track current extraction and distribution quantities'],
   ['colored-balls', 'colors, subsets, distribution rules and sharing update the live problem'],
   ['structured-subset', 'selected variables alone receive parity and lower or upper bounds'],

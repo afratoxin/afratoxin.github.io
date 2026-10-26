@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = new URL('../', import.meta.url);
 const html = fs.readFileSync(new URL('index.html', root), 'utf8');
-const css = fs.readFileSync(new URL('style.css', root), 'utf8');
+const css = ['style.css','design.css'].map(path=>fs.readFileSync(new URL(path,root),'utf8')).join('\n');
 const runner = fileURLToPath(new URL('./helpers/ui-runner.mjs', import.meta.url));
 
 function cssRules(text, media = []) {
@@ -25,11 +25,11 @@ function cssRules(text, media = []) {
   return result;
 }
 const rules = cssRules(css);
-function authoredStyle(selector, width) {
+function authoredStyle(selector, width, height = 900) {
   const result = {};
   for (const rule of rules) {
     if (!rule.selectors.includes(selector)) continue;
-    if (!rule.media.every(media => [...media.matchAll(/(min|max)-width\s*:\s*(\d+)px/g)].every(([, side, value]) => side === 'min' ? width >= Number(value) : width <= Number(value)))) continue;
+    if (!rule.media.every(media => [...media.matchAll(/(min|max)-(width|height)\s*:\s*(\d+)px/g)].every(([,side,axis,value]) => side === 'min' ? (axis==='width'?width:height) >= Number(value) : (axis==='width'?width:height) <= Number(value)))) continue;
     for (const declaration of rule.body.split(';')) {
       const colon = declaration.indexOf(':'); if (colon >= 0) result[declaration.slice(0, colon).trim()] = declaration.slice(colon + 1).trim();
     }
@@ -83,3 +83,21 @@ for (const [scenario, name] of [
     assert.ifError(result.error); assert.equal(result.status, 0, result.stderr || result.stdout); assert.match(result.stdout, /PASS/);
   });
 }
+
+test('layout contract: normal bounds keep their complete numeric stepper across both metadata columns', () => {
+  for (const width of [390,1024,1440]) {
+    const wrapper=authoredStyle('.normal-bound-field .drag-meta .value-stepper',width);
+    assert.equal(wrapper['grid-column'],'1 / -1');
+    const input=authoredStyle('.normal-bound-field .drag-meta .control-value-input',width);
+    assert.equal(input['min-width'],'0');
+    assert.equal(input.width,'auto');
+  }
+});
+
+test('layout contract: short mobile landscape keeps fixed controls compact around a scrollable editor',()=>{
+  assert.equal(authoredStyle('.pane-title-row',844,390).display,'none');
+  assert.equal(authoredStyle('.adjust-description',844,390).display,'none');
+  assert.equal(authoredStyle('.adjust-content',844,390).overflow,'auto');
+  assert.equal(authoredStyle('.controls-actions',844,390).padding,'6px 10px');
+  assert.equal(tracks(authoredStyle('.lab-grid',844,390)['grid-template-columns']),1);
+});

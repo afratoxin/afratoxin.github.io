@@ -1,5 +1,5 @@
 import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-balls';
-import { createBallEditor } from './ball-editor.mjs?v=20261026-balls';
+import { createBallEditor } from './ball-editor.mjs?v=20261026-design';
 import { specs } from './engines.mjs?v=20261026-balls';
 import { renderExamQuestion } from './exam-paper.mjs?v=20261026-exam';
 import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor, validateStructureLimits } from './structured-editor.mjs?v=20261026-limits';
@@ -69,7 +69,7 @@ function familyInfo(id = state.family) {
 function allFamilies() {
   const families = new Map(familyDefaults.map(([id]) => [id, familyInfo(id)]));
   for (const spec of engineList) if (!families.has(spec.id)) families.set(spec.id, familyInfo(spec.id));
-  for (const family of state.catalog?.families ?? []) families.set(family.id, family);
+  for (const family of state.catalog?.families ?? []) families.set(family.id, familyInfo(family.id));
   return [...families.values()];
 }
 
@@ -313,7 +313,7 @@ function renderControls() {
   }
   for (const control of getSpecControls(spec, state.params)) {
     const field = node('div', `control-field${control.type === 'checkbox' ? ' checkbox-field' : ''}${control.normalBound ? ' normal-bound-field' : ''}`);
-    field.dataset.control = control.key;
+    field.dataset.control = control.key; field.dataset.type = control.type;
     const id = `control-${control.key}`;
     const label = node('label', 'control-label', control.label); label.htmlFor = `slider-${control.key}`;
     const input = node(control.type === 'select' ? 'select' : 'input', control.type === 'checkbox' ? 'control-checkbox' : 'control-input');
@@ -325,7 +325,24 @@ function renderControls() {
     slider.setAttribute('aria-label', `${control.label} 드래그로 조절`);
     const meta = node('div', `drag-meta drag-meta-${control.type}`);
     const minLabel = node('span', 'range-bound'); const maxLabel = node('span', 'range-bound');
-    if (control.type === 'number' || control.type === 'checkbox') meta.append(minLabel, input, maxLabel);
+    if (control.type === 'number') {
+      const stepper = node('div', 'value-stepper');
+      const move = direction => {
+        const entry = controls.get(control.key); if (!entry || input.disabled) return;
+        const value = Number(input.value), current = entry.control;
+        if (numberError(current,value,input.value,entry.allowed)) return;
+        let next;
+        if (entry.allowed) next = direction > 0 ? entry.allowed.find(n=>n>value+1e-9) : entry.allowed.findLast(n=>n<value-1e-9);
+        else { const step=current.normalBound?current.zscore.se*(current.zscore.step??.1):current.step==='any'?1:Number(current.step??1); next=roundBound(Math.max(current.min,Math.min(current.max,value+direction*step))); }
+        if (next===undefined || Math.abs(next-value)<1e-10) return;
+        input.value=String(next); editControl(control.key,'immediate');
+      };
+      const minus=node('button','number-step','−'),plus=node('button','number-step','+');
+      minus.type='button';plus.type='button';minus.id=`decrease-${control.key}`;plus.id=`increase-${control.key}`;
+      minus.setAttribute('aria-label',`${control.label} 줄이기`);plus.setAttribute('aria-label',`${control.label} 늘리기`);
+      minus.addEventListener('click',()=>move(-1));plus.addEventListener('click',()=>move(1));
+      stepper.append(minus,input,plus); meta.append(minLabel,stepper,maxLabel);
+    } else if (control.type === 'checkbox') meta.append(minLabel,input,maxLabel);
     else meta.append(input);
     field.append(label, slider, meta);
     const boundNotice = node('p', 'dynamic-bound-notice'); boundNotice.id = `${id}-range`; boundNotice.hidden = true;
@@ -395,6 +412,8 @@ function renderControls() {
   }
   for (const name of ['expression', 'variables', 'conditions']) $(`adjust-tab-${name}`).disabled = !usesStructure && !coloredFamily(state.family);
   if (!usesStructure && !coloredFamily(state.family) && !['basic', 'examples'].includes(state.adjustTab)) state.adjustTab = 'basic';
+  $('adjust-tab-variables').textContent = coloredFamily(state.family) ? '색별 수량' : '변수';
+  $('adjust-tab-expression').textContent = state.family === 'selection' ? '식·순서' : '식';
   renderBasicPage(); setAdjustTab(state.adjustTab);
 }
 
@@ -417,6 +436,8 @@ function setAdjustTab(name, focus = false) {
   const names = ['basic', 'expression', 'variables', 'conditions', 'examples'];
   if (!names.includes(name) || $(`adjust-tab-${name}`).disabled) return;
   state.adjustTab = name;
+  const hints={basic:'핵심 수치를 드래그하거나 +, −로 미세 조절하세요.',expression:'문자의 관계를 식으로 만들고, 조건을 연결하세요.',variables:coloredFamily(state.family)?'편집할 색을 고른 뒤 공의 수를 조절하세요.':'조건을 적용할 변수를 골라 범위를 정하세요.',conditions:'일부 대상에만 조건을 주거나 여러 조건을 조합하세요.',examples:'예제를 불러온 뒤 수치를 바꿔 탐색해 보세요.'};
+  $('adjust-description').textContent=hints[name]??'';
   for (const tab of names) {
     $(`adjust-panel-${tab}`).hidden = name !== tab;
     $(`adjust-tab-${tab}`).setAttribute('aria-selected', String(name === tab));
@@ -480,6 +501,7 @@ function updateStructuredScalarAvailability(edited) {
     const field = controls.get(key);
     if (!field) continue;
     field.input.disabled = ignored; field.slider.disabled = ignored;
+    for(const button of field.field.querySelectorAll('.number-step')) button.disabled=ignored;
     field.field.dataset.ignored = String(ignored);
     let note = $(`structure-scalar-note-${key}`);
     if (!note) {
@@ -777,9 +799,9 @@ function renderComparison() {
   }
   const grid = node('div', 'compare-grid');
   const observed = node('section', 'panel compare-panel observed-panel');
-  observed.append(node('p', 'comparison-label observed-label', 'OBSERVED · 실제 출제'), node('h3', 'comparison-title', '기출에서 확인한 조건'), list(family.observedConditions ?? [], 'comparison-list'));
+  observed.append(node('p', 'comparison-label observed-label', '기출에서 발견한 조건'), node('h3', 'comparison-title', '기출에서 확인한 조건'), list(family.observedConditions ?? [], 'comparison-list'));
   const proposed = node('section', 'panel compare-panel proposed-panel');
-  proposed.append(node('p', 'comparison-label proposed-label', 'PROPOSED · 추가 제안'), node('h3', 'comparison-title', '더 실험해 볼 변형 축'), list(family.proposedConditions ?? [], 'comparison-list'));
+  proposed.append(node('p', 'comparison-label proposed-label', '새롭게 조합해 볼 조건'), node('h3', 'comparison-title', '더 실험해 볼 변형 축'), list(family.proposedConditions ?? [], 'comparison-list'));
   grid.append(observed, proposed);
   const comparison = node('section', 'panel comparison-insight');
   comparison.append(node('h3', 'comparison-title', '조건이 바뀌면 달라지는 점'));
@@ -788,8 +810,8 @@ function renderComparison() {
   if (family.insight) comparison.append(node('div', 'insight-box', family.insight));
   const capabilities = ballConditionAxes[state.family];
   const support = capabilities ? node('section','panel comparison-insight') : null;
-  if(support) { support.append(node('h3','comparison-title','지금 생성기에서 조합 가능한 조건'),list(capabilities.supported,'comparison-list'),node('h4','comparison-title','추가 확장 대상'),list(capabilities.future,'comparison-list')); }
-  replace($('compare-content'), [support, grid, comparison]);
+  if(support) { const future=node('details','future-conditions');future.append(node('summary','','앞으로 확장할 조건'),list(capabilities.future,'comparison-list'));support.append(node('h3','comparison-title','생성기에서 조합할 수 있는 조건'),list(capabilities.supported,'comparison-list capability-list'),future); }
+  replace($('compare-content'), [grid, comparison, support]);
 }
 
 function populateFilters() {
@@ -819,6 +841,7 @@ function filteredCatalog() {
 }
 
 function renderCatalog() {
+  $('filter-clear-button').disabled=state.source==='recent'&&state.mapFamily==='all'&&state.year==='all'&&!state.search;
   $('legacy-notice').hidden = state.source === 'recent';
   if (!state.catalog) {
     $('catalog-count').textContent = state.catalogError ? '기출 자료를 불러오지 못했습니다.' : '기출 자료를 불러오는 중입니다.';
@@ -1010,6 +1033,7 @@ function bindEvents() {
       if (next !== undefined) { event.preventDefault(); setView(tabs[next].dataset.view, true); }
     });
   });
+  $('filter-clear-button').addEventListener('click',()=>{clearTimeout(searchTimer);state.source='recent';state.mapFamily='all';state.year='all';state.search='';state.page=1;$('filter-source').value='recent';$('filter-search').value='';populateFilters();renderCatalog();});
   $('filter-source').addEventListener('change', (event) => { state.source = event.target.value; state.page = 1; populateYears(); renderCatalog(); });
   $('filter-family').addEventListener('change', (event) => { state.mapFamily = event.target.value; state.page = 1; renderCatalog(); });
   $('filter-year').addEventListener('change', (event) => { state.year = event.target.value; state.page = 1; renderCatalog(); });

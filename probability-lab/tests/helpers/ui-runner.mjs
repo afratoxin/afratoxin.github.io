@@ -204,6 +204,23 @@ if(scenario==='layout-phone'){
   raw('tab-map').click();assert.equal(raw('view-map').hidden,false);raw('tab-lab').click();assert.equal(raw('control-mu').value,'50');assert.ok(raw('normal-table-container').querySelector('table'));
   console.log('PASS phone pane replacement rather than vertical stacking / pane and appendix tabs / keyboard focus / preserved values / source and problem switching / normal table independent of hidden solution / map round trip');process.exit(0);
 }
+if(scenario==='friendly-ui'){
+  assert.ok(raw('adjust-description'),'the current adjustment tab explains its purpose');
+  assert.ok(raw('decrease-total')&&raw('increase-total'),'exact numeric values support fine adjustment');
+  raw('increase-total').click();await wait();assert.equal(raw('control-total').value,'8');assert.equal(raw('answer-value').textContent,'35');
+  raw('decrease-total').click();await wait();assert.equal(raw('control-total').value,'7');assert.equal(raw('answer-value').textContent,'20');
+  input('total','999');await wait();assert.equal(raw('result-status').textContent,'조건 확인');
+  raw('decrease-total').click();await wait();assert.equal(raw('control-total').value,'999','fine adjustment must not sanitize an invalid draft');
+  $('reset-button').click();activate('adjust-tab-conditions');assert.match(raw('adjust-description').textContent,/조건/);
+  family('selection');assert.equal(raw('adjust-tab-variables').textContent,'색별 수량');
+  activate('adjust-tab-conditions');raw('ball-rule-add').click();assert.ok(raw('ball-rule-kind'));
+  const chip=raw('adjust-conditions-host').querySelector('[data-color="0"]');assert.ok(chip,'color scope carries its visible color identity');
+  const pressed=chip.getAttribute('aria-pressed');chip.click();await wait();assert.notEqual(chip.getAttribute('aria-pressed'),pressed);
+  $('tab-map').click();raw('filter-source').value='all';raw('filter-source').dispatch('change');raw('filter-search').value='없는검색어';raw('filter-search').dispatch('input');await wait();
+  raw('filter-clear-button').click();assert.equal(raw('filter-source').value,'recent');assert.equal(raw('filter-family').value,'all');assert.equal(raw('filter-search').value,'');assert.match(raw('catalog-count').textContent,/1문항/);
+  assert.ok(raw('filter-clear-button').disabled,'clear filters indicates the default filter state');
+  console.log('PASS fine numeric steps / invalid draft retention / contextual tab help / color scope / clear filters');process.exit(0);
+}
 if(scenario==='ball-rule-ranges'){
   family('selection');input('blue',0);input('red',9);input('draw',8);input('relation',0,'change');await wait();
   activate('adjust-tab-conditions');raw('ball-rule-add').click();
@@ -267,7 +284,7 @@ if(scenario==='structured-subset'){
 if(scenario==='structured-custom'){
   setField('structure-main-left','a+b+2*c+d^2');setField('structure-main-right','20');await wait();
   assert.equal($('answer-value').textContent,'142');assert.equal($('structure-sync-status').dataset.mode,'custom');
-  for(const key of ['total','relation']){assert.equal($(`control-${key}`).disabled,true);assert.equal($(`slider-${key}`).disabled,true);assert.equal($(`structure-scalar-note-${key}`).hidden,false);}
+  for(const key of ['total','relation']){assert.equal($(`control-${key}`).disabled,true);assert.equal($(`slider-${key}`).disabled,true);assert.equal($(`structure-scalar-note-${key}`).hidden,false);if(key==='total'){assert.equal(raw('decrease-total').disabled,true);assert.equal(raw('increase-total').disabled,true);}}
   // A link can carry an independent base value even while its unrelated slider is disabled.
   setHash({family:'integer-sum',params:{k:4,total:16,structure:structure('a+b+2*c+d^2','20')},view:'lab'});
   assert.equal($('structure-main-left').value,'a+b+2*c+d^2');assert.equal($('structure-main-right').value,'20');assert.equal($('answer-value').textContent,'142','base sum must not overwrite a custom expression');
