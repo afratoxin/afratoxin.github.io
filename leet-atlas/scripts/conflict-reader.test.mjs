@@ -1,3 +1,5 @@
+import * as referenceSearch from '../reference-search.mjs';
+import * as semanticSearch from '../semantic-search.mjs';
 // Regression coverage uses the actual app renderer with the browser-I/O adapter
 // from archive-ui.test.mjs. It never modifies source data or contacts a remote.
 import test from 'node:test';
@@ -39,7 +41,7 @@ async function boot(hash = '#/question/2305', data = fixture) {
   const document = { querySelector: element, querySelectorAll() { return []; }, addEventListener(k, fn) { events.set(k, fn); } };
   const location = { hash, href: 'https://example.invalid/' + hash };
   const memory = new Map();
-  const env = {
+  const env = {...referenceSearch,...semanticSearch,
     document, location, window: { addEventListener() {}, scrollTo() {}, innerWidth: 1440, innerHeight: 900 },
     history: { replaceState(_a, _b, path) { location.hash = path; } }, navigator: {},
     localStorage: { getItem: k => memory.get(k) || null, setItem: (k, v) => memory.set(k, String(v)) },
@@ -158,7 +160,8 @@ test('the complete 755-question archive renders all real readers with preserved 
     page.location.hash = `#/question/${q.id}`;
     page.app.render();
     const html = page.html();
-    assert.equal((html.match(/class="option-row/g) || []).length, 5, `${q.id}: five explanations`);
+    assert.equal(q.options.length, 5, `${q.id}: all authored explanations remain in the data`);
+    assert.equal((html.match(/class="option-row/g) || []).length, q.answerStatus === 'source-conflict' ? 5 : 1, `${q.id}: selected answer or unresolved choices`);
     if (q.answerStatus === 'source-conflict') {
       conflicts++;
       assert.doesNotMatch(html, /class="answer-strip"|option-row[^\"]*is-correct|option-correct-label/, q.id);

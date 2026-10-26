@@ -1,3 +1,5 @@
+import * as referenceSearch from '../reference-search.mjs';
+import * as semanticSearch from '../semantic-search.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -34,7 +36,7 @@ async function boot({id='p001',database=createIndexedDBFixture(),memory=new Map(
  const document={querySelector:element,querySelectorAll:()=>[],addEventListener:(k,fn)=>events.set(k,fn)};
  const location={hash:`#/question/${id}`,href:`https://afratoxin.github.io/leet-atlas/#/question/${id}`};
  if(!memory.has('leet-atlas:2027:reviews:v1'))memory.set('leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:2,reviews:{p001:{note:'보존할 메모',bookmarkColors:['blue'],status:'check'}}}));
- const env={document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>{if(storageControl.failWrites)throw new Error('denied');memory.set(k,v)}},indexedDB:database.indexedDB,navigator:{},fetch:async path=>{requests.push(path);return{ok:true,json:async()=>structuredClone(data)}},...core,...tagGroups,...localText,...sidebar,...localSources};
+ const env={...referenceSearch,...semanticSearch,document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>{if(storageControl.failWrites)throw new Error('denied');memory.set(k,v)}},indexedDB:database.indexedDB,navigator:{},fetch:async path=>{requests.push(path);return{ok:true,json:async()=>structuredClone(data)}},...core,...tagGroups,...localText,...sidebar,...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const previous=Object.getOwnPropertyDescriptor(globalThis,'indexedDB');
  if(blockedIndexedDB){delete env.indexedDB;Object.defineProperty(globalThis,'indexedDB',{configurable:true,get(){throw new Error('blocked database getter')}});}

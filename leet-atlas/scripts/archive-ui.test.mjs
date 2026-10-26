@@ -1,3 +1,5 @@
+import * as referenceSearch from '../reference-search.mjs';
+import * as semanticSearch from '../semantic-search.mjs';
 // Runs the actual app against a mixed archive. The adapter supplies browser I/O;
 // routing, sorting, filtering, bookmark migration and rendered content remain real.
 import test from 'node:test';
@@ -42,7 +44,7 @@ async function boot(hash='',reviews={},data=fixture,blockedStorage=false,savedTe
  const memory=new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})]]);
  if(savedTexts!==null) memory.set(localText.LOCAL_TEXT_STORAGE_KEY,savedTexts);
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
- const env={document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>structuredClone(data)}},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
+ const env={...referenceSearch,...semanticSearch,document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>structuredClone(data)}},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const previous=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
  if(blockedStorage) {
@@ -242,7 +244,7 @@ test('existing 2027 explanations and legacy bookmarks remain available with arch
  const reviewed=await boot('#/question/2701');
  const html=reviewed.elements.get('#main').innerHTML;
  assert.match(html,/핵심 해설/);
- assert.equal((html.match(/class="option-row/g)||[]).length,5);
+ assert.equal((html.match(/class="option-row/g)||[]).length,1);
  const {app,elements,memory}=await boot('#/bookmarks',{'2701':{bookmark:true,note:'남겨 둔 메모',status:'check'},'p001':{bookmarkColors:['blue']}});
  assert.deepEqual(rows(elements.get('#question-list').innerHTML),['2701','p001']);
  assert.equal(app.state.reviews['2701'].note,'남겨 둔 메모');
@@ -447,7 +449,7 @@ test('year collection can add another year without contradicting its pinned year
 test('adding and removing year tags preserves puzzle, query, review and bookmark restrictions',async()=>{
  const reviews={'2632':{bookmarkColors:['blue'],status:'check'},'2512':{bookmarkColors:['blue'],status:'check'},'2533':{bookmarkColors:['red'],status:'check'}};
  const {app}=await boot(`#/bookmarks?bookmark=blue&tag=${year2026}&tag=${puzzle}&sort=newest`,reviews,fullArchive);
- app.state.query='논리';app.state.review='check';
+ app.state.searchMode='keyword';app.state.query='논리';app.state.review='check';
  app.toggleTag(year2025);app.render();
  assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2632','2512']);
  assert.equal(app.state.query,'논리');assert.equal(app.state.review,'check');

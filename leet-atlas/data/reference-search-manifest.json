@@ -1,0 +1,45 @@
+{
+  "formatVersion": 1,
+  "runtime": {
+    "library": "@huggingface/transformers",
+    "version": "3.8.1"
+  },
+  "model": {
+    "id": "Xenova/multilingual-e5-small",
+    "revision": "761b726dd34fb83930e26aab4e9ac3899aa1fa78",
+    "dtype": "q8",
+    "pooling": "mean",
+    "normalize": true,
+    "dimensions": 384,
+    "queryPrefix": "query: ",
+    "passagePrefix": "passage: "
+  },
+  "encoding": "int8-base64",
+  "questionCount": 755,
+  "documentCount": 3523,
+  "sourceSha256": "b89d22781bbd1daee0b62dc7f6ea45623e7305ca9fadfe973ae6d708ce2ad46b",
+  "documentSha256": "3f8f81f98a134522d7549327f2904fcb9f37e3271d088ac37b273881d58f1e4f",
+  "indexSha256": "bdf6f075abcf91c07d29c29331b4809014ecc56f0a139c048b3a63596f430503",
+  "indexBytes": 1831808,
+  "builtAt": "2026-10-26T06:25:14.819Z",
+  "buildSeconds": 2.6,
+  "buildCommand": "node scripts/build-search-index.mjs --runtime ../.search-work/semantic-runtime/node_modules/@huggingface/transformers/dist/transformers.node.mjs --evaluate",
+  "chunking": {
+    "sourceCharacters": 500,
+    "strideCharacters": 400,
+    "metadataFirst": true
+  },
+  "vectorQuantization": "Per-vector max-absolute int8; cosine renormalizes stored vectors.",
+  "refresh": {
+    "method": "Reuse exact matching document vectors; embed changed documents with the same pinned model.",
+    "previousSourceSha256": "aacdfad9da15de79527636eb6d03ca7f0e8b6a0087729b9c34fd462d4c4ac810",
+    "sourceRevision": "5b46a68f9c28ed4954a30e8b5d2006b25a2c582a",
+    "reusedDocuments": 3516,
+    "embeddedDocuments": 7,
+    "changedQuestionIds": [
+      "1034",
+      "2305",
+      "2435"
+    ]
+  }
+}

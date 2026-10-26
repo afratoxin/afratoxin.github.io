@@ -78,3 +78,26 @@ python scripts/augment_taxonomy.py --archive data/archive.json --refinements dat
 ```sh
 python scripts/build_local_source_pack.py --text-pack /path/to/leet-text-all-years.json --registry data/archive.json --image-dir /path/to/original-question-crops --output /outside/the/repository/leet-sources-all-years.json
 ```
+
+
+## 출제 구상으로 참고 문항 찾기
+
+문항 탐색의 기본 **참고 문항 추천**에 만들고 싶은 문제를 문장으로 입력하면, 관련 표현과 분류·대화 구조를 비교하여 관련성순으로 추천합니다. 예를 들어 `인문 논리학 소재의, 2명이 서로 싸우는 문항`이나 `엄마랑 자식이 공부 안 하는 것도 원인이 되는지 논쟁`처럼 설명할 수 있습니다. 각 카드의 **추천 근거**와 실제 원문 일부를 보고 참고할 만한지 확인하세요. 추정한 조건은 순위에 반영하므로 부분적으로 맞는 후보도 포함될 수 있습니다. 직접 선택한 태그·연도·북마크·검수 필터는 필수 조건으로 유지합니다.
+
+**키워드 검색**으로 바꾸면 기존처럼 공백으로 나눈 모든 단어가 문항번호·회차·제목·본문·분류·태그 근거에 포함되는 문항을 찾습니다. 문항번호를 정확히 입력하는 검색도 유지합니다.
+
+문장 의미 비교는 브라우저에서 실행합니다. 첫 사용에는 다국어 검색 모델 약118MB와 실행 자료를 공개 배포처에서 내려받으며, 이후 브라우저 캐시를 재사용합니다. 별도 계정·API 키·AI 호출 요금은 없고 입력 문장을 외부 추론 서비스로 보내지 않습니다. 준비 중에도 관련 표현·분류 검색 결과를 먼저 보여주며, 기기나 네트워크 사정으로 준비하지 못하면 그 상태를 알립니다. 개인 교정본은 표현 검색에 반영하지만 미리 계산한 의미 자료는 공개 원문을 기준으로 합니다.
+
+검색 자료는 `data/reference-search-manifest.json`에 원본 해시·모델 버전·계산 범위를 기록합니다. 원문이나 분류를 바꾸면 `scripts/build-search-index.mjs`로 다시 계산해야 합니다. 모델 파일과 생성용 패키지·캐시는 공개 저장소에 포함하지 않습니다.
+
+
+의미 검색 자료를 다시 계산하는 예시(LEET Atlas 폴더에서 실행):
+
+```powershell
+npm.cmd install --prefix ../.search-work/semantic-runtime @huggingface/transformers@3.8.1
+node scripts/build-search-index.mjs --runtime ../.search-work/semantic-runtime/node_modules/@huggingface/transformers/dist/transformers.node.mjs --evaluate
+```
+
+현재 검색 자료는755문항의3,523개 짧은 문서를384차원으로 계산한 것입니다. 모든 원문 조각은 겹치게 나누어 뒷부분도 포함하고, 모델 입력 제한 안에 들어가는지 검사했습니다. 생성 후에는 `node --test scripts/*.test.mjs`로 원본 해시와 검색 자료의 대응을 확인합니다.
+
+참고 문항 추천의 **관련성순**은 문장 의미와 구조를 함께 반영합니다. 기존 **정확도 순**은 제목·본문의 검색어 유사도 기준으로 유지하며, 검색 전의 기본 목록은 최신순입니다.

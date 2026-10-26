@@ -1,3 +1,5 @@
+import * as referenceSearch from '../reference-search.mjs';
+import * as semanticSearch from '../semantic-search.mjs';
 // Executes actual render/navigation code with a minimal DOM adapter.
 // Generated content and behavior are checked; layout and browser behavior are not.
 import test from 'node:test';
@@ -22,7 +24,7 @@ async function boot(hash='',reviews={},mode='paged') {
  const history={replaceState(_a,_b,path){location.hash=path}};
  const memory=new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})],['leet-atlas:list-mode',mode]]);
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
- const env={document,location,window,history,localStorage,navigator:{},fetch:async()=>({ok:true,json:async()=>structuredClone(data)}),...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
+ const env={...referenceSearch,...semanticSearch,document,location,window,history,localStorage,navigator:{},fetch:async()=>({ok:true,json:async()=>structuredClone(data)}),...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const run=new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,toggleTag,saveReview,filteredQuestions,updateListResults,showBookmarkPalette,selectBookmarkColor,changeListMode,resetListPage};');
  const app=await run(...Object.values(env));
@@ -39,8 +41,8 @@ test('scroll mode shows all forty and an explicit paged URL overrides saved scro
  const saved=await boot('#/questions',{},'scroll');assert.equal(rowCount(saved.elements.get('#question-list').innerHTML),40);
  const paged=await boot('#/questions?mode=paged',{},'scroll');assert.equal(rowCount(paged.elements.get('#question-list').innerHTML),10);
 });
-test('reader renders original and five option explanations',async()=>{
- const {elements}=await boot('#/question/2701');const html=elements.get('#main').innerHTML;assert.match(html,/assets\/questions\/2701.webp\?v=/);assert.match(html,/핵심 해설/);assert.equal((html.match(/class="option-row/g)||[]).length,5);
+test('reader renders original and the correct-option explanation',async()=>{
+ const {elements}=await boot('#/question/2701');const html=elements.get('#main').innerHTML;assert.match(html,/assets\/questions\/2701.webp\?v=/);assert.match(html,/핵심 해설/);assert.equal((html.match(/class="option-row/g)||[]).length,1);
 });
 test('updated 2708 has normal answer three and no obsolete conflict warning',async()=>{
  const {elements}=await boot('#/question/2708');const html=elements.get('#main').innerHTML;assert.match(html,/>정답 ③</);assert.doesNotMatch(html,/원본 문항·답안 불일치|ㄴ만 성립하지만/);

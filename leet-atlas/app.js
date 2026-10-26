@@ -1,13 +1,15 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-search-sort1';
-import { groupTags } from './tag-groups.mjs?v=20261026-search-sort1';
-import { renderSidebar } from './sidebar.mjs?v=20261026-search-sort1';
-import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-search-sort1';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-search-sort1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-reference1';
+import { groupTags } from './tag-groups.mjs?v=20261026-reference1';
+import { renderSidebar } from './sidebar.mjs?v=20261026-reference1';
+import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-reference1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-reference1';
+import { rankReferences } from './reference-search.mjs?v=20261026-reference1';
+import { createSemanticSearch } from './semantic-search.mjs?v=20261026-reference1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-search-sort1';
+const CACHE_VERSION = '20261026-reference1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -31,6 +33,90 @@ let tooltipTimer;
 let toastTimer;
 let nextFocus = null;
 let lastView = null;
+let semanticSearchClient;
+let semanticSequence = 0;
+let semanticStatusSequence = 0;
+let semanticTimer;
+Object.assign(state, {searchMode:'recommend', searchSort:state.route.sort === 'accuracy' ? 'accuracy' : 'relevance', searchMatches:new Map(), semanticQuery:'', semanticScores:new Map(), semanticStatus:{state:'idle'}});
+
+function cancelSemanticSearch() {
+  clearTimeout(semanticTimer);
+  semanticSequence++;
+  semanticStatusSequence = 0;
+  // An empty request cancels the client's pending result and its status ownership.
+  void semanticSearchClient?.search('');
+  state.semanticQuery = '';
+  state.semanticScores = new Map();
+  state.semanticStatus = {state:'idle'};
+}
+function scheduleSemanticSearch() {
+  cancelSemanticSearch();
+  if (state.searchMode !== 'recommend' || !state.query.trim()) return;
+  state.semanticStatus = {state:'waiting'};
+  semanticTimer = setTimeout(() => { void refreshSemanticSearch(); }, 400);
+}
+async function refreshSemanticSearch() {
+  clearTimeout(semanticTimer);
+  const sequence = ++semanticSequence;
+  semanticStatusSequence = 0;
+  const query = state.query.trim();
+  if (state.searchMode !== 'recommend' || !query) return;
+  if (/^(?:p\d{3}|\d{4})$/i.test(query)) {
+    void semanticSearchClient?.search('');
+    state.semanticStatus = {state:'exact'};
+    updateSearchStatus();
+    return;
+  }
+  state.semanticStatus = {state:'loading'};
+  semanticStatusSequence = sequence;
+  updateSearchStatus();
+  try {
+    semanticSearchClient ||= createSemanticSearch({onStatus(status) {
+      // Even a failure while typing must discard the failed client before a retry.
+      if (status.state === 'fallback') {
+        const failedClient = semanticSearchClient;
+        semanticSearchClient = undefined;
+        failedClient?.dispose();
+      }
+      if (semanticStatusSequence === semanticSequence && state.searchMode === 'recommend' && state.query.trim()) {
+        state.semanticStatus = status;
+        updateSearchStatus();
+      }
+    }});
+    const scores = await semanticSearchClient.search(query);
+    if (sequence !== semanticSequence || state.query.trim() !== query || state.searchMode !== 'recommend') return;
+    if (state.semanticStatus.state === 'fallback') {
+      semanticSearchClient?.dispose();
+      semanticSearchClient = undefined;
+    } else {
+      state.semanticQuery = query;
+      state.semanticScores = scores;
+      state.semanticStatus = {state:'ready'};
+    }
+  } catch {
+    if (sequence !== semanticSequence || state.query.trim() !== query || state.searchMode !== 'recommend') return;
+    state.semanticStatus = {state:'fallback'};
+    semanticSearchClient?.dispose();
+    semanticSearchClient = undefined;
+  }
+  if (['list','bookmarks','tag'].includes(state.route.view)) updateListResults();
+}
+function updateSearchStatus() {
+  const status = document.querySelector('#search-status');
+  if (!status) return;
+  const query = state.query.trim();
+  let message;
+  if (state.searchMode === 'keyword') message = '공백으로 나눈 모든 단어가 제목·본문·분류·태그 근거에 포함된 문항을 찾습니다.';
+  else if (!query) message = '만들고 싶은 문항을 문장으로 설명해 보세요. 첫 의미 검색에는 모델 약118MB와 실행 자료를 내려받습니다. 검색 문장은 이 기기에서 처리합니다.';
+  else if (state.semanticStatus.state === 'ready') message = '문장 의미·관련 표현·분류·구조를 함께 비교했습니다. 각 문항의 추천 근거를 확인하세요.';
+  else if (state.semanticStatus.state === 'exact') message = '문항 번호가 일치하는 자료를 먼저 찾았습니다.';
+  else if (state.semanticStatus.state === 'fallback') message = '이 기기에서 의미 비교를 준비하지 못해 관련 표현·분류로 검색했습니다. 키워드 검색도 사용할 수 있습니다.';
+  else if (state.semanticStatus.state === 'searching') message = '문장의 뜻을 비교하고 있습니다. 관련 표현·분류로 찾은 결과를 먼저 보여드립니다.';
+  else if (state.semanticStatus.state === 'loading') message = `처음 한 번 의미 검색 자료를 준비하고 있습니다${Number.isFinite(state.semanticStatus.progress) ? ` · ${Math.round(state.semanticStatus.progress)}%` : ''}. 지금은 관련 표현·분류로 찾은 결과입니다.`;
+  else message = '관련 표현·분류로 찾은 후보입니다. 문장의 뜻도 함께 비교합니다.';
+  if (state.searchMode === 'recommend' && query && state.localTexts.size) message += ' 개인 교정본은 표현 검색에 반영하며 의미 비교 자료는 공개 원문 기준입니다.';
+  status.textContent = message;
+}
 
 const paths = {
   search: '<circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/>',
@@ -258,12 +344,28 @@ function toggleTag(id) {
 }
 function resetFilters() {
   state.query = '';
+  cancelSemanticSearch();
   state.review = 'all';
   navigate(listRoute({ tags: [], bookmark: state.route.view === 'bookmarks' ? 'any' : 'all' }), { search: true });
 }
 function filteredQuestions() {
   const questions = state.data.questions.map(question => state.localTexts.has(question.id) ? { ...question, text: state.localTexts.get(question.id).text } : question);
-  return filterQuestions(questions, { query: state.query, tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
+  const recommend = state.searchMode === 'recommend' && Boolean(state.query.trim());
+  const candidates = filterQuestions(questions, { query: recommend ? '' : state.query, tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') }, state.reviews);
+  state.searchMatches = new Map();
+  if (!recommend) return candidates;
+  const matches = rankReferences(candidates, state.query, {semanticScores:state.semanticQuery === state.query.trim() ? state.semanticScores : new Map()});
+  state.searchMatches = new Map(matches.map(match => [match.id, match]));
+  if (state.searchSort === 'relevance') {
+    const byId = new Map(candidates.map(question => [question.id, question]));
+    return matches.map(match => byId.get(match.id)).filter(Boolean);
+  }
+  const available = candidates.filter(question => state.searchMatches.has(question.id));
+  if (state.searchSort === 'accuracy') {
+    const scores = new Map(available.map(question => [question.id, keywordSearchScore(question, state.query)]));
+    available.sort((a,b) => scores.get(b.id) - scores.get(a.id));
+  }
+  return available;
 }
 function tagCount(id) { return state.tagCounts.get(id) || 0; }
 function filterPanel() {
@@ -300,15 +402,17 @@ function renderList() {
   }
   const title = isBookmarks ? '모든 북마크' : tag ? tag.label : '문항 탐색';
   document.title = `${title} · LEET Atlas`;
-  const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '예비시험부터 최신 회차까지, 소재·태그와 분류 이유를 함께 살펴보세요.';
+  const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '만들고 싶은 문항을 설명하고, 참고할 기출문항과 추천 근거를 찾아보세요.';
   main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
-  <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="문항번호, 분야, 소재, 본문으로 검색" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
+  <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-mode-label"><span class="sr-only">검색 방식</span><select id="search-mode" class="review-select" aria-label="검색 방식"><option value="recommend">참고 문항 추천</option><option value="keyword">키워드 검색</option></select></label><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="${state.searchMode === 'keyword' ? '문항번호, 분야, 소재, 본문으로 검색' : '예: 인문 논리학 소재의, 두 사람이 서로 논박하는 문항'}" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
+    <p id="search-status" class="search-status" role="status" aria-live="polite"></p><button type="button" class="search-example button-text" data-search-example>예시: 인문 논리학 소재의, 2명이 서로 싸우는 문항</button>
     <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
-    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬" title="정확도 순: 검색어와 문항 제목·본문의 유사도가 높은 순. 검색어가 없거나 유사도가 같으면 최신순으로 표시합니다."><option value="newest">최신순</option><option value="oldest">오래된순</option><option value="accuracy">정확도 순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
+    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="relevance">관련성순</option><option value="oldest">오래된순</option><option value="newest">최신순</option><option value="accuracy">정확도 순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
     <p class="list-bottom-note">${icon('info')} 회차별 출처와 분류 이유를 문항에서 확인할 수 있습니다. 정답·해설 검토 여부도 각 문항에 표시합니다.</p>
   </section></div>`;
   document.querySelector('#review-filter').value = state.review;
-  document.querySelector('#question-sort').value = state.route.sort;
+  document.querySelector('#search-mode').value = state.searchMode;
+  document.querySelector('#question-sort').value = state.searchMode === 'recommend' && state.query.trim() && state.searchSort === 'relevance' ? 'relevance' : state.route.sort;
   updateListResults();
 }
 function questionRoute(question) {
@@ -320,7 +424,9 @@ function questionCard(question) {
   const activeTag = state.route.view === 'tag' ? state.taxonomy.get(state.route.id) : null;
   const reason = activeTag ? question.tagReasons?.[activeTag.label] || question.tagReasons?.[activeTag.id] : null;
   const thumbnail = imageFor(question, true);
-  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${typeof question.text === 'string' && question.text.trim() ? '<span class="text-available-badge">본문 있음</span>' : ''}${imageFor(question, true) || usesImageBundle(question) ? '<span class="text-available-badge">이미지 있음</span>' : ''}${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
+  const match = state.searchMatches.get(question.id);
+  const recommendation = match ? `<div class="reference-match"><p class="reference-reasons"><strong>추천 근거</strong> ${esc(match.reasons.length ? match.reasons.slice(0,3).join(' · ') : '문장 의미가 비슷한 후보')}</p>${match.snippet ? `<p class="reference-snippet">${esc(match.snippet)}</p>` : ''}</div>` : '';
+  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${typeof question.text === 'string' && question.text.trim() ? '<span class="text-available-badge">본문 있음</span>' : ''}${imageFor(question, true) || usesImageBundle(question) ? '<span class="text-available-badge">이미지 있음</span>' : ''}${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${recommendation}${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
 }
 function paginationMarkup(result) {
   if (!result.total) return '';
@@ -331,6 +437,9 @@ function paginationMarkup(result) {
 }
 function updateListResults() {
   const questions = filteredQuestions();
+  updateSearchStatus();
+  const sorting = document.querySelector('#question-sort');
+  if (sorting) sorting.value = state.searchMode === 'recommend' && state.query.trim() && state.searchSort === 'relevance' ? 'relevance' : state.route.sort;
   const count = document.querySelector('#result-count');
   if (!count) return;
   const result = paginateQuestions(questions, { page: state.route.page || 1, pageSize: 10, mode: state.route.mode || 'paged' });
@@ -533,7 +642,7 @@ function renderQuestion() {
     return;
   }
   document.title = `${question.id} ${question.title} · LEET Atlas`;
-  const sorted = state.route.sort === 'accuracy' ? filteredQuestions() : filterQuestions(state.data.questions, { sort: state.route.sort });
+  const sorted = state.route.sort === 'accuracy' || state.searchMode === 'recommend' && state.query.trim() ? filteredQuestions() : filterQuestions(state.data.questions, { sort: state.route.sort });
   const index = sorted.findIndex(item => item.id === question.id);
   const prev = sorted[index - 1];
   const next = sorted[index + 1];
@@ -552,6 +661,7 @@ function render() {
   hideTooltip();
   const previousRoute = state.route;
   state.route = parseRoute(location.hash);
+  if (previousRoute.sort !== state.route.sort) state.searchSort = state.route.sort === 'accuracy' ? 'accuracy' : 'date';
   const originalTagId = state.route.id;
   const originalTags = state.route.tags.join('\n');
   if (state.route.view === 'tag') state.route.id = canonicalTagId(state.route.id);
@@ -774,7 +884,8 @@ document.addEventListener('click', event => {
       item.setAttribute('aria-pressed', String(active));
     });
     renderTagCatalogResults();
-  } else if (button.hasAttribute('data-import-local-text')) document.querySelector('#local-text-file')?.click();
+  } else if (button.hasAttribute('data-search-example')) { state.query = '인문 논리학 소재의, 2명이 서로 싸우는 문항'; state.searchMode = 'recommend'; state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); render(); }
+  else if (button.hasAttribute('data-import-local-text')) document.querySelector('#local-text-file')?.click();
   else if (button.hasAttribute('data-clear-local-source')) void clearLocalSource(button.dataset.clearLocalSource);
   else if (button.hasAttribute('data-clear-local-text')) clearLocalText(button.dataset.clearLocalText);
   else if (button.hasAttribute('data-source-mode')) changeSourceMode(button.dataset.sourceMode);
@@ -811,7 +922,7 @@ document.addEventListener('input', event => {
     document.querySelectorAll(`[data-tag-choices="${axis}"] [data-related-group]`).forEach(group => { group.hidden = ![...group.querySelectorAll('[data-filter-tag]')].some(button => !button.hidden); if (term && !group.hidden && group.matches('details')) group.open = true; });
     document.querySelector(`[data-tag-empty="${axis}"]`).hidden = visible > 0;
     hideTooltip();
-  } else if (event.target.id === 'question-search') { state.query = event.target.value; resetListPage(); updateListResults(); }
+  } else if (event.target.id === 'question-search') { state.query = event.target.value; state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); updateListResults(); }
   else if (event.target.id === 'tag-catalog-search') { state.tagQuery = event.target.value; renderTagCatalogResults(); }
   else if (event.target.hasAttribute('data-note-for')) {
     const saved = saveReview(event.target.dataset.noteFor, { note: event.target.value });
@@ -821,7 +932,12 @@ document.addEventListener('input', event => {
 });
 document.addEventListener('change', event => {
   if (event.target.id === 'local-text-file') { const file = event.target.files?.[0]; if (file) void importSourceOrTextFile(file); event.target.value = ''; }
-  if (event.target.id === 'question-sort') navigate(listRoute({ sort: ['oldest', 'newest', 'accuracy'].includes(event.target.value) ? event.target.value : 'newest', page: 1 }), { main: true });
+  if (event.target.id === 'search-mode') { state.searchMode = event.target.value === 'keyword' ? 'keyword' : 'recommend'; state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); render(); }
+  if (event.target.id === 'question-sort') {
+    state.searchSort = event.target.value === 'relevance' ? 'relevance' : event.target.value === 'accuracy' ? 'accuracy' : 'date';
+    if (state.searchSort === 'relevance') { resetListPage(); updateListResults(); }
+    else navigate(listRoute({ sort: ['oldest','newest','accuracy'].includes(event.target.value) ? event.target.value : 'newest', page: 1 }), { main: true });
+  }
   if (event.target.id === 'review-filter') { state.review = event.target.value; resetListPage(); updateListResults(); }
 });
 document.addEventListener('pointerover', event => {

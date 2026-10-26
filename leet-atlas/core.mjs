@@ -60,6 +60,10 @@ function relevanceScorer(query,terms) {
     return 3*fieldScore(question.title)+fieldScore(question.text||question.sourceStem);
   };
 }
+export function keywordSearchScore(question, query='') {
+  const terms=String(query||'').normalize('NFKC').trim().toLocaleLowerCase('ko').split(/\s+/).filter(Boolean);
+  return relevanceScorer(query, terms)(question);
+}
 export function filterQuestions(questions, {query='',tags=[],taxonomy=[],requiredTags=[],review='all',bookmark='all',sort='newest'}={}, reviews={}) {
   const terms=String(query||'').normalize('NFKC').trim().toLocaleLowerCase('ko').split(/\s+/).filter(Boolean);
   const groups=tagFilterGroups(tags,taxonomy);

@@ -1,3 +1,5 @@
+import * as referenceSearch from '../reference-search.mjs';
+import * as semanticSearch from '../semantic-search.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -79,7 +81,7 @@ async function boot(hash='#/questions',respond=async()=>({ok:true,json:async()=>
  }
  const document={querySelector:element,querySelectorAll(selector){return selector==='[data-image-question]'?currentHolders():[]},addEventListener(k,fn){events.set(k,fn)}};
  const location={hash,href:'https://afratoxin.github.io/leet-atlas/'+hash};
- const env={document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem(){return null},setItem(){}},navigator:{},fetch:async path=>{requests.push(path);return path.startsWith('data/archive.json')?{ok:true,json:async()=>structuredClone(data)}:respond(path)},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
+ const env={...referenceSearch,...semanticSearch,document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem(){return null},setItem(){}},navigator:{},fetch:async path=>{requests.push(path);return path.startsWith('data/archive.json')?{ok:true,json:async()=>structuredClone(data)}:respond(path)},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const app=await new AsyncFunction(...Object.keys(env),appSource+'\nreturn {state,render,imageFor,hydrateImages,showImage,retryImage,questionCard,readerSource};')(...Object.values(env));
  return {app,elements,location,requests,questions,holders:currentHolders,events};
