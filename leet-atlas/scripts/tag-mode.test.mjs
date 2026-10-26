@@ -17,29 +17,29 @@ const questions=[
 const ids=rows=>rows.map(q=>q.id);
 
 test('automatic filtering unions years while intersecting selected nonyear tags',()=>{
- assert.deepEqual(ids(filterQuestions(questions,{taxonomy,tags:['year-2025','year-2026','year-2027']})),['2501','2601','2602','2701']);
- assert.deepEqual(ids(filterQuestions(questions,{taxonomy,tags:['year-2025','year-2026','year-2027','law','argument']})),['2501','2701']);
- assert.deepEqual(ids(filterQuestions(questions,{taxonomy,tags:['law','science']})),[]);
+ assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['year-2025','year-2026','year-2027']})),['2501','2601','2602','2701']);
+ assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['year-2025','year-2026','year-2027','law','argument']})),['2501','2701']);
+ assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['law','science']})),[]);
 });
 
 test('obsolete tag modes cannot override the automatic operators',()=>{
  for(const tagMode of ['and','or','auto','invalid']) {
-  assert.deepEqual(ids(filterQuestions(questions,{taxonomy,tags:['year-2025','year-2026','law'],tagMode})),['2501','2601']);
-  assert.deepEqual(ids(filterQuestions(questions,{taxonomy,tags:['law','argument'],tagMode})),['2401','2501','2701']);
-  assert.deepEqual(filterQuestions(questions,{taxonomy,tags:[],tagMode}),questions);
+  assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['year-2025','year-2026','law'],tagMode})),['2501','2601']);
+  assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['law','argument'],tagMode})),['2401','2501','2701']);
+  assert.deepEqual(filterQuestions(questions,{sort:'oldest',taxonomy,tags:[],tagMode}),questions);
  }
 });
 
 test('explicit required tags remain unconditional intersections',()=>{
- assert.deepEqual(ids(filterQuestions(questions,{taxonomy,requiredTags:['law'],tags:['year-2026','year-2027']})),['2601','2701']);
- assert.deepEqual(ids(filterQuestions(questions,{taxonomy,requiredTags:['law','argument'],tags:[]})),['2401','2501','2701']);
- assert.deepEqual(filterQuestions(questions,{taxonomy,requiredTags:['year-2025'],tags:['year-2026','year-2027']}),[]);
- assert.deepEqual(filterQuestions(questions,{taxonomy,requiredTags:['year-2025','year-2026']}),[]);
+ assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,requiredTags:['law'],tags:['year-2026','year-2027']})),['2601','2701']);
+ assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,requiredTags:['law','argument'],tags:[]})),['2401','2501','2701']);
+ assert.deepEqual(filterQuestions(questions,{sort:'oldest',taxonomy,requiredTags:['year-2025'],tags:['year-2026','year-2027']}),[]);
+ assert.deepEqual(filterQuestions(questions,{sort:'oldest',taxonomy,requiredTags:['year-2025','year-2026']}),[]);
 });
 
 test('automatic year alternatives do not broaden query, bookmark, or review conditions',()=>{
  const reviews={'2501':{bookmarkColors:['blue'],status:'check'},'2601':{bookmarkColors:['blue'],status:'done'},'2602':{bookmarkColors:['blue'],status:'check'},'2701':{bookmarkColors:['red'],status:'check'}};
- const selected=filterQuestions(questions,{taxonomy,query:'권리',tags:['year-2025','year-2026','year-2027'],requiredTags:['law'],bookmark:'blue',review:'check',sort:'newest'},reviews);
+ const selected=filterQuestions(questions,{sort:'oldest',taxonomy,query:'권리',tags:['year-2025','year-2026','year-2027'],requiredTags:['law'],bookmark:'blue',review:'check',sort:'newest'},reviews);
  assert.deepEqual(ids(selected),['2501']);
 });
 

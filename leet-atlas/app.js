@@ -1,13 +1,13 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-solutions2';
-import { groupTags } from './tag-groups.mjs?v=20261026-solutions2';
-import { renderSidebar } from './sidebar.mjs?v=20261026-solutions2';
-import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-solutions2';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-solutions2';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-search-sort1';
+import { groupTags } from './tag-groups.mjs?v=20261026-search-sort1';
+import { renderSidebar } from './sidebar.mjs?v=20261026-search-sort1';
+import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-search-sort1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-search-sort1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-solutions2';
+const CACHE_VERSION = '20261026-search-sort1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -304,7 +304,7 @@ function renderList() {
   main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
   <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록"><div class="search-row"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(state.query)}" placeholder="문항번호, 분야, 소재, 본문으로 검색" aria-label="문항 검색" autocomplete="off"></label><select id="review-filter" class="review-select" aria-label="검수 상태 필터"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></div>
     <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
-    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="oldest">오래된순</option><option value="newest">최신순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
+    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬" title="정확도 순: 검색어와 문항 제목·본문의 유사도가 높은 순. 검색어가 없거나 유사도가 같으면 최신순으로 표시합니다."><option value="newest">최신순</option><option value="oldest">오래된순</option><option value="accuracy">정확도 순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
     <p class="list-bottom-note">${icon('info')} 회차별 출처와 분류 이유를 문항에서 확인할 수 있습니다. 정답·해설 검토 여부도 각 문항에 표시합니다.</p>
   </section></div>`;
   document.querySelector('#review-filter').value = state.review;
@@ -530,7 +530,7 @@ function renderQuestion() {
     return;
   }
   document.title = `${question.id} ${question.title} · LEET Atlas`;
-  const sorted = filterQuestions(state.data.questions, { sort: state.route.sort });
+  const sorted = state.route.sort === 'accuracy' ? filteredQuestions() : filterQuestions(state.data.questions, { sort: state.route.sort });
   const index = sorted.findIndex(item => item.id === question.id);
   const prev = sorted[index - 1];
   const next = sorted[index + 1];
@@ -818,7 +818,7 @@ document.addEventListener('input', event => {
 });
 document.addEventListener('change', event => {
   if (event.target.id === 'local-text-file') { const file = event.target.files?.[0]; if (file) void importSourceOrTextFile(file); event.target.value = ''; }
-  if (event.target.id === 'question-sort') navigate(listRoute({ sort: event.target.value === 'newest' ? 'newest' : 'oldest', page: 1 }), { main: true });
+  if (event.target.id === 'question-sort') navigate(listRoute({ sort: ['oldest', 'newest', 'accuracy'].includes(event.target.value) ? event.target.value : 'newest', page: 1 }), { main: true });
   if (event.target.id === 'review-filter') { state.review = event.target.value; resetListPage(); updateListResults(); }
 });
 document.addEventListener('pointerover', event => {

@@ -86,7 +86,7 @@ async function boot(hash='#/questions',respond=async()=>({ok:true,json:async()=>
 }
 
 test('ten visible cards hydrate from one bundle and detail and enlargement reuse the same image',async()=>{
- const pending=deferred();const ui=await boot('#/questions',()=>pending.promise);
+ const pending=deferred();const ui=await boot('#/questions?sort=oldest',()=>pending.promise);
  const before=ui.elements.get('#question-list').innerHTML;
  assert.doesNotMatch(before,/src="assets\/questions\/p/);assert.match(before,/불러오는 중/);
  assert.equal(ui.requests.filter(path=>path.includes('/images/')).length,1);

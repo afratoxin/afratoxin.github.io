@@ -69,7 +69,7 @@ test('blocked browser storage does not prevent public questions and explanations
 test('automatic filtering combines multiple exam years and keeps bookmark constraints',async()=>{
  const reviews={'2701':{bookmarkColors:['blue']},'p001':{bookmarkColors:['blue']},'0901':{bookmarkColors:['red']}};
  const {app,elements}=await boot('#/bookmarks?bookmark=blue&tag=year-preliminary&tag=year-2027&tagMode=or',reviews);
- assert.deepEqual(app.filteredQuestions().map(q=>q.id),['p001','2701']);
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2701','p001']);
  assert.match(elements.get('#main').innerHTML,/연도끼리는 OR/);
  assert.doesNotMatch(elements.get('#main').innerHTML,/id="tag-match-mode"/);
  assert.equal(app.state.route.tagMode,'auto');
@@ -177,23 +177,48 @@ test('bookmark palette keeps newest order when opening all bookmarks',async()=>{
  assert.equal(route.sort,'newest');
 });
 
-test('archive loading shows mixed exams in chronological order across ten-card pages',async()=>{
+test('accuracy selection ranks the active search and preserves filtering and reader order',async()=>{
+ const data=structuredClone(fixture);
+ Object.assign(data.questions.find(q=>q.id==='0902'),{title:'혈액형 비율',text:'학생들의 집단 구성을 조사한다.'});
+ Object.assign(data.questions.find(q=>q.id==='0901'),{title:'학교 조사',text:'혈액형 비율에 관한 문제이다.'});
+ Object.assign(data.questions.find(q=>q.id==='2701'),{title:'건강 조사',text:'혈액형을 조사한 뒤 학생 비율을 계산한다.'});
+ const reviews=Object.fromEntries(data.questions.map(q=>[q.id,{bookmarkColors:['blue']}]));
+ const {app,elements,events,location}=await boot('#/bookmarks?bookmark=blue&tag=field-law&page=2',reviews,data);
+ app.state.query='혈액형 비율';
+ assert.match(elements.get('#main').innerHTML,/<option value="accuracy">정확도 순<\/option>/);
+ events.get('change')({target:{id:'question-sort',value:'accuracy'}});app.render();
+ assert.equal(app.state.route.sort,'accuracy');
+ assert.equal(app.state.route.page,1);
+ assert.equal(app.state.route.bookmark,'blue');
+ assert.deepEqual(app.state.route.tags,['field-law']);
+ assert.deepEqual(rows(elements.get('#question-list').innerHTML),['0902','0901','2701']);
+ location.hash=core.buildRoute({...app.state.route,view:'question',id:'0901'});app.render();
+ assert.match(elements.get('#main').innerHTML,/data-question-nav="0902"/);
+ assert.match(elements.get('#main').innerHTML,/data-question-nav="2701"/);
+ assert.match(elements.get('#main').innerHTML,/sort=accuracy/);
+ app.state.query='학교';location.hash='#/questions?sort=accuracy';app.render();
+ assert.deepEqual(rows(elements.get('#question-list').innerHTML),['0901']);
+ app.state.query='';app.render();
+ assert.equal(rows(elements.get('#question-list').innerHTML)[0],'2701');
+});
+
+test('archive loading defaults to newest across ten-card pages',async()=>{
  const first=await boot();
  assert.match(first.requests[0],/^data\/archive\.json\?v=/);
- assert.deepEqual(rows(first.elements.get('#question-list').innerHTML),['p001','p002','0901','0902','0903','0904','0905','0906','0907','0908']);
+ assert.deepEqual(rows(first.elements.get('#question-list').innerHTML),['2701','0901','0902','0903','0904','0905','0906','0907','0908','0909']);
  assert.match(first.elements.get('#main').innerHTML,/3회분/);
  assert.equal(first.elements.get('#archive-edition')?.textContent,'3회분 · 전체 아카이브');
  assert.equal(first.elements.get('#archive-count')?.textContent,13);
- assert.match(first.elements.get('#question-list').innerHTML,/2009학년도 예비시험/);
+ assert.equal(first.elements.get('#question-sort').value,'newest');
  const last=await boot('#/questions?page=2');
- assert.deepEqual(rows(last.elements.get('#question-list').innerHTML),['0909','0910','2701']);
+ assert.deepEqual(rows(last.elements.get('#question-list').innerHTML),['0910','p001','p002']);
  assert.doesNotMatch(first.document.title,/2027/);
 });
 
 test('preliminary deep links open the source and navigate to regular 2009 after the preliminary exam',async()=>{
  assert.equal(core.parseRoute('#/question/p001').id,'p001');
  assert.equal(core.buildRoute({view:'question',id:'p001'}),'#/question/p001');
- const {elements}=await boot('#/question/p002');
+ const {elements}=await boot('#/question/p002?sort=oldest');
  const html=elements.get('#main').innerHTML;
  assert.match(html,/2009학년도 예비시험/);
  assert.match(html,/assets\/questions\/p002.webp\?v=/);
@@ -219,7 +244,7 @@ test('existing 2027 explanations and legacy bookmarks remain available with arch
  assert.match(html,/핵심 해설/);
  assert.equal((html.match(/class="option-row/g)||[]).length,5);
  const {app,elements,memory}=await boot('#/bookmarks',{'2701':{bookmark:true,note:'남겨 둔 메모',status:'check'},'p001':{bookmarkColors:['blue']}});
- assert.deepEqual(rows(elements.get('#question-list').innerHTML),['p001','2701']);
+ assert.deepEqual(rows(elements.get('#question-list').innerHTML),['2701','p001']);
  assert.equal(app.state.reviews['2701'].note,'남겨 둔 메모');
  assert.equal(JSON.parse(memory.get('leet-atlas:2027:reviews:v1')).reviews['2701'].status,'check');
  app.showBookmarkPalette('p001');app.selectBookmarkColor('violet');
@@ -292,7 +317,7 @@ test('metadata-only reader gives an exact local PDF reference and classification
 });
 
 test('missing card thumbnails render question-and-field placeholders with working detail links',async()=>{
- const {elements}=await boot('#/questions',{},metadataOnlyArchive());
+ const {elements}=await boot('#/questions?sort=oldest',{},metadataOnlyArchive());
  const html=elements.get('#question-list').innerHTML;
  assert.equal(rows(html).length,10);
  assert.match(html,/class="row-thumb[^\"]*is-placeholder/);
@@ -403,7 +428,7 @@ test('real archive applies year AND puzzle even from an old global-OR URL',async
 
 test('real archive combines multiple years with puzzle and explains the current expression',async()=>{
  const {app,elements}=await boot(`#/questions?tag=${year2025}&tag=${year2026}&tag=${puzzle}`,{},fullArchive);
- assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2512','2533','2534','2535','2632','2633','2634']);
+ assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2632','2633','2634','2512','2533','2534','2535']);
  const html=elements.get('#main').innerHTML;
  assert.match(html,/적용 중인 조건/);
  assert.match(html,/2025학년도 또는 2026학년도/);

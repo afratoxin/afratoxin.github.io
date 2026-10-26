@@ -39,10 +39,31 @@ export function tagFilterGroups(tags=[], taxonomy=[]) {
   }
   return [...groups.values()].sort((a,b)=>Number(b.axis==='year')-Number(a.axis==='year'));
 }
-export function filterQuestions(questions, {query='',tags=[],taxonomy=[],requiredTags=[],review='all',bookmark='all',sort='oldest'}={}, reviews={}) {
+// Relevance uses the question itself, not solution confidence or review status.
+const relevanceText=value=>String(value||'').normalize('NFKC').toLocaleLowerCase('ko').replace(/[^\p{L}\p{N}]/gu,'');
+function textGrams(text) {
+  return new Set(text.length<2 ? [...text] : Array.from({length:text.length-1},(_,i)=>text.slice(i,i+2)));
+}
+function relevanceScorer(query,terms) {
+  const phrase=relevanceText(query), words=terms.map(relevanceText).filter(Boolean), grams=textGrams(phrase);
+  return question=>{
+    if(!phrase)return 0;
+    const fieldScore=value=>{
+      const text=relevanceText(value);
+      if(!text)return 0;
+      const fieldGrams=textGrams(text);
+      const overlap=[...grams].filter(gram=>fieldGrams.has(gram)).length;
+      const similarity=2*overlap/(grams.size+fieldGrams.size);
+      const coverage=words.length ? words.filter(word=>text.includes(word)).length/words.length : 0;
+      return (text.includes(phrase)?4:0)+2*coverage+similarity;
+    };
+    return 3*fieldScore(question.title)+fieldScore(question.text||question.sourceStem);
+  };
+}
+export function filterQuestions(questions, {query='',tags=[],taxonomy=[],requiredTags=[],review='all',bookmark='all',sort='newest'}={}, reviews={}) {
   const terms=String(query||'').normalize('NFKC').trim().toLocaleLowerCase('ko').split(/\s+/).filter(Boolean);
   const groups=tagFilterGroups(tags,taxonomy);
-  return questions.filter(q=>{
+  const matched=questions.filter(q=>{
     const reasons=Object.values(q.tagReasons||{}).map(reason=>typeof reason==='string'?reason:JSON.stringify(reason));
     const hay=[q.id,q.year,q.examLabel,q.examKey,q.number,q.title,q.text,...(q.domains||[]),...(q.fields||[]),...(q.subjects||[]),...(q.types||[]),...(q.logic||[]),...reasons].join(' ').normalize('NFKC').toLocaleLowerCase('ko');
     const r=reviews[q.id]||{};const colors=bookmarkColors(r);
@@ -51,9 +72,13 @@ export function filterQuestions(questions, {query='',tags=[],taxonomy=[],require
     const questionTags=q.tags||[];
     const matchesTags=groups.every(group=>group.operator==='or'?group.tags.some(t=>questionTags.includes(t)):group.tags.every(t=>questionTags.includes(t)));
     return terms.every(t=>hay.includes(t))&&requiredTags.every(t=>questionTags.includes(t))&&matchesTags&&matchesReview&&matchesBookmark;
-  }).sort((a,b)=>{
+  });
+  const score=relevanceScorer(query,terms);
+  const scores=sort==='accuracy'&&terms.length ? new Map(matched.map(q=>[q,score(q)])) : new Map();
+  return matched.sort((a,b)=>{
+    const relevance=(scores.get(b)||0)-(scores.get(a)||0);
     const examOrder=a.year-b.year||(a.examKey==='preliminary'?0:1)-(b.examKey==='preliminary'?0:1);
-    return (sort==='newest'?-examOrder:examOrder)||a.number-b.number;
+    return relevance||(sort==='oldest'?examOrder:-examOrder)||a.number-b.number;
   });
 }
 export function paginateQuestions(questions,{page=1,pageSize=10,mode='paged'}={}) {
@@ -78,14 +103,14 @@ export function parseRoute(hash='') {
   const requestedBookmark=colorIds.has(b)||b==='any'||b==='all'?b:view==='bookmarks'?'any':'all';
   const bookmark=view==='bookmarks'&&requestedBookmark==='all'?'any':requestedBookmark;
   const n=Number(params.get('page')||1);const page=Number.isFinite(n)?Math.max(1,Math.floor(n)):1;
-  return {view,id,tags,bookmark,page,mode:params.get('mode')==='scroll'?'scroll':'paged',sort:params.get('sort')==='newest'?'newest':'oldest',tagMode:'auto'};
+  return {view,id,tags,bookmark,page,mode:params.get('mode')==='scroll'?'scroll':'paged',sort:['oldest','newest','accuracy'].includes(params.get('sort'))?params.get('sort'):'newest',tagMode:'auto'};
 }
 export function buildRoute({view='list',id=null,tags=[],bookmark,page=1,mode,sort}={}) {
   const params=new URLSearchParams();[...new Set(tags)].forEach(t=>params.append('tag',t));
   const defaultBookmark=view==='bookmarks'?'any':'all';
   if(bookmark && bookmark!==defaultBookmark)params.set('bookmark',bookmark);
   if(mode)params.set('mode',mode==='scroll'?'scroll':'paged');
-  if(sort==='newest')params.set('sort','newest');
+  if(['oldest','newest','accuracy'].includes(sort))params.set('sort',sort);
   if(Number(page)>1 && mode!=='scroll')params.set('page',Math.floor(Number(page)));
   const path=view==='question'&&id?'/question/'+id:view==='bookmarks'?'/bookmarks':view==='tags'?'/tags':view==='tag'&&id?'/tags/'+encodeURIComponent(id):'/questions';
   return '#'+path+(params.size?'?'+params:'');

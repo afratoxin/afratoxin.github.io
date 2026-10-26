@@ -10,7 +10,7 @@ const Y2025='year-abefd8a26e',Y2026='year-750655310c';
 const PRELIMINARY='year-220e7b197d',Y2009='year-c68ff39a4f';
 const PUZZLE='type-4536b24c5d';
 const ids=rows=>rows.map(question=>question.id);
-const select=(tags,options={},reviews={})=>filterQuestions(questions,{taxonomy,tags,...options},reviews);
+const select=(tags,options={},reviews={})=>filterQuestions(questions,{sort:'oldest',taxonomy,tags,...options},reviews);
 const canonicalGroups=groups=>groups.map(group=>({...group,tags:[...group.tags].sort()})).sort((a,b)=>a.axis.localeCompare(b.axis));
 
 test('2026 and puzzle select exactly the three matching archive questions',()=>{
@@ -58,7 +58,7 @@ test('missing taxonomy metadata keeps tags mandatory without guessing from year 
 test('metadata identifies year alternatives even when their IDs lack a year prefix',()=>{
  const renamedTaxonomy=taxonomy.map(tag=>tag.id===Y2025?{...tag,id:'exam-a'}:tag.id===Y2026?{...tag,id:'exam-b'}:tag);
  const renamedQuestions=questions.map(question=>({...question,tags:question.tags.map(tag=>tag===Y2025?'exam-a':tag===Y2026?'exam-b':tag)}));
- assert.deepEqual(ids(filterQuestions(renamedQuestions,{taxonomy:renamedTaxonomy,tags:['exam-a','exam-b',PUZZLE]})),['2512','2533','2534','2535','2632','2633','2634']);
+ assert.deepEqual(ids(filterQuestions(renamedQuestions,{sort:'oldest',taxonomy:renamedTaxonomy,tags:['exam-a','exam-b',PUZZLE]})),['2512','2533','2534','2535','2632','2633','2634']);
 });
 
 test('year alternatives preserve query, bookmark, review, and explicit required-tag restrictions',()=>{
