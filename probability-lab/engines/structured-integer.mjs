@@ -1,5 +1,5 @@
 import { parseExpression, polynomial } from './expression-parser.mjs?v=20261026-structure';
-import { conditionLabel, questionMath } from '../exam-paper.mjs?v=20261026-condition-glyphs';
+import { conditionLabel, questionMath } from '../exam-paper.mjs?v=20261026-challenge-grid';
 
 const DOMAINS={natural:{label:'자연수',low:1,step:1,residue:0},nonnegative:{label:'0 이상의 정수',low:0,step:1,residue:0},integer:{label:'정수',low:-Infinity,step:1,residue:0},'positive-even':{label:'양의 짝수',low:2,step:2,residue:0},'positive-odd':{label:'양의 홀수',low:1,step:2,residue:1},'integer-even':{label:'짝수인 정수',low:-Infinity,step:2,residue:0},'integer-odd':{label:'홀수인 정수',low:-Infinity,step:2,residue:1}};
 const LABELS={eq:'=',ne:'≠',lt:'<',le:'≤',gt:'>',ge:'≥'};

@@ -1,4 +1,4 @@
-import { statisticsSpecs } from './statistics.mjs?v=20261026-condition-glyphs';
+import { statisticsSpecs } from './statistics.mjs?v=20261026-challenge-grid';
 
 const raw = Object.fromEntries(statisticsSpecs.map(spec => [spec.id, spec]));
 const LIMIT = 999n;
@@ -29,16 +29,24 @@ const capError = facts => exceeds(facts) ? '계산에 사용하는 경우의 수
 function normalControls(p, base) {
   const mu = fallback(p.mu, 50), sigma = fallback(p.sigma, 10), n = fallback(p.n, 1);
   const se = sigma > 0 && n > 0 ? sigma / Math.sqrt(n) : 10;
-  const min = Math.max(-999, mu - 3 * se), max = Math.min(999, mu + 3 * se);
-  const muMin = Math.ceil((-999 + 3 * se - 1e-10) * 10) / 10, muMax = Math.floor((999 - 3 * se + 1e-10) * 10) / 10;
-  const bound = { min, max, step: 'any', normalBound: true, zscore: { min: -3, max: 3, step: 0.1, mu, sigma, se, n } };
-  return cloneControls(base, { mu: { min: muMin, max: muMax }, sigma: { min: 0.1, max: 30, step: 0.01 }, n: { max: 999 }, lower: { ...bound }, upper: { ...bound } });
+  const min = Math.max(-999, mu - 2 * se), max = Math.min(999, mu + 2 * se);
+  const muMin = Math.ceil((-999 + 2 * se - 1e-10) * 100) / 100, muMax = Math.floor((999 - 2 * se + 1e-10) * 100) / 100;
+  const bound = { min, max, step: 0.01, normalBound: true, zscore: { min: -2, max: 2, step: 0.5, mu, sigma, se, n } };
+  return cloneControls(base, { mu: { min: muMin, max: muMax, step: 0.01 }, sigma: { min: 0.01, max: 30, step: 0.01 }, lower: { ...bound }, upper: { ...bound } });
 }
+const twoDecimals = value => Math.abs(value * 100 - Math.round(value * 100)) < 1e-7;
+const normalGrid = z => Number.isFinite(z) && Math.abs(z * 2 - Math.round(z * 2)) < 1e-7 && Math.abs(z) <= 2 + 1e-7;
 const normalProfile = {
   presets: raw.normal.presets,
   controls: normalControls,
   validate(p) {
-    return inputError(p, normalControls(p, raw.normal.controls)) || (p.lower > p.upper ? '하한은 상한보다 클 수 없습니다.' : '');
+    const controlsError = inputError(p, normalControls(p, raw.normal.controls));
+    if (controlsError) return controlsError;
+    const se = p.sigma / Math.sqrt(p.n), zl = (p.lower - p.mu) / se, zu = (p.upper - p.mu) / se;
+    if (![p.mu, p.sigma, p.lower, p.upper, se].every(twoDecimals)) return '모평균, 모표준편차, 표준오차와 구간의 값은 소수 둘째 자리까지만 사용할 수 있습니다.';
+    if (p.lower > p.upper) return '하한은 상한보다 클 수 없습니다.';
+    if (!normalGrid(zl) || !normalGrid(zu)) return '표준화한 두 끝값은 표에 있는 −2부터 2까지의 0.5 단위 값이어야 합니다.';
+    return '';
   },
   facts(p, result) {
     const se = p.sigma / Math.sqrt(p.n);

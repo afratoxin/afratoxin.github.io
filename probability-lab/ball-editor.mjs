@@ -1,4 +1,4 @@
-import { COLORS, emptyBallRules } from './engines/ball-rules.mjs?v=20261026-condition-glyphs';
+import { COLORS, emptyBallRules } from './engines/ball-rules.mjs?v=20261026-challenge-grid';
 const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e;};
 const clone=x=>JSON.parse(JSON.stringify(x));
 const relations=[['eq','='],['ne','≠'],['ge','≥'],['le','≤'],['gt','>'],['lt','<']];
@@ -23,18 +23,19 @@ export function createBallEditor(params,distribution,onChange,fields){
   for(const [value,label]of options){const b=node('button','ball-chip',label);b.type='button';if(key==='colors')b.dataset.color=String(value);b.setAttribute('aria-pressed',String((rule[key]??options.map(x=>x[0])).includes(value)));b.addEventListener('click',()=>{const old=rule[key]??options.map(x=>x[0]);rule[key]=old.includes(value)?old.filter(x=>x!==value):[...old,value].sort((a,b)=>a-b);b.setAttribute('aria-pressed',String(rule[key].includes(value)));commit();});chips.append(b);}
   section.append(chips);parent.append(section);
  }
- const choices=distribution?[['eachBox','상자마다 선택한 색의 공 수'],['boxKinds','상자마다 들어 있는 색 종류'],['boxParity','상자별 공 수의 홀짝'],['occupiedBoxes','공이 있는 상자 수'],['emptyBoxes','빈 상자 수'],['monoBoxes','단색 상자 수'],['mixedBoxes','여러 색 상자 수'],['allColorsBoxes','선택한 모든 색이 있는 상자 수'],['expression','문자식 · 합·차·곱·제곱']]:[['count','선택한 색의 공 수 합'],['each','선택한 색마다 공 수'],['kinds','뽑힌 색 종류 수'],['parity','선택한 색 공 수 합의 홀짝'],['expression','문자식 · 합·차·곱·제곱']];
+ const choices=distribution?[['eachBox','상자마다 선택한 색의 공 수'],['boxKinds','상자마다 들어 있는 색 종류'],['boxParity','상자별 공 수의 홀짝'],['occupiedBoxes','공이 있는 상자 수'],['emptyBoxes','빈 상자 수'],['monoBoxes','단색 상자 수'],['mixedBoxes','여러 색 상자 수'],['allColorsBoxes','선택한 모든 색이 있는 상자 수'],['boxColorCompare','상자 안 두 색의 수 비교'],['colorOnlyBoxes','한 가지 색만 든 상자 수'],['expression','문자식 · 합·차·곱·제곱']]:[['count','선택한 색의 공 수 합'],['each','선택한 색마다 공 수'],['kinds','뽑힌 색 종류 수'],['parity','선택한 색 공 수 합의 홀짝'],['expression','문자식 · 합·차·곱·제곱']];
  function add(kind=choices[0][0]){
   if(!rules||typeof rules!=='object'||Array.isArray(rules))rules=emptyBallRules();
   if(!rules[active]||!Array.isArray(rules[active].rules))rules[active]={logic:'and',negate:false,rules:[]};
   const g=rules[active];if(g.rules.length>=8)return;g.rules.push(newRule(kind));index=g.rules.length-1;render();commit();
  }
- function newRule(kind){return {kind,colors:Array.from({length:params.colorKinds},(_,i)=>i),...(distribution?{boxes:Array.from({length:params.boxes},(_,i)=>i)}:{}),target:kind==='parity'||kind==='boxParity'?0:1,relation:'eq',left:(distribution?params.boxes:params.colorKinds)>1?'a+b':'a',right:'1'};}
+ function newRule(kind){return {kind,colors:kind==='boxColorCompare'?(params.colorKinds>=7?[5,6]:[0,1]):kind==='colorOnlyBoxes'?[params.colorKinds>=7?6:0]:Array.from({length:params.colorKinds},(_,i)=>i),...(distribution?{boxes:Array.from({length:params.boxes},(_,i)=>i)}:{}),target:kind==='parity'||kind==='boxParity'||kind==='colorOnlyBoxes'?0:1,relation:'eq',left:(distribution?params.boxes:params.colorKinds)>1?'a+b':'a',right:'1'};}
  function targetMaximum(rule){
   const selected=rule.colors??Array.from({length:params.colorKinds},(_,i)=>i);
   if(!distribution)return rule.kind==='kinds'?selected.length:params.draw;
   if(rule.kind==='eachBox')return selected.reduce((total,i)=>total+Number(params[COLORS[i]?.[0]]??0),0);
   if(rule.kind==='boxKinds')return selected.length;
+  if(rule.kind==='colorOnlyBoxes')return params.boxes;
   return params.boxes;
  }
  function updateParams(next){
@@ -53,14 +54,15 @@ export function createBallEditor(params,distribution,onChange,fields){
   const nav=node('div','ball-navigation');const prev=button('←','ball-rule-prev',()=>{index--;render();},nav),status=node('span','',g.rules.length?`${index+1} / ${g.rules.length}`:'조건 없음');nav.append(status);const next=button('→','ball-rule-next',()=>{index++;render();},nav);prev.disabled=index<=0;next.disabled=index>=g.rules.length-1;button('+ 조건','ball-rule-add',()=>add(),nav).disabled=g.rules.length>=8;host.append(nav);
   index=Math.max(0,Math.min(index,g.rules.length-1));const r=g.rules[index];
   if(!r){host.append(node('p','control-hint','조건을 추가하고 적용할 색·상자만 선택하세요.'+(distribution?'':' 기본 탭의 빨간 공 조건도 함께 적용됩니다.')));return;}
-  const card=node('div','ball-rule-card');select('조건 종류','ball-rule-kind',choices,r.kind,value=>{g.rules[index]=newRule(value);render();commit();},card);
-  if(!['occupiedBoxes','emptyBoxes','monoBoxes','mixedBoxes'].includes(r.kind))scope(distribution?'계산할 공의 색 · 선택한 색만 센다':'적용할 색','colors',COLORS.slice(0,params.colorKinds).map((x,i)=>[i,x[1]]),r,card);
-  if(['eachBox','boxKinds','boxParity'].includes(r.kind))scope(params.boxesDistinct?'적용할 상자':'모든 상자를 선택하세요','boxes',Array.from({length:params.boxes},(_,i)=>[i,String.fromCharCode(65+i)]),r,card);
+  const card=node('div','ball-rule-card'),availableChoices=distribution&&params.colorKinds<2?choices.filter(([kind])=>kind!=='boxColorCompare'):choices;select('조건 종류','ball-rule-kind',availableChoices,r.kind,value=>{g.rules[index]=newRule(value);render();commit();},card);
+  if(!['occupiedBoxes','emptyBoxes','monoBoxes','mixedBoxes'].includes(r.kind))scope(distribution?(r.kind==='boxColorCompare'?'비교할 두 색 · 색 순서대로 왼쪽과 오른쪽':'계산할 공의 색'):'적용할 색','colors',COLORS.slice(0,params.colorKinds).map((x,i)=>[i,x[1]]),r,card);
+  if(['eachBox','boxKinds','boxParity','boxColorCompare'].includes(r.kind))scope(params.boxesDistinct?'적용할 상자':'모든 상자를 선택하세요','boxes',Array.from({length:params.boxes},(_,i)=>[i,String.fromCharCode(65+i)]),r,card);
   if(r.kind==='expression'){
    card.append(node('p','control-hint',distribution?'a, b, … = 각 상자의 선택한 색 공 수':'a, b, … = 색 순서대로 뽑힌 공의 개수'));
    for(const key of ['left','right']){const label=node('label','control-label',key==='left'?'왼쪽 식':'오른쪽 식'),input=node('input','control-input');input.type='text';input.id='ball-rule-'+key;label.htmlFor=input.id;input.value=r[key];input.maxLength=500;input.addEventListener('input',()=>{r[key]=input.value;commit();});card.append(label,input);}
    select('식의 관계','ball-rule-relation',relations,r.relation,value=>{r.relation=value;commit();},card);
   }else if(r.kind==='parity'||r.kind==='boxParity')select('홀짝','ball-rule-parity',[[0,'짝수'],[1,'홀수']],r.target,value=>{r.target=value;commit();},card);
+  else if(r.kind==='boxColorCompare')select('두 색의 수 비교','ball-rule-relation',relations,r.relation,value=>{r.relation=value;commit();},card);
   else {select('수량 조건','ball-rule-relation',relations,r.relation,value=>{r.relation=value;commit();},card);number('기준값','ball-rule-target',r.target,0,targetMaximum(r),(value,drag)=>{r.target=value;commit(drag);},card);}
   button('이 조건 삭제','ball-rule-delete',()=>{g.rules.splice(index,1);index=Math.min(index,g.rules.length-1);render();commit();},card);host.append(card);
  }

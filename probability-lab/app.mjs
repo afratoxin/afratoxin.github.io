@@ -1,8 +1,8 @@
-import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-condition-glyphs';
-import { createBallEditor } from './ball-editor.mjs?v=20261026-condition-glyphs';
-import { specs } from './engines.mjs?v=20261026-condition-glyphs';
-import { renderExamQuestion, questionMath } from './exam-paper.mjs?v=20261026-condition-glyphs';
-import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor, validateStructureLimits } from './structured-editor.mjs?v=20261026-limits';
+import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-challenge-grid';
+import { createBallEditor } from './ball-editor.mjs?v=20261026-challenge-grid';
+import { specs } from './engines.mjs?v=20261026-challenge-grid';
+import { renderExamQuestion, questionMath } from './exam-paper.mjs?v=20261026-challenge-grid';
+import { sanitizeStructure, createStructuredEditor, validateStructureLimits } from './structured-editor.mjs?v=20261026-limits';
 
 const $ = (id) => document.getElementById(id);
 const engineList = Array.isArray(specs) ? specs : Object.values(specs ?? {});
@@ -196,6 +196,11 @@ function refreshControlEntries(params, writeValues = false, changedKey) {
     entry.allowed = control.type === 'number' && !control.normalBound ? allowedFor(spec, control.key, params) : null;
     if (entry.allowed?.length) { control.min = Math.min(...entry.allowed); control.max = Math.max(...entry.allowed); }
     entry.control = control;
+    entry.field.hidden = Boolean(control.when && !control.when.values.includes(params[control.when.key]));
+    const fieldLabel=entry.field.querySelector('.control-label');
+    if(fieldLabel)fieldLabel.textContent=control.label;
+    entry.input.setAttribute('aria-label',`${control.label} ${control.type==='number'?'직접 입력':'선택'}`);
+    entry.slider.setAttribute('aria-label',`${control.label} 드래그로 조절`);
     const { input, slider, minLabel, maxLabel, boundNotice } = entry;
     slider.setAttribute('data-allowed-values', entry.allowed ? JSON.stringify(entry.allowed) : '');
     slider.dataset.valueMode = control.normalBound ? 'zscore' : entry.allowed ? 'allowed' : 'value';
@@ -355,6 +360,7 @@ function renderControls() {
       input.setAttribute('aria-describedby', help.id); slider.setAttribute('aria-describedby', help.id);
       const details = node('details', 'control-help-details'); details.append(node('summary', '', '설명'), help); field.append(details);
     }
+    field.hidden=Boolean(control.when&&!control.when.values.includes(state.params[control.when.key]));
     controls.set(control.key, { control, input, slider, field, minLabel, maxLabel, boundNotice, allowed: null });
     input.addEventListener(control.type === 'number' ? 'input' : 'change', () => editControl(control.key, 'typed'));
     slider.addEventListener('input', () => {
@@ -699,26 +705,86 @@ function randomValue(control, defaults, allowed = null) {
   return Number((min + index * step).toPrecision(12));
 }
 
+const randomInt=(min,max)=>min+Math.floor(Math.random()*(max-min+1));
+const randomPick=values=>values[randomInt(0,values.length-1)];
+function randomNormalParams(spec){
+  const root=randomPick([1,2,3,4,5,6,8,10]),n=root*root,k=randomInt(5,80),se=k/50,sigma=Number((se*root).toFixed(2)),mu=randomInt(-30,80);
+  const points=[-2,-1.5,-1,-.5,0,.5,1,1.5,2],i=randomInt(0,points.length-2),j=randomInt(i+1,points.length-1),lower=Number((mu+points[i]*se).toFixed(2)),upper=Number((mu+points[j]*se).toFixed(2));
+  return {...cloneDefaults(spec),mu,sigma,n,lower,upper};
+}
+function randomFunctionParams(spec){
+  const challenge=randomPick(['sum-image','product-image','idempotent','involution']);
+  if(challenge==='sum-image'||challenge==='product-image'){
+    const domain=randomInt(2,5),codomain=randomInt(2,5),map=Array.from({length:domain},()=>randomInt(1,codomain));
+    return {...cloneDefaults(spec),domain,codomain,challenge,target:challenge==='sum-image'?map.reduce((a,b)=>a+b,0):map.reduce((a,b)=>a*b,1),imageSize:new Set(map).size};
+  }
+  if(challenge==='idempotent'){
+    const domain=randomInt(2,5),image=Array.from({length:domain},(_,i)=>i+1).filter(()=>Math.random()<.5);
+    if(!image.length)image.push(randomInt(1,domain));
+    const set=new Set(image),map=Array.from({length:domain},(_,i)=>set.has(i+1)?i+1:randomPick(image));
+    return {...cloneDefaults(spec),domain,codomain:domain,challenge,target:map.reduce((a,b)=>a+b,0),imageSize:image.length};
+  }
+  const domain=randomInt(2,6),map=Array.from({length:domain},(_,i)=>i+1),available=Array.from({length:domain},(_,i)=>i);
+  const pairs=randomInt(0,Math.floor(domain/2));
+  for(let i=0;i<pairs;i++){
+    const first=available.splice(randomInt(0,available.length-1),1)[0],second=available.splice(randomInt(0,available.length-1),1)[0];
+    map[first]=second+1;map[second]=first+1;
+  }
+  return {...cloneDefaults(spec),domain,codomain:domain,challenge:'involution',target:map[0],imageSize:map.filter((value,i)=>value===i+1).length};
+}
+function randomDistributionParams(spec){
+  const boxes=3,black=randomInt(3,4),white=black+randomInt(1,2),bundle=randomInt(0,3);
+  const cmp=(box,relation)=>({kind:'boxColorCompare',colors:[5,6],boxes:box<0?[0,1,2]:[box],relation});
+  const whiteOnly={kind:'colorOnlyBoxes',colors:[6],target:0,relation:'eq'};
+  const whiteOrder={kind:'expression',colors:[6],left:'b',right:'a',relation:'gt'};
+  const rules=bundle===0?[cmp(0,'gt'),whiteOrder]:bundle===1?[cmp(-1,'le'),whiteOrder]:bundle===2?[cmp(0,'gt'),whiteOnly]:[cmp(-1,'le'),whiteOnly,whiteOrder];
+  return {...cloneDefaults(spec),colorKinds:7,red:0,blue:0,yellow:0,green:0,purple:0,black,white,boxes,ballsDistinct:false,boxesDistinct:true,ballRules:{event:{logic:'and',negate:false,rules},given:{logic:'and',negate:false,rules:[]}}};
+}
+function randomSelectionParams(spec){
+  const pattern=randomInt(0,2),colorKinds=3,red=randomInt(3,5),blue=randomInt(3,5),yellow=randomInt(2,4),draw=randomInt(3,5);
+  const rules=pattern===0?[
+    {kind:'count',colors:[0],target:1,relation:'eq'},
+    {kind:'parity',colors:[1,2],target:0}
+  ]:pattern===1?[
+    {kind:'kinds',colors:[0,1,2],target:3,relation:'eq'},
+    {kind:'expression',colors:[0,1,2],left:'a*b+c',right:'4',relation:'ge'}
+  ]:[
+    {kind:'count',colors:[0,1],target:2,relation:'ge'},
+    {kind:'expression',colors:[0,1,2],left:'a*b+c^2',right:'5',relation:'ge'}
+  ];
+  return {...cloneDefaults(spec),colorKinds,red,blue,yellow,green:0,purple:0,black:0,white:0,draw,redTarget:0,relation:'none',replacement:false,ordered:false,query:'probability',sequence:'any',firstColor:-1,lastColor:-1,ballRules:{event:{logic:'and',negate:false,rules},given:{logic:'and',negate:false,rules:[]}}};
+}
+function randomIntegerChallenge(spec){
+  const examples=[
+    {k:4,total:16,conditions:[{kind:'expression',left:'a*b',relation:'eq',right:'12'}]},
+    {k:4,total:12,conditions:[{kind:'expression',left:'(a-b)^2',relation:'eq',right:'4'},{kind:'increasing',variables:[2,3]}]},
+    {k:4,total:18,conditions:[{kind:'expression',left:'a+b',relation:'eq',right:'10'}]},
+    {k:5,total:18,conditions:[{kind:'expression',left:'c*d',relation:'eq',right:'16'}]}
+  ];
+  const sample=randomPick(examples),names=Array.from({length:sample.k},(_,i)=>String.fromCharCode(97+i));
+  return {...cloneDefaults(spec),k:sample.k,total:sample.total,relation:'eq',domain:'natural',lowerOn:false,upperOn:false,order:'any',distinct:false,structure:{enabled:true,left:names.join('+'),relation:'eq',right:String(sample.total),variables:Array.from({length:sample.k},()=>({domain:'inherit',parity:'any',lower:null,upper:null})),conditions:sample.conditions}};
+}
+
 function randomize() {
   const spec = engines.get(state.family);
   if (!spec) return;
   const live = readAndValidate();
   const current = safeParams(spec, live.error ? state.params : live.params);
   const structured = spec.id === 'integer-sum';
-  const simpleMain = structured && isSimpleMain(current.structure, current);
   let selected;
   for (let attempt = 0; attempt < 15; attempt++) {
     let params = cloneDefaults(spec);
-    for (const key of (spec.controls ?? []).map((control) => control.key)) {
+    if(spec.id==='normal')params=randomNormalParams(spec);
+    else if(spec.id==='function')params=randomFunctionParams(spec);
+    else if(spec.id==='distribution')params=randomDistributionParams(spec);
+    else if(spec.id==='selection')params=randomSelectionParams(spec);
+    else if(structured)params=randomIntegerChallenge(spec);
+    else if(spec.presets?.length&&Math.random()<.45)params={...cloneDefaults(spec),...randomPick(spec.presets).params};
+    else for (const key of (spec.controls ?? []).map((control) => control.key)) {
       const control = getSpecControls(spec, params).find((item) => item.key === key);
       if (!control) continue;
       params[key] = randomValue(control, spec.defaults, control.type === 'number' ? allowedFor(spec, key, params) : null);
       if (typeof spec.normalizeParams === 'function') params = spec.normalizeParams(params, key);
-    }
-    if (structured) {
-      if (current.structure.conditions.length || !simpleMain) params.k = current.k;
-      if (!simpleMain) { params.total = current.total; params.relation = current.relation; }
-      params.structure = synchronizeStructure(current.structure, params, simpleMain);
     }
     try {
       const result = spec.solve(params);

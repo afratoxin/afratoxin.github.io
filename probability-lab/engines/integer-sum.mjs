@@ -1,5 +1,5 @@
-import { structuredSolve } from './structured-integer.mjs?v=20261026-condition-glyphs';
-import { conditionLabel } from '../exam-paper.mjs?v=20261026-condition-glyphs';
+import { structuredSolve } from './structured-integer.mjs?v=20261026-challenge-grid';
+import { conditionLabel } from '../exam-paper.mjs?v=20261026-challenge-grid';
 
 const options = pairs => pairs.map(([value,label])=>({value,label}));
 const defaults={k:4,total:7,relation:'eq',domain:'natural',lowerOn:false,lower:0,upperOn:false,upper:7,order:'any',distinct:false};

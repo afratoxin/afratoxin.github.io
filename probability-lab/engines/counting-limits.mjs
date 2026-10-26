@@ -1,4 +1,4 @@
-import { countingSpecs } from './counting.mjs?v=20261026-condition-glyphs';
+import { countingSpecs } from './counting.mjs?v=20261026-challenge-grid';
 
 // Public examination limits. Raw engines remain available for independent checks.
 const raw = new Map(countingSpecs.map(spec => [spec.id, spec]));
@@ -139,6 +139,33 @@ function conditionalControls(input,base) {
   else eventValue=condition.count?{min:condition.minSum,max:condition.maxSum}:{min:recoveryDraw*(recoveryDraw+1)/2,max:recoveryDraw*(2*p.n-recoveryDraw+1)/2};
   return adapted(base,{n,draw,conditionValue:{min:p.condition==='max-eq'?Math.min(p.n,Math.max(1,p.draw)):1,max:p.n},eventValue});
 }
+function functionControls(input,base) {
+  const p=controlParams('function',input),advanced=p.challenge!=='basic',composition=['idempotent','involution'].includes(p.challenge);
+  const n=Math.max(1,Math.min(6,p.domain)),m=Math.max(1,Math.min(6,p.codomain));
+  const targetLabel=p.challenge==='product-image'?'함숫값의 곱 P':p.challenge==='involution'?'f(1)의 값 t':'함숫값의 합 S';
+  const imageLabel=p.challenge==='involution'?'고정점의 수 r':'치역 f(X)의 원소 수 r';
+  const targetMin=p.challenge==='product-image'?1:p.challenge==='involution'?1:n;
+  const targetMax=p.challenge==='product-image'?Math.min(999,Number(power(m,n))):p.challenge==='involution'?n:n*m;
+  return adapted(base,{
+    domain:{min:advanced?1:0,max:advanced?6:12},
+    codomain:{min:advanced?1:0,max:advanced?6:12,...(composition?{min:n,max:n}:{})},
+    constraint:{when:{key:'challenge',values:['basic']}},
+    fixed:{min:0,max:p.domain,when:{key:'challenge',values:['basic']}},
+    target:{min:targetMin,max:targetMax,label:targetLabel,when:{key:'challenge',values:['sum-image','product-image','idempotent','involution']}},
+    imageSize:{min:p.challenge==='involution'?0:1,max:p.challenge==='involution'?n:Math.min(n,m),label:imageLabel,when:{key:'challenge',values:['sum-image','product-image','idempotent','involution']}}
+  });
+}
+function functionError(p) {
+  if(p.challenge==='basic')return p.fixed>p.domain?'고정하는 함수값 수는 정의역 원소 수 이하여야 합니다.':'';
+  if(p.domain<1||p.domain>6||p.codomain<1||p.codomain>6)return '심화 함수 조건은 정의역과 공역의 원소 수를 각각 1~6으로 설정하세요.';
+  if(['idempotent','involution'].includes(p.challenge)&&p.domain!==p.codomain)return '합성함수 조건에서는 정의역과 공역의 크기를 같게 설정하세요.';
+  if(p.challenge==='involution'&&(p.imageSize>p.domain||(p.domain-p.imageSize)%2!==0))return '대합에서 고정점 수와 전체 원소 수의 차는 짝수여야 합니다.';
+  if(p.challenge!=='involution'&&(p.imageSize<1||p.imageSize>Math.min(p.domain,p.codomain)))return '치역 원소 수는 1 이상이고 정의역과 공역의 크기 이하여야 합니다.';
+  if(['sum-image','idempotent'].includes(p.challenge)&&(p.target<p.domain||p.target>p.domain*p.codomain))return '함숫값의 합은 실제 가능한 범위 안의 정수여야 합니다.';
+  if(p.challenge==='product-image'&&(p.target<1||BigInt(p.target)>power(p.codomain,p.domain)))return '함숫값의 곱은 실제 가능한 범위 안의 양의 정수여야 합니다.';
+  if(p.challenge==='involution'&&(p.target<1||p.target>p.domain))return 'f(1)의 값은 정의역 원소 수 범위 안이어야 합니다.';
+  return '';
+}
 function validateWith(id,check=()=> '') {
   return input=>{const p=parameters(id,input);return baseError(id,p)||check(p);};
 }
@@ -154,8 +181,18 @@ export const countingLimitProfiles = {
   selection:{presets:presets('selection'),controls:selectionControls,validate:validateWith('selection',selectionError),facts:(p,result)=>facts('selection',p,result)},
   function:{
     presets:presets('function'),
-    controls(input,base){const p=controlParams('function',input);return adapted(base,{domain:extrema(p.fixed,12,value=>safeResult('function',{...p,domain:value})),codomain:extrema(0,12,value=>safeResult('function',{...p,codomain:value})),fixed:{min:0,max:p.domain}});},
-    validate:validateWith('function',p=>p.fixed>p.domain?'고정하는 함수값 수는 정의역 크기 이하여야 합니다.':''),
+    controls:functionControls,
+    validate:validateWith('function',functionError),
+    normalizeParams(p,changedKey){
+      if(p.challenge==='basic')return p;
+      p.domain=Math.max(1,Math.min(6,p.domain));p.codomain=Math.max(1,Math.min(6,p.codomain));
+      if(['idempotent','involution'].includes(p.challenge)){
+        if(changedKey==='codomain')p.domain=p.codomain;
+        else p.codomain=p.domain;
+      }
+      if(p.challenge==='involution'&&(p.imageSize>p.domain||(p.domain-p.imageSize)%2!==0))p.imageSize=Math.max(p.domain%2,Math.min(p.domain,p.imageSize-1));
+      return p;
+    },
     facts:(p,result)=>facts('function',p,result)
   },
   coefficient:{

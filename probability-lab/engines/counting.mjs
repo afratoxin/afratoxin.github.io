@@ -1,7 +1,7 @@
 // Exact combinatorics engines. Counts stay as BigInt until chart/display conversion.
-import { conditionLabel } from '../exam-paper.mjs?v=20261026-condition-glyphs';
-const N = (key, label, min, max, help) => ({ key, label, type: 'number', min, max, step: 1, ...(help ? { help } : {}) });
-const S = (key, label, options, help) => ({ key, label, type: 'select', options: options.map(([value, label]) => ({ value, label })), ...(help ? { help } : {}) });
+import { conditionLabel } from '../exam-paper.mjs?v=20261026-challenge-grid';
+const N = (key, label, min, max, help, extra = {}) => ({ key, label, type: 'number', min, max, step: 1, ...(help ? { help } : {}), ...extra });
+const S = (key, label, options, help) => ({ key, label, type: 'select', options: options.map(([value, label]) => ({ value, label })), ...(typeof help === 'string' ? { help } : help ?? {}) });
 const C = (key, label, help) => ({ key, label, type: 'checkbox', ...(help ? { help } : {}) });
 const factorial = n => { let v = 1n; for (let k = 2; k <= n; k++) v *= BigInt(k); return v; };
 const choose = (n, k) => {
@@ -138,13 +138,63 @@ const selection = makeSpec({
   ],replacement?'복원 여부뿐 아니라 순서를 구별하는지도 확인해야 합니다. 이 모형의 복원 추출은 순서 있는 독립 추출입니다.':'색깔만 구별하는 문제가 아니라 각각의 공을 구별하는 문제입니다. 따라서 같은 색의 공을 고를 때도 조합을 사용합니다.',{cases,chart:cases.map(row=>({label:row.label,value:Number(row.count)})),warnings:total===0n?['전체 공보다 많이 비복원 추출할 수 없으므로 가능한 선택은 0가지입니다.']:[]});
 },p=>p.red+p.blue===0?'적어도 하나의 공이 있어야 합니다.':'');
 
+const functionChallenges=['sum-image','product-image','idempotent','involution'];
+function countFunctionChallenge(p) {
+  const {domain:n,codomain:m,challenge,target,imageSize:r}=p;
+  const compositional=challenge==='idempotent'||challenge==='involution';
+  if(n<1||m<1||n>6||m>6)return invalid('심화 함수 조건은 정의역과 공역의 원소 수를 각각 1~6으로 설정하세요.');
+  if(compositional&&n!==m)return invalid('합성함수 조건에서는 X=Y가 되도록 정의역과 공역의 크기를 같게 설정하세요.');
+  if(challenge==='involution'&&(imageSize>n||(n-imageSize)%2!==0))return invalid('대합에서 고정점 수와 전체 원소 수의 차는 짝수여야 합니다.');
+  if(challenge!=='involution'&&(r<1||r>Math.min(n,m)))return invalid('치역 원소 수는 1 이상이고 정의역과 공역의 크기 이하여야 합니다.');
+  if(['sum-image','idempotent'].includes(challenge)&&(target<n||target>n*m))return invalid(`함숫값의 합은 ${n} 이상 ${n*m} 이하여야 합니다.`);
+  if(challenge==='product-image'&&(target<1||BigInt(target)>BigInt(m)**BigInt(n)))return invalid('함숫값의 곱은 실제 가능한 범위 안의 양의 정수여야 합니다.');
+  if(challenge==='involution'&&(target<1||target>n))return invalid(`f(1)의 값은 1 이상 ${n} 이하여야 합니다.`);
+  let value=0n;
+  const map=Array(n).fill(1),groups=new Map();
+  const accept=()=>{
+    const image=[...new Set(map)].sort((a,b)=>a-b),sum=map.reduce((a,b)=>a+b,0);
+    const product=map.reduce((a,b)=>a*BigInt(b),1n);
+    const fixed=map.reduce((count,y,i)=>count+(y===i+1?1:0),0);
+    if(challenge==='sum-image'&&(sum!==target||image.length!==r))return;
+    if(challenge==='product-image'&&(product!==BigInt(target)||image.length!==r))return;
+    if(challenge==='idempotent'&&(map.some((y,i)=>map[y-1]!==y)||image.length!==r||sum!==target))return;
+    if(challenge==='involution'&&(map.some((y,i)=>map[y-1]!==i+1)||fixed!==r||map[0]!==target))return;
+    value++;
+    const key=challenge==='involution'?`고정점 {${map.map((y,i)=>y===i+1?i+1:null).filter(Boolean).join(', ')||'없음'}}`:`치역 {${image.join(', ')}}`;
+    groups.set(key,(groups.get(key)??0n)+1n);
+  };
+  const visit=i=>{if(i===n){accept();return;}for(let y=1;y<=m;y++){map[i]=y;visit(i+1);}};
+  visit(0);
+  const conditions=[];
+  if(challenge==='sum-image')conditions.push(`Σ_{x∈X} f(x) = ${target}`,`치역 f(X)의 원소 수는 ${r}`);
+  if(challenge==='product-image')conditions.push(`∏_{x∈X} f(x) = ${target}`,`치역 f(X)의 원소 수는 ${r}`);
+  if(challenge==='idempotent')conditions.push(`f(f(x)) = f(x) (모든 x∈X)`,`치역 f(X)의 원소 수는 ${r}`,`Σ_{x∈X} f(x) = ${target}`);
+  if(challenge==='involution')conditions.push(`f(f(x)) = x (모든 x∈X)`,`f의 고정점 수는 ${r}`,`f(1) = ${target}`);
+  const setText=size=>`{1, 2, …, ${size}}`;
+  const question=`집합 X=${setText(n)}, Y=${setText(m)}에 대하여, 다음 조건을 만족시키는 함수 f:X→Y의 개수를 구하시오.\n${conditions.map((condition,i)=>`(${conditionLabel(i)}) ${condition}`).join('\n')}`;
+  const method=challenge==='idempotent'
+    ?'f∘f=f이면 치역의 각 원소는 f에 의해 고정된다. 치역을 먼저 정한 뒤 나머지 원소가 그 치역으로 가는 경우를 살피고, 함숫값의 합 조건으로 걸러낸다.'
+    :challenge==='involution'
+      ?'f∘f=id이면 f는 서로 맞바꾸는 두 원소의 쌍과 고정점으로 이루어진다. 고정점 수와 f(1)의 값을 정해 가능한 짝짓기를 분류한다.'
+      :'치역에 포함될 원소들을 정하고, 각 정의역 원소의 함숫값을 배정한다. 합 또는 곱 조건과 치역 크기를 함께 적용해 중복 없이 센다.';
+  const label=challenge==='product-image'?'곱·치역 조건':challenge==='sum-image'?'합·치역 조건':challenge==='idempotent'?'멱등 합성·치역·합 조건':'대합·고정점·함숫값 조건';
+  const rows=[...groups].map(([group,count])=>({label:group,count:String(count),detail:'이 치역 또는 고정점 구조에서 나머지 조건까지 만족하는 함수 수'}));
+  return countResult(question,value,[
+    {title:'조건의 구조 파악',body:method,formula:conditions.join(' · ')},
+    {title:'경우를 나누어 세기',body:`정의역 원소별 함수값 배정을 치역 또는 고정점 구조에 따라 나누고, 각 조건을 동시에 만족하는 경우만 더한다.`,formula:`함수의 수 = ${value}`},
+    {title:'조건을 만족하는 함수의 수',body:`${label}을 모두 만족하는 함수는 ${value}개이다.`,formula:`답 = ${value}`}
+  ],method,{cases:rows.slice(0,24),warnings:rows.length>24?['경우 표는 대표 구조 24개까지만 표시합니다.']:[]});
+}
+
 const functions = makeSpec({
   id:'function',title:'조건을 만족하는 함수',category:'경우의 수',
-  description:'전체 함수, 일대일함수, 전사함수와 특정 함수값 조건을 비교합니다.',
-  defaults:{domain:5,codomain:3,constraint:'onto',fixed:0},
-  controls:[N('domain','정의역 원소 수 n',0,12),N('codomain','공역 원소 수 m',0,12),S('constraint','함수 조건',[['none','전체 함수'],['onto','전사함수'],['injective','일대일함수']]),N('fixed','f(1)=⋯=f(s)=1의 s',0,12,'s=0이면 고정 조건이 없습니다. s는 n 이하입니다.')],
-  presets:[{name:'전사함수',params:{domain:5,codomain:3,constraint:'onto',fixed:0}},{name:'함수값 하나 고정',params:{domain:5,codomain:3,constraint:'onto',fixed:1}},{name:'일대일 불가능',params:{domain:5,codomain:3,constraint:'injective',fixed:0}}]
-},({domain:n,codomain:m,constraint,fixed:s})=>{
+  description:'전사·일대일 조건에 더해 함숫값의 합·곱, 치역의 크기와 합성함수 조건을 조합합니다.',
+  defaults:{domain:5,codomain:3,constraint:'onto',fixed:0,challenge:'basic',target:12,imageSize:2},
+  controls:[N('domain','정의역 원소 수 n',0,12),N('codomain','공역 원소 수 m',0,12),S('challenge','문항 조건',[['basic','기본: 전사·일대일'],['sum-image','함숫값의 합 + 치역 크기'],['product-image','함숫값의 곱 + 치역 크기'],['idempotent','합성함수 + 치역 크기 + 합'],['involution','대합 + 고정점 + f(1)']]),S('constraint','기본 함수 조건',[['none','전체 함수'],['onto','전사함수'],['injective','일대일함수']],{when:{key:'challenge',values:['basic']}}),N('fixed','f(1)=⋯=f(s)=1의 s',0,12,'s=0이면 고정 조건이 없습니다. s는 n 이하입니다.',{when:{key:'challenge',values:['basic']}}),N('target','조건의 기준값',0,999,'조건 종류에 따라 함숫값의 합·곱 또는 f(1)의 값입니다.',{when:{key:'challenge',values:functionChallenges}}),N('imageSize','치역 크기 / 고정점 수',0,12,'대합에서는 고정점 수, 나머지 심화 조건에서는 치역 원소 수입니다.',{when:{key:'challenge',values:functionChallenges}})],
+  presets:[{name:'전사함수',params:{domain:5,codomain:3,constraint:'onto',fixed:0}},{name:'함수값 하나 고정',params:{domain:5,codomain:3,constraint:'onto',fixed:1}},{name:'일대일 불가능',params:{domain:5,codomain:3,constraint:'injective',fixed:0}},{name:'함숫값 합과 치역 크기',params:{domain:4,codomain:3,challenge:'sum-image',target:8,imageSize:2}},{name:'멱등 합성함수',params:{domain:4,codomain:4,challenge:'idempotent',target:10,imageSize:2}},{name:'대합과 고정점',params:{domain:4,codomain:4,challenge:'involution',target:2,imageSize:2}}]
+},p=>{
+  const {domain:n,codomain:m,constraint,fixed:s,challenge}=p;
+  if(functionChallenges.includes(challenge))return countFunctionChallenge(p);
   let value=0n,formula='',reason='',cases=[];
   const impossibleFixed=s>0&&m===0;
   if(impossibleFixed){reason='공역이 비어 있으므로 함수값을 1로 정할 수 없습니다.';formula='경우의 수 = 0';}
@@ -473,7 +523,7 @@ const conditional=makeSpec({
   description:'조건 B로 표본공간을 줄이고 A∩B와 B의 경우의 수를 직접 비교합니다.',
   defaults:{n:8,draw:3,condition:'sum-even',conditionValue:1,event:'include',eventValue:1},
   controls:[N('n','카드 번호의 최댓값 n',1,18),N('draw','동시에 뽑는 카드 수 r',0,9),S('condition','주어진 조건 B',[['sum-even','카드 합이 짝수'],['include','특정 카드 포함'],['max-eq','최댓값이 특정 수']]),N('conditionValue','조건 B의 카드 번호·최댓값',1,18,'B가 합의 짝수 여부일 때에는 사용하지 않습니다.'),S('event','구하려는 사건 A',[['odd-count','홀수 카드 개수가 특정 수'],['include','특정 카드 포함'],['sum-ge','카드 합이 기준 이상']]),N('eventValue','사건 A의 기준 값',0,180)],
-  presets:[{name:'짝수 합과 1번 카드',params:{n:8,draw:3,condition:'sum-even',conditionValue:1,event:'include',eventValue:1}},{name:'1번 포함과 홀수 2장',params:{n:8,draw:3,condition:'include',conditionValue:1,event:'odd-count',eventValue:2}},{name:'최댓값 제한',params:{n:8,draw:3,condition:'max-eq',conditionValue:5,event:'sum-ge',eventValue:10}}]
+  presets:[{name:'짝수 합과 1번 카드',params:{n:8,draw:3,condition:'sum-even',conditionValue:1,event:'include',eventValue:1}},{name:'1번 포함과 홀수 2장',params:{n:8,draw:3,condition:'include',conditionValue:1,event:'odd-count',eventValue:2}},{name:'최댓값 제한',params:{n:8,draw:3,condition:'max-eq',conditionValue:5,event:'sum-ge',eventValue:10}},{name:'최댓값·홀수 개수 동시 조건',params:{n:10,draw:4,condition:'max-eq',conditionValue:6,event:'odd-count',eventValue:2}},{name:'특정 카드·합의 하한',params:{n:10,draw:4,condition:'include',conditionValue:3,event:'sum-ge',eventValue:20}}]
 },({n,draw:r,condition,conditionValue:b,event,eventValue:a})=>{
   let total=0n,countB=0n,countAB=0n,countAoutside=0n,neither=0n;
   const check=list=>{
