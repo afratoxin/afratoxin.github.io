@@ -86,3 +86,5 @@ main{max-width:1640px;margin:auto;min-height:calc(100vh - 139px);padding:24px 28
 .reference-reasons strong{font-weight:650;margin-right:5px}
 .reference-snippet{font-size:11px;line-height:1.75;color:#6a786c;margin-top:4px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;white-space:pre-line}
 @media(max-width:900px){.search-row{grid-template-columns:minmax(0,1fr) minmax(100px,145px)}.search-box{grid-row:1;grid-column:1/-1}.search-mode-label{grid-column:1;grid-row:2}.search-row>.review-select{grid-column:2;grid-row:2;max-width:none;width:100%}.search-mode-label .review-select{height:35px;font-size:11px}.search-status{font-size:10px}.search-example{font-size:10px}.reference-snippet{font-size:11px}}
+
+@media screen{.source-image{max-height:62vh;object-fit:contain;object-position:center top}}
