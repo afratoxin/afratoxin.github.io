@@ -335,21 +335,26 @@ test('shared subject collections display every parent field and search by second
 const fullArchive=JSON.parse(await readFile(new URL('../data/archive.json',import.meta.url),'utf8'));
 const puzzle='type-4536b24c5d',year2026='year-750655310c',year2025='year-abefd8a26e';
 
-test('full archive shows native coverage and only available question cards carry a text badge',async()=>{
+test('full archive provides every body and image without importing personal files',async()=>{
  const oldest=await boot('#/questions',{},fullArchive);
- assert.equal(oldest.elements.get('#text-coverage')?.textContent,'본문 40/755');
- assert.match(oldest.elements.get('#text-coverage').title,/2009학년도 예비시험 0\/40/);
+ assert.equal(oldest.elements.get('#text-coverage')?.textContent,'본문 755/755');
+ assert.equal(oldest.elements.get('#image-coverage')?.textContent,'이미지 755/755');
+ assert.match(oldest.elements.get('#text-coverage').title,/2009학년도 예비시험 40\/40/);
  assert.match(oldest.elements.get('#text-coverage').title,/2027학년도 본시험 40\/40/);
- assert.doesNotMatch(oldest.elements.get('#question-list').innerHTML,/본문 있음/);
+ assert.equal((oldest.elements.get('#question-list').innerHTML.match(/본문 있음/g)||[]).length,10);
  const newest=await boot('#/questions?sort=newest',{},fullArchive);
  assert.equal((newest.elements.get('#question-list').innerHTML.match(/본문 있음/g)||[]).length,10);
 });
 
 test('all 715 local bodies import across the real 755-question archive, restore, search and preserve review notes',async()=>{
+ const legacyArchive=structuredClone(fullArchive);
+ for (const q of legacyArchive.questions) if (q.examKey !== '2027') {
+  q.sourceAccess='local-only';q.text='';q.image='';q.thumbnail='';delete q.imageBundle;
+ }
  const reviews={'p001':{bookmarkColors:['blue'],status:'check',note:'기존 검수 메모'},'2701':{note:'공개 문항 메모'}};
- const {app,elements,memory,requests,location}=await boot('#/question/p001',reviews,fullArchive);
+ const {app,elements,memory,requests,location}=await boot('#/question/p001',reviews,legacyArchive);
  const nativeBefore=app.state.data.questions.filter(question=>question.examKey==='2027').map(question=>question.text);
- const records=fullArchive.questions.filter(question=>question.sourceAccess==='local-only').map(question=>({
+ const records=legacyArchive.questions.filter(question=>question.sourceAccess==='local-only').map(question=>({
   id:question.id,examKey:question.examKey,number:question.number,sourcePage:question.sourcePage,
   text:`로컬전체본문 ${question.id} ${question.examLabel} ${question.number}번\n① 개인용 <본문> & 선택지`,
  }));
@@ -378,7 +383,7 @@ test('all 715 local bodies import across the real 755-question archive, restore,
  app.state.query='';location.hash='#/questions';app.render();
  assert.equal((elements.get('#question-list').innerHTML.match(/본문 있음/g)||[]).length,10);
  assert.equal(requests.length,1);
- const restored=await boot('#/question/2632',reviews,fullArchive,false,memory.get(localText.LOCAL_TEXT_STORAGE_KEY));
+ const restored=await boot('#/question/2632',reviews,legacyArchive,false,memory.get(localText.LOCAL_TEXT_STORAGE_KEY));
  assert.equal(restored.app.state.localTexts.size,715);
  assert.equal(restored.elements.get('#text-coverage').textContent,'본문 755/755');
  assert.match(restored.elements.get('#main').innerHTML,/로컬전체본문 2632/);

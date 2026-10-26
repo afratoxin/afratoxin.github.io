@@ -2095,6 +2095,8 @@
     "legacyTaxonomyMetadataSha256": "d211f7243bb5e34ac53c563d99e6af92e7d78dec88ad06570cbd7749f6cd4beb",
     "native2027Sha256": "438732665016fbbc87671f703c45d8550b2fb3d51a48eb5f91eb77e0196515ba",
     "legacyTaxonomyCount": 221,
-    "native2027FileSha256": "a8f479da5c9fb6c3a6e8aa183d45543d57ca6ae3eed341d6b353e25cf77578cc"
+    "native2027FileSha256": "a8f479da5c9fb6c3a6e8aa183d45543d57ca6ae3eed341d6b353e25cf77578cc",
+    "connectedSourceArchiveSha256": "b38c4abfdb2926c6b6c9d52206606df36cb215696d487862799a4817da00ffd0",
+    "sourceConnectionDate": "2026-10-26"
   }
 }

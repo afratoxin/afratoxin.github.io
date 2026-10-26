@@ -49,7 +49,7 @@ for q in qs:
     assert all(isinstance(s['verdict'],bool) and len(s['explanation']) >= 20 for s in q.get('statements',[])), qid
     if q['examKey'] != '2027':
         assert qid in images and q['sourceAccess'] == 'bundled', qid
-        assert q['imageBundle'] == str(images[qid].relative_to(ROOT)), qid
+        assert q['imageBundle'] == images[qid].relative_to(ROOT).as_posix(), qid
         assert [o['number'] for o in q['sourceOptions']] == [1,2,3,4,5], qid
 for before in old['questions']:
     after = by_id[before['id']]

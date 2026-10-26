@@ -181,7 +181,7 @@ class TaxonomyRefinementsTest(unittest.TestCase):
                                               if 'type-823b36ade9' in annotation['tags']})
         self.assertEqual(len(data['questions']), 755)
         self.assertEqual(len(data['exams']), 20)
-        self.assertEqual(data['publicationMode'], 'explanations-only')
+        self.assertEqual(data['publicationMode'], 'full-content')
 
     def test_all_tag_counts_references_and_parent_links_are_valid(self):
         data = json.loads((ROOT / 'data/archive.json').read_text())
@@ -210,7 +210,7 @@ class TaxonomyRefinementsTest(unittest.TestCase):
         for q in immutable['questions']:
             for key in ('tags', 'types', 'tagReasons'):
                 q.pop(key, None)
-        self.assertEqual(digest(immutable), refinement['preservation']['immutableArchiveSha256'])
+        self.assertEqual(digest(immutable), refinement['preservation']['connectedSourceArchiveSha256'])
         annotations = baseline_annotations(data, refinement)
         self.assertEqual(digest(annotations), refinement['preservation']['legacyAnnotationsSha256'])
         native = json.loads((ROOT / 'data/2027.json').read_text())

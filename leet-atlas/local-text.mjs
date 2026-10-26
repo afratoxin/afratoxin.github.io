@@ -46,7 +46,7 @@ export function parseLocalTextPack(input, questions) {
   const seen = new Set();
   return pack.questions.map(record => {
     const question = record && registry.get(record.id);
-    if (!question || seen.has(record.id) || question.sourceAccess !== 'local-only') {
+    if (!question || seen.has(record.id) || question.examKey === '2027' || !['local-only', 'bundled'].includes(question.sourceAccess)) {
       throw new Error('중복되었거나 불러올 수 없는 문항이 포함되어 있습니다.');
     }
     if (record.examKey !== question.examKey || record.number !== question.number) {

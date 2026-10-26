@@ -1,13 +1,13 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-tree1';
-import { groupTags } from './tag-groups.mjs?v=20261026-tree1';
-import { renderSidebar } from './sidebar.mjs?v=20261026-tree1';
-import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-tree1';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-tree1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-sources1';
+import { groupTags } from './tag-groups.mjs?v=20261026-sources1';
+import { renderSidebar } from './sidebar.mjs?v=20261026-sources1';
+import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-sources1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-sources1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-tree1';
+const CACHE_VERSION = '20261026-sources1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -432,7 +432,7 @@ function readerSource(question) {
   const correctionNotice = corrections.length ? `<details class="text-corrections"><summary>원본 대조로 복원한 추출 오류 ${corrections.length}곳</summary><ul>${corrections.map(item => `<li><strong>${esc(item.to)}</strong><span>${esc(item.reason)}</span></li>`).join('')}</ul><p>원본 이미지와 복원 전 추출 텍스트는 보존되어 있습니다. 전체 내역은 문항 데이터 JSON에서 확인할 수 있습니다.</p></details>` : '';
   return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} ${localSource ? '이 브라우저에 불러온 원문입니다.' : '원본 이미지를 그대로 보존했습니다.'} 문제지 ${esc(question.examPage)}쪽${localSource ? ` · 통합 PDF ${esc(localSource.sourcePage)}쪽` : question.sourcePdfPage || question.sourcePage ? ` · 제공 PDF ${esc(question.sourcePdfPage || question.sourcePage)}쪽` : ''}</div>
   <div id="source-image-view"${state.sourceMode === 'image' ? '' : ' hidden'}><div ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="source"` : ''}>${sourceImageMarkup(question)}</div></div>
-  <div id="source-text-view"${state.sourceMode === 'text' ? '' : ' hidden'}><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(displayedText)}</pre><p class="text-warning">PDF 문자층에서 추출한 텍스트입니다. 공백·줄바꿈·표·수식은 원본과 다를 수 있으므로 원본 이미지를 함께 확인해 주세요.</p>${correctionNotice}${localSource ? `<button type="button" class="button-text local-text-more" data-clear-local-source="${esc(question.id)}">이 원문 지우기</button>` : ''}</div></section>`;
+  <div id="source-text-view"${state.sourceMode === 'text' ? '' : ' hidden'}><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(displayedText)}</pre><p class="text-warning">PDF 문자층에서 추출한 텍스트입니다. 공백·줄바꿈·표·수식은 원본과 다를 수 있으므로 원본 이미지를 함께 확인해 주세요.</p>${correctionNotice}${localSource ? `<button type="button" class="button-text local-text-more" data-clear-local-source="${esc(question.id)}">이 원문 지우기</button>` : state.localTexts.has(question.id) ? `<button type="button" class="button-text local-text-more" data-clear-local-text="${esc(question.id)}">이 본문 지우기</button>` : ''}</div></section>`;
 }
 function localTextPanel(question) {
   const record = state.localTexts.get(question.id);
@@ -474,7 +474,7 @@ async function importLocalSourceFile(file) {
     if (file.size > 64 * 1024 * 1024) throw new Error('원문 파일은 64 MiB까지 불러올 수 있습니다.');
     const records = parseLocalSourcePack(await file.text(), state.data.questions);
     try { await ensureSourceSnapshot(); } catch {
-      const complete = records.length === state.data.questions.filter(question => question.sourceAccess === 'local-only').length;
+      const complete = records.length === state.data.questions.filter(question => question.examKey !== '2027' && ['local-only', 'bundled'].includes(question.sourceAccess)).length;
       if (!complete) throw new Error('저장된 원문을 읽지 못했습니다. 다시 시도하거나 전체 원문 파일을 선택해 주세요.');
     }
     const sources = new Map([...state.localSources, ...records.map(record => [record.id, record])]);

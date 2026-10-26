@@ -8,7 +8,12 @@ import * as sidebar from '../sidebar.mjs';
 import * as localSources from '../local-sources.mjs';
 import {createIndexedDBFixture} from './fixtures/indexeddb.mjs';
 
-const archive=JSON.parse(await readFile(new URL('../data/archive.json',import.meta.url),'utf8'));
+const publishedArchive=JSON.parse(await readFile(new URL('../data/archive.json',import.meta.url),'utf8'));
+const archive=structuredClone(publishedArchive);
+// These tests exercise imports from the earlier archive without bundled sources.
+for (const q of archive.questions) if (q.examKey !== '2027') {
+ q.sourceAccess='local-only';q.text='';q.image='';q.thumbnail='';delete q.imageBundle;
+}
 const source=(await readFile(new URL('../app.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
 const image='data:image/webp;base64,UklGRiIAAABXRUJQVlA4IBYAAAAwAQCdASoBAAEADsD+JaQAA3AAAAAA';
 const row=id=>{
@@ -20,7 +25,7 @@ const file=records=>{
  return {size:Buffer.byteLength(payload),text:async()=>payload};
 };
 
-async function boot({id='p001',database=createIndexedDBFixture(),memory=new Map(),blockedIndexedDB=false}={}) {
+async function boot({id='p001',database=createIndexedDBFixture(),memory=new Map(),blockedIndexedDB=false,data=archive}={}) {
  const elements=new Map(),events=new Map(),requests=[],storageControl={failWrites:false};
  const element=key=>{
   if(!elements.has(key))elements.set(key,{innerHTML:'',textContent:'',hidden:true,open:false,value:'',dataset:{},classList:{add(){},toggle(){}},style:{setProperty(){}},addEventListener(){},focus(){},setAttribute(){},removeAttribute(name){delete this[name]},getClientRects(){return[1]},showModal(){this.open=true},close(){this.open=false}});
@@ -29,13 +34,42 @@ async function boot({id='p001',database=createIndexedDBFixture(),memory=new Map(
  const document={querySelector:element,querySelectorAll:()=>[],addEventListener:(k,fn)=>events.set(k,fn)};
  const location={hash:`#/question/${id}`,href:`https://afratoxin.github.io/leet-atlas/#/question/${id}`};
  if(!memory.has('leet-atlas:2027:reviews:v1'))memory.set('leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:2,reviews:{p001:{note:'보존할 메모',bookmarkColors:['blue'],status:'check'}}}));
- const env={document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>{if(storageControl.failWrites)throw new Error('denied');memory.set(k,v)}},indexedDB:database.indexedDB,navigator:{},fetch:async path=>{requests.push(path);return{ok:true,json:async()=>structuredClone(archive)}},...core,...tagGroups,...localText,...sidebar,...localSources};
+ const env={document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>{if(storageControl.failWrites)throw new Error('denied');memory.set(k,v)}},indexedDB:database.indexedDB,navigator:{},fetch:async path=>{requests.push(path);return{ok:true,json:async()=>structuredClone(data)}},...core,...tagGroups,...localText,...sidebar,...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const previous=Object.getOwnPropertyDescriptor(globalThis,'indexedDB');
  if(blockedIndexedDB){delete env.indexedDB;Object.defineProperty(globalThis,'indexedDB',{configurable:true,get(){throw new Error('blocked database getter')}});}
- let app;try{app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,filteredQuestions,showImage,importLocalSourceFile:typeof importLocalSourceFile === "function" ? importLocalSourceFile : null,importLocalTextFile,clearLocalSource:typeof clearLocalSource === "function" ? clearLocalSource : null};')(...Object.values(env));}finally{if(blockedIndexedDB){if(previous)Object.defineProperty(globalThis,'indexedDB',previous);else delete globalThis.indexedDB;}}
+ let app;try{app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,filteredQuestions,showImage,importLocalSourceFile:typeof importLocalSourceFile === "function" ? importLocalSourceFile : null,importLocalTextFile,clearLocalText,clearLocalSource:typeof clearLocalSource === "function" ? clearLocalSource : null};')(...Object.values(env));}finally{if(blockedIndexedDB){if(previous)Object.defineProperty(globalThis,'indexedDB',previous);else delete globalThis.indexedDB;}}
  return {app,elements,events,requests,location,memory,database,storageControl};
 }
+
+test('personal source corrections survive the transition to bundled public originals',async()=>{
+ const first=await boot({data:publishedArchive});
+ await first.app.importLocalSourceFile(file([row('p001')]));
+ assert.equal(first.app.state.localSources.size,1);
+ assert.match(first.elements.get('#main').innerHTML,/합성 원문 p001/);
+ assert.equal(first.elements.get('#text-coverage').textContent,'본문 755/755');
+ const restored=await boot({data:publishedArchive,database:first.database,memory:first.memory});
+ assert.equal(restored.app.state.localSources.size,1);
+ assert.match(restored.elements.get('#main').innerHTML,/합성 원문 p001/);
+ await restored.app.clearLocalSource('p001');
+ assert.equal(restored.app.state.localSources.size,0);
+ assert.equal(restored.elements.get('#text-coverage').textContent,'본문 755/755');
+ assert.match(restored.elements.get('#main').innerHTML,/참을 깨달은 자/);
+ assert.equal(restored.app.state.reviews.p001.note,'보존할 메모');
+});
+
+test('saved text corrections can restore and clear over the bundled public original',async()=>{
+ const memory=new Map();
+ const record=row('p001');delete record.image;
+ memory.set(localText.LOCAL_TEXT_STORAGE_KEY,JSON.stringify({schemaVersion:1,kind:'leet-atlas-local-text',questions:[record]}));
+ const context=await boot({data:publishedArchive,memory});
+ assert.equal(context.app.state.localTexts.size,1);
+ assert.match(context.elements.get('#main').innerHTML,/합성 원문 p001/);
+ assert.match(context.elements.get('#main').innerHTML,/data-clear-local-text="p001"/);
+ context.app.clearLocalText('p001');
+ assert.equal(context.app.state.localTexts.size,0);
+ assert.match(context.elements.get('#main').innerHTML,/참을 깨달은 자/);
+});
 
 test('source import connects actual reader images and text while preserving public data and reviews',async()=>{
  const {app,elements,memory,requests}=await boot();

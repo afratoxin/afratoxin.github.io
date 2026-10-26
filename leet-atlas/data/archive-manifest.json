@@ -2444,10 +2444,138 @@
     }
   ],
   "taxonomyCount": 232,
-  "publicationMode": "explanations-only",
+  "publicationMode": "full-content",
   "draftExplanationQuestionCount": 755,
   "optionExplanationCount": 3775,
   "preservedSourceQuestionCount": 40,
   "sourceReferenceQuestionCount": 715,
-  "officialAnswerVerificationComplete": false
+  "officialAnswerVerificationComplete": false,
+  "imageCount": 715,
+  "imageBundleFiles": [
+    {
+      "path": "data/images/2009.json",
+      "examKey": "2009",
+      "imageCount": 40,
+      "sha256": "dc70417b3a6bc164fd26555f648ade0ec23f36f844cc0983138c362f583f1dc7"
+    },
+    {
+      "path": "data/images/2010-a.json",
+      "examKey": "2010",
+      "imageCount": 18,
+      "sha256": "367af5a179722fe6853d9119bb95e8f5367402682e25a41ff90245bcb66ebfa3"
+    },
+    {
+      "path": "data/images/2010-b.json",
+      "examKey": "2010",
+      "imageCount": 17,
+      "sha256": "aca1d3b642b0f72d03eff18d5d19f912aeed9026d68b6f3552a4ae17b80da9cf"
+    },
+    {
+      "path": "data/images/2011.json",
+      "examKey": "2011",
+      "imageCount": 35,
+      "sha256": "6316895218bd39e6e6f3ef9fc996512d7759da8ea1c954eb46c10d9281ec3390"
+    },
+    {
+      "path": "data/images/2012.json",
+      "examKey": "2012",
+      "imageCount": 35,
+      "sha256": "2921e0ceb7bc14f9efe1842350f7f65f797620c30d2ebbc73199448297420d20"
+    },
+    {
+      "path": "data/images/2013.json",
+      "examKey": "2013",
+      "imageCount": 35,
+      "sha256": "fe79897b133e82b162d5807b25c1cdb19a6ee6167ce61d97ed3198cea84396c5"
+    },
+    {
+      "path": "data/images/2014.json",
+      "examKey": "2014",
+      "imageCount": 35,
+      "sha256": "5567db22bdce890bba4ca1bfe12b02d40eb2cd9823a0b319ceeb63f7c397d55e"
+    },
+    {
+      "path": "data/images/2015.json",
+      "examKey": "2015",
+      "imageCount": 35,
+      "sha256": "6ee762728daaba69974540ef05b036ef216852f8806b96742cde46f4e79dfce8"
+    },
+    {
+      "path": "data/images/2016.json",
+      "examKey": "2016",
+      "imageCount": 35,
+      "sha256": "9fa2a922a7cb849b6d6c7c0199320a167abe8f02b25a99d7640659ff2919588c"
+    },
+    {
+      "path": "data/images/2017.json",
+      "examKey": "2017",
+      "imageCount": 35,
+      "sha256": "b9d3b7c9e03768c3eb25e61f0afbd53d081b05c2d35895628c9d55d2b4ed47be"
+    },
+    {
+      "path": "data/images/2018.json",
+      "examKey": "2018",
+      "imageCount": 35,
+      "sha256": "551531fed17b3519a7c0061ada3b10553c9dd355e2fed0bd00733766690c2abc"
+    },
+    {
+      "path": "data/images/2019.json",
+      "examKey": "2019",
+      "imageCount": 40,
+      "sha256": "79dccf15ee6566b5de77f1d5ed243ef0b368412012b66e875c1377e38c63ce3b"
+    },
+    {
+      "path": "data/images/2020.json",
+      "examKey": "2020",
+      "imageCount": 40,
+      "sha256": "88c34c3a17bfb30473709ca4ee273ce015ea492315911dce9d6de385668a2b1d"
+    },
+    {
+      "path": "data/images/2021.json",
+      "examKey": "2021",
+      "imageCount": 40,
+      "sha256": "efa652dc77587ef1149dfcd962b8cb7e674bd2721a4cab76f9d12f7a1afc9ee4"
+    },
+    {
+      "path": "data/images/2022.json",
+      "examKey": "2022",
+      "imageCount": 40,
+      "sha256": "17f83758433fa3bb6630fa81a0b189cb0d0d30f05b44fb934b94633df5820742"
+    },
+    {
+      "path": "data/images/2023.json",
+      "examKey": "2023",
+      "imageCount": 40,
+      "sha256": "0239eeac7b05551f3832fd61fd6e8275a345bb3993d8e954f1a74a742a93e34e"
+    },
+    {
+      "path": "data/images/2024.json",
+      "examKey": "2024",
+      "imageCount": 40,
+      "sha256": "1009b7f71b3053174af5fde0456403f46b31695a3f599c64d41852d6cf72118b"
+    },
+    {
+      "path": "data/images/2025.json",
+      "examKey": "2025",
+      "imageCount": 40,
+      "sha256": "240ce5fb7254f2dd2b7ed1d7d6d8abeee54c9a9c8b882e602dc08f5665c2dd32"
+    },
+    {
+      "path": "data/images/2026.json",
+      "examKey": "2026",
+      "imageCount": 40,
+      "sha256": "2e1ce0f1db598145e902987f2ececc0bf41c8f46e03730d8f488c80243177120"
+    },
+    {
+      "path": "data/images/preliminary.json",
+      "examKey": "preliminary",
+      "imageCount": 40,
+      "sha256": "c6369e1494937ee5adb75295295e694bfca3a82741b1b1d8da2d35b2d6ac437a"
+    }
+  ],
+  "sourceContentRequestedDate": "2026-10-26",
+  "publicationApprovalStatus": "authorized-by-user",
+  "sourcePayloadAuthorizationScope": "사용자가 원문 이미지와 파싱 텍스트를 afratoxin/afratoxin.github.io 공개 저장소와 LEET Atlas 사이트에 업로드하도록 명시적으로 요청함.",
+  "publicTextQuestionCount": 755,
+  "publicImageQuestionCount": 755
 }
