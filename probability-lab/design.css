@@ -331,3 +331,154 @@ input[type="range"]:disabled { cursor: default; opacity: .45; }
   .answer-box { margin: 0 16px 9px; padding: 9px 12px; }.answer-value { font-size: 24px; }
   .question-panel, .solution-subpane { padding: 14px 16px; }
 }
+
+/* 2026-10-26 visual refinement: stronger hierarchy, clearer contrast, calmer surfaces. */
+:root {
+  --bg: #f4f5f2;
+  --paper: #ffffff;
+  --navy: #202b27;
+  --text: #293832;
+  --muted: #52615a;
+  --faint: #68766e;
+  --line: #e1e7e2;
+  --teal: #28664f;
+  --teal-dark: #1d4e3b;
+  --teal-soft: #eaf3ed;
+  --blue-soft: #eef3ef;
+  --amber: #8c5f24;
+  --amber-soft: #fbf3e5;
+  --ui-shadow: 0 8px 24px #20332a0a;
+}
+body { color: var(--text); background: #f3f5f2; }
+.site-header { background: #f3f5f2; }
+.header-inner { min-height: 78px; }
+.brand-mark { background: #244f3e; border-radius: 11px; }
+.brand-name { color: #203b30; font-weight: 700; }
+.brand-tagline { color: #66766c; }
+.header-inner .top-tabs { background: #e8ede8; border-color: #dce4de; }
+.header-inner .tab-button { color: #52645a; font-weight: 550; }
+.header-inner .tab-button[aria-selected="true"] { color: #1f573e; box-shadow: 0 2px 6px #1f352508; }
+.workbench-help > summary { color: #41584b; border-color: #dce5de; background: #fff; }
+
+/* The three workbench columns read as distinct, related tools. */
+.workbench-pane { border-color: #e0e6e1; border-radius: 16px; box-shadow: 0 5px 20px #243c3508; }
+.controls-panel { background: #fbfcfa; }
+.problem-panel { background: #fff; }
+.solution-panel { background: #fbfcfa; }
+.pane-title-row h2, .pane-header h2 { color: #263c31; }
+.pane-caption, .adjust-description, .problem-kicker { color: #66756c; }
+.pane-title-row h2::before { color: #657c6d; }
+.adjust-heading { padding-top: 18px; }
+.family-select { border-color: #d9e3dc; color: #263c31; }
+.adjust-tabs { background: #e9eeea; border: 1px solid #e1e7e2; }
+.adjust-tab { color: #56675e; font-weight: 550; }
+.adjust-tab:hover { color: #1f573e; background: #ffffff9c; }
+.adjust-tab[aria-selected="true"] { color: #1e5b40; border-color: #dce7df; box-shadow: 0 2px 5px #193e2a0b; }
+.adjust-content { scrollbar-color: #c5d2c9 transparent; }
+.control-field { border-color: #e1e8e2; box-shadow: 0 1px 2px #20352a04; }
+.control-field:hover { border-color: #cbd9ce; }
+.control-field > .control-label, .control-label { color: #43564b; }
+.control-hint, .control-footnote, .range-bound, #basic-page-status { color: #637269; }
+.control-input, .structure-select { color: #293b32; border-color: #d8e2db; }
+.control-field .drag-meta-select .control-input { color: #32483a; }
+.value-stepper { background: #f5f8f5; border-color: #d7e2d9; }
+.value-stepper .control-value-input { color: #245b40; }
+.number-step { color: #4e6858; }
+.number-step:hover:enabled { background: #e4eee7; color: #1f5138; }
+.control-range::-webkit-slider-runnable-track { background: linear-gradient(to right, #3d795b 0%, #3d795b var(--range-progress, 0%), #e3eae4 var(--range-progress, 0%), #e3eae4 100%); }
+.control-range::-webkit-slider-thumb { background: #347452; box-shadow: 0 0 0 1px #34745226, 0 2px 4px #20352a1c; }
+.control-range::-moz-range-thumb { background: #347452; box-shadow: 0 0 0 1px #34745226; }
+.dynamic-bound-notice { color: #385b46; background: #edf5ef; }
+.controls-actions { background: #f6f8f6; border-color: #e1e8e2; }
+.button { font-weight: 600; }
+.button-primary { background: #28664f; border-color: #28664f; }
+.button-primary:hover:enabled { background: #1f543f; border-color: #1f543f; }
+.button-secondary { color: #43584b; border-color: #d8e2db; }
+.button-secondary:hover:enabled { background: #edf4ef; border-color: #b9cebf; }
+.button-ghost { color: #52645a; }
+.button-ghost:hover:enabled { color: #1f573e; }
+.pane-header { padding-bottom: 15px; }
+.pane-header h2 { letter-spacing: -.045em; }
+.live-indicator { color: #28664f; border-color: #dce9df; background: #f2f8f3; }
+.compact-tabs { border-color: #e5eae6; }
+.compact-tab { color: #596a61; }
+.compact-tab:hover { color: #245b40; }
+.compact-tab[aria-selected="true"] { color: #1f5a3f; }
+.compact-tab[aria-selected="true"]::after { background: #347452; }
+.result-meta { margin-bottom: 20px; }
+.badge { color: #465c4e; border-color: #e1e9e3; background: #f1f5f1; }
+.status-pill { color: #4e6857; background: #edf5ef; }
+.problem-text { color: #27372f; font-family: 'Noto Serif KR', 'Batang', serif; font-weight: 500; }
+.normal-table-container { background: #f8faf8; border-color: #e0e8e2; }
+.normal-table-heading h4, .normal-table-source, .normal-table-notes { color: #52675a; }
+.normal-table th { background: #edf3ee; color: #405c4a; }
+.normal-table td { color: #344b3c; }
+.solution-header h2 { color: #263c31; }
+.answer-box { background: #edf5ef; border-color: #d9e8dc; }
+.answer-label, .answer-unit { color: #526b59; }
+.answer-value { color: #245a3d; }
+.solution-subpane { scrollbar-color: #c5d2c9 transparent; }
+.subsection-title { color: #465e50; }
+.step-number { color: #2d694c; background: #eef5ef; border-color: #dce9de; }
+.step-title { color: #2f4938; }
+.step-body { color: #4e5f55; }
+.formula { color: #395745; background: #f3f7f3; border-color: #e0e9e2; }
+.insight-box { background: #f2f6f1; border-color: #e0e8df; border-left-color: #84a98a; }
+.insight-label, .insight-body { color: #405949; }
+.case-table th { color: #455e4d; background: #edf3ee; }
+.case-table td { color: #43574a; }
+.case-table tr:nth-child(even) td { background: #f8faf8; }
+.empty-state { color: #586a5f; background: #f6f9f6; border-color: #dce6de; }
+
+/* Archive tab: filters first, then scannable, consistent question cards. */
+.scroll-view { background: #fafbf9; border-color: #e0e6e1; }
+.section-kicker { color: #52705d; }
+.section-title { color: #263d31; font-weight: 700; }
+.section-description { color: #596960; }
+.section-badge { color: #315c42; border-color: #dce8de; background: #eef5ef; font-weight: 600; }
+.map-filter-panel { border-color: #e0e7e1; box-shadow: 0 3px 12px #20332a06; }
+.filter-label { color: #41574a; font-size: 11px; font-weight: 650; }
+.filter-field .control-input { background-color: #fcfdfc; }
+.catalog-summary { color: #46594e; }
+.catalog-summary p { font-size: 13px; font-weight: 650; }
+.catalog-list, .source-grid { gap: 12px; }
+.catalog-card, .source-card { border-color: #e1e8e2; border-radius: 12px; box-shadow: 0 2px 8px #20332a04; }
+.catalog-card:hover, .source-card:hover { transform: translateY(-1px); border-color: #b9cdbd; box-shadow: 0 6px 18px #20332a0b; }
+.source-meta { color: #627168; }
+.badge-recent { color: #2e6748; background: #edf5ef; border-color: #dce9df; }
+.badge-legacy { color: #785c32; background: #f7f2e8; border-color: #ebe2cf; }
+.catalog-card-title, .source-title { color: #2f4938; }
+.source-summary, .source-insight { color: #526258; }
+.source-detail { border-color: #e8ede8; }
+.source-detail > summary, .source-detail .detail-label { color: #52665a; }
+.condition-list { color: #596960; }
+.source-explainer { color: #66746b; }
+.pagination { margin-top: 22px; }
+.page-button { color: #4b5f53; border-color: #e0e7e1; }
+.page-button:hover { background: #eff5f0; }
+.page-button[aria-current="true"] { background: #e7f0e8; border-color: #b9d0bf; color: #24583d; font-weight: 700; }
+
+/* Comparison tab: make observed and suggested conditions easy to distinguish. */
+.compare-family-select { color: #293b32; }
+.compare-grid { gap: 14px; }
+.compare-panel, .comparison-insight { border-color: #e0e7e1; box-shadow: 0 3px 12px #20332a05; }
+.observed-panel { border-top-color: #588368; }
+.proposed-panel { border-top-color: #c39650; background: #fffdfa; }
+.comparison-label { color: #5b6b61; }
+.comparison-title { color: #30483a; }
+.comparison-list, .difference-list { color: #4f6056; }
+.comparison-list li::marker { color: #548064; }
+.proposed-panel .comparison-list li::marker { color: #bf9453; }
+.future-conditions { color: #53635a; border-color: #e6ebe6; }
+.comparison-insight .insight-box { background: #f4f7f3; }
+.toast { background: #244f3e; border-color: #244f3e; }
+
+@media (max-width: 1023px) {
+  .pane-switch-button { color: #42594a; background: #fff; border-color: #dce6de; }
+  .pane-switch-button[aria-selected="true"] { color: #1e583e; background: #e8f1e9; border-color: #aec8b4; box-shadow: inset 0 0 0 1px #d3e3d6; }
+}
+@media (max-width: 620px) {
+  .header-inner .top-tabs { background: #e8ede8; }
+  .scroll-view { background: #fafbf9; }
+  .catalog-card, .source-card { box-shadow: 0 2px 8px #20332a05; }
+}
