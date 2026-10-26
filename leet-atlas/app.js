@@ -33,6 +33,7 @@ let tooltipTarget = null;
 let tooltipTimer;
 let toastTimer;
 let nextFocus = null;
+let keyboardQuestionId = null;
 let lastView = null;
 let yearContentPromise = null;
 let yearContent = null;
@@ -330,6 +331,19 @@ function navigate(route, focus) {
   const hash = buildRoute({ mode: state.route.mode || state.modePreference, sort: state.route.sort, ...route });
   if (hash === location.hash) render();
   else location.hash = hash;
+}
+function moveQuestionByArrow(direction) {
+  if (state.route.view !== 'question' || !state.data) return false;
+  const ordered = state.route.sort === 'accuracy' || state.searchMode === 'recommend' && state.query.trim()
+    ? filteredQuestions()
+    : filterQuestions(state.data.questions, { sort: state.route.sort });
+  const currentId = keyboardQuestionId || state.route.id;
+  const index = ordered.findIndex(question => question.id === currentId);
+  const target = ordered[index + direction];
+  if (!target) return false;
+  keyboardQuestionId = target.id;
+  navigate({ ...state.route, view: 'question', id: target.id });
+  return true;
 }
 function listRoute(change = {}) {
   const view = ['list', 'bookmarks', 'tag'].includes(state.route.view) ? state.route.view : 'list';
@@ -656,7 +670,7 @@ function renderQuestion() {
   const questionLength = String(question.text || question.rawText || '').replace(/\s/g, '').length;
   const questionLayout = questionLength <= 950 ? 'short' : questionLength <= 1350 ? 'medium' : 'long';
   const listHref = buildRoute(state.returnRoute || { ...state.route, view: state.route.bookmark && state.route.bookmark !== 'all' ? 'bookmarks' : 'list', id: null });
-  main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} ${state.returnRoute?.view === 'analysis' ? '연도별 분석' : '문항 목록'} <span aria-hidden="true">/</span> ${esc(examLabel(question))}</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항">${icon('right')}</button></nav></div>
+  main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} ${state.returnRoute?.view === 'analysis' ? '연도별 분석' : '문항 목록'} <span aria-hidden="true">/</span> ${esc(examLabel(question))}</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항" aria-keyshortcuts="ArrowLeft">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><span class="question-keyboard-hint" title="방향키로 문항 이동" aria-hidden="true">← →</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항" aria-keyshortcuts="ArrowRight">${icon('right')}</button></nav></div>
   <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(examLabel(question))} 법학적성시험 · 추리논증 ${esc(question.number)}번 <span aria-hidden="true">·</span> 검수용 초안</div></div></div><div class="question-heading-actions">${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
   ${renderRibbon(question)}<div class="reader-grid reader-grid--${questionLayout}">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="${unreviewed ? '문항 분류 이유' : '문항 해설'}"><div class="panel-heading"><h2>${unreviewed ? '소재와 태그 분류' : '해설과 논증 구조'} <span>${unreviewed ? 'CLASSIFICATION' : 'ANALYSIS'}</span></h2><span class="draft-label"><i></i>검수용 초안</span></div><div class="analysis-body">${unreviewed ? classificationSections(question) : explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
   ${documentLinks(question)}`;
@@ -701,6 +715,7 @@ function render() {
   hideTooltip();
   const previousRoute = state.route;
   state.route = parseRoute(location.hash);
+  keyboardQuestionId = state.route.view === 'question' ? state.route.id : null;
   if (previousRoute.sort !== state.route.sort) state.searchSort = state.route.sort === 'accuracy' ? 'accuracy' : 'date';
   const originalTagId = state.route.id;
   const originalTags = state.route.tags.join('\n');
@@ -1000,7 +1015,12 @@ document.addEventListener('focusin', event => {
   const target = event.target.closest('[data-tooltip]');
   if (target) showTooltip(target); else hideTooltip();
 });
-document.addEventListener('keydown', event => { if (event.key === 'Escape') hideTooltip(); });
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') hideTooltip();
+  if (!['ArrowLeft', 'ArrowRight'].includes(event.key) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.isComposing) return;
+  if (event.target.closest?.('input, textarea, select, [contenteditable], [role="textbox"]') || document.querySelector('dialog[open]')) return;
+  if (moveQuestionByArrow(event.key === 'ArrowLeft' ? -1 : 1)) event.preventDefault();
+});
 document.addEventListener('error', event => {
   if (event.target.matches?.('.source-image')) {
     const button = event.target.closest('.source-image-button');
