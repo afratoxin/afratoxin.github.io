@@ -2,7 +2,7 @@ import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor,
 import { groupTags } from './tag-groups.mjs?v=20261026-strengthen-release1';
 import { renderSidebar } from './sidebar.mjs?v=20261026-strengthen-release1';
 import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-year-analysis1';
-import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-year-analysis1';
+import { loadLocalTexts, parseLocalTextPack, saveLocalTexts } from './local-text.mjs?v=20261026-year-analysis1';
 import { rankReferences } from './reference-search.mjs?v=20261026-year-analysis1';
 import { createSemanticSearch } from './semantic-search.mjs?v=20261026-year-analysis1';
 import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-plane1';
@@ -232,18 +232,6 @@ function archiveScope() {
   const count = state.data.exam?.examCount || state.data.exams?.length || new Set(state.data.questions.map(question => question.examKey || question.year)).size;
   return count > 1 ? `${count}회분` : examLabel(state.data.questions[0] || { year: '' });
 }
-function updateTextCoverage() {
-  const coverage = localTextCoverage(state.data.questions, state.localTexts);
-  const status = document.querySelector('#text-coverage');
-  status.textContent = `본문 ${coverage.available}/${coverage.total}`;
-  status.title = coverage.exams.map(exam => `${exam.examLabel} ${exam.available}/${exam.total}`).join('\n');
-  const images = state.data.questions.filter(question => state.localSources.has(question.id) || question.sourceAccess !== 'local-only' && (question.image || question.imageBundle));
-  const imageStatus = document.querySelector('#image-coverage');
-  if (imageStatus) {
-    imageStatus.textContent = `이미지 ${images.length}/${coverage.total}`;
-    imageStatus.title = coverage.exams.map(exam => `${exam.examLabel} ${images.filter(question => question.examKey === exam.examKey).length}/${exam.total}`).join('\n');
-  }
-}
 function emptyTaxonomyLabel() {
   return state.data.exams || state.data.exam?.examCount ? '현재 아카이브 자료 없음' : `현재 ${state.data.questions[0]?.year || ''} 자료 없음`;
 }
@@ -428,8 +416,7 @@ function renderList() {
     <p id="search-status" class="search-status" role="status" aria-live="polite"></p><button type="button" class="search-example button-text" data-search-example>예시: 인문 논리학 소재의, 2명이 서로 싸우는 문항</button>
     <div id="color-filter-area">${colorFilters()}</div>${selectedFilterChips()}
     <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="relevance">관련성순</option><option value="oldest">오래된순</option><option value="newest">최신순</option><option value="accuracy">정확도 순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
-    <p class="list-bottom-note">${icon('info')} 회차별 출처와 분류 이유를 문항에서 확인할 수 있습니다. 정답·해설 검토 여부도 각 문항에 표시합니다.</p>
-  </section></div>`;
+      </section></div>`;
   document.querySelector('#review-filter').value = state.review;
   document.querySelector('#search-mode').value = state.searchMode;
   document.querySelector('#question-sort').value = state.searchMode === 'recommend' && state.query.trim() && state.searchSort === 'relevance' ? 'relevance' : state.route.sort;
@@ -446,7 +433,7 @@ function questionCard(question) {
   const thumbnail = imageFor(question, true);
   const match = state.searchMatches.get(question.id);
   const recommendation = match ? `<div class="reference-match"><p class="reference-reasons"><strong>추천 근거</strong> ${esc(match.reasons.length ? match.reasons.slice(0,3).join(' · ') : '문장 의미가 비슷한 후보')}</p>${match.snippet ? `<p class="reference-snippet">${esc(match.snippet)}</p>` : ''}</div>` : '';
-  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${typeof question.text === 'string' && question.text.trim() ? '<span class="text-available-badge">본문 있음</span>' : ''}${imageFor(question, true) || usesImageBundle(question) ? '<span class="text-available-badge">이미지 있음</span>' : ''}${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${recommendation}${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
+  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div>${recommendation}${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
 }
 function paginationMarkup(result) {
   if (!result.total) return '';
@@ -671,8 +658,8 @@ function renderQuestion() {
   const questionLayout = questionLength <= 950 ? 'short' : questionLength <= 1350 ? 'medium' : 'long';
   const listHref = buildRoute(state.returnRoute || { ...state.route, view: state.route.bookmark && state.route.bookmark !== 'all' ? 'bookmarks' : 'list', id: null });
   main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} ${state.returnRoute?.view === 'analysis' ? '연도별 분석' : '문항 목록'} <span aria-hidden="true">/</span> ${esc(examLabel(question))}</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항" aria-keyshortcuts="ArrowLeft">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><span class="question-keyboard-hint" title="방향키로 문항 이동" aria-hidden="true">← →</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항" aria-keyshortcuts="ArrowRight">${icon('right')}</button></nav></div>
-  <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(examLabel(question))} 법학적성시험 · 추리논증 ${esc(question.number)}번 <span aria-hidden="true">·</span> 검수용 초안</div></div></div><div class="question-heading-actions">${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
-  ${renderRibbon(question)}<div class="reader-grid reader-grid--${questionLayout}">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="${unreviewed ? '문항 분류 이유' : '문항 해설'}"><div class="panel-heading"><h2>${unreviewed ? '소재와 태그 분류' : '해설과 논증 구조'} <span>${unreviewed ? 'CLASSIFICATION' : 'ANALYSIS'}</span></h2><span class="draft-label"><i></i>검수용 초안</span></div><div class="analysis-body">${unreviewed ? classificationSections(question) : explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
+  <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(examLabel(question))} 법학적성시험 · 추리논증 ${esc(question.number)}번</div></div></div><div class="question-heading-actions">${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
+  ${renderRibbon(question)}<div class="reader-grid reader-grid--${questionLayout}">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="${unreviewed ? '문항 분류 이유' : '문항 해설'}"><div class="panel-heading"><h2>${unreviewed ? '소재와 태그 분류' : '해설과 논증 구조'} <span>${unreviewed ? 'CLASSIFICATION' : 'ANALYSIS'}</span></h2></div><div class="analysis-body">${unreviewed ? classificationSections(question) : explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
   ${documentLinks(question)}`;
   void hydrateImages([question]);
 }
@@ -741,7 +728,6 @@ function render() {
   else if (state.route.view === 'analysis') renderAnnualPage();
   else if (state.route.view === 'tags') renderTags();
   else renderList();
-  updateTextCoverage();
   updateNavigation();
   const focus = nextFocus;
   nextFocus = null;
