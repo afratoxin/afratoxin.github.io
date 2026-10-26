@@ -83,7 +83,7 @@ const eventAlgebra = define({
   else if (p.query === 'independence') steps.push({ title: '독립의 필요충분조건 확인', body: `P(A∩B)와 P(A)P(B)를 분수 그대로 비교한다. 두 값이 ${independent ? '같으므로 독립이다.' : '다르므로 독립이 아니다.'}`, formula: `${p.both}×${total} ${independent ? '=' : '≠'} ${a}×${b}` });
   else steps.push({ title: '조건으로 표본공간 줄이기', body: `이미 ${p.query === 'aGivenB' ? 'B' : 'A'}가 일어났으므로 그 사건에 속한 사람만 분모에 놓는다.`, formula: `${symbol[p.query]} = ${p.both}/${p.query === 'aGivenB' ? b : a} = ${value.exact}` });
   return {
-    status: 'ok', question: `어느 학급에서 학생들의 두 활동 A, B의 참여 여부를 조사하였다. 두 활동에 모두 참여한 학생은 ${p.both}명, A에만 참여한 학생은 ${p.aOnly}명, B에만 참여한 학생은 ${p.bOnly}명, 두 활동에 모두 참여하지 않은 학생은 ${p.neither}명이다. 이 학급에서 임의로 한 명을 선택한다. 사건 A, B를 각각 선택한 학생이 활동 A, B에 참여하는 사건이라 할 때, ${p.query === 'independence' ? '사건 A와 B가 독립인지 판정하시오.' : `${symbol[p.query]}의 값은?`}`,
+    status: 'ok', question: `어느 학급에서 활동 A, B의 참여 여부를 조사하였더니 두 활동에 모두 참여한 학생은 ${p.both}명, A에만 참여한 학생은 ${p.aOnly}명, B에만 참여한 학생은 ${p.bOnly}명, 두 활동에 모두 참여하지 않은 학생은 ${p.neither}명이었다. 이 학급에서 한 명을 임의로 택할 때, 그 학생이 활동 A, B에 참여하는 사건을 각각 A, B라 하자. ${p.query === 'independence' ? '두 사건 A와 B가 독립인지 판정하시오.' : `${symbol[p.query]}의 값을 구하시오.`}`,
     answer: p.query === 'independence' ? `두 사건은 ${independent ? '독립이다.' : '독립이 아니다.'}` : `${symbol[p.query]} = ${value.exact}`,
     ...value, unit: p.query === 'independence' ? '판정' : '확률', steps,
     insight: p.query === 'independence' ? '배반과 독립은 다릅니다. 교집합이 비었다는 사실만으로 독립이라고 할 수 없습니다.' : `P(A)=${pa}, P(B)=${pb}, P(A∩B)=${pab}. 조건부확률은 조건 사건이 분모가 됩니다.`,
@@ -123,7 +123,7 @@ const binomial = define({
     ? probabilityStep
     : { title: p.query === 'mean' ? '평균 계산' : '분산 계산', body: p.query === 'mean' ? '각 시행의 성공 지시변수의 평균을 더하면 된다.' : '독립인 성공 지시변수의 분산을 더하면 된다.', formula: `${target} = ${p.query === 'mean' ? 'np' : 'np(1−p)'} = ${value.exact}` };
   return {
-    status: 'ok', question: `각 시행에서 사건 A가 일어날 확률은 ${prob}이다. 이 시행을 서로 독립적으로 ${p.n}회 반복할 때, 사건 A가 일어난 횟수를 확률변수 X라 하자. ${target}의 값은?`,
+    status: 'ok', question: `한 번의 시행에서 사건 A가 일어날 확률은 ${prob}이다. 이 시행을 서로 독립적으로 ${p.n}회 반복하여, 사건 A가 일어난 횟수를 확률변수 X라 하자. ${target}의 값은?`,
     answer: `${target} = ${value.exact}`, ...value, unit: p.query === 'probability' ? '확률' : p.query === 'mean' ? '회' : '회²',
     steps: [{ title: '이항분포 확인', body: '각 시행은 성공과 실패로 나뉘고 성공확률은 일정하며, 시행끼리 독립이다.', formula: `X ~ B(${p.n}, ${prob})` }, { title: '한 가지 성공 횟수의 확률', body: 'k번 성공하는 위치를 고른 뒤 각 배열의 확률을 곱한다. p=0 또는 p=1도 해당 점에 확률 1을 둔다.', formula: `P(X=k) = ${p.n}Ck·(${prob})ᵏ·(1−${prob})⁽${p.n}−k⁾` }, third],
     insight: '평균 np는 분포의 중심을, 분산 np(1−p)는 흩어진 정도를 나타냅니다. p가 0이나 1이면 성공 횟수는 상수입니다.',
@@ -269,7 +269,7 @@ const normal = define({
   const se = p.sigma / Math.sqrt(p.n), zl = (p.lower - p.mu) / se, zu = (p.upper - p.mu) / se;
   const probability = normalInterval(zl, zu), tableSolution = normalTableInterval(zl, zu);
   return {
-    status: 'ok', question: `모평균이 ${p.mu}, 모표준편차가 ${p.sigma}인 정규모집단에서 크기가 ${p.n}인 표본을 임의추출한다. 표본평균을 X̄라 할 때, P(${p.lower}≤X̄≤${p.upper})의 값은? (단, 표준정규분포표를 이용한다.)`,
+    status: 'ok', question: `모평균이 ${p.mu}, 모표준편차가 ${p.sigma}인 정규분포를 따르는 모집단에서 크기가 ${p.n}인 표본을 임의추출한다. 표본평균을 X̄라 할 때, P(${p.lower}≤X̄≤${p.upper})의 값을 구하시오. (단, 표준정규분포표를 이용한다.)`,
     answer: `표 이용: P(${p.lower}≤X̄≤${p.upper}) ≈ ${tableSolution.probability.toFixed(4)} (약 ${fmt(100 * tableSolution.probability, 4)}%)`, numeric: probability, unit: '확률',
     normalTable: normalTableFor([zl, zu]),
     steps: [{ title: '표본평균의 분포', body: '정규모집단에서 독립적으로 추출한 표본평균도 정규분포를 따른다. 표본평균의 표준편차는 σ/√n이다.', formula: `E(X̄)=${p.mu}, σ(X̄)=${p.sigma}/√${p.n}≈${fmt(se, 10)}` }, { title: '양 끝을 표준화', body: '평균을 빼고 표본평균의 표준편차로 나눈다. σ 자체로 나누는 것과 구별한다.', formula: `Z=(X̄−${p.mu})/(σ/√n), z₁≈${fmt(zl, 8)}, z₂≈${fmt(zu, 8)}` }, { title: '표의 넓이를 대칭과 차로 계산', body: tableSolution.body, formula: tableSolution.formula }],

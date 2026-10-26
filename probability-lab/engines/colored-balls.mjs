@@ -1,4 +1,4 @@
-import { COLORS, emptyBallRules, compileBallGroup, compare } from './ball-rules.mjs?v=20261026-prompt-style';
+import { COLORS, emptyBallRules, compileBallGroup, compare } from './ball-rules.mjs?v=20261026-prompt-style-fix';
 const N=(key,label,min,max,extra={})=>({key,label,type:'number',min,max,step:1,...extra});
 const S=(key,label,options,extra={})=>({key,label,type:'select',options:options.map(([value,label])=>({value,label})),...extra});
 const C=(key,label,extra={})=>({key,label,type:'checkbox',...extra});
@@ -107,7 +107,7 @@ function solveDraw(p){
  const drawText=p.replacement?`임의로 한 개의 공을 꺼내어 색을 확인한 후 다시 넣는 시행을 ${p.draw}회 반복한다.`:ordered?`임의로 한 개씩 공을 ${p.draw}개 꺼낸다.`:`임의로 공 ${p.draw}개를 동시에 꺼낸다.`;
  const eventConditions=[baseCondition,!A.empty?A.text:'',seqText].filter(Boolean);
  const eventPrompt=eventConditions.length?`다음 조건을 만족시키는 경우의 수를 구하시오.\n${eventConditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`:'가능한 결과의 수를 구하시오.';
- const probabilityPrompt=given?`${B.text}일 때, ${eventText}일 확률은?`:eventConditions.length?`${eventText}일 확률은?`:'이 시행에서 어떤 결과가 나올 확률은?';
+ const probabilityPrompt=given?`${B.text}일 때, ${eventText}일 확률은?`:eventConditions.length?`${eventText}일 확률은?`:'모든 가능한 추출 결과를 포함하는 사건의 확률은?';
  const usesExpression=[...(p.ballRules?.event?.rules??[]),...(p.ballRules?.given?.rules??[])].some(rule=>rule.kind==='expression');
  const question=`주머니에 ${quantities}가 들어 있다. ${drawText}${p.query==='probability'?`\n${probabilityPrompt}`:`\n${given?`${B.text}인 경우 중, `:''}${eventPrompt}`}\n(단, 공은 각각 서로 구별${ordered?', 공을 꺼낸 순서를 구별':''}한다.)${usesExpression?'\n(a, b, …는 색의 순서대로 꺼낸 각 색 공의 개수를 나타낸다.)':''}`;
  return {status:'ok',question,answer,exact:answer,numeric:p.query==='probability'?Number(numerator)/Number(denominator):Number(numerator),unit:p.query==='probability'?'확률':'가지',steps:[

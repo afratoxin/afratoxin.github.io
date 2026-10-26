@@ -206,7 +206,7 @@ function originalQuestion(p,bounds){
  }
  for(const c of s.conditions)conditions.push(c.kind==='expression'?`${c.left} ${LABELS[c.relation]} ${c.right}`:c.kind==='distinct'?`${c.variables.map(name).join(', ')}의 값은 서로 다르다.`:c.variables.map(name).join(c.kind==='increasing'?' < ':' ≤ '));
  if(p.order!=='any')conditions.push(names.join(p.order==='increasing'||p.distinct?' < ':' ≤ '));else if(p.distinct)conditions.push(`${names.join(', ')}의 값은 서로 다르다.`);
- const heading=`${DOMAINS[p.domain].label} ${names.join(', ')}에 대하여, 다음 조건을 만족시키는 순서쌍 (${names.join(', ')})의 개수를 구하시오.`;
+ const heading=`${DOMAINS[p.domain].label} ${names.join(', ')}에 대하여, 다음 조건을 만족시키는 (${names.join(', ')})의 개수를 구하시오.`;
  return `${heading}\n${conditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`;
 }
 export function structuredSolve(p,basicSolve){

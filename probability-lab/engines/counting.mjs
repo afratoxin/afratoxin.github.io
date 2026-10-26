@@ -460,7 +460,7 @@ const probabilityCount=makeSpec({
   for(let i=0;i<sorted.length;i+=width){const group=sorted.slice(i,i+width);chart.push({label:group.length===1?`${group[0][0]}`:`${group[0][0]}~${group.at(-1)[0]}`,value:Number(group.reduce((s,row)=>s+row[1],0n))});}
   const teaching=statistic==='sum'?sumTeaching(sides,rolls,target,relation):statistic==='max'?maximumTeaching(sides,rolls,target,relation):productTeaching(sides,rolls,target,relation,prefixDistribution);
   const f=fraction(successful,total);
-  return probabilityResult(`1부터 ${sides}까지의 자연수가 하나씩 적힌 ${sides}면체 주사위를 서로 독립적으로 ${rolls}회 던진다. 나온 눈의 ${name}이 ${relationText(target,relation)}일 확률은?`,successful,total,[
+  return probabilityResult(`1부터 ${sides}까지의 자연수가 하나씩 적힌 주사위를 서로 독립적으로 ${rolls}회 던질 때, 나온 눈의 ${name}이 ${relationText(target,relation)}일 확률은?`,successful,total,[
     {title:'동일확률의 기준',body:`순서 있는 각 눈의 결과는 같은 확률입니다. 전체 ${total}가지를 분모로 삼고, 사건의 경우의 수를 조합·곱의 법칙으로 구합니다. ${name}의 서로 다른 값이 동일확률인 것은 아닙니다.`,formula:`전체 결과 수 = ${sides}^${rolls} = ${total}`},
     ...teaching.steps,
     {title:'확률로 마무리',body:`조건을 만족하는 ${successful}가지를 전체 ${total}가지로 나누어 약분합니다.`,formula:`P(A) = ${successful}/${total} = ${f.text}`}

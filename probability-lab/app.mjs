@@ -1,6 +1,6 @@
-import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-prompt-style';
-import { createBallEditor } from './ball-editor.mjs?v=20261026-prompt-style';
-import { specs } from './engines.mjs?v=20261026-prompt-style';
+import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-prompt-style-fix';
+import { createBallEditor } from './ball-editor.mjs?v=20261026-prompt-style-fix';
+import { specs } from './engines.mjs?v=20261026-prompt-style-fix';
 import { renderExamQuestion } from './exam-paper.mjs?v=20261026-exam';
 import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor, validateStructureLimits } from './structured-editor.mjs?v=20261026-limits';
 
