@@ -83,7 +83,7 @@ const eventAlgebra = define({
   else if (p.query === 'independence') steps.push({ title: '독립의 필요충분조건 확인', body: `P(A∩B)와 P(A)P(B)를 분수 그대로 비교한다. 두 값이 ${independent ? '같으므로 독립이다.' : '다르므로 독립이 아니다.'}`, formula: `${p.both}×${total} ${independent ? '=' : '≠'} ${a}×${b}` });
   else steps.push({ title: '조건으로 표본공간 줄이기', body: `이미 ${p.query === 'aGivenB' ? 'B' : 'A'}가 일어났으므로 그 사건에 속한 사람만 분모에 놓는다.`, formula: `${symbol[p.query]} = ${p.both}/${p.query === 'aGivenB' ? b : a} = ${value.exact}` });
   return {
-    status: 'ok', question: `어느 모임에서 두 조건 A, B를 조사하였다. 두 조건 모두 해당하는 사람은 ${p.both}명, A에만 해당하는 사람은 ${p.aOnly}명, B에만 해당하는 사람은 ${p.bOnly}명, 어느 조건에도 해당하지 않는 사람은 ${p.neither}명이다. 이 모임에서 한 명을 같은 가능성으로 뽑을 때 ${p.query === 'independence' ? '사건 A와 B가 독립인지 판정하시오.' : `${symbol[p.query]}를 구하시오.`}`,
+    status: 'ok', question: `어느 학급에서 학생들의 두 활동 A, B의 참여 여부를 조사하였다. 두 활동에 모두 참여한 학생은 ${p.both}명, A에만 참여한 학생은 ${p.aOnly}명, B에만 참여한 학생은 ${p.bOnly}명, 두 활동에 모두 참여하지 않은 학생은 ${p.neither}명이다. 이 학급에서 임의로 한 명을 선택한다. 사건 A, B를 각각 선택한 학생이 활동 A, B에 참여하는 사건이라 할 때, ${p.query === 'independence' ? '사건 A와 B가 독립인지 판정하시오.' : `${symbol[p.query]}의 값은?`}`,
     answer: p.query === 'independence' ? `두 사건은 ${independent ? '독립이다.' : '독립이 아니다.'}` : `${symbol[p.query]} = ${value.exact}`,
     ...value, unit: p.query === 'independence' ? '판정' : '확률', steps,
     insight: p.query === 'independence' ? '배반과 독립은 다릅니다. 교집합이 비었다는 사실만으로 독립이라고 할 수 없습니다.' : `P(A)=${pa}, P(B)=${pb}, P(A∩B)=${pab}. 조건부확률은 조건 사건이 분모가 됩니다.`,
@@ -123,7 +123,7 @@ const binomial = define({
     ? probabilityStep
     : { title: p.query === 'mean' ? '평균 계산' : '분산 계산', body: p.query === 'mean' ? '각 시행의 성공 지시변수의 평균을 더하면 된다.' : '독립인 성공 지시변수의 분산을 더하면 된다.', formula: `${target} = ${p.query === 'mean' ? 'np' : 'np(1−p)'} = ${value.exact}` };
   return {
-    status: 'ok', question: `한 번의 시행에서 성공할 확률이 ${prob}인 실험을 서로 독립적으로 ${p.n}번 반복한다. 성공한 횟수를 확률변수 X라 할 때 ${target}를 구하시오.`,
+    status: 'ok', question: `각 시행에서 사건 A가 일어날 확률은 ${prob}이다. 이 시행을 서로 독립적으로 ${p.n}회 반복할 때, 사건 A가 일어난 횟수를 확률변수 X라 하자. ${target}의 값은?`,
     answer: `${target} = ${value.exact}`, ...value, unit: p.query === 'probability' ? '확률' : p.query === 'mean' ? '회' : '회²',
     steps: [{ title: '이항분포 확인', body: '각 시행은 성공과 실패로 나뉘고 성공확률은 일정하며, 시행끼리 독립이다.', formula: `X ~ B(${p.n}, ${prob})` }, { title: '한 가지 성공 횟수의 확률', body: 'k번 성공하는 위치를 고른 뒤 각 배열의 확률을 곱한다. p=0 또는 p=1도 해당 점에 확률 1을 둔다.', formula: `P(X=k) = ${p.n}Ck·(${prob})ᵏ·(1−${prob})⁽${p.n}−k⁾` }, third],
     insight: '평균 np는 분포의 중심을, 분산 np(1−p)는 흩어진 정도를 나타냅니다. p가 0이나 1이면 성공 횟수는 상수입니다.',
@@ -155,6 +155,9 @@ const discrete = define({
   const mean = fraction(a * baseSum + b * n, n), variance = fraction(a * a * (baseSquares * n - baseSum * baseSum), n * n);
   const value = p.query === 'mean' ? mean : variance;
   const description = p.transform === 'square' ? 'i²' : p.transform === 'parity' ? 'i가 홀수이면 1, 짝수이면 0' : 'i';
+  const scaleText=p.scale===1?'':p.scale===-1?'−':`${p.scale}`;
+  const offsetText=p.offset===0?'':p.offset>0?`+${p.offset}`:`−${Math.abs(p.offset)}`;
+  const transformedValue=p.scale===0?`${p.offset}`:`${scaleText}${p.transform==='parity'?'g(i)':description}${offsetText}`;
   const entries = [...groups].sort((a, b) => a[0] - b[0]);
   const target = p.query === 'mean' ? 'E(X)' : 'V(X)';
   const baseStep = p.transform === 'parity'
@@ -163,7 +166,7 @@ const discrete = define({
       ? { title: '제곱합과 네제곱합 공식', body: 'Y=i²로 놓으면 평균에는 제곱합, 이차 모멘트에는 네제곱합을 쓴다. 네제곱합 공식은 제곱변환을 위한 확장 계산식이다.', formula: `Σi²=n(n+1)(2n+1)/6=${sum2}, Σi⁴=n(n+1)(2n+1)(3n²+3n−1)/30=${sum4}` }
       : { title: '자연수의 합 공식 사용', body: 'Y=i로 놓고 각 눈을 늘어놓는 대신 자연수의 합과 제곱합 공식을 사용한다.', formula: `Σi=n(n+1)/2=${sum1}, Σi²=n(n+1)(2n+1)/6=${sum2}` };
   return {
-    status: 'ok', question: `1부터 ${p.faces}까지의 자연수가 하나씩 적힌 공정한 ${p.faces}면체를 한 번 던진다. 나온 눈 i에 대하여 g(i)=${description}, X=${p.scale}g(i)+(${p.offset})로 정할 때 ${target}를 구하시오.`,
+    status: 'ok', question: `1부터 ${p.faces}까지의 자연수가 하나씩 적힌 카드 ${p.faces}장 중 임의로 한 장을 선택하고, 그 카드에 적힌 수를 i라 하자. 확률변수 X를 X=${transformedValue}로 정할 때, ${target}의 값은?${p.transform==='parity'?`\n(단, g(i)는 i가 홀수이면 1, 짝수이면 0이다.)`:''}`,
     answer: `${target} = ${value.exact}`, ...value, unit: p.query === 'mean' ? '값' : '값²',
     steps: [baseStep, { title: '기본변수의 평균과 분산', body: `각 눈은 등확률이므로 합 공식의 값을 ${p.faces}로 나누어 모멘트를 구하고, V(Y)=E(Y²)−{E(Y)}²를 적용한다.`, formula: `E(Y)=${baseMean.exact}, V(Y)=${baseVariance.exact}` }, { title: '일차변환 공식 적용', body: 'X=aY+b에서 평균은 a배 한 뒤 b를 더하고, 분산은 a²배 한다. 상수 b는 분산에 영향을 주지 않는다.', formula: p.query === 'mean' ? `E(X)=(${p.scale})E(Y)+(${p.offset})=${value.exact}` : `V(X)=(${p.scale})²V(Y)=${value.exact}` }],
     insight: '일차변환 aY+b에서 평균은 aE(Y)+b, 분산은 a²V(Y)입니다. 상수를 더해도 분산은 변하지 않습니다.',
@@ -189,9 +192,11 @@ const continuous = define({
     return x <= middle ? 2 * ((x - p.a) / width) ** 2 : 1 - 2 * ((p.b - x) / width) ** 2;
   };
   const fl = cdf(p.lower), fu = cdf(p.upper), probability = clamp(fu - fl);
-  const density = p.shape === 'uniform' ? '구간 [a,b]에서 f(x)=1/(b−a), 그 밖에서는 0' : '꼭짓점 ((a+b)/2, 2/(b−a))과 밑변의 양 끝 (a,0), (b,0)을 잇는 삼각형이고, [a,b] 밖에서는 0';
+  const density = p.shape === 'uniform'
+    ? `f(x) = { 1/${fmt(width)}  (${p.a}≤x≤${p.b}),  0  (그 밖의 경우) }`
+    : `f(x) = { 2(x−${p.a})/(${fmt(width)})²  (${p.a}≤x≤${fmt(middle)}),  2(${p.b}−x)/(${fmt(width)})²  (${fmt(middle)}<x≤${p.b}),  0  (그 밖의 경우) }`;
   return {
-    status: 'ok', question: `a=${p.a}, b=${p.b}이다. 연속확률변수 X의 확률밀도함수는 ${density}이다. P(${p.lower}≤X≤${p.upper})를 구하시오.`,
+    status: 'ok', question: `연속확률변수 X의 확률밀도함수 f(x)가 다음과 같을 때, P(${p.lower}≤X≤${p.upper})의 값은?\n${density}`,
     answer: `P(${p.lower}≤X≤${p.upper}) ≈ ${fmt(probability, 10)}`, numeric: probability, unit: '확률',
     steps: [{ title: '전체 넓이 1 확인', body: p.shape === 'uniform' ? '높이는 밑변 길이의 역수이므로 직사각형의 넓이는 1이다.' : '삼각형의 넓이가 1이므로 높이는 밑변 길이의 역수의 2배이다.', formula: p.shape === 'uniform' ? `높이=1/(b−a)≈${fmt(1 / width)}` : `높이=2/(b−a)≈${fmt(2 / width)}` }, { title: '누적확률로 나타내기', body: 'F(x)=P(X≤x)라 두면 구간의 확률은 양 끝의 누적확률 차이다. 분포 바깥에서 F는 각각 0 또는 1이다.', formula: p.shape === 'uniform' ? 'F(x)=(x−a)/(b−a), a≤x≤b' : 'F(x)=2{(x−a)/(b−a)}² (a≤x≤중점), 1−2{(b−x)/(b−a)}² (중점≤x≤b)' }, { title: '양 끝의 누적확률 빼기', body: '연속확률변수는 한 점의 확률이 0이므로 구간 끝의 포함 여부는 결과에 영향을 주지 않는다.', formula: `P(${p.lower}≤X≤${p.upper})=F(${p.upper})−F(${p.lower})≈${fmt(fu, 10)}−${fmt(fl, 10)}≈${fmt(probability, 10)}` }],
     insight: '확률은 밀도함수의 높이가 아니라 구간 아래의 넓이입니다. 밀도의 높이는 1보다 클 수도 있습니다.',
@@ -264,7 +269,7 @@ const normal = define({
   const se = p.sigma / Math.sqrt(p.n), zl = (p.lower - p.mu) / se, zu = (p.upper - p.mu) / se;
   const probability = normalInterval(zl, zu), tableSolution = normalTableInterval(zl, zu);
   return {
-    status: 'ok', question: `모평균이 ${p.mu}, 모표준편차가 ${p.sigma}인 정규분포에서 크기가 ${p.n}인 표본을 독립적으로 추출한다. 표본평균을 X̄라 할 때 제시된 표준정규분포표를 이용하여 P(${p.lower}≤X̄≤${p.upper})를 구하시오.`,
+    status: 'ok', question: `모평균이 ${p.mu}, 모표준편차가 ${p.sigma}인 정규모집단에서 크기가 ${p.n}인 표본을 임의추출한다. 표본평균을 X̄라 할 때, P(${p.lower}≤X̄≤${p.upper})의 값은? (단, 표준정규분포표를 이용한다.)`,
     answer: `표 이용: P(${p.lower}≤X̄≤${p.upper}) ≈ ${tableSolution.probability.toFixed(4)} (약 ${fmt(100 * tableSolution.probability, 4)}%)`, numeric: probability, unit: '확률',
     normalTable: normalTableFor([zl, zu]),
     steps: [{ title: '표본평균의 분포', body: '정규모집단에서 독립적으로 추출한 표본평균도 정규분포를 따른다. 표본평균의 표준편차는 σ/√n이다.', formula: `E(X̄)=${p.mu}, σ(X̄)=${p.sigma}/√${p.n}≈${fmt(se, 10)}` }, { title: '양 끝을 표준화', body: '평균을 빼고 표본평균의 표준편차로 나눈다. σ 자체로 나누는 것과 구별한다.', formula: `Z=(X̄−${p.mu})/(σ/√n), z₁≈${fmt(zl, 8)}, z₂≈${fmt(zu, 8)}` }, { title: '표의 넓이를 대칭과 차로 계산', body: tableSolution.body, formula: tableSolution.formula }],
@@ -290,7 +295,7 @@ const estimation = define({
     ? { title: '표에서 임계값 읽기', body: `중앙 ${p.confidence}%의 절반 넓이인 ${fmt(Number(p.confidence) / 200, 4)}에 가까운 표 값을 찾는다. 현재 문항의 추가 행에 제시된 교과서식 반올림 임계값을 사용한다.`, formula: `P(0≤Z≤${z})≈${normalTableArea(z)}, 임계값 z≈${z}` }
     : { title: '제시된 정밀 임계값 사용', body: '정밀 근사 계산을 선택했으므로 발문에 제시된 정밀 임계값을 사용한다. 표의 추가 행은 해당 값에서의 확률을 네 자리로 반올림한 것이다.', formula: `P(−z≤Z≤z)=${Number(p.confidence) / 100}, 임계값 z≈${fmt(z, 10)}` };
   return {
-    status: 'ok', question: `모표준편차 σ=${p.sigma}가 알려진 정규모집단에서 크기가 ${p.n}인 표본을 독립적으로 추출하였더니 표본평균이 ${p.mean}이었다. 모평균 μ의 신뢰수준 ${p.confidence}% ${p.query === 'length' ? '신뢰구간의 길이를' : '신뢰구간을'} ${tableMode ? '제시된 표를 이용하여 ' : ''}구하시오. 신뢰구간 계산에는 임계값 z≈${fmt(z, 10)}를 사용한다.`,
+    status: 'ok', question: `모표준편차가 ${p.sigma}인 정규모집단에서 크기가 ${p.n}인 표본을 임의추출하였더니 표본평균이 ${p.mean}이었다. 모평균 μ에 대한 신뢰수준 ${p.confidence}% ${p.query === 'length' ? '신뢰구간의 길이는?' : '신뢰구간을 구하시오.'}${tableMode ? ' (단, 표준정규분포표를 이용한다.)' : ` (단, 임계값은 z=${fmt(z, 4)}로 한다.)`}`,
     answer: `${basis}: ${p.query === 'length' ? `신뢰구간의 길이 ≈ ${fmt(length, 10)}` : `${fmt(lower)} ≤ μ ≤ ${fmt(upper)} (길이 약 ${fmt(length)})`}`, numeric: length, unit: '구간 길이',
     normalTable: normalTableFor([z]),
     steps: [criticalStep, { title: '표준오차와 오차한계', body: '표준오차에 임계값을 곱하면 표본평균의 좌우에 더할 오차한계가 된다.', formula: `표준오차=σ/√n≈${fmt(se, 10)}, 오차한계=zσ/√n≈${fmt(margin, 10)}` }, { title: '구간과 길이 구하기', body: '표본평균을 중심으로 오차한계만큼 양쪽으로 넓힌다. 길이는 오차한계의 두 배이다.', formula: `[x̄−zσ/√n, x̄+zσ/√n]≈[${fmt(lower)}, ${fmt(upper)}], 길이≈${fmt(length, 10)}` }],

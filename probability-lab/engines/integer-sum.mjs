@@ -1,4 +1,4 @@
-import { structuredSolve } from './structured-integer.mjs?v=20261026-structure';
+import { structuredSolve } from './structured-integer.mjs?v=20261026-prompt-style';
 
 const options = pairs => pairs.map(([value,label])=>({value,label}));
 const defaults={k:4,total:7,relation:'eq',domain:'natural',lowerOn:false,lower:0,upperOn:false,upper:7,order:'any',distinct:false};
@@ -15,14 +15,15 @@ function basicSolve(input={}) {
   for(const [key,lo,hi] of [['k',2,8],['total',-40,80],['lower',-30,40],['upper',-30,40]])if(!Number.isInteger(p[key])||p[key]<lo||p[key]>hi)return fail(`${key}의 값을 ${lo}~${hi} 사이의 정수로 입력하세요.`);
   if(!Object.hasOwn(domains,p.domain)||!Object.hasOwn(relationLabels,p.relation)||!['any','nondecreasing','increasing'].includes(p.order))return fail('정의역·부등호·순서 조건을 확인하세요.');
   if(['lowerOn','upperOn','distinct'].some(k=>typeof p[k]!=='boolean'))return fail('조건 선택값이 올바르지 않습니다.');
-  const {k,total:T}=p,d=domains[p.domain],sub=['₁','₂','₃','₄','₅','₆','₇','₈'];
-  const names=Array.from({length:k},(_,i)=>`x${sub[i]}`),sum=names.join(' + ');
+  const {k,total:T}=p,d=domains[p.domain];
+  const names=Array.from({length:k},(_,i)=>String.fromCharCode(97+i)),sum=names.join(' + ');
   const extras=[];
-  if(p.lowerOn)extras.push(`각 변수는 ${p.lower} 이상이다.`);
-  if(p.upperOn)extras.push(`각 변수는 ${p.upper} 이하이다.`);
-  if(p.order!=='any')extras.push(`${names.join(p.order==='increasing'?' < ':' ≤ ')}이다.`);
-  if(p.distinct)extras.push('각 변수의 값은 서로 다르다.');
-  const question=`${k}개의 ${d.label} ${names.join(', ')}에 대하여\n${sum} ${relationLabels[p.relation]} ${T}\n를 만족시키는 순서쌍 (${names.join(', ')})의 개수를 구하시오.${extras.length?'\n'+extras.join('\n'):''}`;
+  if(p.lowerOn)extras.push(`${names.join(', ')} ≥ ${p.lower}`);
+  if(p.upperOn)extras.push(`${names.join(', ')} ≤ ${p.upper}`);
+  if(p.order!=='any')extras.push(names.join(p.order==='increasing'||p.distinct?' < ':' ≤ '));
+  else if(p.distinct)extras.push(`${names.join(', ')}의 값은 서로 다르다.`);
+  const conditions=[`${sum} ${relationLabels[p.relation]} ${T}`,...extras];
+  const question=`${d.label} ${names.join(', ')}에 대하여, 다음 조건을 만족시키는 순서쌍 (${names.join(', ')})의 개수를 구하시오.\n${conditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`;
   const base={status:'ok',question,unit:'개',steps:[],insight:'각 변수의 최소값과 홀짝을 먼저 반영하면, 합의 조건을 만족하는 정수해를 세는 문제로 바뀝니다.'};
   const zero=reason=>({...base,answer:'0',exact:'0',numeric:0,steps:[{title:'조건의 양립 가능성 확인',body:reason},{title:'경우의 수',body:'주어진 모든 조건을 동시에 만족시키는 순서쌍은 없다.',formula:'경우의 수 = 0'}],cases:[],samples:[]});
   let L=Math.max(d.low,p.lowerOn?p.lower:-Infinity),U=p.upperOn?p.upper:Infinity;

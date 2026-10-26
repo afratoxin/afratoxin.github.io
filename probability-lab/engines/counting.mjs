@@ -69,7 +69,7 @@ const arrangement = makeSpec({
 }, ({ a, b, c, condition, circular }) => {
   const n = a + b + c, others = b + c;
   const conditionLabel = { none: '아무런 제한 없이', apart: 'A끼리 이웃하지 않도록', together: '모든 A가 하나의 연속한 덩어리가 되도록' }[condition];
-  const question = `A ${a}개, B ${b}개, C ${c}개를 ${conditionLabel} ${circular ? '원형으로' : '일렬로'} 배열하는 경우의 수를 구하시오. 같은 문자는 구별하지 않는다.${circular ? ' 회전하여 일치하는 배열은 같게 보고, 뒤집기는 구별한다.' : ''}`;
+  const question = `문자 A가 ${a}개, B가 ${b}개, C가 ${c}개 있다. 이 문자들을 ${conditionLabel} ${circular ? '원형으로' : '일렬로'} 배열하는 경우의 수는?\n(단, 같은 문자끼리는 서로 구별하지 ${circular ? '않고, 회전하여 일치하는 배열은 같은 것으로 보며, 뒤집어서 일치하는 배열은 다른 것으로 본다.' : '않는다.'})`;
   let value, formula, method, cases;
   if (!n) {
     value = 1n; formula = '빈 배열의 수 = 1'; method = '아무 문자도 놓지 않는 빈 배열을 한 가지로 셉니다.';
@@ -162,8 +162,13 @@ const functions = makeSpec({
     formula=`Σ(j=0…${required}) (−1)^j C(${required},j) (${m}−j)^${n-s}`;
     reason=s?'상 1은 이미 사용되었습니다. 나머지 공역 원소가 하나라도 빠지는 함수를 포함배제로 제외합니다.':'공역 원소가 하나라도 상에서 빠지는 함수를 포함배제 원리로 제외합니다. 두 번 제외한 함수는 다시 더합니다.';
   }
-  const label={none:'함수',onto:'전사함수',injective:'일대일함수'}[constraint];
-  return countResult(`X={1,…,${n}}, Y={1,…,${m}}에 대하여 X에서 Y로의 ${label} 중 ${s?`f(1)=⋯=f(${s})=1을 만족하는`:'별도의 함수값 조건이 없는'} 것의 개수를 구하시오. 원소 수가 0인 집합은 공집합으로 본다.`,value,[
+  const setText=size=>size===0?'∅':size===1?'{1}':`{1, 2, …, ${size}}`;
+  const functionConditions=[];
+  if(constraint==='onto')functionConditions.push('f는 전사함수이다.');
+  if(constraint==='injective')functionConditions.push('f는 일대일함수이다.');
+  if(s)functionConditions.push(s===1?'f(1)=1':`f(1)=f(2)=⋯=f(${s})=1`);
+  const question=`집합 X=${setText(n)}, Y=${setText(m)}에 대하여, ${functionConditions.length?'다음 조건을 만족시키는 함수':'함수'} f:X→Y의 개수를 구하시오.${functionConditions.length?`\n${functionConditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`:''}`;
+  return countResult(question,value,[
     {title:'함수와 추가 조건',body:`각 정의역 원소는 정확히 하나의 상을 갖습니다. ${constraint==='onto'?'전사함수는 공역의 모든 원소를 상으로 사용합니다.':constraint==='injective'?'일대일함수에서는 서로 다른 정의역 원소의 상이 달라야 합니다.':'서로 다른 정의역 원소의 상이 같아도 됩니다.'}`},
     {title:'조건을 반영하여 세기',body:reason,formula},
     {title:'함수 개수 확정',body:`조건을 모두 만족하는 함수는 ${value}개입니다. 공집합에서 공집합으로의 함수는 빈 함수 한 개로 셉니다.`,formula:`함수의 수 = ${value}`}
@@ -185,7 +190,13 @@ const coefficient=makeSpec({
     cases.push({label:`첫째 항 ${k}번 선택`,count:`${term}`,detail:`C(${n},${k}) × (${a})^${k} × (${b})^${n-k}; 차수 ${exponent}`});
   }
   const equal=p===q;
-  return {...countResult(`다항식 ((${a})x^${p}+(${b})x^${q})^${n}을 전개한 식에서 x^${t}의 계수를 구하시오.`,value,[
+  const termText=(coefficient,exponent)=>{
+    if(coefficient===0)return '0';
+    const sign=coefficient<0?'−':'',magnitude=Math.abs(coefficient);
+    return `${sign}${exponent===0?magnitude:`${magnitude===1?'':magnitude}x${exponent===1?'':`^${exponent}`}`}`;
+  };
+  const polynomialText=`${termText(a,p)} ${b<0?'−':'+'} ${termText(Math.abs(b),q)}`;
+  return {...countResult(`다항식 (${polynomialText})^${n}의 전개식에서 x^${t}의 계수는?`,value,[
     {title:'일반항 세우기',body:`${n}개의 괄호 중 첫째 항을 k번, 둘째 항을 ${n}−k번 선택합니다. 어느 괄호에서 첫째 항을 고르는지는 조합으로 셉니다.`,formula:`C(${n},k)·(${a})^k·(${b})^(${n}−k)·x^(${p}k+${q}(${n}−k))`},
     {title:equal?'같은 차수의 항 처리':'목표 차수와 일치시키기',body:equal?`두 항의 차수가 같아 모든 일반항의 차수는 ${n*p}입니다. 이 차수와 목표가 같으면 모든 계수를 더하고, 다르면 계수는 0입니다.`:`${p}k+${q}(${n}−k)=${t}를 만족하는 0 이상 ${n} 이하의 정수 k만 남깁니다. 정수 해가 없으면 해당 차수의 항도 없습니다.`,formula:equal?`(a+b)^n·x^(pn) = (${a+b})^${n}·x^${n*p}`:`(${p-q})k = ${t-q*n}`},
     {title:'계수 계산',body:cases.length?`조건에 맞는 일반항 ${cases.length}개의 계수를 더하면 ${value}입니다. 음수인 항은 부호까지 함께 계산합니다.`:'목표 차수를 만드는 선택이 없으므로 계수는 0입니다.',formula:`[x^${t}] = ${value}`}
@@ -449,7 +460,7 @@ const probabilityCount=makeSpec({
   for(let i=0;i<sorted.length;i+=width){const group=sorted.slice(i,i+width);chart.push({label:group.length===1?`${group[0][0]}`:`${group[0][0]}~${group.at(-1)[0]}`,value:Number(group.reduce((s,row)=>s+row[1],0n))});}
   const teaching=statistic==='sum'?sumTeaching(sides,rolls,target,relation):statistic==='max'?maximumTeaching(sides,rolls,target,relation):productTeaching(sides,rolls,target,relation,prefixDistribution);
   const f=fraction(successful,total);
-  return probabilityResult(`1부터 ${sides}까지의 눈이 같은 확률로 나오는 주사위를 독립적으로 ${rolls}번 던진다. 나온 눈의 ${name}이 ${relationText(target,relation)}일 확률을 구하시오.`,successful,total,[
+  return probabilityResult(`1부터 ${sides}까지의 자연수가 하나씩 적힌 ${sides}면체 주사위를 서로 독립적으로 ${rolls}회 던진다. 나온 눈의 ${name}이 ${relationText(target,relation)}일 확률은?`,successful,total,[
     {title:'동일확률의 기준',body:`순서 있는 각 눈의 결과는 같은 확률입니다. 전체 ${total}가지를 분모로 삼고, 사건의 경우의 수를 조합·곱의 법칙으로 구합니다. ${name}의 서로 다른 값이 동일확률인 것은 아닙니다.`,formula:`전체 결과 수 = ${sides}^${rolls} = ${total}`},
     ...teaching.steps,
     {title:'확률로 마무리',body:`조건을 만족하는 ${successful}가지를 전체 ${total}가지로 나누어 약분합니다.`,formula:`P(A) = ${successful}/${total} = ${f.text}`}
@@ -474,9 +485,9 @@ const conditional=makeSpec({
   };
   const visit=(start,list)=>{if(list.length===r){check(list);return;}for(let x=start;x<=n-(r-list.length)+1;x++)visit(x+1,[...list,x]);};
   visit(1,[]);
-  const Btext=condition==='sum-even'?'뽑은 카드에 적힌 수의 합이 짝수':condition==='include'?`${b}번 카드를 포함`:`뽑은 카드에 적힌 수의 최댓값이 ${b}`;
-  const Atext=event==='odd-count'?`홀수 카드가 정확히 ${a}장`:event==='include'?`${a}번 카드를 포함`:`카드에 적힌 수의 합이 ${a} 이상`;
-  const question=`1부터 ${n}까지의 수가 하나씩 적힌 카드 ${n}장 중 ${r}장을 같은 확률로 동시에 뽑는다. ${Btext}라는 조건 B가 주어졌을 때, ${Atext}인 사건 A의 조건부확률 P(A|B)를 구하시오.`;
+  const Btext=condition==='sum-even'?'뽑은 카드에 적힌 수의 합이 짝수일 때':condition==='include'?`뽑은 카드에 ${b}번 카드가 포함되어 있을 때`:`뽑은 카드에 적힌 수의 최댓값이 ${b}일 때`;
+  const Atext=event==='odd-count'?`뽑은 카드 중 홀수인 수가 정확히 ${a}개일`:event==='include'?`뽑은 카드에 ${a}번 카드가 포함되어 있을`:`뽑은 카드에 적힌 수의 합이 ${a} 이상일`;
+  const question=`1부터 ${n}까지의 자연수가 각각 하나씩 적힌 카드 ${n}장 중 ${r}장을 임의로 동시에 뽑는다. ${Btext}, ${Atext} 확률은?`;
   const teaching=conditionalTeaching({n,draw:r,condition,conditionValue:b,event,eventValue:a},countB,countAB);
   const cases=[...teaching.cases,{label:'A∩B',count:`${countAB}`,detail:'분자: A와 B를 모두 만족'},{label:'(A의 여사건)∩B',count:`${countB-countAB}`,detail:'B 안에서 A가 성립하지 않음'},{label:'B',count:`${countB}`,detail:'분모: 위 두 경우의 합'},{label:'A∩(B의 여사건)',count:`${countAoutside}`,detail:'A는 만족하지만 B를 만족하지 않음'},{label:'(A의 여사건)∩(B의 여사건)',count:`${neither}`,detail:'A와 B를 모두 만족하지 않음'}];
   const steps=[

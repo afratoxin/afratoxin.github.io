@@ -1,4 +1,4 @@
-import { COLORS, emptyBallRules } from './engines/ball-rules.mjs?v=20261026-balls';
+import { COLORS, emptyBallRules } from './engines/ball-rules.mjs?v=20261026-prompt-style';
 const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e;};
 const clone=x=>JSON.parse(JSON.stringify(x));
 const relations=[['eq','='],['ne','≠'],['ge','≥'],['le','≤'],['gt','>'],['lt','<']];

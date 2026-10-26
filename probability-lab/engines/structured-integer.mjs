@@ -182,11 +182,32 @@ function primeExponentSolution(main,bounds,base){
  return{...base,answer:String(count),exact:String(count),numeric:Number(count),steps,cases:[{label:'소인수별 지수 분배의 독립적인 조합',count:String(count)}],solutionMethod:'prime-exponents',proofSummary:'소인수의 지수 분배와 양의 정수 순서쌍의 일대일 대응을 이용하여 중복조합과 곱의 법칙으로 셌다.'};
 }
 function originalQuestion(p,bounds){
- const s=p.structure,lines=[`${p.k}개의 변수 ${Array.from({length:p.k},(_,i)=>name(i)).join(', ')}에 대하여`,`${s.left} ${LABELS[s.relation]} ${s.right}`];
- for(let i=0;i<p.k;i++){const v=bounds[i],data=s.variables[i]??{};lines.push(`${name(i)}: ${v.label}${data.parity&&data.parity!=='any'?`, ${data.parity==='even'?'짝수':'홀수'}`:''}${p.lowerOn||data.lower!=null?`, ${Math.max(p.lowerOn?p.lower:-Infinity,data.lower??-Infinity)} 이상`:''}${p.upperOn||data.upper!=null?`, ${Math.min(p.upperOn?p.upper:Infinity,data.upper??Infinity)} 이하`:''}`);}
- for(const c of s.conditions)lines.push(c.kind==='expression'?`${c.left} ${LABELS[c.relation]} ${c.right}`:c.kind==='distinct'?`${c.variables.map(name).join(', ')}의 값은 서로 다르다.`:c.variables.map(name).join(c.kind==='increasing'?' < ':' ≤ '));
- if(p.order!=='any')lines.push(Array.from({length:p.k},(_,i)=>name(i)).join(p.order==='increasing'?' < ':' ≤ '));if(p.distinct)lines.push('모든 변수의 값은 서로 다르다.');
- lines.push('모든 조건을 만족시키는 순서쌍의 개수를 구하시오.');return lines.join('\n');
+ const s=p.structure,names=Array.from({length:p.k},(_,i)=>name(i));
+ const conditions=[`${s.left} ${LABELS[s.relation]} ${s.right}`];
+ const variableGroups=new Map();
+ for(let i=0;i<p.k;i++){
+  const data=s.variables[i]??{};let kind=data.domain&&data.domain!=='inherit'?DOMAINS[data.domain].label:DOMAINS[p.domain].label;
+  if(data.parity&&data.parity!=='any'){
+   const parityName=data.parity==='even'?'짝수':'홀수';
+   if(!/짝수|홀수/.test(kind))kind=`${parityName}인 ${kind}`;
+   else if(!kind.includes(parityName))kind=`${kind}이면서 ${parityName}`;
+  }
+  const low=Math.max(p.lowerOn?p.lower:-Infinity,data.lower??-Infinity),high=Math.min(p.upperOn?p.upper:Infinity,data.upper??Infinity);
+  if(kind===DOMAINS[p.domain].label&&!Number.isFinite(low)&&!Number.isFinite(high))continue;
+  const key=JSON.stringify([kind,low,high]);if(!variableGroups.has(key))variableGroups.set(key,{kind,low,high,vars:[]});variableGroups.get(key).vars.push(names[i]);
+ }
+ for(const {kind,low,high,vars} of variableGroups.values()){
+  const list=vars.join(', '),parts=[];
+  if(kind!==DOMAINS[p.domain].label)parts.push(`${list}는 ${kind}이다`);
+  if(Number.isFinite(low)&&Number.isFinite(high))parts.push(`${low} ≤ ${list} ≤ ${high}`);
+  else if(Number.isFinite(low))parts.push(`${list} ≥ ${low}`);
+  else if(Number.isFinite(high))parts.push(`${list} ≤ ${high}`);
+  conditions.push(parts.join(', 그리고 '));
+ }
+ for(const c of s.conditions)conditions.push(c.kind==='expression'?`${c.left} ${LABELS[c.relation]} ${c.right}`:c.kind==='distinct'?`${c.variables.map(name).join(', ')}의 값은 서로 다르다.`:c.variables.map(name).join(c.kind==='increasing'?' < ':' ≤ '));
+ if(p.order!=='any')conditions.push(names.join(p.order==='increasing'||p.distinct?' < ':' ≤ '));else if(p.distinct)conditions.push(`${names.join(', ')}의 값은 서로 다르다.`);
+ const heading=`${DOMAINS[p.domain].label} ${names.join(', ')}에 대하여, 다음 조건을 만족시키는 순서쌍 (${names.join(', ')})의 개수를 구하시오.`;
+ return `${heading}\n${conditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`;
 }
 export function structuredSolve(p,basicSolve){
  try{

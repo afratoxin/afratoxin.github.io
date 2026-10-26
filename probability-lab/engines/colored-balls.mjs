@@ -1,4 +1,4 @@
-import { COLORS, emptyBallRules, compileBallGroup, compare } from './ball-rules.mjs?v=20261026-balls';
+import { COLORS, emptyBallRules, compileBallGroup, compare } from './ball-rules.mjs?v=20261026-prompt-style';
 const N=(key,label,min,max,extra={})=>({key,label,type:'number',min,max,step:1,...extra});
 const S=(key,label,options,extra={})=>({key,label,type:'select',options:options.map(([value,label])=>({value,label})),...extra});
 const C=(key,label,extra={})=>({key,label,type:'checkbox',...extra});
@@ -12,6 +12,7 @@ const bounded=n=>{if(n>999n)throw Error('표본공간·경우의 수·분자·�
 const group=rules=>({logic:'and',negate:false,rules});
 const event=rules=>({event:group(rules),given:group([])});
 const counts=p=>COLORS.slice(0,p.colorKinds).map(([key])=>p[key]);
+const COLOR_WORDS=['빨간','파란','노란','초록색','보라색','검은'];
 const colorsControls=COLORS.map(([key,label])=>N(key,`${label} 공 수`,0,20,{group:'colors'}));
 const colorDefaults={colorKinds:2,red:4,blue:5,yellow:1,green:1,purple:1,black:1};
 const sequenceOptions=[['any','순서 조건 없음'],['apart','같은 색끼리 이웃하지 않음'],['repeat','같은 색 이웃이 한 번 이상'],['sameEnds','처음과 마지막 색이 같음'],['differentEnds','처음과 마지막 색이 다름']];
@@ -86,10 +87,11 @@ function solveDraw(p){
  if(!denominator)throw Error('조건 사건의 경우의 수가 0이므로 조건부확률을 정의할 수 없습니다.');
  bounded(numerator);bounded(denominator);
  const given=!B.empty;
- const quantities=a.map((n,i)=>`${COLORS[i][1]} ${n}개`).join(', ');
- const baseCondition=p.relation==='none'?'':`빨간 공 수 ${p.relation==='eq'?'=':p.relation==='ge'?'≥':'≤'} ${p.redTarget}`;
- const seqText=[p.sequence!=='any'?sequenceOptions.find(x=>x[0]===p.sequence)[1]:'',p.firstColor>=0?`첫 공 ${COLORS[p.firstColor][1]}`:'',p.lastColor>=0?`마지막 공 ${COLORS[p.lastColor][1]}`:''].filter(Boolean).join(', ');
- const eventText=[baseCondition,!A.empty?A.text:'',seqText].filter(Boolean).join(' 및 ')||'제한 없음';
+ const quantities=a.map((n,i)=>`${COLOR_WORDS[i]} 공 ${n}개`).join(', ');
+ const baseCondition=p.relation==='none'?'':`빨간 공이 ${p.relation==='eq'?`정확히 ${p.redTarget}개`:p.relation==='ge'?`${p.redTarget}개 이상`:`${p.redTarget}개 이하`}`;
+ const sequenceText={any:'',apart:'같은 색의 공이 서로 이웃하지 않는다',repeat:'같은 색의 공이 이웃하는 경우가 있다',sameEnds:'처음과 마지막에 꺼낸 공의 색이 같다',differentEnds:'처음과 마지막에 꺼낸 공의 색이 다르다'}[p.sequence];
+ const seqText=[sequenceText,p.firstColor>=0?`첫 번째로 꺼낸 공은 ${COLORS[p.firstColor][1]}색이다`:'',p.lastColor>=0?`마지막으로 꺼낸 공은 ${COLORS[p.lastColor][1]}색이다`:''].filter(Boolean).join('이고 ');
+ const eventText=[baseCondition,!A.empty?A.text:'',seqText].filter(Boolean).join('이고 ')||'제한 없음';
  const generic=ordered?(p.replacement?'(r!/∏xᵢ!)∏nᵢ^xᵢ':'r!∏C(nᵢ,xᵢ)'):'∏C(nᵢ,xᵢ)';
  const hasSeq=p.sequence!=='any'||p.firstColor>=0||p.lastColor>=0;
  const answer=p.query==='probability'?fraction(numerator,denominator):String(numerator);
@@ -102,7 +104,13 @@ function solveDraw(p){
  const missedFormula=p.replacement?`${other}^${p.draw}`:ordered?`P(${other},${p.draw})`:`C(${other},${p.draw})`;
  const vectorFormula=vector=>hasSeq?`${seqWays(vector,p)} × `+vector.map((n,i)=>p.replacement?`${a[i]}^${n}`:`P(${a[i]},${n})`).join(' × '):ordered?p.replacement?`${p.draw}! / (${vector.map(n=>`${n}!`).join('·')}) × ${vector.map((n,i)=>`${a[i]}^${n}`).join(' × ')}`:`${p.draw}! × ${vector.map((n,i)=>`C(${a[i]},${n})`).join(' × ')}`:vector.map((n,i)=>`C(${a[i]},${n})`).join(' × ');
 
- return {status:'ok',question:`서로 구별되는 공이 ${quantities} 들어 있다. ${p.replacement?'매번 공을 되돌려 넣으며':'되돌려 넣지 않고'} ${p.draw}개를 ${ordered?'차례로 뽑는다. 뽑힌 순서를 구별한다.':'동시에 뽑는다.'}${given?` 뽑힌 공에 대하여 ${B.text}임이 알려져 있다.`:''}\n다음 조건을 만족하는 ${p.query==='probability'?'확률':'경우의 수'}를 구하시오.\n${eventText}\n(a, b, …는 색 순서대로 뽑힌 공의 개수이다.)`,answer,exact:answer,numeric:p.query==='probability'?Number(numerator)/Number(denominator):Number(numerator),unit:p.query==='probability'?'확률':'가지',steps:[
+ const drawText=p.replacement?`임의로 한 개의 공을 꺼내어 색을 확인한 후 다시 넣는 시행을 ${p.draw}회 반복한다.`:ordered?`임의로 한 개씩 공을 ${p.draw}개 꺼낸다.`:`임의로 공 ${p.draw}개를 동시에 꺼낸다.`;
+ const eventConditions=[baseCondition,!A.empty?A.text:'',seqText].filter(Boolean);
+ const eventPrompt=eventConditions.length?`다음 조건을 만족시키는 경우의 수를 구하시오.\n${eventConditions.map((condition,i)=>`(${String.fromCharCode(44032+i)}) ${condition}`).join('\n')}`:'가능한 결과의 수를 구하시오.';
+ const probabilityPrompt=given?`${B.text}일 때, ${eventText}일 확률은?`:eventConditions.length?`${eventText}일 확률은?`:'이 시행에서 어떤 결과가 나올 확률은?';
+ const usesExpression=[...(p.ballRules?.event?.rules??[]),...(p.ballRules?.given?.rules??[])].some(rule=>rule.kind==='expression');
+ const question=`주머니에 ${quantities}가 들어 있다. ${drawText}${p.query==='probability'?`\n${probabilityPrompt}`:`\n${given?`${B.text}인 경우 중, `:''}${eventPrompt}`}\n(단, 공은 각각 서로 구별${ordered?', 공을 꺼낸 순서를 구별':''}한다.)${usesExpression?'\n(a, b, …는 색의 순서대로 꺼낸 각 색 공의 개수를 나타낸다.)':''}`;
+ return {status:'ok',question,answer,exact:answer,numeric:p.query==='probability'?Number(numerator)/Number(denominator):Number(numerator),unit:p.query==='probability'?'확률':'가지',steps:[
  {title:given?'조건 사건을 새 표본공간으로':'전체 경우의 수',body:given?`주어진 조건을 만족하는 경우만 분모로 사용한다. 전체 ${space}가지 중 조건 사건은 ${denominator}가지이다.`:`${ordered?'순서 있는':'순서 없는'} 등확률인 결과를 기준으로 센다. 색의 구성 자체는 등확률이 아니다.`,formula:given?`n(B)=${denominator}`:`n(Ω)=${p.replacement?`${total}^${p.draw}`:ordered?`P(${total},${p.draw})`:`C(${total},${p.draw})`}=${space}`},
  {title:complement?'여사건으로 간단히 계산':hasSeq?'색 구성과 순서 조건을 분리':'색 구성에 조합의 곱 적용',body:complement?'선택한 색이 적어도 하나 나오는 사건의 여사건은 선택한 색이 하나도 나오지 않는 사건이다. 나머지 색의 공만으로 뽑는 경우를 전체에서 뺀다.':hasSeq?'가능한 색별 개수부터 정한다. 같은 색 이웃 금지나 처음·마지막 조건을 만족하는 색 순서 수에 실제 공을 배정하는 경우의 수를 곱한다.':'색별 개수 xᵢ의 합은 추출 수와 같다. 조건을 만족하는 색 구성마다 조합의 곱을 계산하고 서로 겹치지 않는 경우를 더한다.',formula:complement?`n(Aᶜ)=${missedFormula}=${missed}`:hasSeq?`색 순서 수 × ${p.replacement?'∏nᵢ^xᵢ':'∏P(nᵢ,xᵢ)'}`:`한 구성의 경우의 수 = ${generic}`},
  {title:given?'교집합의 경우의 수':'조건을 만족하는 경우의 수',body:complement?'여사건과 구하는 사건은 겹치지 않으며 전체를 이룬다.':A.empty&&p.relation==='none'&&!hasSeq?'추가 제한이 없으므로 모든 경우가 포함된다.':`조건을 만족하는 색 구성 ${rows.length}개를 묶어 센다. 각 항은 개별 공을 직접 나열한 것이 아니라 한 색 구성 전체의 경우의 수이다.`,formula:complement?`n(A)=${space}−${missed}=${numerator}`:`n(${given?'A∩B':'A'})=${terms.join(' + ')||'0'}${rows.length>6?' + …':''}=${numerator}`},
@@ -132,9 +140,12 @@ function solveDistribution(p){
  if(p.ballRules?.given?.rules?.length||p.ballRules?.given?.negate)throw Error('상자 분배에서는 조건 사건 대신 분배 조건에 추가하세요.');
  const {rows,space}=matrixOutcomes(p,a),valid=rows.filter(row=>A.test(row.matrix)),answer=bounded(valid.reduce((v,r)=>v+r.weight,0n));
  const grouped=new Map();for(const row of valid){const vector=row.matrix.map(r=>r[0]),key=vector.join(',');grouped.set(key,(grouped.get(key)??0n)+row.weight);}
- const quantities=a.map((n,i)=>`${COLORS[i][1]} 공 ${n}개`).join(', '),unrestricted=A.empty;
+ const quantities=a.map((n,i)=>`${COLOR_WORDS[i]} 공 ${n}개`).join(', '),unrestricted=A.empty;
  const formula=p.boxesDistinct?p.ballsDistinct?`${p.boxes}^${sum(a)}`:a.map(n=>`C(${n+p.boxes-1},${p.boxes-1})`).join(' × '):p.ballsDistinct?'Σ S(n,j) (1≤j≤상자 수)':'색별 분배표에서 상자 순서의 중복을 제거';
- return {status:'ok',question:`${quantities}를 ${p.boxes}개의 ${p.boxesDistinct?'서로 구별되는':'서로 구별하지 않는'} 상자에 남김없이 넣는다. 같은 색의 공은 ${p.ballsDistinct?'서로 구별한다':'서로 구별하지 않는다'}. 빈 상자를 허용한다.\n${A.empty?'제한 없이':`다음 조건을 만족하도록`} 분배하는 경우의 수를 구하시오.${A.empty?'':`\n${A.text}`}\n${p.boxesDistinct?'a, b, …는 각 상자의 공 수이다. 식에 색을 지정하면 해당 색의 공만 센다.':''}`,answer:String(answer),exact:String(answer),numeric:Number(answer),unit:'가지',steps:[
+ const distributionConditions=A.empty?[]:[A.text];
+ const usesExpression=(p.ballRules?.event?.rules??[]).some(rule=>rule.kind==='expression');
+ const question=`주머니에 ${quantities}가 들어 있다. 이 공을 ${p.boxes}개의 ${p.boxesDistinct?'서로 다른':'서로 구별되지 않는'} 상자에 남김없이 나누어 넣을 때, ${distributionConditions.length?'다음 조건을 만족시키는 분배 방법의 수를 구하시오.':'분배 방법의 수는?'}${distributionConditions.length?`\n(가) ${distributionConditions[0]}`:''}\n(단, ${p.ballsDistinct?'공은 각각 서로 구별하고':'같은 색의 공끼리는 서로 구별하지 않고'}, 빈 상자를 허용한다.)${usesExpression?'\n(a, b, …는 상자 A, B, …에 들어 있는 선택한 색의 공 수를 나타낸다.)':''}`;
+ return {status:'ok',question,answer:String(answer),exact:String(answer),numeric:Number(answer),unit:'가지',steps:[
  {title:'공과 상자의 구별 확인',body:p.ballsDistinct?'각 공은 서로 다르므로 한 색을 각 상자에 정해진 수만큼 배정하는 방법은 다항계수로 센다.':'같은 색 공은 서로 바꾸어도 같으므로 색별로 중복조합을 적용한다. 색이 다른 공의 분배는 별도로 정한다.',formula:p.ballsDistinct?'한 색의 배정 수 = n! / (x₁!x₂!⋯)':'x₁+⋯+xₖ=n, xᵢ≥0 ⇒ C(n+k−1,k−1)'},
  {title:p.boxesDistinct?'색별 분배와 곱의 법칙':'같은 상자의 중복 제거',body:p.boxesDistinct?'각 색의 분배를 독립적으로 정하고 경우의 수를 곱한다.':'상자 안의 색별 개수가 같은 분배를 한 묶음으로 본다. 빈 상자는 공의 배정을 추가하지 않는다. 서로 다른 공을 쓰면 같은 구성을 가진 비어 있지 않은 상자들의 교환 중복도 나눈다. S(n,j)는 서로 다른 n개 공을 비어 있지 않은 j묶음으로 나누는 경우의 수를 뜻한다.',formula:unrestricted?`${formula} = ${space}`:p.boxesDistinct?`전체 분배 = ${formula} = ${space}`:p.ballsDistinct?'각 구성의 수 = ∏nᵢ! / (∏xᵢⱼ! · ∏mᵥ!)':'상자의 색별 구성 열을 정렬하여 일치하면 같은 분배'},
  {title:unrestricted?'전체 경우의 수 확정':'상자별 조건을 반영하여 묶기',body:unrestricted?'추가 조건이 없어 전체 경우의 수가 답이다.':'상자 하나의 색별 구성부터 정한 다음, 남은 공의 분배를 조합으로 묶어 더한다. 상자별 총량·색 가짓수와 공통 조건은 같은 분배표에 함께 적용한다.',formula:unrestricted?`답 = ${answer}`:`조건을 만족하는 구성들의 가중치 합 = ${answer}`}

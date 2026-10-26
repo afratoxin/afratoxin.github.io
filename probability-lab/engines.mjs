@@ -1,10 +1,10 @@
-import { ballDrawSpec, distributionSpec, coloredBallProfiles } from './engines/colored-balls.mjs?v=20261026-balls';
-import { integerSumSpec } from './engines/integer-sum.mjs?v=20261026-structure';
-import { countingSpecs } from './engines/counting.mjs?v=20261026-structure';
-import { statisticsSpecs } from './engines/statistics.mjs?v=20261026-structure';
-import { createExamSpec } from './engines/exam-limits.mjs?v=20261026-limits';
-import { countingLimitProfiles } from './engines/counting-limits.mjs?v=20261026-limits';
-import { statisticsLimitProfiles } from './engines/statistics-limits.mjs?v=20261026-limits';
+import { ballDrawSpec, distributionSpec, coloredBallProfiles } from './engines/colored-balls.mjs?v=20261026-prompt-style';
+import { integerSumSpec } from './engines/integer-sum.mjs?v=20261026-prompt-style';
+import { countingSpecs } from './engines/counting.mjs?v=20261026-prompt-style';
+import { statisticsSpecs } from './engines/statistics.mjs?v=20261026-prompt-style';
+import { createExamSpec } from './engines/exam-limits.mjs?v=20261026-prompt-style';
+import { countingLimitProfiles } from './engines/counting-limits.mjs?v=20261026-prompt-style';
+import { statisticsLimitProfiles } from './engines/statistics-limits.mjs?v=20261026-prompt-style';
 
 // Keep the mathematical modules independently testable. Every model exposed by
 // the application passes through the same exam-sized input and result policy.
