@@ -1,4 +1,4 @@
-"""Apply reviewed, additive type refinements without replacing source data.
+"""Apply reviewed, additive type/logic refinements without replacing source data.
 
 The normalized definitions and assignments in data/type-refinements.json are
 self-contained. This builder does not read lecture PDFs or private audit files.
@@ -28,8 +28,8 @@ def augment_archive(archive, refinements):
         if not tag_id or tag_id in definition_ids:
             raise ValueError(f'Duplicate or missing refinement ID: {tag_id}')
         definition_ids.add(tag_id)
-        if definition.get('axis') != 'type' or not definition.get('label') or not definition.get('description'):
-            raise ValueError(f'Incomplete type definition: {tag_id}')
+        if definition.get('axis') not in ('type', 'logic') or not definition.get('label') or not definition.get('description'):
+            raise ValueError(f'Incomplete type/logic definition: {tag_id}')
         if tag_id in taxonomy:
             existing = taxonomy[tag_id]
             for key, value in definition.items():
@@ -72,7 +72,7 @@ def augment_archive(archive, refinements):
         assignments_seen.add((question_id, tag_id))
         q, tag = questions[question_id], taxonomy[tag_id]
         tags = q.setdefault('tags', [])
-        types = q.setdefault('types', [])
+        labels = q.setdefault('types' if tag['axis'] == 'type' else 'logic', [])
         reasons = q.setdefault('tagReasons', {})
         parent_id = tag.get('parentTagId')
         if parent_id and parent_id not in tags:
@@ -80,14 +80,18 @@ def augment_archive(archive, refinements):
             if not isinstance(parent_reason, str) or not parent_reason.strip():
                 raise ValueError(f'Missing parent addition reason: {question_id}/{parent_id}')
             tags.append(parent_id)
-            if tag['parentLabel'] not in types:
-                types.append(tag['parentLabel'])
+            if tag['parentLabel'] not in labels:
+                labels.append(tag['parentLabel'])
             reasons.setdefault(parent_id, parent_reason)
+            if tag['axis'] == 'logic':
+                reasons.setdefault(tag['parentLabel'], parent_reason)
         if tag_id not in tags:
             tags.append(tag_id)
-        if tag['label'] not in types:
-            types.append(tag['label'])
+        if tag['label'] not in labels:
+            labels.append(tag['label'])
         reasons.setdefault(tag_id, assignment['reason'])
+        if tag['axis'] == 'logic':
+            reasons.setdefault(tag['label'], assignment['reason'])
 
     counts = {tag_id: 0 for tag_id in taxonomy}
     for q in result['questions']:
@@ -110,19 +114,19 @@ def main():
     parser.add_argument('--manifest', type=Path, help='Optionally refresh only taxonomyCount')
     args = parser.parse_args()
     try:
-        archive = json.loads(args.archive.read_text())
-        refinements = json.loads(args.refinements.read_text())
+        archive = json.loads(args.archive.read_text(encoding='utf-8'))
+        refinements = json.loads(args.refinements.read_text(encoding='utf-8'))
         augmented = augment_archive(archive, refinements)
     except (ValueError, KeyError, TypeError) as error:
         parser.error(str(error))
     output = args.output or args.archive
-    output.write_text(json.dumps(augmented, ensure_ascii=False, indent=2) + '\n')
+    output.write_text(json.dumps(augmented, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
     if args.manifest:
-        manifest = json.loads(args.manifest.read_text())
+        manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
         manifest['taxonomyCount'] = len(augmented['taxonomy'])
-        args.manifest.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
+        args.manifest.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(f'Augmented {len(augmented["questions"])} questions; '
-          f'{len(refinements["definitions"])} type definitions; '
+          f'{len(refinements["definitions"])} refinement definitions; '
           f'{len(refinements["assignments"])} reviewed memberships; '
           f'{len(augmented["taxonomy"])} taxonomy entries.')
 

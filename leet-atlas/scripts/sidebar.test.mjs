@@ -198,3 +198,23 @@ test('untrusted labels and disclosure identifiers are escaped in generated HTML'
   assert.ok(disclosure(root,'domain:domain-"<bad>'));
   assert.ok(allText(root).includes('인문 <script>alert(1)</script> & "예술"'));
 });
+
+test('logic children appear under strengthen, open on selection, and carry searchable parent paths',()=>{
+  const taxonomy=[...fixture,
+    {id:'logic-strengthen',axis:'logic',label:'강화·약화'},
+    {id:'logic-direction',axis:'logic',label:'평가 방향 역전',parentTagId:'logic-strengthen',refinementGroup:'판단상 혼동'},
+    {id:'logic-link',axis:'logic',label:'근거–결론 연결 변화',parentTagId:'logic-strengthen',refinementGroup:'증거의 작용 방식'},
+  ];
+  const root=render({taxonomy,selectedTags:['logic-direction']});
+  const parent=disclosure(root,'logic:logic-strengthen');
+  assert.ok(parent,'strengthen must be an expandable logic parent');
+  assert.ok(isOpen(parent));
+  assert.ok(isOpen(disclosure(root,'axis:logic')));
+  assert.match(allText(parent),/판단상 혼동/);
+  assert.match(allText(parent),/증거의 작용 방식/);
+  const child=withAttr(parent,'data-filter-tag','logic-direction');
+  assert.match(child.attrs['data-tag-search'],/강화·약화/);
+  assert.match(child.attrs['data-tag-search'],/판단상 혼동/);
+  assert.equal(descendants(root).filter(n=>n.attrs['data-filter-tag']==='logic-direction').length,1);
+  assert.ok(withAttr(root,'data-filter-tag','logic-variable'));
+});

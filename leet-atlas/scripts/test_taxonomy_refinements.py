@@ -44,6 +44,34 @@ def baseline_annotations(data, refinement):
     return annotations
 
 
+def without_logic_refinements(data):
+    """Recover the earlier type-refinement snapshot without weakening its hashes."""
+    result = copy.deepcopy(data)
+    logic = json.loads((ROOT / 'data/logic-refinements.json').read_text(encoding='utf-8'))
+    definitions = {tag['id']: tag for tag in logic['definitions']}
+    questions = {q['id']: q for q in result['questions']}
+    for assignment in reversed(logic['assignments']):
+        q = questions[assignment['questionId']]
+        tag = definitions[assignment['tagId']]
+        if tag['id'] in q['tags']:
+            q['tags'].remove(tag['id'])
+        if tag['label'] in q['logic']:
+            q['logic'].remove(tag['label'])
+        q['tagReasons'].pop(tag['id'], None)
+        q['tagReasons'].pop(tag['label'], None)
+        if assignment.get('parentAdditionReason'):
+            if tag['parentTagId'] in q['tags']:
+                q['tags'].remove(tag['parentTagId'])
+            if tag['parentLabel'] in q['logic']:
+                q['logic'].remove(tag['parentLabel'])
+            q['tagReasons'].pop(tag['parentTagId'], None)
+            q['tagReasons'].pop(tag['parentLabel'], None)
+    result['taxonomy'] = [tag for tag in result['taxonomy'] if tag['id'] not in definitions]
+    for tag in result['taxonomy']:
+        tag['count'] = sum(tag['id'] in q['tags'] for q in result['questions'])
+    return result
+
+
 class TaxonomyRefinementsTest(unittest.TestCase):
     def builder(self):
         self.assertTrue(BUILDER.exists(), 'The additive taxonomy builder is missing')
@@ -203,7 +231,7 @@ class TaxonomyRefinementsTest(unittest.TestCase):
                 tag = tags[parent_id]
 
     def test_full_preservation_hashes_and_native_2027(self):
-        data = json.loads((ROOT / 'data/archive.json').read_text())
+        data = without_logic_refinements(json.loads((ROOT / 'data/archive.json').read_text()))
         refinement = self.refinements()
         immutable = copy.deepcopy(data)
         immutable.pop('taxonomy')
@@ -244,8 +272,8 @@ class TaxonomyRefinementsTest(unittest.TestCase):
             output = Path(temporary) / 'archive.json'
             original = json.loads((ROOT/'data/archive.json').read_text())
             refinement = self.refinements()
-            baseline = copy.deepcopy(original)
-            annotations = baseline_annotations(original, refinement)
+            baseline = without_logic_refinements(original)
+            annotations = baseline_annotations(baseline, refinement)
             new_ids = {tag['id'] for tag in refinement['definitions']}
             baseline['taxonomy'] = [tag for tag in baseline['taxonomy'] if tag['id'] not in new_ids]
             for q in baseline['questions']:
@@ -257,6 +285,9 @@ class TaxonomyRefinementsTest(unittest.TestCase):
             subprocess.run([sys.executable, str(BUILDER), '--archive', str(baseline_path),
                             '--refinements', str(REFINEMENTS), '--output', str(output)], check=True,
                            capture_output=True, text=True)
+            subprocess.run([sys.executable, str(BUILDER), '--archive', str(output),
+                            '--refinements', str(ROOT/'data/logic-refinements.json'), '--output', str(output)],
+                           check=True, capture_output=True, text=True)
             self.assertEqual(json.loads(output.read_text()), json.loads((ROOT/'data/archive.json').read_text()))
             first = output.read_bytes()
             subprocess.run([sys.executable, str(BUILDER), '--archive', str(output),

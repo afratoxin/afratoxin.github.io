@@ -70,3 +70,16 @@ test('unseen labels and missing parents remain discoverable with stable fallback
  assert.deepEqual(groupTags([], {axis:'field'}),[]);
  assert.equal(groupTags([{id:'x',axis:'subject',label:'새 소재'}],{axis:'subject'})[0].label,'분야 미지정');
 });
+
+test('strengthen refinements form two explicit catalog groups with no duplicates',()=>{
+ const input=[
+  {id:'logic-strengthen',axis:'logic',label:'강화·약화'},
+  {id:'direction',axis:'logic',label:'평가 방향 역전',parentTagId:'logic-strengthen',refinementGroup:'판단상 혼동'},
+  {id:'neutral',axis:'logic',label:'관련되지만 중립',parentTagId:'logic-strengthen',refinementGroup:'판단상 혼동'},
+  {id:'link',axis:'logic',label:'근거–결론 연결 변화',parentTagId:'logic-strengthen',refinementGroup:'증거의 작용 방식'},
+ ];
+ const groups=groupTags(input,{axis:'logic'});
+ assert.deepEqual(groups.map(g=>g.label),['논증 평가·전제','강화·약화 · 판단상 혼동','강화·약화 · 증거의 작용 방식']);
+ assert.deepEqual(groups[1].tags.map(t=>t.id),['direction','neutral']);
+ assert.equal(groups.flatMap(g=>g.tags).length,4);
+});

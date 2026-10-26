@@ -69,7 +69,14 @@ export function groupTags(tags,{axis}={}) {
   const selectedAxis=axis||unique[0].axis;
   if(selectedAxis==='field')return configuredGroups(unique,selectedAxis,FIELD_GROUPS,'기타 분야');
   if(selectedAxis==='type')return configuredGroups(unique,selectedAxis,TYPE_GROUPS,'기타 문항 유형');
-  if(selectedAxis==='logic')return configuredGroups(unique,selectedAxis,LOGIC_GROUPS,'기타 풀이 논리');
+  if(selectedAxis==='logic') {
+    const refinements=unique.filter(tag=>tag.parentTagId==='logic-strengthen'&&tag.refinementGroup);
+    const groups=configuredGroups(unique.filter(tag=>!refinements.includes(tag)),selectedAxis,LOGIC_GROUPS,'기타 풀이 논리');
+    const labels=[...new Set(refinements.map(tag=>tag.refinementGroup))];
+    const children=labels.map((label,index)=>({id:`logic-strengthen-${index}`,label:`강화·약화 · ${label}`,tags:refinements.filter(tag=>tag.refinementGroup===label)}));
+    groups.splice(groups.findIndex(group=>group.id==='logic-arguments')+1,0,...children);
+    return groups;
+  }
   if(selectedAxis==='subject')return subjectGroups(unique);
   if(selectedAxis==='year')return yearGroups(unique);
   return [{id:`${selectedAxis||'tag'}-all`,label:selectedAxis==='domain'?'전체 대범주':'기타 태그',tags:unique.sort(compareLabels)}];

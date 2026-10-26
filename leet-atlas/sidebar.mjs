@@ -1,4 +1,4 @@
-import {groupTags} from './tag-groups.mjs';
+import {groupTags} from './tag-groups.mjs?v=20261026-strengthen-release1';
 
 const escape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const asSet=value=>new Set(Array.isArray(value)||value instanceof Set?value:[]);
@@ -55,8 +55,8 @@ export function buildDomainTree(taxonomy=[]) {
 }
 
 /** Keep base types visible and attach only explicit parentTagId relationships. */
-export function buildTypeTree(taxonomy=[]) {
-  const tags=taxonomyTags(taxonomy).filter(tag=>tag.axis==='type');
+function buildAxisTree(taxonomy,axis) {
+  const tags=taxonomyTags(taxonomy).filter(tag=>tag.axis===axis);
   const nodes=new Map(tags.map(tag=>[tag.id,makeNode(tag)]));
   const roots=[];
   function safeParent(tag) {
@@ -78,6 +78,9 @@ export function buildTypeTree(taxonomy=[]) {
   return roots;
 }
 
+export function buildTypeTree(taxonomy=[]) { return buildAxisTree(taxonomy,'type'); }
+export function buildLogicTree(taxonomy=[]) { return buildAxisTree(taxonomy,'logic'); }
+
 function tagsIn(nodes) {
   const tags=new Map();
   function visit(node) {
@@ -91,7 +94,7 @@ function tagsIn(nodes) {
 /** Render only the four filter disclosures; the application owns the surrounding panel. */
 export function renderSidebar({taxonomy=[],selectedTags=[],openKeys=[]}={},renderTag) {
   const tags=taxonomyTags(taxonomy),selected=asSet(selectedTags),manual=asSet(openKeys);
-  const domainTree=buildDomainTree(tags),typeTree=buildTypeTree(tags);
+  const domainTree=buildDomainTree(tags),typeTree=buildTypeTree(tags),logicTree=buildLogicTree(tags);
   const renderChoice=typeof renderTag==='function'?renderTag:(tag,path)=>{
     const active=selected.has(tag.id);
     return `<button type="button" class="filter-choice${active?' is-active':''}" data-axis="${escape(tag.axis)}" data-filter-tag="${escape(tag.id)}" data-tag-search="${escape([tag.label,tag.description,path].filter(Boolean).join(' '))}" aria-pressed="${active}">${escape(tag.label)}</button>`;
@@ -112,10 +115,19 @@ export function renderSidebar({taxonomy=[],selectedTags=[],openKeys=[]}={},rende
     const key=nodeKey(node,kind);
     const open=manual.has(key)||ownTags.some(tag=>selected.has(tag.id))||containsOpen(node.children,childKind(kind));
     const currentPath=[...path,node.label];
-    return `<details class="filter-tree-group filter-tree-${kind}" data-related-group data-filter-disclosure="${escape(key)}"${open?' open':''}><summary><span class="filter-disclosure-label">${escape(node.label)}</span><span class="filter-disclosure-count">${escape(countLabel(ownTags))}</span></summary><div class="filter-tree-body">${node.tag?`<div class="filter-parent-choice" data-related-group><span class="filter-parent-label">이 범주 선택</span>${renderChoice(node.tag,path.join(' '))}</div>`:''}<div class="filter-tree-children">${node.children.map(child=>renderNode(child,currentPath,childKind(kind))).join('')}</div></div></details>`;
+    const groups=new Map();
+    for(const child of node.children) {
+      const label=child.tag?.refinementGroup||'';
+      if(!groups.has(label))groups.set(label,[]);
+      groups.get(label).push(child);
+    }
+    const children=[...groups].map(([label,nodes])=>label?`<section data-related-group class="filter-tag-group"><h4>${escape(label)}</h4>${nodes.map(child=>renderNode(child,[...currentPath,label],childKind(kind))).join('')}</section>`:nodes.map(child=>renderNode(child,currentPath,childKind(kind))).join('')).join('');
+    return `<details class="filter-tree-group filter-tree-${kind}" data-related-group data-filter-disclosure="${escape(key)}"${open?' open':''}><summary><span class="filter-disclosure-label">${escape(node.label)}</span><span class="filter-disclosure-count">${escape(countLabel(ownTags))}</span></summary><div class="filter-tree-body">${node.tag?`<div class="filter-parent-choice" data-related-group><span class="filter-parent-label">이 범주 선택</span>${renderChoice(node.tag,path.join(' '))}</div>`:''}<div class="filter-tree-children">${children}</div></div></details>`;
   }
   function renderGroups(axis,label) {
-    return groupTags(tags,{axis}).map(group=>`<section class="filter-tag-group" data-related-group><h4>${escape(group.label)}<span>${escape(countLabel(group.tags))}</span></h4><div class="filter-tags">${group.tags.map(tag=>renderChoice(tag,`${label} ${group.label}`)).join('')}</div></section>`).join('');
+    const roots=axis==='logic'?logicTree:null;
+    const nodes=new Map((roots||[]).map(node=>[node.id,node]));
+    return groupTags(roots?roots.map(node=>node.tag):tags,{axis}).map(group=>`<section class="filter-tag-group" data-related-group><h4>${escape(group.label)}<span>${escape(countLabel(group.tags))}</span></h4><div class="filter-tags">${group.tags.map(tag=>roots?renderNode(nodes.get(tag.id),[label,group.label],axis):renderChoice(tag,`${label} ${group.label}`)).join('')}</div></section>`).join('');
   }
   const axes=[
     {id:'domain',label:'대범주',tree:domainTree,items:tags.filter(tag=>['domain','field','subject'].includes(tag.axis))},
@@ -125,7 +137,7 @@ export function renderSidebar({taxonomy=[],selectedTags=[],openKeys=[]}={},rende
   ];
   return axes.map(axis=>{
     const key=`axis:${axis.id}`;
-    const open=manual.has(key)||axis.items.some(tag=>selected.has(tag.id))||(axis.tree&&containsOpen(axis.tree,axis.id));
+    const open=manual.has(key)||axis.items.some(tag=>selected.has(tag.id))||containsOpen(axis.tree||(axis.id==='logic'?logicTree:[]),axis.id);
     const selectedCount=axis.items.filter(tag=>selected.has(tag.id)).length;
     const rootCount=axis.tree?axis.tree.length:axis.items.length;
     const rootCountLabel=`${selectedCount?`${selectedCount}개 선택 · `:''}${rootCount}`;

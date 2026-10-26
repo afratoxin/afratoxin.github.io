@@ -1,6 +1,6 @@
 import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-year-analysis1';
-import { groupTags } from './tag-groups.mjs?v=20261026-year-analysis1';
-import { renderSidebar } from './sidebar.mjs?v=20261026-year-analysis1';
+import { groupTags } from './tag-groups.mjs?v=20261026-strengthen-release1';
+import { renderSidebar } from './sidebar.mjs?v=20261026-strengthen-release1';
 import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-year-analysis1';
 import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-year-analysis1';
 import { rankReferences } from './reference-search.mjs?v=20261026-year-analysis1';
@@ -10,7 +10,7 @@ import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-year-analysis1';
+const CACHE_VERSION = '20261026-strengthen-release1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -250,7 +250,7 @@ function canonicalTagId(id) {
   return state.data?.tagAliases?.[id] || id;
 }
 function tagParent(tag) {
-  if (tag.parentTagId) return `문항 유형 · ${state.taxonomy.get(tag.parentTagId)?.label || tag.parentLabel || ''}`;
+  if (tag.parentTagId) return `${AXES.find(axis => axis.id === tag.axis)?.label || '분류'} · ${state.taxonomy.get(tag.parentTagId)?.label || tag.parentLabel || ''}${tag.refinementGroup ? ` · ${tag.refinementGroup}` : ''}`;
   const fields = tag.parentFields?.length ? tag.parentFields : tag.parentField ? [tag.parentField] : [];
   return fields.length ? `분야 · ${fields.join(' · ')}` : tag.parentDomain ? `대범주 · ${tag.parentDomain}` : '';
 }
