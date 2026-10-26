@@ -1,3 +1,5 @@
+import { examNormalTable } from '../data/normal-table.mjs?v=20261026-structure';
+
 // Native ES modules only. Counting probabilities use BigInt throughout.
 const gcd = (a, b) => { a = a < 0n ? -a : a; while (b) [a, b] = [b, a % b]; return a; };
 function fraction(n, d = 1n) {
@@ -101,12 +103,24 @@ const binomial = define({
   if (p.lower > p.upper || (p.query === 'probability' && p.upper > p.n)) return invalid(['확률을 구하는 구간은 0 ≤ 하한 ≤ 상한 ≤ n이어야 합니다.']);
   const den = BigInt(p.denominator), num = BigInt(p.numerator), fail = den - num, total = den ** BigInt(p.n);
   const masses = Array.from({ length: p.n + 1 }, (_, k) => choose(p.n, k) * num ** BigInt(k) * fail ** BigInt(p.n - k));
-  const sum = masses.slice(p.lower, p.upper + 1).reduce((a, b) => a + b, 0n);
+  const rangeSum = (lo, hi) => masses.slice(lo, hi + 1).reduce((a, b) => a + b, 0n);
+  const complement = p.lower + p.n - p.upper < p.upper - p.lower + 1;
+  const sum = complement ? total - rangeSum(0, p.lower - 1) - rangeSum(p.upper + 1, p.n) : rangeSum(p.lower, p.upper);
   const value = p.query === 'mean' ? fraction(BigInt(p.n) * num, den) : p.query === 'variance' ? fraction(BigInt(p.n) * num * fail, den * den) : fraction(sum, total);
   const prob = fraction(num, den).exact;
   const target = p.query === 'mean' ? 'E(X)' : p.query === 'variance' ? 'V(X)' : `P(${p.lower}≤X≤${p.upper})`;
+  let probabilityStep;
+  if (p.lower === 0 && p.upper === p.n) probabilityStep = { title: '가능한 성공 횟수 전체', body: '성공 횟수는 반드시 0 이상 n 이하이므로 전체 사건이다.', formula: `${target}=1` };
+  else if (complement) {
+    const excluded = [], powers = [];
+    if (p.lower === 1) { excluded.push('P(X=0)'); powers.push(`(1−${prob})^${p.n}`); }
+    else if (p.lower > 1) { excluded.push(`Σ(k=0…${p.lower - 1}) P(X=k)`); powers.push(`Σ(k=0…${p.lower - 1}) ${p.n}Ck·(${prob})^k·(1−${prob})^(${p.n}−k)`); }
+    if (p.upper === p.n - 1) { excluded.push(`P(X=${p.n})`); powers.push(`(${prob})^${p.n}`); }
+    else if (p.upper < p.n - 1) { excluded.push(`Σ(k=${p.upper + 1}…${p.n}) P(X=k)`); powers.push(`Σ(k=${p.upper + 1}…${p.n}) ${p.n}Ck·(${prob})^k·(1−${prob})^(${p.n}−k)`); }
+    probabilityStep = { title: '여사건으로 짧게 계산', body: '구간 밖의 성공 횟수가 더 적으므로 전체 확률 1에서 제외할 양끝 확률만 뺀다.', formula: `${target}=1−${excluded.join('−')}=1−${powers.join('−')}=${value.exact}` };
+  } else probabilityStep = { title: p.lower === p.upper ? '조합으로 한 항 계산' : '조합식의 필요한 항만 더하기', body: `성공 위치를 조합으로 고른 식에서 k=${p.lower}${p.lower === p.upper ? '인 한 항만 계산한다.' : `부터 ${p.upper}까지 필요한 항만 더한다.`}`, formula: p.lower === p.upper ? `${target}=${p.n}C${p.lower}·(${prob})^${p.lower}·(1−${prob})^${p.n - p.lower}=${value.exact}` : `${target}=Σ(k=${p.lower}…${p.upper}) ${p.n}Ck·(${prob})^k·(1−${prob})^(${p.n}−k)=${value.exact}` };
   const third = p.query === 'probability'
-    ? { title: '정수 구간의 확률 더하기', body: `양 끝을 포함하여 k=${p.lower}부터 ${p.upper}까지의 확률을 더한다.`, formula: `${target} = Σ P(X=k) = ${value.exact}` }
+    ? probabilityStep
     : { title: p.query === 'mean' ? '평균 계산' : '분산 계산', body: p.query === 'mean' ? '각 시행의 성공 지시변수의 평균을 더하면 된다.' : '독립인 성공 지시변수의 분산을 더하면 된다.', formula: `${target} = ${p.query === 'mean' ? 'np' : 'np(1−p)'} = ${value.exact}` };
   return {
     status: 'ok', question: `한 번의 시행에서 성공할 확률이 ${prob}인 실험을 서로 독립적으로 ${p.n}번 반복한다. 성공한 횟수를 확률변수 X라 할 때 ${target}를 구하시오.`,
@@ -126,22 +140,32 @@ const discrete = define({
   presets: [{ name: '공정한 주사위', params: { faces: 6, transform: 'linear', scale: 1, offset: 0 } }, { name: '눈의 제곱', params: { transform: 'square', query: 'variance' } }, { name: '5면체의 홀짝', params: { faces: 5, transform: 'parity', query: 'mean' } }]
 }, p => {
   const groups = new Map();
-  let sum = 0n, sumSquares = 0n;
   for (let i = 1; i <= p.faces; i++) {
     const g = p.transform === 'square' ? i * i : p.transform === 'parity' ? i % 2 : i;
     const x = p.scale * g + p.offset;
     groups.set(x, (groups.get(x) || 0) + 1);
-    sum += BigInt(x); sumSquares += BigInt(x) ** 2n;
   }
-  const n = BigInt(p.faces), mean = fraction(sum, n), moment = fraction(sumSquares, n), variance = fraction(sumSquares * n - sum * sum, n * n);
+  const n = BigInt(p.faces), a = BigInt(p.scale), b = BigInt(p.offset);
+  const sum1 = n * (n + 1n) / 2n, sum2 = n * (n + 1n) * (2n * n + 1n) / 6n;
+  const sum4 = n * (n + 1n) * (2n * n + 1n) * (3n * n * n + 3n * n - 1n) / 30n;
+  const odd = BigInt(Math.ceil(p.faces / 2));
+  const baseSum = p.transform === 'square' ? sum2 : p.transform === 'parity' ? odd : sum1;
+  const baseSquares = p.transform === 'square' ? sum4 : p.transform === 'parity' ? odd : sum2;
+  const baseMean = fraction(baseSum, n), baseVariance = fraction(baseSquares * n - baseSum * baseSum, n * n);
+  const mean = fraction(a * baseSum + b * n, n), variance = fraction(a * a * (baseSquares * n - baseSum * baseSum), n * n);
   const value = p.query === 'mean' ? mean : variance;
   const description = p.transform === 'square' ? 'i²' : p.transform === 'parity' ? 'i가 홀수이면 1, 짝수이면 0' : 'i';
   const entries = [...groups].sort((a, b) => a[0] - b[0]);
   const target = p.query === 'mean' ? 'E(X)' : 'V(X)';
+  const baseStep = p.transform === 'parity'
+    ? { title: '홀짝을 두 사건으로 묶기', body: `홀수 눈은 ${odd}개, 짝수 눈은 ${n - odd}개이다. Y=g(i)는 성공확률 q=${fraction(odd, n).exact}인 베르누이 확률변수이다.`, formula: `E(Y)=q, V(Y)=q(1−q), q=${fraction(odd, n).exact}` }
+    : p.transform === 'square'
+      ? { title: '제곱합과 네제곱합 공식', body: 'Y=i²로 놓으면 평균에는 제곱합, 이차 모멘트에는 네제곱합을 쓴다. 네제곱합 공식은 제곱변환을 위한 확장 계산식이다.', formula: `Σi²=n(n+1)(2n+1)/6=${sum2}, Σi⁴=n(n+1)(2n+1)(3n²+3n−1)/30=${sum4}` }
+      : { title: '자연수의 합 공식 사용', body: 'Y=i로 놓고 각 눈을 늘어놓는 대신 자연수의 합과 제곱합 공식을 사용한다.', formula: `Σi=n(n+1)/2=${sum1}, Σi²=n(n+1)(2n+1)/6=${sum2}` };
   return {
     status: 'ok', question: `1부터 ${p.faces}까지의 자연수가 하나씩 적힌 공정한 ${p.faces}면체를 한 번 던진다. 나온 눈 i에 대하여 g(i)=${description}, X=${p.scale}g(i)+(${p.offset})로 정할 때 ${target}를 구하시오.`,
     answer: `${target} = ${value.exact}`, ...value, unit: p.query === 'mean' ? '값' : '값²',
-    steps: [{ title: '확률분포 만들기', body: `각 눈의 확률은 1/${p.faces}이다. 서로 다른 눈이 같은 X 값으로 바뀌면 그 확률을 합한다.`, formula: 'P(X=x) = X=x가 되는 눈의 수 / 전체 면의 수' }, { title: '일차와 이차 모멘트', body: '확률변수의 값에 각각의 확률을 곱해 더한다. E(X²)는 평균을 제곱한 값과 다르다.', formula: `E(X)=${mean.exact}, E(X²)=${moment.exact}` }, { title: p.query === 'mean' ? '평균 읽기' : '평균의 제곱을 빼기', body: p.query === 'mean' ? '확률로 가중한 값의 합이 구하는 평균이다.' : '분산은 이차 모멘트에서 평균의 제곱을 뺀 값이다.', formula: p.query === 'mean' ? `E(X)=${value.exact}` : `V(X)=E(X²)−{E(X)}²=${value.exact}` }],
+    steps: [baseStep, { title: '기본변수의 평균과 분산', body: `각 눈은 등확률이므로 합 공식의 값을 ${p.faces}로 나누어 모멘트를 구하고, V(Y)=E(Y²)−{E(Y)}²를 적용한다.`, formula: `E(Y)=${baseMean.exact}, V(Y)=${baseVariance.exact}` }, { title: '일차변환 공식 적용', body: 'X=aY+b에서 평균은 a배 한 뒤 b를 더하고, 분산은 a²배 한다. 상수 b는 분산에 영향을 주지 않는다.', formula: p.query === 'mean' ? `E(X)=(${p.scale})E(Y)+(${p.offset})=${value.exact}` : `V(X)=(${p.scale})²V(Y)=${value.exact}` }],
     insight: '일차변환 aY+b에서 평균은 aE(Y)+b, 분산은 a²V(Y)입니다. 상수를 더해도 분산은 변하지 않습니다.',
     cases: entries.map(([x, count]) => ({ label: `X=${x}`, count: `${count}`, detail: `P(X=${x})=${fraction(count, p.faces).exact}` })),
     chart: entries.map(([x, count]) => ({ label: `X=${x}`, value: count / p.faces }))
@@ -194,6 +218,41 @@ function normalInterval(lower, upper) {
   if (upper <= 0) return clamp(normalTail(-upper) - normalTail(-lower));
   return clamp(1 - normalTail(-lower) - normalTail(upper));
 }
+function normalTableArea(z) {
+  z = Math.abs(z);
+  const original = examNormalTable.rows.find(row => Math.abs(Number(row.z) - z) < 1e-9);
+  return original ? original.probability : z === 0 ? '0.0000' : (0.5 - normalTail(z)).toFixed(4);
+}
+function normalTableFor(values) {
+  const additionalRows = [];
+  for (const value of values) {
+    const z = Math.abs(value);
+    if (z === 0 || examNormalTable.rows.some(row => Math.abs(Number(row.z) - z) < 1e-9)) continue;
+    const label = fmt(z, 8);
+    if (!additionalRows.some(row => row.z === label)) additionalRows.push({ z: label, probability: normalTableArea(z), label: '현재 문항 추가 근삿값' });
+  }
+  return {
+    ...examNormalTable, source: { ...examNormalTable.source }, rows: examNormalTable.rows.map(row => ({ ...row })), additionalRows,
+    notes: [...examNormalTable.notes, ...(additionalRows.length ? ['추가 근삿값은 원래 기출표에 없는 값이며, 현재 문항을 위해 수치적분한 뒤 소수 넷째 자리로 반올림했습니다.'] : []), '표의 확률값으로 계산한 답은 정밀 수치적분값과 반올림 차이가 있을 수 있습니다.']
+  };
+}
+function normalTableInterval(lower, upper) {
+  const l = normalTableArea(lower), u = normalTableArea(upper);
+  const signed = z => z === 0 ? 0 : (z < 0 ? -1 : 1) * Number(normalTableArea(z));
+  const probability = clamp(Number((signed(upper) - signed(lower)).toFixed(4)));
+  let body, expression;
+  if (lower <= 0 && upper >= 0) {
+    body = '정규분포의 좌우 대칭을 이용하여 0의 왼쪽 넓이를 오른쪽으로 옮긴 뒤 두 넓이를 더한다.';
+    expression = Math.abs(lower + upper) < 1e-9 ? `2P(0≤Z≤${fmt(upper, 8)})≈2×${u}` : `P(0≤Z≤${fmt(-lower, 8)})+P(0≤Z≤${fmt(upper, 8)})≈${l}+${u}`;
+  } else if (upper <= 0) {
+    body = '좌우 대칭으로 양의 구간으로 옮긴 뒤, 큰 0~z 넓이에서 작은 0~z 넓이를 뺀다.';
+    expression = `P(0≤Z≤${fmt(-lower, 8)})−P(0≤Z≤${fmt(-upper, 8)})≈${l}−${u}`;
+  } else {
+    body = '두 끝이 모두 0의 오른쪽이므로 큰 0~z 넓이에서 작은 0~z 넓이를 뺀다.';
+    expression = `P(0≤Z≤${fmt(upper, 8)})−P(0≤Z≤${fmt(lower, 8)})≈${u}−${l}`;
+  }
+  return { probability, body, formula: `P(${fmt(lower, 8)}≤Z≤${fmt(upper, 8)})=${expression}=${probability.toFixed(4)}` };
+}
 const normal = define({
   id: 'normal', title: '정규분포와 표본평균', category: '통계',
   description: '모표준편차와 표본크기를 바꾸며 표본평균을 표준화하고 구간확률을 비교합니다.',
@@ -203,34 +262,42 @@ const normal = define({
 }, p => {
   if (p.lower > p.upper) return invalid(['구간의 하한은 상한보다 클 수 없습니다.']);
   const se = p.sigma / Math.sqrt(p.n), zl = (p.lower - p.mu) / se, zu = (p.upper - p.mu) / se;
-  const probability = normalInterval(zl, zu);
+  const probability = normalInterval(zl, zu), tableSolution = normalTableInterval(zl, zu);
   return {
-    status: 'ok', question: `모평균이 ${p.mu}, 모표준편차가 ${p.sigma}인 정규분포에서 크기가 ${p.n}인 표본을 독립적으로 추출한다. 표본평균을 X̄라 할 때 P(${p.lower}≤X̄≤${p.upper})를 구하시오.`,
-    answer: `P(${p.lower}≤X̄≤${p.upper}) ≈ ${fmt(probability, 10)} (약 ${fmt(100 * probability, 6)}%)`, numeric: probability, unit: '확률',
-    steps: [{ title: '표본평균의 분포', body: '정규모집단에서 독립적으로 추출한 표본평균도 정규분포를 따른다. 표본평균의 표준편차는 σ/√n이다.', formula: `E(X̄)=${p.mu}, σ(X̄)=${p.sigma}/√${p.n}=${fmt(se, 10)}` }, { title: '양 끝을 표준화', body: '평균을 빼고 표본평균의 표준편차로 나눈다. σ 자체로 나누는 것과 구별한다.', formula: `Z=(X̄−${p.mu})/${fmt(se, 10)}, z₁=${fmt(zl, 8)}, z₂=${fmt(zu, 8)}` }, { title: '표준정규분포의 넓이', body: 'Φ(z)=P(Z≤z)라 하면 두 누적확률의 차가 구하는 확률이다. 이 실험실에서는 밀도함수를 수치적분하여 근사한다.', formula: `P(${fmt(zl, 8)}≤Z≤${fmt(zu, 8)})=Φ(${fmt(zu, 8)})−Φ(${fmt(zl, 8)})≈${fmt(probability, 10)}` }],
+    status: 'ok', question: `모평균이 ${p.mu}, 모표준편차가 ${p.sigma}인 정규분포에서 크기가 ${p.n}인 표본을 독립적으로 추출한다. 표본평균을 X̄라 할 때 제시된 표준정규분포표를 이용하여 P(${p.lower}≤X̄≤${p.upper})를 구하시오.`,
+    answer: `표 이용: P(${p.lower}≤X̄≤${p.upper}) ≈ ${tableSolution.probability.toFixed(4)} (약 ${fmt(100 * tableSolution.probability, 4)}%)`, numeric: probability, unit: '확률',
+    normalTable: normalTableFor([zl, zu]),
+    steps: [{ title: '표본평균의 분포', body: '정규모집단에서 독립적으로 추출한 표본평균도 정규분포를 따른다. 표본평균의 표준편차는 σ/√n이다.', formula: `E(X̄)=${p.mu}, σ(X̄)=${p.sigma}/√${p.n}≈${fmt(se, 10)}` }, { title: '양 끝을 표준화', body: '평균을 빼고 표본평균의 표준편차로 나눈다. σ 자체로 나누는 것과 구별한다.', formula: `Z=(X̄−${p.mu})/(σ/√n), z₁≈${fmt(zl, 8)}, z₂≈${fmt(zu, 8)}` }, { title: '표의 넓이를 대칭과 차로 계산', body: tableSolution.body, formula: tableSolution.formula }],
     insight: '표본크기가 4배가 되면 표본평균의 표준편차는 절반이 됩니다. 같은 실제 구간이라도 표준화된 구간은 더 넓어집니다.',
-    warnings: ['정규분포 확률은 수치 근사값입니다. 표준정규분포표의 반올림값과 약간 다를 수 있습니다.'],
+    warnings: [`답과 풀이에는 표의 반올림값을 사용했습니다. 정밀 수치적분 확률은 약 ${fmt(probability, 10)}입니다.`],
     chart: Array.from({ length: 12 }, (_, i) => { const l = -3 + i * 0.5, u = l + 0.5; return { label: `${fmt(p.mu + l * se)}~${fmt(p.mu + u * se)}`, value: normalInterval(l, u) }; })
   };
 });
 
 const critical = { '90': 1.6448536269514722, '95': 1.959963984540054, '99': 2.5758293035489004 };
+const textbookCritical = { '90': 1.645, '95': 1.96, '99': 2.58 };
 const estimation = define({
   id: 'estimation', title: '모평균의 신뢰구간', category: '통계',
   description: '모표준편차를 아는 정규모집단에서 신뢰수준, 표본크기와 신뢰구간의 길이를 비교합니다.',
-  defaults: { mean: 50, sigma: 10, n: 100, confidence: '95', query: 'interval' },
-  controls: [numberControl('mean', '표본평균 x̄', -1000, 1000, 0.1), numberControl('sigma', '알려진 모표준편차 σ', 0.01, 1000, 0.01), numberControl('n', '독립 표본의 크기 n', 1, 10000), selectControl('confidence', '신뢰수준', [['90', '90%'], ['95', '95%'], ['99', '99%']]), selectControl('query', '구할 것', [['interval', '모평균의 신뢰구간'], ['length', '신뢰구간의 길이']])],
-  presets: [{ name: '95% 신뢰구간', params: { mean: 50, sigma: 10, n: 100, confidence: '95', query: 'interval' } }, { name: '표본크기 네 배', params: { n: 400, query: 'length' } }, { name: '99%로 신뢰수준 높이기', params: { confidence: '99', query: 'interval' } }]
+  defaults: { mean: 50, sigma: 10, n: 100, confidence: '95', query: 'interval', mode: 'table' },
+  controls: [numberControl('mean', '표본평균 x̄', -1000, 1000, 0.1), numberControl('sigma', '알려진 모표준편차 σ', 0.01, 1000, 0.01), numberControl('n', '독립 표본의 크기 n', 1, 10000), selectControl('confidence', '신뢰수준', [['90', '90%'], ['95', '95%'], ['99', '99%']]), selectControl('query', '구할 것', [['interval', '모평균의 신뢰구간'], ['length', '신뢰구간의 길이']]), selectControl('mode', '계산 기준', [['table', '기출식 표 계산'], ['precise', '정밀 근사 계산']])],
+  presets: [{ name: '95% 신뢰구간', params: { mean: 50, sigma: 10, n: 100, confidence: '95', query: 'interval', mode: 'table' } }, { name: '표본크기 네 배', params: { n: 400, query: 'length', mode: 'table' } }, { name: '99%로 신뢰수준 높이기', params: { confidence: '99', query: 'interval', mode: 'table' } }]
 }, p => {
-  const z = critical[p.confidence], se = p.sigma / Math.sqrt(p.n), margin = z * se, lower = p.mean - margin, upper = p.mean + margin, length = 2 * margin;
+  const tableMode = p.mode === 'table', selectedCritical = tableMode ? textbookCritical : critical;
+  const z = selectedCritical[p.confidence], se = p.sigma / Math.sqrt(p.n), margin = z * se, lower = p.mean - margin, upper = p.mean + margin, length = 2 * margin;
+  const basis = tableMode ? '기출식 표 계산' : '정밀 근사 계산';
+  const criticalStep = tableMode
+    ? { title: '표에서 임계값 읽기', body: `중앙 ${p.confidence}%의 절반 넓이인 ${fmt(Number(p.confidence) / 200, 4)}에 가까운 표 값을 찾는다. 현재 문항의 추가 행에 제시된 교과서식 반올림 임계값을 사용한다.`, formula: `P(0≤Z≤${z})≈${normalTableArea(z)}, 임계값 z≈${z}` }
+    : { title: '제시된 정밀 임계값 사용', body: '정밀 근사 계산을 선택했으므로 발문에 제시된 정밀 임계값을 사용한다. 표의 추가 행은 해당 값에서의 확률을 네 자리로 반올림한 것이다.', formula: `P(−z≤Z≤z)=${Number(p.confidence) / 100}, 임계값 z≈${fmt(z, 10)}` };
   return {
-    status: 'ok', question: `모표준편차 σ=${p.sigma}가 알려진 정규모집단에서 크기가 ${p.n}인 표본을 독립적으로 추출하였더니 표본평균이 ${p.mean}이었다. 모평균 μ의 신뢰수준 ${p.confidence}% ${p.query === 'length' ? '신뢰구간의 길이를' : '신뢰구간을'} 구하시오. 신뢰구간 계산에는 임계값 z≈${fmt(z, 10)}를 사용한다.`,
-    answer: p.query === 'length' ? `신뢰구간의 길이 ≈ ${fmt(length, 10)}` : `${fmt(lower)} ≤ μ ≤ ${fmt(upper)} (길이 약 ${fmt(length)})`, numeric: length, unit: '구간 길이',
-    steps: [{ title: '신뢰수준에 맞는 임계값', body: `표준정규분포의 가운데 ${p.confidence}%를 남기는 양의 임계값을 z라 둔다. 모표준편차를 알고 있으므로 z 신뢰구간을 사용한다.`, formula: `P(−z≤Z≤z)=${Number(p.confidence) / 100}, z≈${fmt(z, 10)}` }, { title: '표준오차와 오차한계', body: '표준오차에 임계값을 곱하면 표본평균의 좌우에 더할 오차한계가 된다.', formula: `표준오차=σ/√n=${fmt(se, 10)}, 오차한계=zσ/√n≈${fmt(margin, 10)}` }, { title: '구간과 길이 구하기', body: '표본평균을 중심으로 오차한계만큼 양쪽으로 넓힌다. 길이는 오차한계의 두 배이다.', formula: `[x̄−zσ/√n, x̄+zσ/√n]≈[${fmt(lower)}, ${fmt(upper)}], 길이≈${fmt(length, 10)}` }],
+    status: 'ok', question: `모표준편차 σ=${p.sigma}가 알려진 정규모집단에서 크기가 ${p.n}인 표본을 독립적으로 추출하였더니 표본평균이 ${p.mean}이었다. 모평균 μ의 신뢰수준 ${p.confidence}% ${p.query === 'length' ? '신뢰구간의 길이를' : '신뢰구간을'} ${tableMode ? '제시된 표를 이용하여 ' : ''}구하시오. 신뢰구간 계산에는 임계값 z≈${fmt(z, 10)}를 사용한다.`,
+    answer: `${basis}: ${p.query === 'length' ? `신뢰구간의 길이 ≈ ${fmt(length, 10)}` : `${fmt(lower)} ≤ μ ≤ ${fmt(upper)} (길이 약 ${fmt(length)})`}`, numeric: length, unit: '구간 길이',
+    normalTable: normalTableFor([z]),
+    steps: [criticalStep, { title: '표준오차와 오차한계', body: '표준오차에 임계값을 곱하면 표본평균의 좌우에 더할 오차한계가 된다.', formula: `표준오차=σ/√n≈${fmt(se, 10)}, 오차한계=zσ/√n≈${fmt(margin, 10)}` }, { title: '구간과 길이 구하기', body: '표본평균을 중심으로 오차한계만큼 양쪽으로 넓힌다. 길이는 오차한계의 두 배이다.', formula: `[x̄−zσ/√n, x̄+zσ/√n]≈[${fmt(lower)}, ${fmt(upper)}], 길이≈${fmt(length, 10)}` }],
     insight: '표본평균은 구간의 위치를 바꿉니다. 표준편차와 신뢰수준은 클수록 구간이 길어지고, 표본크기는 클수록 구간이 짧아집니다. 신뢰수준은 같은 절차를 반복했을 때 구간이 모평균을 포함하는 비율을 뜻합니다.',
-    warnings: ['임계값은 수치 근사값입니다. 교과서에서 z=1.96 등으로 반올림하여 계산한 값과 약간 다를 수 있습니다.'],
+    warnings: tableMode ? [`발문·답·풀이·차트는 모두 교과서식 반올림 임계값 z≈${z}를 사용합니다.`, ...(p.confidence === '99' ? ['99%의 z≈2.58은 반올림값이므로 표의 중앙 넓이는 약 99.02%입니다.'] : [])] : ['발문·답·풀이·차트는 모두 정밀 근사 임계값을 사용합니다. 기출식 표 계산을 선택하면 교과서의 반올림 임계값으로 비교할 수 있습니다.'],
     cases: [{ label: '구간의 하한', count: fmt(lower, 10) }, { label: '구간의 상한', count: fmt(upper, 10) }, { label: '구간의 길이', count: fmt(length, 10) }],
-    chart: ['90', '95', '99'].map(level => ({ label: `${level}% 구간 길이`, value: 2 * critical[level] * se }))
+    chart: ['90', '95', '99'].map(level => ({ label: `${level}% 구간 길이`, value: 2 * selectedCritical[level] * se }))
   };
 });
 

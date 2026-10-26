@@ -1,4 +1,5 @@
-import { specs } from './engines.mjs';
+import { specs } from './engines.mjs?v=20261026-structure';
+import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor } from './structured-editor.mjs?v=20261026-structure';
 
 const $ = (id) => document.getElementById(id);
 const engineList = Array.isArray(specs) ? specs : Object.values(specs ?? {});
@@ -19,11 +20,19 @@ const state = {
   catalog: null, catalogError: false, mapFamily: 'all', source: 'recent', year: 'all', search: '', page: 1,
 };
 const PAGE_SIZE = 12;
+const METHOD_LABELS = new Map([
+  ['stars-bars', '하한·홀짝 치환과 중복조합'], ['gap-substitution', '차이 변수로 치환'],
+  ['inclusion-exclusion', '포함배제'], ['prime-exponents', '소인수의 지수 분배'],
+  ['contradiction', '조건의 모순 확인'], ['unbounded', '무한히 많은 해의 판정'],
+  ['core-cases', '핵심 변수를 분류한 뒤 조합 계산'], ['complement', '여사건으로 계산'],
+  ['factor-pairs', '약수쌍 분류'], ['symmetry', '대칭과 차이로 분류'],
+]);
 let controls = new Map();
 let calculationTimer;
 let dragCalculationTimer;
 let toastTimer;
 let searchTimer;
+let structuredEditor;
 
 function node(tag, className, content) {
   const element = document.createElement(tag);
@@ -60,7 +69,9 @@ function familyItems(id = state.family) {
 }
 
 function cloneDefaults(spec) {
-  return { ...(spec?.defaults ?? {}) };
+  const params = { ...(spec?.defaults ?? {}) };
+  if (spec?.id === 'integer-sum') params.structure = sanitizeStructure(spec.defaults?.structure, params);
+  return params;
 }
 
 function safeParams(spec, given = {}) {
@@ -73,6 +84,7 @@ function safeParams(spec, given = {}) {
     if (control.type === 'checkbox' && typeof value === 'boolean') params[control.key] = value;
     if (control.type === 'select' && (control.options ?? []).some((option) => option.value === value)) params[control.key] = value;
   }
+  if (spec?.id === 'integer-sum') params.structure = sanitizeStructure(given.structure, params);
   return params;
 }
 
@@ -126,6 +138,7 @@ function selectFamily(id, params, keepMapFilter = false) {
 function renderControls() {
   const family = familyInfo();
   const spec = engines.get(state.family);
+  structuredEditor = undefined;
   $('lab-title').textContent = family.title;
   $('lab-description').textContent = spec?.description ?? family.description ?? '기출에 쓰인 조건과 풀이 구조를 살펴보세요.';
   $('result-category').textContent = spec?.category ?? '기출 구조';
@@ -206,7 +219,7 @@ function renderControls() {
       slider.setAttribute('aria-describedby', help.id);
       field.append(help);
     }
-    controls.set(control.key, { control, input, slider });
+    controls.set(control.key, { control, input, slider, field });
     input.addEventListener(control.type === 'number' ? 'input' : 'change', () => { syncSlider(); scheduleCalculation(); });
     slider.addEventListener('input', () => {
       if (control.type === 'checkbox') input.checked = Number(slider.value) === 1;
@@ -226,11 +239,33 @@ function renderControls() {
   $('copy-button').disabled = !available;
   $('answer-button').disabled = !available;
   if (!available) $('controls').append(node('p', 'empty-state', '이 유형은 기출 분류를 제공합니다. 연결된 기출과 조건 비교를 확인해 주세요.'));
+  const usesStructure = state.family === 'integer-sum';
+  $('structure-panel').hidden = !usesStructure;
+  $('structure-editor-jump').hidden = !usesStructure;
+  $('structure-editor').replaceChildren();
+  if (usesStructure) {
+    state.params.structure = sanitizeStructure(state.params.structure, state.params);
+    structuredEditor = createStructuredEditor($('structure-editor'), state.params, (change) => {
+      if (change?.presetParams) {
+        state.params = safeParams(spec, change.presetParams);
+        renderControls(); calculate();
+      } else if (change?.immediate) calculate();
+      else if (change?.drag) {
+        const { error } = readAndValidate();
+        if (error) calculate();
+        else {
+          document.querySelector('.problem-panel').setAttribute('aria-busy', 'true');
+          if (!dragCalculationTimer) dragCalculationTimer = setTimeout(calculate, 45);
+        }
+      } else scheduleCalculation();
+    });
+  }
 }
 
 function readAndValidate() {
   const params = cloneDefaults(engines.get(state.family));
   let error = '';
+  if (state.family === 'integer-sum' && structuredEditor) updateStructuredScalarAvailability(structuredEditor.mode());
   for (const { control, input } of controls.values()) {
     let value;
     let message = '';
@@ -246,11 +281,36 @@ function readAndValidate() {
       else if (control.max !== undefined && value > control.max) message = `${control.label}: ${control.max} 이하로 입력해 주세요.`;
       else if (!input.validity.valid) message = `${control.label}: ${control.step ?? 1} 단위의 수를 입력해 주세요.`;
     }
+    if (input.disabled && message) { value = state.params[control.key] ?? params[control.key]; message = ''; }
     input.setAttribute('aria-invalid', message ? 'true' : 'false');
     if (message && !error) error = message;
     params[control.key] = value;
   }
+  if (!error && state.family === 'integer-sum' && structuredEditor) {
+    const edited = structuredEditor.read(params);
+    updateStructuredScalarAvailability(edited);
+    if (edited.error) error = edited.error;
+    else params.structure = edited.structure;
+  }
   return { params, error };
+}
+
+function updateStructuredScalarAvailability(edited) {
+  const ignored = edited.enabled && !edited.autoMain;
+  for (const key of ['total', 'relation']) {
+    const field = controls.get(key);
+    if (!field) continue;
+    field.input.disabled = ignored; field.slider.disabled = ignored;
+    field.field.dataset.ignored = String(ignored);
+    let note = $(`structure-scalar-note-${key}`);
+    if (!note) {
+      note = node('p', 'structure-scalar-note', '직접 편집한 주된 식을 사용 중입니다. 아래 식 편집기에서 기준값·관계를 바꾸세요.');
+      note.id = `structure-scalar-note-${key}`; field.field.append(note);
+      const description = [field.input.getAttribute('aria-describedby'), note.id].filter(Boolean).join(' ');
+      field.input.setAttribute('aria-describedby', description); field.slider.setAttribute('aria-describedby', description);
+    }
+    note.hidden = !ignored;
+  }
 }
 
 function scheduleCalculation() {
@@ -296,6 +356,7 @@ function renderResult() {
   $('result-status').textContent = status === 'ok' ? '계산 완료' : status === 'infinite' ? '무한히 많음' : '조건 확인';
   $('result-status').dataset.status = status;
   $('problem-text').textContent = result.question ?? '문항을 생성할 조건을 선택해 주세요.';
+  renderNormalTable(result.normalTable);
   $('answer-value').textContent = result.answer ?? result.exact ?? '—';
   $('answer-unit').textContent = result.unit ?? '';
   $('insight-text').textContent = result.insight ?? '';
@@ -311,6 +372,9 @@ function renderResult() {
   });
   replace($('steps-list'), steps);
   document.querySelector('.solution-section').hidden = !steps.length;
+  const method = typeof result.solutionMethod === 'string' ? result.solutionMethod : '';
+  $('solution-method').hidden = !method;
+  $('solution-method').textContent = method ? `풀이 방법 · ${METHOD_LABELS.get(method) ?? method}` : '';
   const warnings = result.warnings ?? [];
   $('result-warnings').hidden = !warnings.length;
   replace($('result-warnings'), warnings.map((warning) => node('p', 'result-warning', warning)));
@@ -320,6 +384,43 @@ function renderResult() {
   $('result-samples').hidden = !samples.length;
   replace($('result-samples'), samples.length ? [node('h4', 'subsection-title', '작은 예로 확인'), list(samples, 'sample-list')] : []);
   updateAnswerVisibility();
+}
+
+function renderNormalTable(data) {
+  const target = $('normal-table-container');
+  target.hidden = !data || !Array.isArray(data.rows) || !data.rows.length;
+  target.replaceChildren();
+  if (target.hidden) return;
+  const heading = node('div', 'normal-table-heading');
+  heading.append(node('h4', '', data.title ?? '표준정규분포표'), node('p', 'normal-table-definition', data.definition ?? 'P(0≤Z≤z)'));
+  target.append(heading);
+  if (data.source) {
+    const source = [data.source.exam, data.source.question !== undefined ? `${data.source.question}번` : '', data.source.pdfPage !== undefined ? `PDF ${data.source.pdfPage}쪽` : ''].filter(Boolean).join(' · ');
+    target.append(node('p', 'normal-table-source', `기출 원본 표 · ${source}`));
+  }
+  function table(rows, captionText, extra = false) {
+    const result = node('table', `normal-table${extra ? ' normal-table-extra' : ''}`);
+    const caption = node('caption', 'sr-only', captionText);
+    const head = node('thead'); const headRow = node('tr');
+    for (const label of ['z', data.definition ?? 'P(0≤Z≤z)', ...(extra ? ['구분'] : [])]) {
+      const cell = node('th', '', label); cell.scope = 'col'; headRow.append(cell);
+    }
+    head.append(headRow); const body = node('tbody');
+    for (const entry of rows.slice(0, 40)) {
+      const row = node('tr');
+      row.append(node('td', '', entry.z), node('td', '', entry.probability));
+      if (extra) row.append(node('td', '', entry.label ?? '현재 문항 추가 근삿값'));
+      body.append(row);
+    }
+    result.append(caption, head, body); const wrap = node('div', 'normal-table-scroll'); wrap.append(result); return wrap;
+  }
+  target.append(table(data.rows, '기출에 제시된 표준정규분포표'));
+  if (Array.isArray(data.additionalRows) && data.additionalRows.length) {
+    const additional = node('section', 'normal-table-additional');
+    additional.append(node('h5', '', '현재 문항에 필요한 추가 근삿값'), node('p', '', '아래 값은 위 기출 원본 표에 덧붙인 계산값입니다.'), table(data.additionalRows, '현재 문항의 추가 근삿값', true));
+    target.append(additional);
+  }
+  if (Array.isArray(data.notes) && data.notes.length) target.append(list(data.notes, 'normal-table-notes'));
 }
 
 function renderCases(cases = []) {
@@ -391,17 +492,26 @@ function randomValue(control, defaults) {
 function randomize() {
   const spec = engines.get(state.family);
   if (!spec) return;
+  const live = readAndValidate();
+  const current = safeParams(spec, live.error ? state.params : live.params);
+  const structured = spec.id === 'integer-sum';
+  const simpleMain = structured && isSimpleMain(current.structure, current);
   let selected;
   for (let attempt = 0; attempt < 15; attempt++) {
     const params = cloneDefaults(spec);
     for (const control of spec.controls ?? []) params[control.key] = randomValue(control, spec.defaults);
+    if (structured) {
+      if (current.structure.conditions.length || !simpleMain) params.k = current.k;
+      if (!simpleMain) { params.total = current.total; params.relation = current.relation; }
+      params.structure = synchronizeStructure(current.structure, params, simpleMain);
+    }
     try {
       const result = spec.solve(params);
       const isZero = result.numeric === 0 || /^(?:0|0\s*개|0\s*가지|0\s*명)$/.test(String(result.exact ?? result.answer ?? '').trim());
       if (result.status === 'ok' && !isZero) { selected = params; break; }
     } catch { /* Retry bounded samples; the fallback is an authored preset. */ }
   }
-  if (!selected) selected = safeParams(spec, spec.presets?.[0]?.params ?? spec.defaults);
+  if (!selected) selected = structured ? current : safeParams(spec, spec.presets?.[0]?.params ?? spec.defaults);
   state.params = selected;
   renderControls(); calculate();
   showToast('새 조건을 적용했습니다. 달라진 풀이를 비교해 보세요.');
@@ -632,8 +742,15 @@ function copyLink() {
 function copyResult() {
   const result = state.result;
   if (!result) return;
+  const normalTable = result.normalTable;
+  const tableText = normalTable ? [
+    '', normalTable.title ?? '표준정규분포표', normalTable.definition ?? 'P(0≤Z≤z)',
+    ...(normalTable.rows ?? []).map((row) => `${row.z}: ${row.probability}`),
+    ...(normalTable.additionalRows?.length ? ['현재 문항의 추가 근삿값', ...normalTable.additionalRows.map((row) => `${row.z}: ${row.probability}`)] : []),
+  ] : [];
   const text = [
-    `확통 구조 실험실 · ${familyInfo().title}`, '', result.question ?? '', '', `정답: ${result.answer ?? result.exact ?? ''}`,
+    `확통 구조 실험실 · ${familyInfo().title}`, '', result.question ?? '', ...tableText, '', `정답: ${result.answer ?? result.exact ?? ''}`,
+    ...(typeof result.solutionMethod === 'string' ? [`풀이 방법: ${METHOD_LABELS.get(result.solutionMethod) ?? result.solutionMethod}`] : []),
     ...(result.steps ?? []).flatMap((step, index) => ['', `${index + 1}. ${step.title ?? ''}`, step.body ?? '', step.formula ?? '']),
     '', result.insight ? `핵심: ${result.insight}` : '',
     '', '대표 구조 실험으로 생성한 문항입니다.',

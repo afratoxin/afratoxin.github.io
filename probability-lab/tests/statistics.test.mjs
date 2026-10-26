@@ -65,6 +65,18 @@ test('binomial rejects zero denominators and invalid intervals or probabilities'
     assert.equal(solve('binomial', params).status, 'invalid');
   }
 });
+test('binomial chooses a short complement for at-least-one and all-but-all events', () => {
+  for (const params of [{ n: 5, lower: 1, upper: 5 }, { n: 5, lower: 0, upper: 4 }]) {
+    const result = solve('binomial', params);
+    assert.equal(result.exact, '31/32');
+    assert.match(result.steps.at(-1).title, /여사건/);
+    assert.match(result.steps.at(-1).formula, /1−/);
+    assert.doesNotMatch(result.steps.at(-1).formula, /Σ/);
+  }
+  const interior = solve('binomial', { n: 10, lower: 1, upper: 9 });
+  assert.equal(interior.exact, '511/512');
+  assert.match(interior.steps.at(-1).formula, /P\(X=0\).*P\(X=10\)/);
+});
 
 test('fair die expectation and variance are exact', () => {
   assert.equal(solve('discrete', { query: 'mean' }).exact, '7/2');
@@ -84,6 +96,15 @@ test('affine transformations allow negative and zero slopes', () => {
   assert.equal(solve('discrete', { scale: -2, offset: 10 }).exact, '3');
   assert.equal(solve('discrete', { scale: -2, offset: 10, query: 'variance' }).exact, '35/3');
   assert.equal(solve('discrete', { scale: 0, query: 'variance' }).exact, '0');
+});
+test('discrete solutions use finite-sum identities and affine variance instead of face enumeration', () => {
+  const linear = solve('discrete', { scale: -2, offset: 10, query: 'variance' });
+  assert.match(linear.steps[0].formula, /Σi.*Σi²/);
+  assert.match(linear.steps.at(-1).formula, /V\(X\).*².*V\(Y\)/);
+  const square = solve('discrete', { transform: 'square', query: 'variance' });
+  assert.match(square.steps[0].formula, /Σi².*Σi⁴/);
+  const parity = solve('discrete', { faces: 5, transform: 'parity' });
+  assert.match(parity.steps[0].body, /홀수.*3/);
 });
 
 test('uniform density integrates intersected support', () => {
@@ -132,9 +153,30 @@ test('normal extreme tails, equal endpoints and broad intervals stay valid', () 
 test('normal rejects zero spread, noninteger sample sizes, and reversed bounds', () => {
   for (const params of [{ sigma: 0 }, { n: 1.5 }, { lower: 60, upper: 40 }]) assert.equal(solve('normal', params).status, 'invalid');
 });
+test('normal supplies the verified 2022 September exam table and solves with its rounded areas', () => {
+  const result = solve('normal', { mu: 0, sigma: 1, lower: -1, upper: 1 });
+  assert.deepEqual(result.normalTable.source, { exam: '2022학년도 대학수학능력시험 9월 모의평가', question: 27, pdfPage: 11 });
+  assert.equal(result.normalTable.definition, 'P(0≤Z≤z)');
+  assert.deepEqual(result.normalTable.rows, [
+    { z: '0.5', probability: '0.1915' }, { z: '1.0', probability: '0.3413' },
+    { z: '1.5', probability: '0.4332' }, { z: '2.0', probability: '0.4772' }
+  ]);
+  assert.match(result.answer, /0\.6826/);
+  assert.match(result.steps.at(-1).body, /대칭/);
+  assert.match(result.steps.at(-1).formula, /0\.3413/);
+  close(result.numeric, 0.6826894921370859);
+});
+test('normal separates extra approximations from original exam rows and subtracts same-side areas', () => {
+  const result = solve('normal', { mu: 0, sigma: 1, lower: 1.2, upper: 2 });
+  assert.equal(result.normalTable.rows.length, 4);
+  assert.deepEqual(result.normalTable.additionalRows, [{ z: '1.2', probability: '0.3849', label: '현재 문항 추가 근삿값' }]);
+  assert.match(result.answer, /0\.0923/);
+  assert.match(result.steps.at(-1).formula, /0\.4772−0\.3849/);
+  assert.ok(result.normalTable.notes.some(note => /기출.*아닌|기출.*없는/.test(note)));
+});
 
 test('known-sigma 95 percent confidence interval has the expected width', () => {
-  const result = solve('estimation', { mean: 50, sigma: 10, n: 100, confidence: '95' });
+  const result = solve('estimation', { mean: 50, sigma: 10, n: 100, confidence: '95', mode: 'precise' });
   close(result.numeric, 3.919927969080108);
   assert.match(result.answer, /48\.040036/);
   assert.match(result.answer, /51\.959964/);
@@ -148,9 +190,30 @@ test('quadrupling sample size halves CI length and confidence enlarges it', () =
 });
 test('confidence interval question supplies the selected normal critical value', () => {
   for (const [confidence, critical] of [['90', '1.644853627'], ['95', '1.9599639845'], ['99', '2.5758293035']]) {
-    const result = solve('estimation', { confidence });
+    const result = solve('estimation', { confidence, mode: 'precise' });
     assert.ok(result.question.includes(`임계값 z≈${critical}`), result.question);
   }
+});
+test('estimation also supplies the exam table with separately identified textbook critical approximations', () => {
+  const result = solve('estimation', { confidence: '95' });
+  assert.equal(result.normalTable.source.pdfPage, 11);
+  assert.ok(result.normalTable.additionalRows.some(row => row.z === '1.96' && row.probability === '0.4750'));
+  assert.ok(result.steps.some(step => /표.*임계값/.test(step.title) && /1\.96/.test(step.formula)));
+  assert.match(result.answer, /48\.04.*51\.96/);
+  close(result.numeric, 3.92);
+  for (const id of ['event-algebra', 'binomial', 'discrete', 'continuous']) assert.equal(solve(id, {}).normalTable, undefined);
+});
+test('confidence interval defaults to the textbook table and keeps every output on its selected basis', () => {
+  for (const [confidence, z, length] of [['90', '1.645', 3.29], ['95', '1.96', 3.92], ['99', '2.58', 5.16]]) {
+    const result = solve('estimation', { confidence, query: 'length' });
+    close(result.numeric, length);
+    assert.ok(result.question.includes(`임계값 z≈${z}`));
+    assert.doesNotMatch(result.question, /1\.959963|2\.575829|1\.644853/);
+    assert.ok(result.answer.includes(String(length)));
+    assert.equal(result.steps.length, 3);
+    assert.ok(result.chart.some(row => row.label.includes(`${confidence}%`) && Math.abs(row.value - length) < 1e-10));
+  }
+  assert.equal(solve('estimation', { mode: 'unsupported' }).status, 'invalid');
 });
 test('all numeric engines reject malformed input without NaN results', () => {
   for (const [id, key] of [['event-algebra', 'both'], ['binomial', 'n'], ['discrete', 'faces'], ['continuous', 'a'], ['normal', 'sigma'], ['estimation', 'sigma']]) {

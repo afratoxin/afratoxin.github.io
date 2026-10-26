@@ -1,3 +1,5 @@
+import { structuredSolve } from './structured-integer.mjs?v=20261026-structure';
+
 const options = pairs => pairs.map(([value,label])=>({value,label}));
 const defaults={k:4,total:7,relation:'eq',domain:'natural',lowerOn:false,lower:0,upperOn:false,upper:7,order:'any',distinct:false};
 const domains={natural:{label:'자연수',low:1,step:1,residue:0},nonnegative:{label:'0 이상의 정수',low:0,step:1,residue:0},integer:{label:'정수',low:-Infinity,step:1,residue:0},'positive-even':{label:'양의 짝수',low:2,step:2,residue:0},'positive-odd':{label:'양의 홀수',low:1,step:2,residue:1},'integer-even':{label:'짝수인 정수',low:-Infinity,step:2,residue:0},'integer-odd':{label:'홀수인 정수',low:-Infinity,step:2,residue:1}};
@@ -7,7 +9,7 @@ const factorial=n=>{let a=1n;for(let i=2;i<=n;i++)a*=BigInt(i);return a;};
 const choose=(n,r)=>{if(n<r||r<0)return 0n;let a=1n;for(let i=1;i<=r;i++)a=a*BigInt(n-r+i)/BigInt(i);return a;};
 const fail=message=>({status:'invalid',question:'입력한 조건을 확인하세요.',answer:'계산할 수 없음',numeric:null,unit:'',steps:[],insight:message,warnings:[message]});
 
-function solve(input={}) {
+function basicSolve(input={}) {
   if(!input||typeof input!=='object'||Array.isArray(input))return fail('입력은 매개변수 객체여야 합니다.');
   const p={...defaults,...input};
   for(const [key,lo,hi] of [['k',2,8],['total',-40,80],['lower',-30,40],['upper',-30,40]])if(!Number.isInteger(p[key])||p[key]<lo||p[key]>hi)return fail(`${key}의 값을 ${lo}~${hi} 사이의 정수로 입력하세요.`);
@@ -86,10 +88,20 @@ function solve(input={}) {
     steps.push({title:'최소값과 홀짝을 치환으로 흡수하기',body:`각 i에 대하여 xᵢ = ${L} + ${d.step===1?'yᵢ':`${d.step}yᵢ`}로 놓으면 yᵢ는 0 이상의 정수이다.`,formula:`y₁ + … + y${sub[k-1]} ${p.relation==='eq'?'=':'≤'} ${M}`});
     const n=p.relation==='eq'?M+k-1:M+k,r=p.relation==='eq'?k-1:k;
     steps.push({title:p.relation==='eq'?'중복조합으로 세기':'남는 양을 새 변수로 두기',body:p.relation==='eq'?'합이 정해진 0 이상의 정수해는 별과 막대로 일대일 대응시킨다.':'남는 양을 0 이상의 정수인 새 변수로 두면 등식 하나로 바뀐다. 이를 중복조합으로 센다.',formula:`C(${n}, ${r}) = ${choose(n,r)}`});
+  }else if(noExtraOrder){
+    const B=(U-L)/d.step;
+    const cumulative=p.relation!=='eq';
+    const S=p.relation==='eq'?(T-k*L)/d.step:Number.isFinite(highSum)?Math.floor((highSum-k*L)/d.step):Math.ceil((lowSum-k*L)/d.step)-1;
+    steps.push({title:'하한과 홀짝을 치환하기',body:`xᵢ = ${L} + ${d.step===1?'':d.step}yᵢ로 두면 0 ≤ yᵢ ≤ ${B}이다. 상한을 잠시 풀면 합이 정해진 0 이상의 정수해를 중복조합으로 셀 수 있다.`,formula:`0 ≤ yᵢ ≤ ${B}`});
+    const combination=`Σⱼ (−1)^j C(${k}, j) C(${S}−j·${B+1}+${cumulative?k:k-1}, ${cumulative?k:k-1})`;
+    steps.push({title:'상한을 넘는 경우를 포함배제로 제외',body:`상한을 넘는 j개 변수를 고르고 각각 yᵢ에서 ${B+1}을 뺀다. 한 변수 초과는 빼고 두 변수 동시 초과는 더하는 포함배제를 적용한다. ${cumulative?'합의 부등식은 남는 양을 0 이상의 새 변수로 두어 중복조합으로 센다.':''} 위쪽 수가 아래쪽 수보다 작은 조합수는 0으로 본다.`,formula:Number.isFinite(highSum)?`${combination} = ${count}`:`${B+1}^${k} − (${combination}) = ${count}`});
+    if(!Number.isFinite(highSum))steps.push({title:'여사건으로 큰 합의 경우 세기',body:`유한한 전체 범위의 ${B+1}^${k}개에서 합이 기준보다 작은 경우를 뺀다. 등호 포함 여부는 정수 경계 ${S}에 반영되어 있다.`});
   }else{
-    steps.push({title:sorted?'값을 크기순으로 선택하여 중복 방지':'합별로 경우를 분류하기',body:sorted?`작은 값부터 ${k}개를 ${unique?'중복 없이':'중복을 허용하여'} 고른다. ${unique&&p.order==='any'?`각 선택은 서로 다른 ${k}!개의 순서쌍을 만든다.`:'각 선택은 주어진 크기 순서의 순서쌍 하나에 대응한다.'}`:'Dⱼ(s)를 앞의 j개 변수의 합이 s인 경우의 수라고 하자. 마지막 변수 값을 하나씩 고정하면 서로 겹치지 않는 경우로 나뉜다.',formula:sorted?'선택한 개수와 합을 함께 기록하며 합산':`Dⱼ(s) = Σ Dⱼ₋₁(s − v)  (v는 가능한 변수 값)`});
-    steps.push({title:'합 조건을 만족하는 경우만 합하기',body:`${Number.isFinite(lowSum)&&Number.isFinite(highSum)&&lowSum===highSum?`합이 ${lowSum}인 경우`:Number.isFinite(highSum)?`합이 ${highSum} 이하인 경우`:`합이 ${lowSum} 이상인 경우`}를 모두 합한다. 정의역·순서·서로 다름 조건은 앞 단계에서 함께 반영했다.`,formula:`경우의 수 = ${count}`});
+    const strict=unique,shift=strict?k*(k-1)/2:0;
+    steps.push({title:'정렬한 값의 간격을 새 변수로 두기',body:`${unique&&p.order==='any'?`먼저 값을 엄격한 오름차순으로 고른다. 서로 다른 ${k}개 값의 배치는 각각 ${k}!가지이므로 마지막에 곱한다. `:''}xᵢ = ${L} + ${d.step===1?'':d.step}(zᵢ${strict?' + i − 1':''})로 놓으면 0 ≤ z₁ ≤ … ≤ z${sub[k-1]}이다. g₁=z₁, g₂=z₂−z₁, …로 간격을 치환하면 모든 gᵢ가 0 이상이다.`,formula:`x₁+…+x${sub[k-1]} = ${k*L+d.step*shift} + ${d.step===1?'':`${d.step}·`}(${k}g₁ + ${k-1}g₂ + … + g${sub[k-1]})`});
+    steps.push({title:'간격의 가중합을 겹치지 않게 분류',body:`첫 간격부터 가능한 값을 정하면 남은 가중합과 상한이 결정된다. 같은 정렬된 선택이 두 번 나타나지 않도록 각 간격은 한 번씩만 센다. 상한은 g₁+…+g${sub[k-1]} ≤ ${(U-L)/d.step-(strict?k-1:0)}로 함께 반영한다. 일반적인 간격의 가중합은 보통의 중복조합 한 식으로 바꿀 수 없으므로 이 경우 분류의 합을 사용한다.`,formula:`주어진 합 관계를 만족하는 간격의 경우${unique&&p.order==='any'?` × ${k}!`:''} = ${count}`});
   }
+
   const samples=[];let visits=0;
   function sample(xs,s){
     if(samples.length>=8||++visits>25000)return;
@@ -103,7 +115,12 @@ function solve(input={}) {
     }
   }
   if(count>0n)sample([],0);
-  return {...base,answer:String(count),exact:String(count),numeric:Number(count),steps,samples,cases:valid.slice(0,20).map(([s,c])=>({label:`합 = ${s}`,count:String(c)})),warnings:valid.length>20?['합별 표에는 앞의 20개 합만 표시했습니다. 정답에는 모든 합을 반영했습니다.']:[],chart:valid.slice(0,12).map(([s,c])=>({label:String(s),value:Number(c)}))};
+  return {...base,answer:String(count),exact:String(count),numeric:Number(count),solutionMethod:sorted?'gap-substitution':p.upperOn?'inclusion-exclusion':'stars-bars',steps,samples,cases:valid.slice(0,20).map(([s,c])=>({label:`합 = ${s}`,count:String(c)})),warnings:valid.length>20?['합별 표에는 앞의 20개 합만 표시했습니다. 정답에는 모든 합을 반영했습니다.']:[],chart:valid.slice(0,12).map(([s,c])=>({label:String(s),value:Number(c)}))};
+}
+
+function solve(input={}) {
+  if(input && typeof input==='object' && !Array.isArray(input) && input.structure?.enabled===true)return structuredSolve({...defaults,...input},basicSolve);
+  return basicSolve(input);
 }
 
 export const integerSumSpec={id:'integer-sum',title:'정수해 · 같은 공의 분배',category:'경우의 수',description:'문자의 수, 합, 부등호, 정의역과 순서 조건을 함께 바꾸어 봅니다.',defaults,controls:[
@@ -117,4 +134,4 @@ export const integerSumSpec={id:'integer-sum',title:'정수해 · 같은 공의 
   {key:'upper',label:'각 변수의 상한',type:'number',min:-30,max:40,step:1},
   {key:'order',label:'크기 순서',type:'select',options:options([['any','제한 없음'],['nondecreasing','작거나 같다 (오름차순)'],['increasing','엄격히 작다']])},
   {key:'distinct',label:'변수의 값이 모두 다름',type:'checkbox'}
-],presets:[{name:'시작 예제: 자연수 4개의 합이 7',params:{...defaults}},{name:'홀수 조건을 치환으로',params:{...defaults,k:3,total:9,domain:'positive-odd'}},{name:'등호를 부등호로',params:{...defaults,k:3,total:7,relation:'le'}},{name:'정수로 바꾸면 무한?',params:{...defaults,domain:'integer'}},{name:'상한과 크기 순서',params:{...defaults,k:3,total:9,upperOn:true,upper:5,order:'nondecreasing'}}],solve};
+],presets:[{name:'시작 예제: 자연수 4개의 합이 7',params:{...defaults}},{name:'홀수 조건을 치환으로',params:{...defaults,k:3,total:9,domain:'positive-odd'}},{name:'등호를 부등호로',params:{...defaults,k:3,total:7,relation:'le'}},{name:'정수로 바꾸면 무한?',params:{...defaults,domain:'integer'}},{name:'상한과 크기 순서',params:{...defaults,k:3,total:9,upperOn:true,upper:5,order:'nondecreasing'}},{name:'기출형: 약수쌍과 남는 합',params:{...defaults,k:4,total:16,structure:{enabled:true,left:'a+b+c+d',relation:'eq',right:'16',variables:[{},{},{parity:'odd'},{lower:2}],conditions:[{kind:'expression',left:'a*b',relation:'eq',right:'12'}]}}},{name:'기출형: 차의 제곱과 대칭',params:{...defaults,k:4,total:12,structure:{enabled:true,left:'a+b+c+d',relation:'eq',right:'12',variables:[{},{},{},{}],conditions:[{kind:'expression',left:'(a-b)^2',relation:'eq',right:'4'}]}}}],solve};

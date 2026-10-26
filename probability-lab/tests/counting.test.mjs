@@ -176,3 +176,128 @@ test('curriculum extension and conditional complements are explicit',()=>{
   assert.ok(cards.cases.some(row=>row.label==='(A의 여사건)∩B'));
   assert.ok(cards.cases.some(row=>row.label==='(A의 여사건)∩(B의 여사건)'));
 });
+
+const explanation = result => result.steps.map(step => `${step.title} ${step.body} ${step.formula ?? ''}`).join('\n');
+test('die sums teach substitution, combinations and upper-bound inclusion exclusion',()=>{
+  const exact=run('probability-count',{sides:6,rolls:3,statistic:'sum',relation:'eq',target:10});
+  assert.equal(exact.exact,'1/8');
+  assert.match(explanation(exact),/중복조합/);
+  assert.match(explanation(exact),/포함배제/);
+  assert.match(explanation(exact),/치환/);
+  const almostAll=run('probability-count',{sides:6,rolls:3,statistic:'sum',relation:'le',target:17});
+  assert.equal(almostAll.exact,'215/216');
+  assert.match(explanation(almostAll),/여사건/);
+  const shortTail=run('probability-count',{sides:6,rolls:3,statistic:'sum',relation:'ge',target:17});
+  assert.equal(shortTail.exact,'1/54');
+  assert.match(explanation(shortTail),/대칭.*치환|치환.*대칭/);
+});
+
+test('maximum uses powers and complements, product groups divisors and last faces',()=>{
+  const maximum=run('probability-count',{sides:6,rolls:4,statistic:'max',relation:'eq',target:5});
+  assert.equal(maximum.exact,'41/144');
+  assert.match(explanation(maximum),/5\^4/);
+  assert.match(explanation(maximum),/4\^4/);
+  assert.match(explanation(run('probability-count',{statistic:'max',relation:'ge',target:5})),/여사건/);
+  const product=run('probability-count',{sides:6,rolls:3,statistic:'product',relation:'eq',target:12});
+  assert.equal(product.exact,'5/72');
+  assert.match(explanation(product),/약수/);
+  assert.match(explanation(product),/마지막/);
+  assert.match(explanation(product),/순열/);
+  assert.ok(product.cases.some(row=>row.label.includes('앞부분의 곱')));
+});
+
+test('conditional card explanations derive parity and fixed-card combination counts',()=>{
+  const parity=run('conditional',{n:8,draw:3,condition:'sum-even',event:'include',eventValue:1});
+  assert.equal(parity.exact,'3/7');
+  assert.match(explanation(parity),/홀수.*짝수|짝수.*홀수/);
+  assert.match(explanation(parity),/C\(4,2\)/);
+  assert.match(explanation(parity),/C\(3,1\)/);
+  const fixed=run('conditional',{n:8,draw:3,condition:'include',conditionValue:1,event:'odd-count',eventValue:2});
+  assert.equal(fixed.exact,'4/7');
+  assert.match(explanation(fixed),/C\(7,2\)/);
+  assert.match(explanation(fixed),/고정/);
+  const maximum=run('conditional',{n:8,draw:3,condition:'max-eq',conditionValue:5,event:'include',eventValue:2});
+  assert.equal(maximum.exact,'1/2');
+  assert.match(explanation(maximum),/C\(4,2\)/);
+  assert.match(explanation(maximum),/C\(3,1\)/);
+});
+
+test('card sum threshold uses disjoint extremal-card cases and combination shortcuts',()=>{
+  const result=run('conditional',{n:8,draw:3,condition:'max-eq',conditionValue:5,event:'sum-ge',eventValue:10});
+  assert.equal(result.exact,'2/3');
+  assert.match(explanation(result),/최댓값/);
+  assert.match(explanation(result),/최소.*합|최대.*합/);
+  assert.match(explanation(result),/조합/);
+  const terms=result.cases.filter(row=>row.label.startsWith('합 조건:'));
+  assert.ok(terms.length>0);
+  assert.equal(terms.reduce((sum,row)=>sum+BigInt(row.count),0n),4n);
+  assert.ok(!result.samples?.length,'worked solutions should show counted classes, not individual card subsets');
+});
+
+test('student solutions do not present dynamic-programming accumulation as the method',()=>{
+  for(const statistic of ['sum','product','max'])for(const relation of ['eq','ge','le']) {
+    const result=run('probability-count',{statistic,relation,target:12});
+    assert.doesNotMatch(explanation(result),/경우의 수 누적|이전 합|이전 곱|도착하는|새 합 =|새 곱 =/);
+  }
+});
+
+// A tiny arithmetic parser checks the displayed numerical formula independently.
+// It accepts only integer arithmetic and C(n,k), never JavaScript or engine code.
+function displayedInteger(expression) {
+  const binomial=(n,k)=>{
+    if(n<0||k<0||k>n)return 0n;
+    let upper=1n,lower=1n;
+    for(let j=1;j<=k;j++){upper*=BigInt(n-j+1);lower*=BigInt(j);}
+    return upper/lower;
+  };
+  const expanded=expression.replace(/C\((-?\d+),(-?\d+)\)/g,(_,n,k)=>`${binomial(Number(n),Number(k))}`)
+    .replaceAll('×','*').replaceAll('−','-').replace(/\s+/g,'');
+  assert.match(expanded,/^[\d()+*^\-]+$/,`not a numerical counting formula: ${expression}`);
+  const tokens=expanded.match(/\d+|[()+*^\-]/g);let at=0;
+  const atom=()=>{
+    if(tokens[at]==='-'){at++;return -atom();}
+    if(tokens[at]==='('){at++;const value=sum();assert.equal(tokens[at++],')');return value;}
+    return BigInt(tokens[at++]);
+  };
+  const exponent=()=>{const value=atom();if(tokens[at]==='^'){at++;return value**exponent();}return value;};
+  const product=()=>{let value=exponent();while(tokens[at]==='*'){at++;value*=exponent();}return value;};
+  const sum=()=>{let value=product();while(tokens[at]==='+'||tokens[at]==='-'){const sign=tokens[at++];const next=product();value=sign==='+'?value+next:value-next;}return value;};
+  const value=sum();assert.equal(at,tokens.length);return value;
+}
+
+test('displayed die formulas and grouped product cases equal the independently counted numerator',()=>{
+  for(const sides of [2,4,6])for(const rolls of [1,3,5])for(const relation of ['eq','le','ge']) {
+    for(const target of [0,1,sides,sides*rolls,15,999])for(const statistic of ['sum','max','product']) {
+      const result=run('probability-count',{sides,rolls,relation,target,statistic});
+      const expected=BigInt(result.cases.find(row=>row.label==='사건 A').count);
+      const formula=result.steps.at(-2).formula;
+      assert.equal(BigInt(formula.match(/= (\d+)$/)[1]),expected,JSON.stringify({sides,rolls,relation,target,statistic}));
+      if(statistic!=='product')assert.equal(displayedInteger(formula.split(' = ')[0]),expected);
+      else {
+        const groups=result.cases.filter(row=>row.label.startsWith('앞부분의 곱')||row.label.startsWith('마지막 눈'));
+        assert.equal(groups.reduce((sum,row)=>sum+BigInt(row.count),0n),expected);
+      }
+    }
+  }
+});
+
+test('displayed parity/fixed-card formulas and sum case tables reproduce numerator and denominator',()=>{
+  for(let n=1;n<=7;n++)for(let draw=0;draw<=Math.min(n,3);draw++)for(const condition of ['sum-even','include','max-eq']) {
+    for(const conditionValue of [1,n+1])for(const event of ['odd-count','include','sum-ge'])for(const eventValue of [0,2,n]) {
+      const result=run('conditional',{n,draw,condition,conditionValue,event,eventValue});
+      for(const [label,index] of [['B',1],['A∩B',2]]) {
+        const formula=result.steps[index].formula.split(' = ')[1];
+        assert.equal(displayedInteger(formula),BigInt(result.cases.find(row=>row.label===label).count),JSON.stringify({n,draw,condition,conditionValue,event,eventValue,label}));
+      }
+      if(event==='sum-ge')assert.equal(result.cases.filter(row=>row.label.startsWith('합 조건:')).reduce((sum,row)=>sum+BigInt(row.count),0n),BigInt(result.cases.find(row=>row.label==='A∩B').count));
+    }
+  }
+});
+
+test('impossible card constraints are explained before forming negative selection sizes',()=>{
+  for(const params of [
+    {n:4,draw:1,condition:'include',conditionValue:1,event:'include',eventValue:2},
+    {n:4,draw:2,condition:'include',conditionValue:1,event:'odd-count',eventValue:0},
+    {n:4,draw:2,condition:'sum-even',event:'odd-count',eventValue:4},
+  ])assert.doesNotMatch(explanation(run('conditional',params)),/홀수는 -\d+장|나머지 -\d+장|짝수 -\d+장|중 -\d+장/);
+});

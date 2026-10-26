@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#172544">
   <meta name="description" content="확률과 통계 기출의 조건과 풀이 구조를 살펴보고, 파라미터를 바꾸며 문항·정답·해설을 함께 실험하는 학습 공간입니다.">
   <title>확통 구조 실험실</title>
-  <link rel="stylesheet" href="./style.css">
-  <script type="module" src="./app.mjs"></script>
+  <link rel="stylesheet" href="./style.css?v=20261026-structure">
+  <script type="module" src="./app.mjs?v=20261026-structure"></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -63,17 +63,19 @@
               <p class="control-error form-error" id="form-error" role="status" hidden></p>
               <div class="controls-actions"><button class="button button-primary" id="random-button" type="button"><span aria-hidden="true">⤨</span>새 조건 뽑기</button><button class="button button-secondary" id="link-button" type="button">현재 조건 링크 복사</button></div>
               <p class="control-footnote">슬라이더를 드래그해 조절하세요. 숫자는 직접 입력할 수도 있습니다.</p>
+              <a class="structure-editor-jump" id="structure-editor-jump" href="#structure-panel" hidden>식·일부 변수 조건 편집 ↓</a>
             </section>
 
             <section class="panel problem-panel" aria-labelledby="problem-title" aria-busy="false">
               <div class="problem-heading"><div><p class="problem-kicker">GENERATED EXAMPLE</p><h3 id="problem-title">조건으로 만든 문항</h3></div><span class="live-indicator"><span aria-hidden="true"></span>실시간 갱신</span></div>
               <div class="result-meta"><span class="badge" id="result-category">경우의 수</span><span class="status-pill" id="result-status">계산 준비</span></div>
               <p class="problem-text" id="problem-text">실험을 준비하고 있습니다.</p>
+              <div id="normal-table-container" class="normal-table-container" aria-label="문제에서 사용할 정규분포표" hidden></div>
               <div class="result-toolbar"><button type="button" class="button button-ghost compact-button" id="answer-button" aria-expanded="true" aria-controls="solution-content">정답·해설 숨기기</button><button type="button" class="button button-ghost compact-button" id="copy-button">결과 복사 ↗</button></div>
               <div id="result-warnings" hidden></div>
               <div id="solution-content">
                 <div class="answer-box"><div class="answer-label">정답</div><div class="answer-value" id="answer-value">—</div><div class="answer-unit" id="answer-unit"></div></div>
-                <section class="solution-section" aria-labelledby="steps-title"><h4 id="steps-title" class="subsection-title">구조를 따라 푸는 해설</h4><div class="steps-list" id="steps-list"></div></section>
+                <section class="solution-section" aria-labelledby="steps-title"><h4 id="steps-title" class="subsection-title">구조를 따라 푸는 해설</h4><p class="solution-method" id="solution-method" hidden></p><div class="steps-list" id="steps-list"></div></section>
                 <div id="result-cases" hidden></div>
                 <div id="result-chart" hidden></div>
                 <div id="result-samples" hidden></div>
@@ -82,6 +84,10 @@
               <p class="answer-hidden" id="answer-hidden" hidden>먼저 문항을 풀어 보세요. 위 버튼으로 정답과 해설을 확인할 수 있습니다.</p>
             </section>
           </div>
+          <section class="panel structure-panel" id="structure-panel" aria-labelledby="structure-title" hidden>
+            <div class="structure-panel-heading"><div><p class="section-kicker">EXPRESSION & VARIABLE CONDITIONS</p><h3 id="structure-title">식·일부 변수 조건 편집기</h3><p class="section-description">a, b만 짝수로 정하거나, 곱·차·제곱 조건을 함께 걸어 보세요.</p></div><a class="button button-ghost compact-button" href="#problem-title">바뀐 문항 보기 ↑</a></div>
+            <div id="structure-editor"></div>
+          </section>
           <section class="source-section" aria-labelledby="related-title">
             <div class="source-heading"><div><p class="section-kicker">BACK TO THE EXAMS</p><h3 id="related-title">이 구조와 연결되는 기출</h3></div><button class="button button-ghost compact-button" type="button" id="all-sources-button">유형 지도에서 모두 보기 →</button></div>
             <p class="source-explainer">아래는 실제 기출을 읽고 작성한 자체 요약입니다. 위 실험은 대표 구조를 다루며, 이 기출의 수치·조건을 그대로 복원한 프리셋은 아닙니다.</p>

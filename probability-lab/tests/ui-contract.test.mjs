@@ -7,6 +7,10 @@ import { fileURLToPath } from 'node:url';
 // Input, change, click and hashchange events exercise the same handlers as users.
 const runner = fileURLToPath(new URL('./helpers/ui-runner.mjs', import.meta.url));
 for (const [scenario, name] of [
+  ['structured-subset', 'selected variables alone receive parity and lower or upper bounds'],
+  ['structured-custom', 'custom equations survive base sliders and reset back into default sum synchronization'],
+  ['structured-hash', 'local groups and shared structures round trip while malicious structures recover safely'],
+  ['normal-table', 'normal table stays directly beneath the question while the solution is hidden'],
   ['slider', 'drag sliders preserve mathematical meanings and synchronize typed companions, presets and links'],
   ['basic', 'inputs, presets, resetting, hidden answers, copying, filters and keyboard tabs work'],
   ['catalog', 'all 13 engines, every preset, seeded random conditions and 253 catalog records render'],

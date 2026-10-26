@@ -192,6 +192,238 @@ const coefficient=makeSpec({
   ],equal?'두 차수가 같으면 k를 한 값으로 결정할 수 없습니다. 먼저 같은 항을 합쳐 (a+b)^n으로 계산하세요.':'차수 방정식의 정수 조건과 0≤k≤n을 확인한 다음 계수를 계산합니다.',{cases}),unit:'계수'};
 });
 
+// Student-facing methods are independent of the distribution used for checking.
+function boundedDiceSum(sides, rolls, target, cumulative) {
+  const total = power(sides, rolls);
+  if (target < rolls || (!cumulative && target > sides * rolls)) return { value: 0n, formula: '0', cases: [], size: 0 };
+  if (cumulative && target >= sides * rolls) return { value: total, formula: `${sides}^${rolls}`, cases: [], size: 0 };
+  const cases = [], terms = [];
+  let value = 0n;
+  for (let j = 0; j <= Math.min(rolls, Math.floor((target - rolls) / sides)); j++) {
+    const top = target - sides * j - (cumulative ? 0 : 1), bottom = rolls - (cumulative ? 0 : 1);
+    const term = choose(rolls, j) * choose(top, bottom), signed = j % 2 ? -term : term;
+    value += signed;
+    const product = `${j ? `C(${rolls},${j})×` : ''}C(${top},${bottom})`;
+    terms.push(`${j ? j % 2 ? ' − ' : ' + ' : ''}${product}`);
+    cases.push({ label: `상한 위반 ${j}개 보정`, count: `${signed}`, detail: `${j % 2 ? '빼기' : '더하기'}: ${product}` });
+  }
+  return { value, formula: terms.join('') || '0', cases, size: terms.length };
+}
+
+function sumTeaching(sides, rolls, target, relation) {
+  const total = power(sides, rolls), center = rolls * (sides + 1);
+  let selected, complement = false, symmetry = false, bound = target;
+  if (relation === 'eq') {
+    symmetry = target > center - target;
+    bound = symmetry ? center - target : target;
+    selected = boundedDiceSum(sides, rolls, bound, false);
+  } else {
+    const directBound = relation === 'le' ? target : target - 1;
+    const reflectedBound = relation === 'le' ? center - target - 1 : center - target;
+    const direct = boundedDiceSum(sides, rolls, directBound, true);
+    const reflected = boundedDiceSum(sides, rolls, reflectedBound, true);
+    symmetry = reflected.size < direct.size;
+    bound = symmetry ? reflectedBound : directBound;
+    complement = relation === 'le' ? symmetry : !symmetry;
+    selected = symmetry ? reflected : direct;
+  }
+  const eventCount = complement ? total - selected.value : selected.value;
+  const transformation = symmetry ? `대칭 치환 z_i=${sides + 1}−x_i를 쓰면 합 S는 ${center}−S로 바뀝니다. ` : '';
+  const event = relation === 'eq' ? `합이 ${bound}인 경우` : `합이 ${bound} 이하인 경우`;
+  const formula = `${complement ? `${sides}^${rolls} − (${selected.formula})` : selected.formula} = ${eventCount}`;
+  return {
+    steps: [
+      { title: '하한을 치환하고 중복조합 적용', body: `원래 눈의 합 x_1+⋯+x_${rolls}=t라 두고 y_i=x_i−1로 치환하면 y_1+⋯+y_${rolls}=t−${rolls}, 0≤y_i≤${sides - 1}입니다. 상한을 잠시 뺀 중복조합은 C(t−1,${rolls - 1})입니다. 원래 눈의 합이 t 이하이면 남는 양을 새 변수로 두어 C(t,${rolls})로 셉니다.`, formula: `합=t: C(t−1,${rolls - 1}),  합≤t: C(t,${rolls})` },
+      { title: `${symmetry ? '대칭 치환과 ' : ''}${complement ? '여사건·' : ''}상한의 포함배제`, body: `${transformation}${event}를 셉니다. x_i≥${sides + 1}인 변수를 j개 고르면 각각 ${sides}를 빼서 치환하므로 C(${rolls},j)를 곱해 번갈아 빼고 더합니다.${complement ? ' 구하기 쉬운 여사건을 전체에서 뺍니다.' : ''} 두 방향 중 보정 항이 적은 식을 사용합니다.`, formula }
+    ], cases: selected.cases, count: eventCount,
+    insight: '양의 정수해는 하한 치환 후 중복조합으로, 주사위 눈의 상한은 포함배제로 처리합니다. 꼬리가 긴 쪽은 여사건이나 눈을 뒤집는 대칭 치환으로 줄입니다.'
+  };
+}
+
+function maximumTeaching(sides, rolls, target, relation) {
+  const atMost = m => power(Math.max(0, Math.min(sides, m)), rolls);
+  const clamp = m => Math.max(0, Math.min(sides, m));
+  const low = relation === 'eq' || relation === 'ge' ? target - 1 : target;
+  const formula = relation === 'eq'
+    ? `${clamp(target)}^${rolls} − ${clamp(target - 1)}^${rolls}`
+    : relation === 'le' ? `${clamp(target)}^${rolls}` : `${sides}^${rolls} − ${clamp(target - 1)}^${rolls}`;
+  const count = relation === 'eq' ? atMost(target) - atMost(target - 1) : relation === 'le' ? atMost(target) : power(sides, rolls) - atMost(target - 1);
+  return {
+    steps: [
+      { title: '최댓값 이하를 먼저 세기', body: `최댓값 M이 m 이하라는 것은 모든 눈이 1부터 m까지라는 뜻입니다. 따라서 1≤m≤${sides}에서 경우의 수는 m^${rolls}입니다. m<1이면 0, m≥${sides}이면 전체입니다.`, formula: `|M≤m| = (0과 ${sides} 사이로 제한한 m)^${rolls}` },
+      { title: relation === 'eq' ? '바로 아래의 누적 경우 빼기' : relation === 'ge' ? '여사건으로 바꾸기' : '같은 선택을 독립적으로 곱하기', body: relation === 'eq' ? `최댓값이 ${target} 이하인 경우에서 ${target - 1} 이하인 경우를 빼면 최댓값이 정확히 ${target}인 경우만 남습니다.` : relation === 'ge' ? `M≥${target}의 여사건은 M≤${target - 1}입니다. 모든 눈을 나눠 세지 않고 전체에서 한 번에 뺍니다.` : `각 눈이 모두 ${target} 이하이도록 가능한 눈을 고르면 됩니다.`, formula: `${formula} = ${count}` }
+    ], count, cases: [{ label: `최댓값 ${low} 이하`, count: `${atMost(low)}`, detail: `${clamp(low)}^${rolls}` }],
+    insight: '최댓값 문제는 각 눈을 따로 나열하기보다 “모두 m 이하”를 먼저 세면 거듭제곱 한두 항으로 정리됩니다.'
+  };
+}
+
+function productPatternSummary(product, length, sides) {
+  const descriptions = []; let types = 0;
+  const visit = (remaining, slots, minFace, prefix) => {
+    if (!slots) {
+      if (remaining !== 1) return;
+      types++;
+      if (descriptions.length >= 3) return;
+      const multiplicities = new Map();
+      for (const face of prefix) multiplicities.set(face, (multiplicities.get(face) || 0) + 1);
+      const denominator = [...multiplicities.values()].map(count => `${count}!`).join('·') || '1';
+      descriptions.push(`${prefix.length ? `(${prefix.join(',')})` : '빈 앞부분'}: ${length}!/(${denominator})`);
+      return;
+    }
+    if (remaining < minFace ** slots || remaining > sides ** slots) return;
+    for (let face = minFace; face <= sides; face++) if (remaining % face === 0) visit(remaining / face, slots - 1, face, [...prefix, face]);
+  };
+  visit(product, length, 1, []);
+  return `${descriptions.join('; ')}${types > descriptions.length ? `; 같은 원리의 다른 ${types - descriptions.length}유형` : ''}`;
+}
+
+function productTeaching(sides, rolls, target, relation, prefixDistribution) {
+  const cases = []; let count = 0n;
+  if (relation === 'eq') {
+    for (let last = 1; last <= sides; last++) {
+      if (target < 1 || target % last !== 0) continue;
+      const q = target / last, prefixCount = prefixDistribution.get(q) || 0n;
+      if (!prefixCount) continue;
+      count += prefixCount;
+      cases.push({ label: `앞부분의 곱 ${q}, 마지막 눈 ${last}`, count: `${prefixCount}`, detail: productPatternSummary(q, rolls - 1, sides) });
+    }
+  } else {
+    const groups = new Map();
+    for (const [q, ways] of prefixDistribution) {
+      const allowed = relation === 'le' ? Math.max(0, Math.min(sides, Math.floor(target / q))) : sides - Math.max(0, Math.min(sides, Math.ceil(target / q) - 1));
+      if (!allowed) continue;
+      const group = groups.get(allowed) || { ways: 0n, min: q, max: q };
+      group.ways += ways; group.min = Math.min(group.min, q); group.max = Math.max(group.max, q); groups.set(allowed, group);
+    }
+    for (const [allowed, group] of [...groups].sort((a,b)=>a[0]-b[0])) {
+      const contribution = group.ways * BigInt(allowed); count += contribution;
+      const last = relation === 'le' ? `1…${allowed}` : `${sides - allowed + 1}…${sides}`;
+      cases.push({ label: `마지막 눈 ${last}`, count: `${contribution}`, detail: `가능한 앞부분 곱 ${group.min}…${group.max}에 해당하는 앞부분 배열 ${group.ways}가지 × 마지막 눈 ${allowed}가지` });
+    }
+  }
+  return {
+    steps: [
+      { title: '소인수·약수와 같은 눈의 순열', body: `앞 ${rolls - 1}개의 눈의 곱을 q로 묶습니다. 곱이 정해지면 각 눈은 그 곱의 약수이고, 소인수의 지수를 나누어 가능한 눈의 종류별 개수를 정합니다. 같은 눈이 e_j번씩 나오는 한 유형의 순열 수는 (${rolls - 1})!/(e_1!e_2!…)입니다.`, formula: `N(q) = 곱이 q인 각 눈의 종류별 유형에 대한 (${rolls - 1})!/(e_1!e_2!…)의 합` },
+      { title: '마지막 눈의 허용 개수 곱하기', body: relation === 'eq' ? `마지막 눈 d는 ${target}의 약수여야 하며 1≤d≤${sides}입니다. 앞부분의 곱이 ${target}/d가 되는 순열 수 N(${target}/d)를 더합니다. 곱이 0인 경우는 없습니다.` : `마지막 눈을 d라 하면 q·d ${relation === 'le' ? '≤' : '≥'} ${target}입니다. q가 주어졌을 때 가능한 d의 개수를 구하고, 허용되는 d의 범위가 같은 앞부분끼리 묶어 곱의 법칙을 적용합니다. 합과 달리 일반적인 곱 조건에는 중복조합 한 번으로 끝나는 공식이 없습니다.`, formula: relation === 'eq' ? `Σ(1≤d≤${sides}, d는 ${target}의 약수) N(${target}/d) = ${count}` : `Σ_q N(q) × |{d: 1≤d≤${sides}, qd ${relation === 'le' ? '≤' : '≥'} ${target}}| = ${count}` }
+    ], count, cases,
+    insight: '곱 조건은 약수와 소인수로 눈의 종류를 제한하고, 같은 종류끼리 묶은 순열 수를 사용합니다. 마지막 눈의 허용 범위가 같으면 한 경우로 합칩니다.'
+  };
+}
+
+const combinationText = (n, k) => n < 0 || k < 0 || k > n ? '0' : `C(${n},${k})`;
+function parityCombinations(odds, evens, size, parity) {
+  const terms = []; let count = 0n;
+  for (let t = 0; t <= size; t++) {
+    if (t % 2 !== parity) continue;
+    const value = choose(odds,t) * choose(evens,size-t);
+    if (!value) continue;
+    count += value; terms.push({ t, count: value, formula: `C(${odds},${t})×C(${evens},${size-t})` });
+  }
+  return { count, formula: terms.map(term=>term.formula).join(' + ') || '0', terms };
+}
+
+// Combination shortcuts stop a whole class once its minimum/maximum sum decides it.
+function thresholdCounter(cards) {
+  const sums=[0], odds=[0], memo=new Map();
+  for(const card of cards){sums.push(sums.at(-1)+card);odds.push(odds.at(-1)+(card%2));}
+  const count=(length,size,target,parity=null)=>{
+    if(size<0||size>length)return 0n;
+    if(!size)return target<=0&&(parity===null||parity===0)?1n:0n;
+    if(target>sums[length]-sums[length-size])return 0n;
+    if(target<=sums[size])return parity===null?choose(length,size):parityCombinations(odds[length],length-odds[length],size,parity).count;
+    if(size===1){let value=0n;for(let i=0;i<length;i++)if(cards[i]>=target&&(parity===null||cards[i]%2===parity))value++;return value;}
+    const key=`${length},${size},${target},${parity}`;
+    if(memo.has(key))return memo.get(key);
+    const last=cards[length-1],nextParity=parity===null?null:(parity-last%2+2)%2;
+    const value=count(length-1,size,target,parity)+count(length-1,size-1,target-last,nextParity);
+    memo.set(key,value);return value;
+  };
+  return count;
+}
+
+function cardSumCases(cards, size, threshold, parity) {
+  if(size<0||size>cards.length)return [];
+  if(!size)return [{label:'합 조건: 남은 카드 없음',count:threshold<=0&&(parity===null||parity===0)?'1':'0',detail:`이미 고정한 카드의 합만으로 기준을 확인합니다.`}];
+  const count=thresholdCounter(cards), rows=[];
+  const minimumTotal=cards.slice(0,size).reduce((sum,card)=>sum+card,0),maximumTotal=cards.slice(-size).reduce((sum,card)=>sum+card,0);
+  if(threshold>maximumTotal)return [{label:'합 조건: 최대 합으로 불가능 판정',count:'0',detail:`남은 ${size}장의 최대 합 ${maximumTotal}이 필요한 합 ${threshold}보다 작습니다.`}];
+  if(threshold<=minimumTotal){
+    const odd=cards.filter(card=>card%2).length;
+    const formula=parity===null?combinationText(cards.length,size):parityCombinations(odd,cards.length-odd,size,parity).formula;
+    return [{label:'합 조건: 모든 남은 카드 선택',count:`${count(cards.length,size,threshold,parity)}`,detail:`최소 합 ${minimumTotal}도 기준 ${threshold} 이상이므로 ${formula}`}];
+  }
+  for(let index=size-1;index<cards.length;index++) {
+    const largest=cards[index],rest=size-1,target=threshold-largest,nextParity=parity===null?null:(parity-largest%2+2)%2;
+    const value=count(index,rest,target,nextParity);
+    const minimum=cards.slice(0,rest).reduce((s,x)=>s+x,0),maximum=cards.slice(index-rest,index).reduce((s,x)=>s+x,0);
+    let detail;
+    if(target>maximum)detail=`나머지 ${rest}장의 최대 합 ${maximum}도 필요한 합 ${target}에 못 미쳐 0`;
+    else if(target<=minimum) {
+      const odd=cards.slice(0,index).filter(x=>x%2).length;
+      detail=nextParity===null?`나머지 ${rest}장의 최소 합 ${minimum}이 필요한 합 ${target} 이상: ${combinationText(index,rest)}=${value}`:`합 기준은 자동 만족, 남은 홀수 개수의 ${nextParity?'홀짝=홀수':'홀짝=짝수'} 조건: ${parityCombinations(odd,index-odd,rest,nextParity).formula}=${value}`;
+    } else if(rest===1)detail=`${largest}보다 작은 카드 중 ${target} 이상${nextParity===null?'':nextParity?'인 홀수':'인 짝수'} ${value}장 중 한 장 선택: C(${value},1)`;
+    else detail=`나머지 ${rest}장은 ${largest}보다 작은 카드에서 합 ${target} 이상${nextParity===null?'':`, 합은 ${nextParity?'홀수':'짝수'}`}. 최댓값을 더 고정하고 최소·최대 합 경계에서 조합으로 묶으면 ${value}가지`;
+    rows.push({label:`합 조건: 남은 카드의 최댓값 ${largest}`,count:`${value}`,detail});
+  }
+  return rows;
+}
+
+function conditionalTeaching({n,draw:r,condition,conditionValue:b,event,eventValue:a}, countB, countAB) {
+  const O=Math.ceil(n/2),E=Math.floor(n/2),cases=[];
+  let denominator='0',denominatorBody,numerator='0',numeratorBody;
+  const validB=condition==='sum-even'||(b<=n&&r>=1);
+  if(condition==='sum-even') {
+    const parity=parityCombinations(O,E,r,0);denominator=parity.formula;
+    denominatorBody=`홀수 카드는 ${O}장, 짝수 카드는 ${E}장입니다. 합이 짝수이려면 홀수 카드 수 t가 짝수여야 하므로 C(${O},t)C(${E},${r}−t)를 짝수 t에 대해서만 더합니다.`;
+    for(const term of parity.terms)cases.push({label:`조건 B: 홀수 ${term.t}장`,count:`${term.count}`,detail:term.formula});
+  } else if(condition==='include') {
+    denominator=validB?combinationText(n-1,r-1):'0';
+    denominatorBody=validB?`${b}번 카드를 먼저 고정하고 제외하면 나머지 ${n-1}장 중 ${r-1}장을 고르면 됩니다.`:`조건의 ${b}번 카드를 포함할 수 없어 조건 B는 불가능합니다.`;
+  } else {
+    denominator=validB?combinationText(b-1,r-1):'0';
+    denominatorBody=validB?`최댓값 ${b}번 카드를 고정하고 나머지는 1부터 ${b-1} 중 ${r-1}장을 고릅니다. 최댓값 이하의 차 C(${b},${r})−C(${b-1},${r})와도 같습니다.`:`최댓값 ${b}인 카드 선택이 존재하지 않습니다.`;
+  }
+  if(!countB){
+    numerator='0';numeratorBody='조건 B 자체가 불가능하므로 교집합도 0가지입니다. 분모가 0인 조건부확률은 정의되지 않습니다.';
+  } else if(event==='odd-count') {
+    if(a>r){numerator='0';numeratorBody=`전체 ${r}장보다 홀수 ${a}장을 더 많이 뽑을 수 없어 교집합은 0가지입니다.`;}
+    else if(condition==='sum-even') {
+      numerator=a%2?'0':`${combinationText(O,a)}×${combinationText(E,r-a)}`;
+      numeratorBody=a%2?'홀수 카드가 홀수 장이면 카드 합도 홀수입니다. 합이 짝수인 조건 B와 모순이므로 분자는 바로 0입니다.':`홀수 ${a}장을 ${O}장 중에서, 나머지 짝수 ${r-a}장을 ${E}장 중에서 고릅니다. 홀수 장수가 짝수라서 B도 자동 만족합니다.`;
+    } else {
+      const fixedOdd=b%2,available=condition==='include'?n-1:b-1;
+      const odd=condition==='include'?O-fixedOdd:Math.ceil((b-1)/2),even=available-odd,need=a-fixedOdd;
+      numerator=validB?`${combinationText(odd,need)}×${combinationText(even,r-1-need)}`:'0';
+      numeratorBody=need<0||need>r-1?`고정된 ${b}번 카드의 홀짝과 요구한 홀수 ${a}장 조건을 함께 만족할 수 없어 0가지입니다.`:`이미 고정한 ${b}번 카드가 ${fixedOdd?'홀수':'짝수'}이므로 남은 ${r-1}장 중 홀수는 ${need}장이 필요합니다. 남은 홀수·짝수에서 각각 조합으로 고릅니다.`;
+    }
+  } else if(event==='include') {
+    if(a<1||a>n||!r||!validB){numerator='0';numeratorBody='필요한 카드가 없거나 함께 뽑을 수 없으므로 교집합은 0가지입니다.';}
+    else if(condition==='sum-even') {
+      const odd=O-a%2,even=E-(1-a%2),parity=parityCombinations(odd,even,r-1,a%2);
+      numerator=parity.formula;
+      numeratorBody=`${a}번 카드를 고정하고 제외합니다. 이 카드가 ${a%2?'홀수':'짝수'}이므로 남은 ${r-1}장의 홀수 개수도 ${a%2?'홀수':'짝수'}여야 전체 합이 짝수입니다. 남은 홀수 ${odd}장·짝수 ${even}장에서 조합으로 고릅니다.`;
+      for(const term of parity.terms)cases.push({label:`교집합: ${a}번 고정, 남은 홀수 ${term.t}장`,count:`${term.count}`,detail:term.formula});
+    } else if(a===b){numerator=denominator;numeratorBody=`${b}번 카드는 조건 B에 의해 이미 고정되어 있으므로 A도 자동 만족합니다.`;}
+    else if(r<2){numerator='0';numeratorBody='한 장만 뽑으면서 서로 다른 두 카드를 모두 포함할 수 없으므로 0가지입니다.';}
+    else if(condition==='include'){numerator=combinationText(n-2,r-2);numeratorBody=`${a}번과 ${b}번 두 카드를 고정하고 나머지 ${n-2}장 중 ${r-2}장을 고릅니다.`;}
+    else if(a>b){numerator='0';numeratorBody=`최댓값이 ${b}이므로 더 큰 ${a}번 카드는 포함할 수 없습니다.`;}
+    else {numerator=combinationText(b-2,r-2);numeratorBody=`최댓값 ${b}번과 ${a}번을 고정합니다. 1부터 ${b-1} 중 ${a}를 제외한 ${b-2}장에서 ${r-2}장을 고릅니다.`;}
+  } else {
+    const fixed=condition==='sum-even'?0:b,k=r-(condition==='sum-even'?0:1);
+    const cards=Array.from({length:condition==='max-eq'?Math.min(n,b-1):n},(_,i)=>i+1).filter(x=>condition==='sum-even'||x!==b);
+    const rows=validB?cardSumCases(cards,k,a-fixed,condition==='sum-even'?0:null):[];
+    cases.push(...rows);numerator=rows.length?`${rows.map(row=>row.count).join(' + ')}`:'0';
+    numeratorBody=k===0?`더 뽑을 카드가 없으므로 고정된 카드의 합 ${fixed}이 기준 ${a} 이상인지만 확인합니다.`:`${fixed?`${b}번 카드를 고정했으므로 남은 카드 합은 ${a-b} 이상이어야 합니다. `:''}남은 카드의 최댓값 m을 기준으로 겹치지 않게 경우를 나눕니다. m을 제외한 카드의 최소 합이 기준 이상이면 그 경우 전체를 조합으로 세고, 최대 합도 기준 미만이면 0입니다. 경계 사이의 경우만 남은 합 조건으로 더 나눕니다. 일반적인 합 조건을 조합 한 항으로 바꾸는 공식은 없습니다.`;
+  }
+  return {
+    steps:[
+      {title:'분모: 조건 B를 조합으로 세기',body:denominatorBody,formula:`|B| = ${denominator} = ${countB}`},
+      {title:event==='sum-ge'?'분자: 최댓값과 합의 경계로 분류':'분자: 고정·홀짝 조건을 함께 적용',body:numeratorBody,formula:`|A∩B| = ${numerator} = ${countAB}`}
+    ], cases,
+    insight:event==='sum-ge'?'카드 합의 기준은 고정 카드의 합을 먼저 빼고 남은 최댓값으로 분류합니다. 한 묶음이 전부 가능하거나 불가능한 경계는 최소·최대 합으로 판단해 조합으로 한 번에 셉니다.':'조건부확률은 B를 새로운 표본공간으로 삼습니다. 고정 카드를 먼저 빼고, 홀수·짝수의 남은 장수를 조합에 대입하면 전체 선택을 나열할 필요가 없습니다.'
+  };
+}
+
 const probabilityCount=makeSpec({
   id:'probability-count',title:'주사위 시행의 확률',category:'확률',
   description:'합·곱·최댓값의 분포를 세어 확률을 기약분수로 구합니다.',
@@ -199,8 +431,9 @@ const probabilityCount=makeSpec({
   controls:[N('sides','공정한 주사위의 면 수',2,12),N('rolls','독립 시행 횟수',1,8),S('statistic','관찰하는 값',[['sum','눈의 합'],['product','눈의 곱'],['max','눈의 최댓값']]),S('relation','사건 조건',[['eq','정확히'],['ge','이상'],['le','이하']]),N('target','기준 값',0,500000000)],
   presets:[{name:'세 눈의 합',params:{sides:6,rolls:3,statistic:'sum',relation:'ge',target:12}},{name:'곱이 12',params:{sides:6,rolls:3,statistic:'product',relation:'eq',target:12}},{name:'최댓값이 5',params:{sides:6,rolls:4,statistic:'max',relation:'eq',target:5}}]
 },({sides,rolls,statistic,relation,target})=>{
-  let distribution=new Map([[statistic==='product'?1:0,1n]]);
+  let distribution=new Map([[statistic==='product'?1:0,1n]]),prefixDistribution=distribution;
   for(let i=0;i<rolls;i++) {
+    if(i===rolls-1)prefixDistribution=distribution;
     const next=new Map();
     for(const [old,count] of distribution) for(let face=1;face<=sides;face++) {
       const value=statistic==='sum'?old+face:statistic==='product'?old*face:Math.max(old,face);
@@ -214,12 +447,13 @@ const probabilityCount=makeSpec({
   const sorted=[...distribution].sort((a,b)=>a[0]-b[0]),chart=[];
   const width=Math.ceil(sorted.length/24);
   for(let i=0;i<sorted.length;i+=width){const group=sorted.slice(i,i+width);chart.push({label:group.length===1?`${group[0][0]}`:`${group[0][0]}~${group.at(-1)[0]}`,value:Number(group.reduce((s,row)=>s+row[1],0n))});}
+  const teaching=statistic==='sum'?sumTeaching(sides,rolls,target,relation):statistic==='max'?maximumTeaching(sides,rolls,target,relation):productTeaching(sides,rolls,target,relation,prefixDistribution);
   const f=fraction(successful,total);
   return probabilityResult(`1부터 ${sides}까지의 눈이 같은 확률로 나오는 주사위를 독립적으로 ${rolls}번 던진다. 나온 눈의 ${name}이 ${relationText(target,relation)}일 확률을 구하시오.`,successful,total,[
-    {title:'같은 확률의 기본 결과',body:`기본 결과는 눈의 순서쌍 (${Array.from({length:rolls},(_,i)=>`x${i+1}`).join(', ')})입니다. 각 결과의 확률은 같고, 모두 ${total}가지입니다. 서로 다른 ${name}의 값들이 같은 확률인 것은 아닙니다.`,formula:`전체 결과 수 = ${sides}^${rolls} = ${total}`},
-    {title:`${name}의 값별 경우의 수 누적`,body:`한 번 던질 때마다 이전 ${name}의 값에 가능한 눈 1부터 ${sides}까지를 반영합니다. 같은 값으로 도착하는 경우의 수를 모두 더하여 ${rolls}회 후의 분포를 얻습니다.`,formula:statistic==='sum'?'새 합 = 이전 합 + 새 눈':statistic==='product'?'새 곱 = 이전 곱 × 새 눈':'새 최댓값 = max(이전 최댓값, 새 눈)'},
-    {title:'사건의 경우의 수를 전체로 나누기',body:`조건을 만족하는 값들의 경우의 수를 합하면 ${successful}가지입니다. 이를 전체 ${total}가지로 나누고 약분합니다.`,formula:`P(A) = ${successful}/${total} = ${f.text}`}
-  ],'동일확률은 각 눈의 순서 있는 나열에 적용됩니다. 합이나 곱의 서로 다른 값에 동일확률을 가정하면 안 됩니다.',{cases:[{label:'사건 A',count:`${successful}`,detail:`${name} 조건 만족`},{label:'사건 A의 여사건',count:`${total-successful}`},{label:'전체',count:`${total}`}],chart,warnings:sorted.length>24?['분포 그래프는 인접한 값을 묶어 표시합니다. 확률 계산에는 모든 값을 정확하게 사용했습니다.']:[]});
+    {title:'동일확률의 기준',body:`순서 있는 각 눈의 결과는 같은 확률입니다. 전체 ${total}가지를 분모로 삼고, 사건의 경우의 수를 조합·곱의 법칙으로 구합니다. ${name}의 서로 다른 값이 동일확률인 것은 아닙니다.`,formula:`전체 결과 수 = ${sides}^${rolls} = ${total}`},
+    ...teaching.steps,
+    {title:'확률로 마무리',body:`조건을 만족하는 ${successful}가지를 전체 ${total}가지로 나누어 약분합니다.`,formula:`P(A) = ${successful}/${total} = ${f.text}`}
+  ],teaching.insight,{cases:[...teaching.cases,{label:'사건 A',count:`${successful}`,detail:`${name} 조건 만족`},{label:'사건 A의 여사건',count:`${total-successful}`},{label:'전체',count:`${total}`}],chart,warnings:sorted.length>24?['분포 그래프는 인접한 값을 묶어 표시합니다. 확률 계산에는 모든 값을 정확하게 사용했습니다.']:[]});
 });
 
 const conditional=makeSpec({
@@ -230,13 +464,12 @@ const conditional=makeSpec({
   presets:[{name:'짝수 합과 1번 카드',params:{n:8,draw:3,condition:'sum-even',conditionValue:1,event:'include',eventValue:1}},{name:'1번 포함과 홀수 2장',params:{n:8,draw:3,condition:'include',conditionValue:1,event:'odd-count',eventValue:2}},{name:'최댓값 제한',params:{n:8,draw:3,condition:'max-eq',conditionValue:5,event:'sum-ge',eventValue:10}}]
 },({n,draw:r,condition,conditionValue:b,event,eventValue:a})=>{
   let total=0n,countB=0n,countAB=0n,countAoutside=0n,neither=0n;
-  const samples=[];
   const check=list=>{
     total++;
     const sum=list.reduce((s,x)=>s+x,0),odd=list.filter(x=>x%2).length;
     const B=condition==='sum-even'?sum%2===0:condition==='include'?list.includes(b):list.length>0&&list.at(-1)===b;
     const A=event==='odd-count'?odd===a:event==='include'?list.includes(a):sum>=a;
-    if(B){countB++;if(A)countAB++;if(samples.length<6)samples.push(`{${list.join(', ')}}: ${A?'A∩B':'(A의 여사건)∩B'}`);}
+    if(B){countB++;if(A)countAB++;}
     else if(A)countAoutside++;else neither++;
   };
   const visit=(start,list)=>{if(list.length===r){check(list);return;}for(let x=start;x<=n-(r-list.length)+1;x++)visit(x+1,[...list,x]);};
@@ -244,15 +477,16 @@ const conditional=makeSpec({
   const Btext=condition==='sum-even'?'뽑은 카드에 적힌 수의 합이 짝수':condition==='include'?`${b}번 카드를 포함`:`뽑은 카드에 적힌 수의 최댓값이 ${b}`;
   const Atext=event==='odd-count'?`홀수 카드가 정확히 ${a}장`:event==='include'?`${a}번 카드를 포함`:`카드에 적힌 수의 합이 ${a} 이상`;
   const question=`1부터 ${n}까지의 수가 하나씩 적힌 카드 ${n}장 중 ${r}장을 같은 확률로 동시에 뽑는다. ${Btext}라는 조건 B가 주어졌을 때, ${Atext}인 사건 A의 조건부확률 P(A|B)를 구하시오.`;
-  const cases=[{label:'A∩B',count:`${countAB}`,detail:'분자: A와 B를 모두 만족'},{label:'(A의 여사건)∩B',count:`${countB-countAB}`,detail:'B 안에서 A가 성립하지 않음'},{label:'B',count:`${countB}`,detail:'분모: 위 두 경우의 합'},{label:'A∩(B의 여사건)',count:`${countAoutside}`,detail:'A는 만족하지만 B를 만족하지 않음'},{label:'(A의 여사건)∩(B의 여사건)',count:`${neither}`,detail:'A와 B를 모두 만족하지 않음'}];
+  const teaching=conditionalTeaching({n,draw:r,condition,conditionValue:b,event,eventValue:a},countB,countAB);
+  const cases=[...teaching.cases,{label:'A∩B',count:`${countAB}`,detail:'분자: A와 B를 모두 만족'},{label:'(A의 여사건)∩B',count:`${countB-countAB}`,detail:'B 안에서 A가 성립하지 않음'},{label:'B',count:`${countB}`,detail:'분모: 위 두 경우의 합'},{label:'A∩(B의 여사건)',count:`${countAoutside}`,detail:'A는 만족하지만 B를 만족하지 않음'},{label:'(A의 여사건)∩(B의 여사건)',count:`${neither}`,detail:'A와 B를 모두 만족하지 않음'}];
   const steps=[
-    {title:'동일확률의 선택 결과',body:`뽑힌 카드의 순서는 구별하지 않습니다. ${r}장짜리 부분집합은 각각 같은 확률로 선택되고 전체 ${total}가지입니다.`,formula:`전체 표본공간 크기 = C(${n},${r}) = ${total}`},
-    {title:'조건 B로 표본공간 줄이기',body:`B를 만족하는 결과만 남기면 ${countB}가지입니다. 이 가운데 A도 함께 만족하는 결과는 ${countAB}가지입니다.`,formula:`|B| = ${countB}, |A∩B| = ${countAB}`},
-    {title:'조건부확률 계산',body:countB?'B를 만족하는 결과끼리는 여전히 같은 확률이므로 A∩B의 개수를 B의 개수로 나누어 약분합니다.':'B를 만족하는 결과가 없습니다. 발생할 확률이 0인 조건에 대한 조건부확률은 이 모형에서 정의되지 않습니다.',formula:countB?`P(A|B) = P(A∩B)/P(B) = |A∩B|/|B| = ${countAB}/${countB} = ${fraction(countAB,countB).text}`:'P(B) = 0이므로 P(A|B)는 정의되지 않음'}
+    {title:'같은 확률과 새로운 표본공간',body:`${r}장을 동시에 뽑으므로 순서는 구별하지 않습니다. 전체는 C(${n},${r})=${total}가지이지만, 조건부확률의 분모는 B를 만족하는 경우의 수입니다.`,formula:`P(A|B)=P(A∩B)/P(B)=|A∩B|/|B|`},
+    ...teaching.steps,
+    {title:'조건부확률 계산',body:countB?'분자와 분모에 공통인 전체 표본공간 크기는 약분되므로 두 경우의 수를 바로 나눕니다.':'B를 만족하는 결과가 없습니다. 확률이 0인 조건에 대한 조건부확률은 이 모형에서 정의되지 않습니다.',formula:countB?`P(A|B) = ${countAB}/${countB} = ${fraction(countAB,countB).text}`:'P(B) = 0이므로 P(A|B)는 정의되지 않음'}
   ];
-  const extra={cases,samples,chart:[{label:'B 안에서 A 만족',value:Number(countAB)},{label:'B 안에서 A 불만족',value:Number(countB-countAB)}]};
+  const extra={cases,chart:[{label:'B 안에서 A 만족',value:Number(countAB)},{label:'B 안에서 A 불만족',value:Number(countB-countAB)}]};
   if(!countB)return {status:'invalid',question,answer:'정의되지 않음',numeric:null,unit:'확률',steps,insight:'P(B)=0이면 조건부확률의 분모가 0입니다. 이를 확률 0으로 처리하지 않습니다.',warnings:['조건 B를 만족하는 선택이 없어 조건부확률이 정의되지 않습니다.'],...extra};
-  return probabilityResult(question,countAB,countB,steps,'분모는 전체 선택 수가 아니라 조건 B를 만족하는 선택 수입니다. 분자에는 A만이 아니라 A와 B의 교집합을 셉니다.',extra);
+  return probabilityResult(question,countAB,countB,steps,teaching.insight,extra);
 },p=>p.draw>p.n?'뽑는 카드 수 r은 전체 카드 수 n 이하이어야 합니다.':'');
 
 export const countingSpecs = [arrangement,selection,functions,coefficient,probabilityCount,conditional];
