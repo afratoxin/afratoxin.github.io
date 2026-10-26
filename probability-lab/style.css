@@ -843,3 +843,8 @@ body { height: 100dvh; min-height: 0; overflow: hidden; display: flex; flex-dire
 .normal-bound-field .drag-meta .range-bound:first-child { grid-column: 1; grid-row: 1; }
 .normal-bound-field .drag-meta .range-bound:last-child { grid-column: 2; grid-row: 1; text-align: right; }
 .normal-bound-field .drag-meta .control-value-input { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; }
+
+/* Compact colored-ball rule workbench. Each color and rule has its own page. */
+.ball-editor{display:grid;gap:10px}.ball-field{display:grid;gap:5px}.ball-field .control-input{min-height:30px;padding:5px 8px;font-size:12px}.ball-field .control-range{margin:0}.ball-rule-card{display:grid;gap:9px;padding-top:6px;border-top:1px solid var(--line,#ddd)}.ball-chips{display:flex;gap:5px;flex-wrap:wrap}.ball-chip{font:inherit;font-size:11px;border:1px solid #d9dee6;border-radius:7px;background:#fff;padding:5px 8px;cursor:pointer}.ball-chip[aria-pressed="true"]{background:#eef3ff;border-color:#6388db;color:#24478f}.ball-navigation{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px}.ball-scope .control-label{margin:0 0 5px}.ball-editor .control-hint{margin:0;line-height:1.5}.ball-editor .control-field{margin:0}.ball-rule-card .control-label{font-size:11px}.ball-rule-card .ball-field{gap:3px}.ball-editor .ball-field label{font-size:11px}
+
+.ball-field{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;column-gap:8px}.ball-field>.control-label{grid-column:1/-1}

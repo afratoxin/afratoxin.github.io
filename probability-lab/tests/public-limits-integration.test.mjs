@@ -26,7 +26,7 @@ function withinVisibleLimit(result, label) {
 }
 
 test('public limits: every experiment exposes dynamic controls and only safe defaults and presets', () => {
-  assert.equal(specs.length, 13);
+  assert.equal(specs.length, 14);
   for (const spec of specs) {
     assert.equal(typeof spec.getControls, 'function', `${spec.id}.getControls`);
     assert.equal(typeof spec.allowedValues, 'function', `${spec.id}.allowedValues`);

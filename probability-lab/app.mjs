@@ -1,4 +1,6 @@
-import { specs } from './engines.mjs?v=20261026-limits';
+import { ballConditionAxes } from './data/ball-condition-axes.mjs?v=20261026-balls';
+import { createBallEditor } from './ball-editor.mjs?v=20261026-balls';
+import { specs } from './engines.mjs?v=20261026-balls';
 import { sanitizeStructure, isSimpleMain, synchronizeStructure, createStructuredEditor, validateStructureLimits } from './structured-editor.mjs?v=20261026-limits';
 
 const $ = (id) => document.getElementById(id);
@@ -6,7 +8,7 @@ const engineList = Array.isArray(specs) ? specs : Object.values(specs ?? {});
 const engines = new Map(engineList.map((spec) => [spec.id, spec]));
 const familyDefaults = [
   ['integer-sum', '정수해와 분배', 'SUM'], ['arrangement', '순열과 배열', 'ORDER'],
-  ['selection', '조합과 분할', 'CHOOSE'], ['function', '함수의 개수', 'MAP'],
+  ['selection', '여러 색 공 뽑기', 'CHOOSE'], ['distribution', '색 공의 상자 분배', 'BOX'], ['function', '함수의 개수', 'MAP'],
   ['coefficient', '이항정리와 계수', 'EXPAND'], ['probability-count', '경우의 수와 확률', 'COUNT'],
   ['conditional', '조건부확률', 'GIVEN'], ['event-algebra', '사건과 독립', 'EVENT'],
   ['binomial', '이항분포', 'REPEAT'], ['discrete', '이산확률변수', 'EXPECT'],
@@ -35,6 +37,8 @@ let dragCalculationTimer;
 let toastTimer;
 let searchTimer;
 let structuredEditor;
+let ballEditor;
+const coloredFamily = id => ['selection','distribution'].includes(id);
 const blockedDraftKeys = new Set();
 
 function node(tag, className, content) {
@@ -55,6 +59,7 @@ function list(values, className = 'condition-list') {
 }
 
 function familyInfo(id = state.family) {
+  if (coloredFamily(id)) return { ...(state.catalog?.families?.find(f=>f.id===id)??{}), ...defaultFamilyMap.get(id), ...(ballConditionAxes[id]?.observedConditions?{observedConditions:ballConditionAxes[id].observedConditions}:{}) };
   return state.catalog?.families?.find((family) => family.id === id)
     ?? defaultFamilyMap.get(id)
     ?? { id, title: engines.get(id)?.title ?? id, code: 'TYPE' };
@@ -68,25 +73,27 @@ function allFamilies() {
 }
 
 function familyItems(id = state.family) {
-  return (state.catalog?.items ?? []).filter((item) => item.family === id);
+  return (state.catalog?.items ?? []).filter((item) => item.family === id || ballConditionAxes[id]?.sourceIds.includes(item.id));
 }
 
 function cloneDefaults(spec) {
   const params = { ...(spec?.defaults ?? {}) };
   if (spec?.id === 'integer-sum') params.structure = sanitizeStructure(spec.defaults?.structure, params);
+  if (coloredFamily(spec?.id)) params.ballRules = JSON.parse(JSON.stringify(spec.defaults.ballRules));
   return params;
 }
 
 function safeParams(spec, given = {}) {
   if (given === null || typeof given !== 'object' || Array.isArray(given)) given = {};
   const params = cloneDefaults(spec);
-  for (const control of spec?.controls ?? []) {
+  for (const control of spec?.inputControls ?? spec?.controls ?? []) {
     if (!Object.hasOwn(given, control.key)) continue;
     const value = given[control.key];
     if (control.type === 'number' && typeof value === 'number' && Number.isFinite(value)) params[control.key] = value;
     if (control.type === 'checkbox' && typeof value === 'boolean') params[control.key] = value;
     if (control.type === 'select' && (control.options ?? []).some((option) => option.value === value)) params[control.key] = value;
   }
+  if (coloredFamily(spec?.id) && Object.hasOwn(given,'ballRules')) params.ballRules = given.ballRules;
   if (spec?.id === 'integer-sum') {
     const limitError = validateStructureLimits(given.structure);
     params.structure = sanitizeStructure(given.structure, params);
@@ -228,7 +235,7 @@ function refreshControlEntries(params, writeValues = false, changedKey) {
 }
 
 function readControlDrafts(loose = false) {
-  const params = cloneDefaults(engines.get(state.family));
+  const params = coloredFamily(state.family) ? { ...cloneDefaults(engines.get(state.family)), ...state.params } : cloneDefaults(engines.get(state.family));
   let error = '';
   for (const { control, input, allowed } of controls.values()) {
     let value; let message = '';
@@ -265,10 +272,13 @@ function editControl(changedKey, mode) {
     if (edited.error) { calculate(); return; }
     draft.params.structure = edited.structure;
   }
+  if (ballEditor) draft.params.ballRules = ballEditor.read();
   const normalized = typeof spec.normalizeParams === 'function' ? spec.normalizeParams(draft.params, changedKey) : draft.params;
   for (const key of blockedDraftKeys) if (key !== changedKey) normalized[key] = draft.params[key];
   const corrected = [...controls.keys()].filter((key) => key !== changedKey && normalized[key] !== draft.params[key]);
   state.params = normalized;
+  if (ballEditor) ballEditor.updateParams(normalized);
+  if (coloredFamily(state.family) && ['colorKinds','boxes'].includes(changedKey)) { renderControls(); calculate(); return; }
   refreshControlEntries(normalized, true, changedKey);
   if (corrected.length) showToast(`허용 범위에 맞춰 조정했습니다: ${corrected.map((key) => `${controls.get(key).control.label} ${formatBound(normalized[key])}`).join(', ')}`);
   if (mode === 'immediate') calculate();
@@ -281,7 +291,7 @@ function editControl(changedKey, mode) {
 function renderControls() {
   const family = familyInfo();
   const spec = engines.get(state.family);
-  structuredEditor = undefined;
+  structuredEditor = undefined; ballEditor = undefined;
   blockedDraftKeys.clear();
   $('lab-title').textContent = family.title;
   $('lab-description').textContent = spec?.description ?? family.description ?? '기출에 쓰인 조건과 풀이 구조를 살펴보세요.';
@@ -375,13 +385,20 @@ function renderControls() {
     $('structure-shared-host').append(panels.shared);
     for (const name of ['expression', 'variables', 'conditions', 'examples']) $(`adjust-${name}-host`).append(panels[name]);
   }
-  for (const name of ['expression', 'variables', 'conditions']) $(`adjust-tab-${name}`).disabled = !usesStructure;
-  if (!usesStructure && !['basic', 'examples'].includes(state.adjustTab)) state.adjustTab = 'basic';
+  if (coloredFamily(state.family)) {
+    ballEditor = createBallEditor(state.params, state.family === 'distribution', (change) => {
+      if(change?.drag) { if(!dragCalculationTimer) dragCalculationTimer=setTimeout(calculate,45); }
+      else scheduleCalculation();
+    }, [...controls.values()]);
+    for(const name of ['expression','variables','conditions']) $(`adjust-${name}-host`).append(ballEditor.panels[name]);
+  }
+  for (const name of ['expression', 'variables', 'conditions']) $(`adjust-tab-${name}`).disabled = !usesStructure && !coloredFamily(state.family);
+  if (!usesStructure && !coloredFamily(state.family) && !['basic', 'examples'].includes(state.adjustTab)) state.adjustTab = 'basic';
   renderBasicPage(); setAdjustTab(state.adjustTab);
 }
 
 function renderBasicPage() {
-  const fields = [...controls.values()];
+  const fields = [...controls.values()].filter(entry => !entry.control.group);
   const pages = Math.max(1, Math.ceil(fields.length / BASIC_PAGE_SIZE));
   state.basicPage = Math.max(1, Math.min(pages, state.basicPage));
   fields.forEach(({ field }, index) => {
@@ -442,7 +459,7 @@ function setSolutionTab(name, focus = false) {
 
 function readAndValidate() {
   if (state.family === 'integer-sum' && structuredEditor) updateStructuredScalarAvailability(structuredEditor.mode());
-  const draft = readControlDrafts();
+  const draft = readControlDrafts(coloredFamily(state.family));
   if (draft.error) return draft;
   if (state.family === 'integer-sum' && structuredEditor) {
     const edited = structuredEditor.read(draft.params);
@@ -450,6 +467,7 @@ function readAndValidate() {
     if (edited.error) return { params: draft.params, error: edited.error };
     draft.params.structure = edited.structure;
   }
+  if (ballEditor) { ballEditor.updateParams(draft.params); draft.params.ballRules = ballEditor.read(); }
   refreshControlEntries(draft.params, false);
   const checked = readControlDrafts();
   return { params: draft.params, error: checked.error };
@@ -666,6 +684,7 @@ function randomize() {
     let params = cloneDefaults(spec);
     for (const key of (spec.controls ?? []).map((control) => control.key)) {
       const control = getSpecControls(spec, params).find((item) => item.key === key);
+      if (!control) continue;
       params[key] = randomValue(control, spec.defaults, control.type === 'number' ? allowedFor(spec, key, params) : null);
       if (typeof spec.normalizeParams === 'function') params = spec.normalizeParams(params, key);
     }
@@ -765,7 +784,10 @@ function renderComparison() {
   if (family.differences?.length) comparison.append(list(family.differences, 'difference-list'));
   else comparison.append(node('p', '', '조건의 위치·강도·결합 방식을 바꿔 가능한 경우와 풀이 전략이 어떻게 달라지는지 비교하세요.'));
   if (family.insight) comparison.append(node('div', 'insight-box', family.insight));
-  replace($('compare-content'), [grid, comparison]);
+  const capabilities = ballConditionAxes[state.family];
+  const support = capabilities ? node('section','panel comparison-insight') : null;
+  if(support) { support.append(node('h3','comparison-title','지금 생성기에서 조합 가능한 조건'),list(capabilities.supported,'comparison-list'),node('h4','comparison-title','추가 확장 대상'),list(capabilities.future,'comparison-list')); }
+  replace($('compare-content'), [support, grid, comparison]);
 }
 
 function populateFilters() {
@@ -787,7 +809,7 @@ function filteredCatalog() {
   const query = state.search.trim().toLocaleLowerCase('ko-KR');
   return recentFirst(state.catalog?.items ?? []).filter((item) => {
     if (state.source !== 'all' && item.source !== state.source) return false;
-    if (state.mapFamily !== 'all' && item.family !== state.mapFamily) return false;
+    if (state.mapFamily !== 'all' && item.family !== state.mapFamily && !ballConditionAxes[state.mapFamily]?.sourceIds.includes(item.id)) return false;
     if (state.year !== 'all' && String(academicYear(item)) !== state.year) return false;
     if (!query) return true;
     return [item.id, item.exam, examShort(item), item.summary, familyInfo(item.family).title, ...(item.conditions ?? []), ...(item.parameters ?? []), ...(item.tags ?? [])].join(' ').toLocaleLowerCase('ko-KR').includes(query);

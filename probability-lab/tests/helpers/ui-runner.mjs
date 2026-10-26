@@ -99,6 +99,7 @@ function ensureAccess(element){
   if(element.closest('#structure-variable-bulk'))activate('structure-variable-mode-bulk');
   if(element.closest('#structure-variable-single'))activate('structure-variable-mode-single');
   const field=element.closest('.control-field');
+  if(field?.hidden&&field.closest('#adjust-variables-host')&&raw('ball-color-current')){const items=raw('ball-color-current').options;const colors=['red','blue','yellow','green','purple','black'];const index=colors.indexOf(field.dataset.control);raw('ball-color-current').value=String(index);raw('ball-color-current').dispatch('change');}
   if(field?.hidden&&raw('basic-next')){pageTo(0,'basic-prev','basic-next');for(let n=0;n<8&&field.hidden&&!raw('basic-next').disabled;n++){actualNavigationActions++;raw('basic-next').click();}}
   const current=element.id?raw(element.id):element;
   assert.ok(current&&document.contains(current),`interaction target ${element.id||element.className} must remain mounted after navigation`);
@@ -144,7 +145,7 @@ if(scenario==='limits-bypass'){
 }
 if(scenario==='layout-tabs'){
   assert.ok(raw('family-select'),'family selection uses the visible native dropdown');
-  assert.equal(raw('family-select').options.length,13);
+  assert.equal(raw('family-select').options.length,14);
   const tabs=['basic','expression','variables','conditions','examples'];
   for(const name of tabs){const tab=raw(`adjust-tab-${name}`);assert.ok(tab,`${name} tab is always mounted`);assert.equal(isHidden(tab),false);assert.equal(tab.getAttribute('role'),'tab');tab.click();assert.equal(tab.getAttribute('aria-selected'),'true');assert.equal(raw(`adjust-panel-${name}`).hidden,false);}
   activate('adjust-tab-basic');raw('adjust-tab-basic').dispatch('keydown',{key:'ArrowRight'});assert.equal(raw('adjust-tab-expression').getAttribute('aria-selected'),'true');assert.equal(document.activeElement.id,'adjust-tab-expression');
@@ -202,6 +203,47 @@ if(scenario==='layout-phone'){
   $('answer-button').click();assert.equal(raw('solution-content').hidden,true);raw('pane-tab-problem').click();assert.equal(isHidden(raw('normal-table-container')),false,'question table remains available while the separate solution is hidden');
   raw('tab-map').click();assert.equal(raw('view-map').hidden,false);raw('tab-lab').click();assert.equal(raw('control-mu').value,'50');assert.ok(raw('normal-table-container').querySelector('table'));
   console.log('PASS phone pane replacement rather than vertical stacking / pane and appendix tabs / keyboard focus / preserved values / source and problem switching / normal table independent of hidden solution / map round trip');process.exit(0);
+}
+if(scenario==='ball-rule-ranges'){
+  family('selection');input('blue',0);input('red',9);input('draw',8);input('relation',0,'change');await wait();
+  activate('adjust-tab-conditions');raw('ball-rule-add').click();
+  assert.equal(Number(raw('ball-rule-target').max),8,'rule max must use the current draw after scalar edits');
+  raw('ball-rule-target-slider').value='8';raw('ball-rule-target-slider').dispatch('input');await wait();assert.equal($('answer-value').textContent,'9');
+  input('draw',9);await wait();assert.equal(Number(raw('ball-rule-target-slider').max),9,'mounted rule bounds track later draw changes');
+  family('distribution');input('boxes',1);input('red',20);input('blue',20);await wait();
+  activate('adjust-tab-conditions');raw('ball-rule-add').click();
+  assert.equal(Number(raw('ball-rule-target-slider').max),40,'one box can receive every color inventory');
+  raw('ball-rule-target-slider').value='40';raw('ball-rule-target-slider').dispatch('input');await wait();assert.equal($('answer-value').textContent,'1');
+  console.log('PASS rule sliders follow live draw and summed color inventory');process.exit(0);
+}
+if(scenario==='colored-balls'){
+  family('selection');
+  input('colorKinds',3);await wait();
+  assert.ok($('control-yellow'),'third color must have an independent quantity control');
+  assert.equal($('adjust-tab-variables').disabled,false);
+  input('red',2);input('blue',2);input('yellow',1);input('draw',2);
+  input('relation',0,'change');await wait();
+  activate('adjust-tab-conditions');
+  assert.ok(raw('ball-rule-add'),'condition builder must be reachable');
+  raw('ball-rule-add').click();
+  const kind=raw('ball-rule-kind');kind.value='kinds';kind.dispatch('change');
+  const target=raw('ball-rule-target');target.value='2';target.dispatch('input');await wait();
+  assert.equal($('result-status').textContent,'계산 완료');assert.equal($('answer-value').textContent,'8');
+  raw('ball-rule-target').value='1000';raw('ball-rule-target').dispatch('input');await wait();assert.equal($('result-status').textContent,'조건 확인');
+  raw('ball-rule-target').value='2';raw('ball-rule-target').dispatch('input');await wait();assert.equal($('answer-value').textContent,'8','fixing an invalid rule must recover without resetting');
+  $('link-button').click();await wait();
+  const saved=JSON.parse(decodeURIComponent(new URL(clipboard).hash.slice(5)));
+  assert.equal(saved.params.colorKinds,3);assert.equal(saved.params.yellow,1);assert.equal(saved.params.ballRules.event.rules[0].kind,'kinds');
+  location.hash='#lab='+encodeURIComponent(JSON.stringify(saved));for(const fn of windowEvents.hashchange||[])fn();
+  assert.equal($('answer-value').textContent,'8');
+  input('draw',1);await wait();assert.equal($('answer-value').textContent,'0','count rules survive scalar changes');
+  family('distribution');assert.equal($('answer-value').textContent,'18');
+  activate('adjust-tab-conditions');raw('ball-rule-add').click();
+  const boxKind=raw('ball-rule-kind');boxKind.value='allColorsBoxes';boxKind.dispatch('change');
+  raw('ball-rule-target').value='1';raw('ball-rule-target').dispatch('input');await wait();
+  assert.equal($('result-status').textContent,'계산 완료');assert.equal($('answer-value').textContent,'9');
+  $('reset-button').click();assert.equal($('answer-value').textContent,'18');
+  console.log('PASS independent color quantities / rule editing / exact weighted count / preserved rules / shared link round trip / boxes and reset');process.exit(0);
 }
 if(scenario==='structured-subset'){
   assert.ok($('structure-editor'),'structured editor must be mounted for integer solutions');
@@ -371,7 +413,7 @@ if(scenario==='slider'){
   }
   // Every control retains its own metadata and resets together with its companion.
   for(const spec of specs){family(spec.id);assertSliders(spec,spec.defaults);}
-  console.log('PASS continuous drag before release / immediate final value / drag math answers / relation-domain meanings / checkbox and decimal sync / invalid exact entry / preset-reset-link state / all 13 slider metadata');process.exit(0);
+  console.log('PASS continuous drag before release / immediate final value / drag math answers / relation-domain meanings / checkbox and decimal sync / invalid exact entry / preset-reset-link state / all 14 slider metadata');process.exit(0);
 }
 if(process.env.TEST_REAL_CATALOG){
   const {specs}=await import(root+'/engines.mjs');
@@ -395,9 +437,9 @@ if(process.env.TEST_REAL_CATALOG){
   let seen=12;while(!$('pagination').children.at(-1).disabled){$('pagination').children.at(-1).click();seen+=$('catalog-list').children.length;}
   assert.equal(seen,253);
   $('filter-source').value='legacy';$('filter-source').dispatch('change');assert.ok($('catalog-count').textContent.includes('117문항'));assert.equal($('legacy-notice').hidden,false);
-  console.log('PASS actual catalog 253 records / pagination / all 13 defaults and presets / 130 random clicks / parameter serialization types');process.exit(0);
+  console.log('PASS actual catalog 253 records / pagination / all 14 defaults and presets / 140 random clicks / parameter serialization types');process.exit(0);
 }
-assert.equal($('family-list').children.length,13);assert.equal($('result-status').textContent,'계산 완료');
+assert.equal($('family-list').children.length,14);assert.equal($('result-status').textContent,'계산 완료');
 family('coefficient');assert.equal($('answer-value').textContent,'80');
 input('n','4');await wait();assert.equal($('answer-value').textContent,'8');
 $('preset-row').children[1].click();assert.equal($('answer-value').textContent,'625');assert.equal($('control-p').value,'2');
