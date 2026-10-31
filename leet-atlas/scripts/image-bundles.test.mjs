@@ -1,3 +1,4 @@
+import * as writerEnv from './writer-test-env.mjs';
 import * as referenceSearch from '../reference-search.mjs';
 import * as semanticSearch from '../semantic-search.mjs';
 import test from 'node:test';
@@ -81,20 +82,23 @@ async function boot(hash='#/questions',respond=async()=>({ok:true,json:async()=>
  }
  const document={querySelector:element,querySelectorAll(selector){return selector==='[data-image-question]'?currentHolders():[]},addEventListener(k,fn){events.set(k,fn)}};
  const location={hash,href:'https://afratoxin.github.io/leet-atlas/'+hash};
- const env={...referenceSearch,...semanticSearch,document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem(){return null},setItem(){}},navigator:{},fetch:async path=>{requests.push(path);return path.startsWith('data/archive.json')?{ok:true,json:async()=>structuredClone(data)}:respond(path)},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
+ const env={...writerEnv,...referenceSearch,...semanticSearch,document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem(){return null},setItem(){}},navigator:{},fetch:async path=>{requests.push(path);if(writerEnv.writerFixtureResponse(path))return writerEnv.writerFixtureResponse(path);return path.startsWith('data/archive.json')?{ok:true,json:async()=>structuredClone(data)}:respond(path)},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const app=await new AsyncFunction(...Object.keys(env),appSource+'\nreturn {state,render,imageFor,hydrateImages,showImage,retryImage,questionCard,readerSource};')(...Object.values(env));
  return {app,elements,location,requests,questions,holders:currentHolders,events};
 }
 
-test('ten visible cards hydrate from one bundle and detail and enlargement reuse the same image',async()=>{
+test('compact cards avoid image downloads and opening a reader reuses one bundle for source and enlargement',async()=>{
  const pending=deferred();const ui=await boot('#/questions?sort=oldest',()=>pending.promise);
  const before=ui.elements.get('#question-list').innerHTML;
- assert.doesNotMatch(before,/src="assets\/questions\/p/);assert.match(before,/불러오는 중/);
+ assert.doesNotMatch(before,/<img|data-image-question/);
+ assert.equal(ui.requests.filter(path=>path.includes('/images/')).length,0);
+ ui.location.hash='#/question/p001';ui.app.render();
+ assert.match(ui.elements.get('#main').innerHTML,/불러오는 중/);
  assert.equal(ui.requests.filter(path=>path.includes('/images/')).length,1);
  pending.resolve({ok:true,json:async()=>bundle('preliminary',ui.questions.slice(0,10).map(q=>q.id))});
  await ui.app.hydrateImages(ui.questions.slice(0,10));
- assert.equal(ui.holders().length,10);
+ assert.equal(ui.holders().length,1);
  for(const holder of ui.holders())assert.ok(holder.innerHTML.includes(URL_IMAGE));
  ui.location.hash='#/question/p001';ui.app.render();
  assert.ok(ui.elements.get('#main').innerHTML.includes(URL_IMAGE));
@@ -111,7 +115,7 @@ test('a late bundle response cannot replace a different question or its open enl
  regular.resolve({ok:true,json:async()=>bundle('2009',['0901'])});await ui.app.hydrateImages([ui.questions[10]]);
  const title=ui.elements.get('#image-dialog-title').textContent;
  preliminary.resolve({ok:true,json:async()=>bundle()});await new Promise(resolve=>setImmediate(resolve));
- assert.match(title,/0901/);assert.equal(ui.elements.get('#image-dialog-title').textContent,title);
+ assert.match(title,/2009학년도 1번/);assert.equal(ui.elements.get('#image-dialog-title').textContent,title);
  assert.equal(ui.elements.get('#enlarged-image').src,URL_IMAGE);
  assert.equal(ui.app.state.route.id,'0901');
  assert.ok(ui.elements.get('#main').innerHTML.includes('0901'));

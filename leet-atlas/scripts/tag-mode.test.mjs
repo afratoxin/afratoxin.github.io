@@ -22,12 +22,14 @@ test('automatic filtering unions years while intersecting selected nonyear tags'
  assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['law','science']})),[]);
 });
 
-test('obsolete tag modes cannot override the automatic operators',()=>{
+test('optional OR operates within each axis while cross-axis and required restrictions remain strict',()=>{
  for(const tagMode of ['and','or','auto','invalid']) {
   assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['year-2025','year-2026','law'],tagMode})),['2501','2601']);
   assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['law','argument'],tagMode})),['2401','2501','2701']);
   assert.deepEqual(filterQuestions(questions,{sort:'oldest',taxonomy,tags:[],tagMode}),questions);
  }
+ assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['law','science','argument'],tagMode:'or'})),['2401','2501','2602','2701']);
+ assert.deepEqual(ids(filterQuestions(questions,{sort:'oldest',taxonomy,tags:['law','science','argument'],tagMode:'auto'})),[]);
 });
 
 test('explicit required tags remain unconditional intersections',()=>{
@@ -43,7 +45,7 @@ test('automatic year alternatives do not broaden query, bookmark, or review cond
  assert.deepEqual(ids(selected),['2501']);
 });
 
-test('canonical tagged routes round trip with automatic mode and omit old mode parameters',()=>{
+test('canonical tagged routes round trip while retaining only the optional OR mode',()=>{
  for(const route of [
   {view:'list',id:null,tags:['year-2025','year-2026'],bookmark:'all',page:2,mode:'paged',sort:'newest'},
   {view:'bookmarks',id:null,tags:['law','science'],bookmark:'blue',page:1,mode:'scroll',sort:'oldest'},
@@ -52,22 +54,22 @@ test('canonical tagged routes round trip with automatic mode and omit old mode p
  ]) {
   for(const tagMode of ['auto','and','or','invalid',undefined]) {
    const hash=buildRoute({...route,tagMode});
-   assert.deepEqual(parseRoute(hash),{...route,tagMode:'auto'});
-   assert.equal(new URLSearchParams(hash.split('?')[1]).has('tagMode'),false);
+   assert.deepEqual(parseRoute(hash),{...route,tagMode:tagMode==='or'?'or':'auto',query:'',searchMode:'recommend',excludedTags:[]});
+   assert.equal(new URLSearchParams(hash.split('?')[1]).has('tagMode'),tagMode==='or');
   }
  }
 });
 
-test('legacy and malformed mode URLs migrate to automatic filtering',()=>{
+test('invalid mode URLs normalize to automatic filtering while explicit OR persists',()=>{
  for(const value of ['', 'and','or','OR','invalid','auto']) {
   const route=parseRoute(`#/questions?tag=year-2025&tag=year-2026&tag=law&tagMode=${value}&sort=newest&page=2`);
-  assert.equal(route.tagMode,'auto');
+  assert.equal(route.tagMode,value==='or'?'or':'auto');
   assert.deepEqual(route.tags,['year-2025','year-2026','law']);
   assert.equal(route.sort,'newest');
   assert.equal(route.page,2);
-  assert.equal(buildRoute(route).includes('tagMode='),false);
+  assert.equal(buildRoute(route).includes('tagMode='),value==='or');
   assert.deepEqual(ids(filterQuestions(questions,{...route,taxonomy})),['2601','2501']);
  }
  assert.equal(parseRoute('#/questions').tagMode,'auto');
- assert.equal(buildRoute({tagMode:'or'}),'#/questions');
+ assert.equal(buildRoute({tagMode:'or'}),'#/questions?tagMode=or');
 });

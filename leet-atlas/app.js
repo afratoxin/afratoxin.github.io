@@ -1,16 +1,23 @@
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261026-general-search4';
+import {createWriterTools} from './writer-tools.mjs?v=20261031-author-db1';
+import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261031-author-db1';
 import { groupTags } from './tag-groups.mjs?v=20261026-general-search4';
 import { renderSidebar } from './sidebar.mjs?v=20261026-general-search4';
 import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-general-search4';
 import { loadLocalTexts, parseLocalTextPack, saveLocalTexts, localTextCoverage } from './local-text.mjs?v=20261026-general-search4';
-import { rankReferences } from './reference-search.mjs?v=20261026-general-search4';
+import { rankReferences, compileSearchIntent, describeSearchIntent } from './reference-search.mjs?v=20261031-author-db1';
 import { createSemanticSearch } from './semantic-search.mjs?v=20261026-general-search4';
-import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261026-year-plane1';
+import { analyzeArchive, renderYearAnalysis, validateYearContent } from './year-analysis.mjs?v=20261031-author-db1';
+import { buildDesignProfile } from './design-profile.mjs?v=20261031-author-db1';
+import { questionLabel } from './question-label.mjs?v=20261031-author-db1';
+import { answerInfo, answerHistoryMarkup } from './answer-notes.mjs?v=20261031-author-db1';
+import { contentImageMarkup, applyContentBounds, preparePrintImages } from './source-image.mjs?v=20261031-author-db1';
+import {RESEARCH_KEY,createResearchStore,parseResearchBackup,researchBackup,mergeResearch,relatedQuestions} from './research-store.mjs?v=20261031-author-db1';
+import {researchWorkspaceMarkup,selectionMarkdown,printableSelection} from './research-workspace.mjs?v=20261031-author-db1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261026-general-search4';
+const CACHE_VERSION = '20261031-author-db1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -44,6 +51,11 @@ let semanticSearchClient;
 let semanticSequence = 0;
 let semanticStatusSequence = 0;
 let semanticTimer;
+let researchStore;
+let writerTools;
+let writerDialogAction;
+let yearAxisX='readingChars',yearAxisY='processingRate';
+Object.assign(state,{imageBounds:{},answerRegistry:{records:[]},selectedIds:new Set(),searchIntent:null,searchMessage:'',sourceFit:'whole'});
 Object.assign(state, {searchMode:'recommend',searchDrafts:{recommend:'',keyword:''},searchQueries:{recommend:'',keyword:''},searchDirty:false, searchSort:state.route.sort === 'accuracy' ? 'accuracy' : 'relevance', searchMatches:new Map(), semanticQuery:'', semanticScores:new Map(), semanticStatus:{state:'idle'}});
 
 function changeSearchMode(mode){
@@ -53,6 +65,7 @@ function changeSearchMode(mode){
   cancelSemanticSearch();
   state.searchMode=mode;
   state.query=state.searchQueries[mode];
+  state.route={...state.route,query:state.query,searchMode:mode};history.replaceState(null,'',buildRoute(state.route));
   state.searchDirty=mode==='recommend'&&state.searchDrafts.recommend!==state.query;
   state.searchSort='relevance';
   resetListPage();render();
@@ -63,6 +76,8 @@ async function submitSearch(){
   state.query=state.searchDrafts[state.searchMode].trim();
   state.searchQueries[state.searchMode]=state.query;
   state.searchDirty=false;
+  state.route={...state.route,query:state.query,searchMode:state.searchMode};
+  history.replaceState(null,'',buildRoute(state.route));
   state.searchSort='relevance';
   cancelSemanticSearch();resetListPage();updateListResults();
   if(state.searchMode==='recommend'&&state.query)await refreshSemanticSearch();
@@ -136,7 +151,7 @@ function updateSearchStatus() {
   const query = state.query.trim();
   let message;
   if (state.searchMode === 'keyword') message = '공백으로 나눈 모든 단어가 제목·본문·분류·해설에 실제로 포함된 문항을 찾습니다.';
-  else if(state.searchDirty)message='내용을 수정했습니다. ‘참고 문항 찾기’를 눌러 새 문장으로 검색을 실행하세요.';
+  else if(state.searchDirty)message='조건을 수정했습니다. 기출 찾기를 눌러 적용하세요.';
   else if (!query) message = '어떤 문장이든 입력할 수 있습니다. 전체 문항의 원문·선택지·해설과 의미를 비교합니다.';
   else if (state.semanticStatus.state === 'ready') message = '문장 의미와 실제 근거 문단을 비교한 관련성순입니다. 문항별 관련 부분을 확인하세요.';
   else if (state.semanticStatus.state === 'exact') message = '문항 번호가 일치하는 자료를 먼저 찾았습니다.';
@@ -145,7 +160,8 @@ function updateSearchStatus() {
   else if (state.semanticStatus.state === 'loading') message = `처음 한 번 의미 검색 자료를 준비하고 있습니다${Number.isFinite(state.semanticStatus.progress) ? ` · ${Math.round(state.semanticStatus.progress)}%` : ''}. 지금은 관련 표현·분류로 찾은 결과입니다.`;
   else message = '관련 표현·분류로 찾은 후보입니다. 문장의 뜻도 함께 비교합니다.';
   if (state.searchMode === 'recommend' && query && state.localTexts.size) message += ' 개인 교정본은 표현 검색에 반영하며 의미 비교 자료는 공개 원문 기준입니다.';
-  status.textContent = message;
+  status.textContent = message + (!state.searchDirty && state.searchMessage ? ` ${state.searchMessage}` : '');
+  const interpreted=document.querySelector('#search-interpretation');if(interpreted)interpreted.textContent=state.searchIntent?describeSearchIntent(state.searchIntent):'';
 }
 
 const paths = {
@@ -207,10 +223,8 @@ function thumbnailMarkup(question) {
   return url ? `<img src="${esc(url)}" alt="" loading="lazy" decoding="async">` : usesImageBundle(question) ? imagePlaceholder(question, true) : `<span class="thumbnail-placeholder" aria-hidden="true"><small>문항</small><strong>${esc(String(question.number).padStart(2, '0'))}</strong><span>${esc(question.fields?.[0] || questionTags(question, 'field')[0]?.label || '추리논증')}</span></span>`;
 }
 function sourceImageMarkup(question) {
-  const url = question.id === '2021' && !state.localSources.has(question.id)
-    ? safeAsset('data/images/content/2021-display.webp')
-    : imageFor(question);
-  return url ? `<button type="button" class="source-image-button" data-enlarge="${esc(question.id)}" aria-label="${esc(question.id)}번 원본 확대"><img class="source-image" src="${esc(url)}" alt="${esc(question.id)}번 원본 문항. 원문은 추출 텍스트 보기에서도 읽을 수 있습니다." decoding="async"></button>` : imagePlaceholder(question);
+ const url=imageFor(question),bounds=state.localSources.has(question.id)?null:state.imageBounds[question.id];
+ return url?`<button type="button" class="source-image-button" data-enlarge="${esc(question.id)}" aria-label="${esc(questionLabel(question))} 원본 확대">${contentImageMarkup(url,`${questionLabel(question)} 원본 문항`,bounds)}</button>`:imagePlaceholder(question);
 }
 function updateImageHolders() {
   document.querySelectorAll('[data-image-question]').forEach(holder => {
@@ -236,7 +250,8 @@ function updateImageDialog(question) {
   const url = imageFor(question);
   image.hidden = !url;
   if (url) image.src = url; else image.removeAttribute('src');
-  image.alt = `${question.id}번 문항의 원본 이미지.`;
+  image.alt = `${questionLabel(question)} 원본 이미지`;
+  applyContentBounds(image,state.localSources.has(question.id)?null:state.imageBounds[question.id]);
   const status = document.querySelector('#image-dialog-status');
   status.hidden = Boolean(url);
   status.innerHTML = url ? '' : imagePlaceholder(question);
@@ -315,7 +330,7 @@ function questionTags(question, axis) {
 }
 function tagDescription(tag, question) {
   const reason = question?.tagReasons?.[tag.label] || question?.tagReasons?.[tag.id];
-  return `${tag.label} · ${AXES.find(axis => axis.id === tag.axis)?.label || '분류'}${tagParent(tag) ? `\n${tagParent(tag)}` : ''}\n${tag.description || '이 분류에 해당하는 문항을 모아 봅니다.'}${reason ? `\n\n이 문항에 붙인 이유\n${asText(reason)}` : ''}\n\n클릭하면 이 태그의 문항 목록으로 이동합니다.`;
+  return `${tag.label} · ${AXES.find(axis => axis.id === tag.axis)?.label || '분류'}${tagParent(tag) ? `\n${tagParent(tag)}` : ''}\n${tag.description || '이 분류에 해당하는 문항을 모아 봅니다.'}${tag.assignmentBoundary?`\n부여 경계: ${asText(tag.assignmentBoundary)}`:''}${reason ? `\n\n이 문항에 붙인 이유\n${asText(reason)}` : ''}\n\n클릭하면 이 태그의 문항 목록으로 이동합니다.`;
 }
 function effectiveTags() {
   return [...new Set([...(state.route.tags || []), ...(state.route.view === 'tag' && state.route.id ? [state.route.id] : [])])];
@@ -336,7 +351,7 @@ function colorDots(colors) {
 function bookmarkButton(id, compact = false) {
   const colors = bookmarkColors(state.reviews[id]);
   const labels = colors.map(id => BOOKMARK_COLORS.find(color => color.id === id)?.label).filter(Boolean).join(', ');
-  return `<button type="button" class="${compact ? 'bookmark-trigger compact' : 'button button-quiet bookmark-trigger'}${colors.length ? ' is-active' : ''}" data-bookmark="${esc(id)}" aria-haspopup="dialog" aria-label="${esc(id)} 북마크 색 선택${labels ? ` · ${esc(labels)}` : ''}">${icon('bookmark', colors.length > 0)}${colors.length ? `<span class="bookmark-dots" aria-hidden="true">${colorDots(colors)}</span>` : ''}${compact ? '' : `<span>${colors.length ? '북마크 색' : '북마크'}</span>`}</button>`;
+  return `<button type="button" class="${compact ? 'bookmark-trigger compact' : 'button button-quiet bookmark-trigger'}${colors.length ? ' is-active' : ''}" data-bookmark="${esc(id)}" aria-haspopup="dialog" aria-label="${esc(questionLabel(state.questions.get(id)||{id}))} 북마크 색 선택${labels ? ` · ${esc(labels)}` : ''}">${icon('bookmark', colors.length > 0)}${colors.length ? `<span class="bookmark-dots" aria-hidden="true">${colorDots(colors)}</span>` : ''}${compact ? '' : `<span>${colors.length ? '북마크 색' : '북마크'}</span>`}</button>`;
 }
 function navigate(route, focus) {
   hideTooltip();
@@ -347,9 +362,7 @@ function navigate(route, focus) {
 }
 function moveQuestionByArrow(direction) {
   if (state.route.view !== 'question' || !state.data) return false;
-  const ordered = state.route.sort === 'accuracy' || state.searchMode === 'recommend' && state.query.trim()
-    ? filteredQuestions()
-    : filterQuestions(state.data.questions, { sort: state.route.sort });
+  const ordered = filteredQuestions();
   const currentId = keyboardQuestionId || state.route.id;
   const index = ordered.findIndex(question => question.id === currentId);
   const target = ordered[index + direction];
@@ -380,17 +393,18 @@ function resetFilters() {
   state.searchDrafts={recommend:'',keyword:''};state.searchQueries={recommend:'',keyword:''};state.searchDirty=false;
   cancelSemanticSearch();
   state.review = 'all';
-  navigate(listRoute({ tags: [], bookmark: state.route.view === 'bookmarks' ? 'any' : 'all' }), { search: true });
+  navigate(listRoute({ tags: [], excludedTags:[], query:'', tagMode:'auto', bookmark: state.route.view === 'bookmarks' ? 'any' : 'all' }), { search: true });
 }
 function filteredQuestions() {
   const questions = state.data.questions.map(question => state.localTexts.has(question.id) ? { ...question, text: state.localTexts.get(question.id).text } : question);
   const recommend = state.searchMode === 'recommend' && Boolean(state.query.trim());
-  const filters = { tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort, bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') };
+  const filters = { tags: effectiveTags(), taxonomy: state.taxonomy, review: state.review, sort: state.route.sort,tagMode:state.route.tagMode,excludedTags:state.route.excludedTags||[], bookmark: state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all') };
   const candidates = filterQuestions(questions, { ...filters, query: recommend ? '' : state.query }, state.reviews);
   state.searchMatches = new Map();
-  if (!recommend) return candidates;
+  if (!recommend){state.searchIntent=null;state.searchMessage='';return candidates;}
   const matches = rankReferences(candidates, state.query, {semanticScores:state.semanticQuery === state.query.trim() ? state.semanticScores : new Map()});
   state.searchMatches = new Map(matches.map(match => [match.id, match]));
+  state.searchIntent=matches.intent||compileSearchIntent(state.query);state.searchMessage=matches.message||'';
   if (state.searchSort === 'relevance') {
     const byId = new Map(candidates.map(question => [question.id, question]));
     return matches.map(match => byId.get(match.id)).filter(Boolean);
@@ -407,7 +421,7 @@ function filterPanel() {
   return `<aside class="filter-panel${state.filtersOpen ? ' is-open' : ''}" aria-label="문항 분류 필터">
     <button class="filter-toggle" type="button" data-toggle-filters aria-expanded="${state.filtersOpen}" aria-controls="filter-content"><span>${icon('filter')} 분류로 좁혀 보기${effectiveTags().length ? ` · ${effectiveTags().length}개 선택` : ''}</span>${icon('down')}</button>
     <div class="filter-heading"><h2>분류로 좁혀 보기</h2><button class="button-text" type="button" data-reset>초기화</button></div>
-    <div id="filter-content" class="filter-content"><p class="filter-help">연도끼리는 OR, 나머지 태그는 AND로 적용합니다.<br>대범주를 펼치면 분야와 소재를 고를 수 있습니다.</p>${renderSidebar({taxonomy: state.taxonomy, selectedTags: effectiveTags(), openKeys: state.filterOpen}, (tag, path) => tagButton(tag, null, true, path))}<p class="filter-help">검색·북마크·검수 상태도 모두 함께 적용합니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
+    <div id="filter-content" class="filter-content"><p class="filter-help">같은 축의 태그를 모두 만족시킬지, 하나 이상 고를지 정할 수 있습니다.</p><label class="writer-tag-mode">포함 조건<select id="writer-tag-mode"><option value="auto" ${state.route.tagMode!=='or'?'selected':''}>모두 만족 (AND)</option><option value="or" ${state.route.tagMode==='or'?'selected':''}>같은 축 중 하나 (OR)</option></select></label><details class="exclude-controls"><summary>제외할 분류 선택</summary><select id="writer-exclude-tag" aria-label="제외할 분류">${[...state.taxonomy.values()].filter(t=>t.axis!=='year').map(t=>`<option value="${esc(t.id)}">${esc(AXES.find(a=>a.id===t.axis)?.label||'')} · ${esc(t.label)}</option>`).join('')}</select><button class="button button-quiet" data-add-exclude>제외 조건 추가</button>${(state.route.excludedTags||[]).map(id=>`<button class="selected-filter" data-remove-exclude="${esc(id)}">${esc(state.taxonomy.get(id)?.label||id)} 제외 ×</button>`).join('')}</details><p class="filter-help">연도끼리는 OR로 묶습니다. 대범주에서 분야·소재를 펼칠 수 있습니다.</p>${renderSidebar({taxonomy: state.taxonomy, selectedTags: effectiveTags(), openKeys: state.filterOpen}, (tag, path) => tagButton(tag, null, true, path))}<p class="filter-help">검색·북마크·검수 상태도 모두 함께 적용합니다. <a href="${esc(buildRoute({ view: 'tags', sort: state.route.sort, mode: state.route.mode }))}">태그 전체 보기 ↗</a></p></div>
   </aside>`;
 }
 
@@ -420,7 +434,7 @@ function colorFilters() {
 }
 function selectedFilterChips() {
   const tags = effectiveTags();
-  const expression = tagFilterGroups(tags, state.taxonomy).map(group => {
+  const expression = tagFilterGroups(tags, state.taxonomy,state.route.tagMode).map(group => {
     const labels = group.tags.map(id => state.taxonomy.get(id)?.label || id);
     return group.operator === 'or' && labels.length > 1 ? `(${labels.join(' 또는 ')})` : labels.join(' 그리고 ');
   }).join(' 그리고 ');
@@ -434,11 +448,8 @@ const searchExamples=[
   ['빈칸 채우기','문항에 빈칸 박스가 존재해서, 그걸 채우는 느낌']
 ];
 function searchControls(){
-  const recommend=state.searchMode==='recommend';
-  const draft=state.searchDrafts[state.searchMode];
-  return `<section class="search-workbench" aria-label="문항 검색"><div class="search-modes" role="group" aria-label="문항 찾는 방법"><button type="button" data-search-mode="recommend" aria-pressed="${recommend}"><strong>설명으로 추천받기</strong><span>문장의 뜻과 가까운 참고 문항 찾기</span></button><button type="button" data-search-mode="keyword" aria-pressed="${!recommend}"><strong>단어로 검색하기</strong><span>입력한 단어가 실제로 포함된 문항 찾기</span></button></div>
-  ${recommend?`<label class="search-field-label" for="recommendation-query">찾고 싶은 문항의 특징</label><textarea id="recommendation-query" rows="3" placeholder="소재, 풀이 방식, 논증의 함정 등 원하는 특징을 자유롭게 설명해 주세요." aria-describedby="search-input-help search-status">${esc(draft)}</textarea><p id="search-input-help" class="search-input-help">정해진 검색어 없이 자유롭게 입력하세요. Ctrl/⌘ + Enter로도 찾을 수 있습니다.</p><div class="search-actions"><span class="search-local-note">첫 의미 검색: 모델 약118MB와 실행 자료 다운로드 · 별도 이용료 없음 · 이 기기에서 처리</span><button class="button search-submit" type="button" data-submit-search>참고 문항 찾기 ${icon('arrow')}</button></div><div class="search-examples" aria-label="추천 문장 예시"><span>입력 예시</span>${searchExamples.map(([label,text])=>`<button type="button" data-search-example="${esc(text)}" aria-label="예시: ${esc(text)}">${esc(label)}</button>`).join('')}</div>`:`<label class="search-field-label" for="question-search">검색할 단어 또는 문항번호</label><div class="keyword-entry"><label class="search-box">${icon('search')}<input id="question-search" type="search" value="${esc(draft)}" placeholder="예: 채권 소멸시효 또는 1225" aria-label="검색할 단어 또는 문항번호" aria-describedby="search-input-help search-status" autocomplete="off"></label><button class="button search-submit" type="button" data-submit-search>단어로 검색</button></div><p id="search-input-help" class="search-input-help">문항번호나 기억나는 표현을 정확히 알고 있을 때 사용하세요.</p>`}
-  <p id="search-status" class="search-status" role="status" aria-live="polite"></p></section>`;
+ const recommend=state.searchMode==='recommend',draft=state.searchDrafts[state.searchMode];
+ return `<section class="search-workbench" aria-label="문항 검색"><div class="search-modes" role="group" aria-label="문항 찾는 방법"><button type="button" data-search-mode="recommend" aria-pressed="${recommend}">조건·설명으로 찾기</button><button type="button" data-search-mode="keyword" aria-pressed="${!recommend}">단어·번호로 찾기</button></div><div class="writer-search-entry"><label class="search-field-label" for="${recommend?'recommendation-query':'question-search'}">${recommend?'찾고 싶은 문항의 조건':'검색할 단어 또는 문항번호'}</label>${recommend?`<textarea id="recommendation-query" rows="2" placeholder="예: 법률이면서 계산 제외, 두 사람의 논쟁에서 같은 증거를 다르게 평가" aria-describedby="search-status">${esc(draft)}</textarea>`:`<input id="question-search" type="search" value="${esc(draft)}" aria-label="검색할 단어 또는 문항번호" placeholder="예: 2020학년도 21번, 채권 소멸시효">`}<button class="button search-submit" data-submit-search>${recommend?'기출 찾기':'단어로 검색'}</button></div><div class="writer-search-meta"><span>필수·제외 조건을 먼저 적용하고 관련성을 비교합니다.</span><button class="button-text" data-writer-save-search>현재 조건 저장</button><button class="button-text" data-copy-search>검색 주소 복사</button></div><p id="search-interpretation" class="search-interpretation"></p><p id="search-status" class="search-status" role="status" aria-live="polite"></p><details class="search-help"><summary>검색 예시·동작 방식</summary><div class="search-examples">${searchExamples.map(([label,text])=>`<button type="button" data-search-example="${esc(text)}">${esc(label)}</button>`).join('')}</div><p>법률 또는 경제학 · 계산 제외 · 표가 있는 실험 · 2024학년도 이후. 해석된 조건을 확인하세요. 명시한 조건은 자동으로 완화하지 않습니다. 상세한 자유 설명은 관련성 판단에 사용합니다. Ctrl/⌘+Enter로 검색할 수 있습니다.</p><p>의미 비교 모델은 첫 사용 시 약118MB와 실행 자료를 내려받고 이 기기에서 처리합니다.</p></details></section>`;
 }
 function renderList() {
   const isBookmarks = state.route.view === 'bookmarks';
@@ -451,11 +462,11 @@ function renderList() {
   }
   const title = isBookmarks ? '모든 북마크' : tag ? tag.label : '문항 탐색';
   document.title = `${title} · LEET Atlas`;
-  const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '만들고 싶은 문항을 설명하고, 참고할 기출문항과 추천 근거를 찾아보세요.';
+  const headingCopy = isBookmarks ? '붙여 둔 색으로 문항을 모으고, 태그로 다시 좁혀 보세요.' : tag ? tag.description || '이 태그가 부여된 모든 문항과 분류 이유를 확인합니다.' : '출제 조건으로 기출을 찾고, 논리·오답 구조를 비교해 자료로 모으세요.';
   main.innerHTML = `${isTag ? `<a class="catalog-back" href="${esc(buildRoute({ view: 'tags', mode: state.route.mode, sort: state.route.sort }))}">${icon('left')} 태그 사전</a>` : ''}<div class="page-heading"><div><div class="eyebrow">${isBookmarks ? 'MY BOOKMARKS' : isTag ? `${esc(AXES.find(axis => axis.id === tag.axis)?.label || 'TAG')} · TAG COLLECTION` : 'QUESTION LIBRARY'}</div><h1>${esc(title)}</h1><p>${esc(headingCopy)}</p>${tag && tagParent(tag) ? `<p class="tag-parent">${esc(tagParent(tag))}</p>` : ''}</div><div class="page-count"><strong id="collection-total">${isBookmarks ? bookmarkCount('any') : tag ? tagCount(tag.id) : state.data.questions.length}</strong>문항 <span aria-hidden="true">/</span> ${esc(archiveScope())}</div></div>
   <div class="list-layout">${filterPanel()}<section class="list-main" aria-label="문항 목록">${searchControls()}
     <div class="collection-filter-row"><div id="color-filter-area">${colorFilters()}</div><label class="review-filter-label">검수 상태<select id="review-filter" class="review-select"><option value="all">모든 검수 상태</option><option value="unreviewed">미검수</option><option value="check">재검토</option><option value="done">검수 완료</option></select></label></div>${selectedFilterChips()}
-    <div class="list-toolbar"><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="relevance">관련성순</option><option value="oldest">오래된순</option><option value="newest">최신순</option><option value="accuracy">정확도 순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
+    <div class="list-toolbar"><button class="button-text" data-select-visible>이 페이지 선정</button><span id="result-count" role="status" aria-live="polite"></span><div class="list-display-controls"><select id="question-sort" class="review-select sort-select" aria-label="문항 정렬"><option value="relevance">관련성순</option><option value="oldest">오래된순</option><option value="newest">최신순</option><option value="accuracy">텍스트 일치순</option></select><div class="segmented" role="group" aria-label="목록 보기 방식"><button type="button" data-list-mode="paged" class="${state.route.mode !== 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode !== 'scroll'}">10개씩</button><button type="button" data-list-mode="scroll" class="${state.route.mode === 'scroll' ? 'is-active' : ''}" aria-pressed="${state.route.mode === 'scroll'}">연속 스크롤</button></div></div></div><div id="question-list" class="question-list question-grid"></div><div id="list-pagination"></div>
       </section></div>`;
   document.querySelector('#review-filter').value = state.review;
   document.querySelector('#question-sort').value = state.searchMode === 'recommend' && state.query.trim() && state.searchSort === 'relevance' ? 'relevance' : state.route.sort;
@@ -479,14 +490,12 @@ function referenceEvidenceDetails(question,match){
   return '';
 }
 function questionCard(question) {
-  const rowTags = ['domain', 'field', 'type'].flatMap(axis => questionTags(question, axis)).slice(0, 3);
-  const href = buildRoute(questionRoute(question));
-  const activeTag = state.route.view === 'tag' ? state.taxonomy.get(state.route.id) : null;
-  const reason = activeTag ? question.tagReasons?.[activeTag.label] || question.tagReasons?.[activeTag.id] : null;
-  const thumbnail = imageFor(question, true);
-  const match = state.searchMatches.get(question.id);
-  const recommendation = match ? `<div class="reference-match"><p class="reference-reasons"><strong>추천 근거</strong> ${esc(match.reasons.length ? match.reasons.slice(0,3).join(' · ') : '문장 의미가 비슷한 후보')}</p>${match.evidenceLabel?`<p class="reference-evidence-label">관련 부분 · ${esc(match.evidenceLabel)}</p>`:''}${match.snippet ? `<p class="reference-snippet">${esc(match.snippet)}</p>` : ''}${referenceEvidenceDetails(question,match)}</div>` : '';
-  return `<article class="question-row question-card"><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(question.id)}번 문항 열기">${esc(question.id)}</a><span class="card-year">${esc(examLabel(question))} · ${String(question.number).padStart(2, '0')}</span>${bookmarkButton(question.id, true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title || `${question.number}번 문항`)}</a><div class="row-meta"><span>문제지 ${esc(question.examPage)}쪽</span>${question.answerStatus === 'source-conflict' ? '<span class="conflict-badge">원본 문항·답안 불일치</span>' : ''}${reviewBadge(question.id)}</div><div class="row-tags">${rowTags.map(tag => tagButton(tag, question)).join('')}</div><a class="button-text" href="author.html#ref=${esc(question.id)}">제작에 참고 ↗</a>${recommendation}${activeTag ? `<p class="tag-reason"><strong>부여 이유</strong> ${esc(reason ? asText(reason) : '문항별 부여 이유가 아직 기록되지 않았습니다.')}</p>` : ''}</div><a class="row-thumb${thumbnail ? '' : ' is-placeholder'}" ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="thumbnail"` : ''} href="${esc(href)}" aria-label="${esc(question.id)}번 문항 상세 보기">${thumbnailMarkup(question)}</a></article>`;
+ const href=buildRoute(questionRoute(question)),match=state.searchMatches.get(question.id),info=answerInfo(question,state.answerRegistry);
+ const rowTags=['field','type','logic'].flatMap(axis=>questionTags(question,axis)).slice(0,5);
+ const activeTag=state.route.view==='tag'?state.taxonomy.get(state.route.id):null;
+ const reason=activeTag?question.tagReasons?.[activeTag.label]||question.tagReasons?.[activeTag.id]:null;
+ const recommendation=match?`<div class="reference-match"><p class="reference-reasons"><strong>일치 근거</strong> ${esc(match.reasons?.slice(0,4).join(' · ')||'원문·해설 관련성')}</p>${match.snippet?`<p class="reference-snippet">${esc(match.snippet)}</p>`:''}${referenceEvidenceDetails(question,match)}${match.conditionEvidence?.length?`<details><summary>조건별 확인 근거</summary>${match.conditionEvidence.map(e=>`<p>${esc(typeof e==='string'?e:JSON.stringify(e))}</p>`).join('')}</details>`:''}</div>`:'';
+ return `<article class="question-row question-card"><label class="writer-select"><input type="checkbox" data-select-question="${esc(question.id)}" aria-label="${esc(questionLabel(question))} 선정" ${state.selectedIds.has(question.id)?'checked':''}><span>선정</span></label><div class="row-content"><div class="card-kicker"><a class="row-index" href="${esc(href)}" aria-label="${esc(questionLabel(question))} 열기">${esc(questionLabel(question))}</a>${info.exception?`<span class="exception-badge">${esc(info.finalLabel)}</span>`:''}${bookmarkButton(question.id,true)}</div><a class="row-title-link" href="${esc(href)}">${esc(question.title)}</a><div class="row-tags">${rowTags.map(tag=>tagButton(tag,question)).join('')}</div>${recommendation}${activeTag?`<p class="tag-reason"><strong>부여 이유</strong> ${esc(asText(reason)||'추가 검토 필요')}</p>`:''}<div class="writer-card-actions"><button class="button-text" data-compare-id="${esc(question.id)}">${researchStore?.state.compareIds.includes(question.id)?'비교에서 제외':'비교'}</button><button class="button-text" data-collect-id="${esc(question.id)}">자료 묶음에 담기</button><a href="author.html#ref=${esc(question.id)}">제작에 참고 ↗</a></div></div></article>`;
 }
 function paginationMarkup(result) {
   if (!result.total) return '';
@@ -514,7 +523,7 @@ function updateListResults() {
   const zeroBaseTag = state.route.view === 'tag' && tagCount(state.route.id) === 0;
   document.querySelector('#question-list').innerHTML = result.items.length ? result.items.map(questionCard).join('') : `<div class="empty-state"><strong>${zeroBaseTag ? emptyTaxonomyLabel() : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '아직 북마크한 문항이 없습니다.' : '조건에 맞는 문항이 없습니다.'}</strong><p>${zeroBaseTag ? '이 분류에 연결된 문항이 아직 없습니다. 현재 문항을 임의로 연결하지 않았습니다.' : state.route.view === 'bookmarks' && !bookmarkCount('any') ? '문항의 북마크 버튼에서 원하는 색을 골라 주세요.' : '검색어나 태그, 북마크 색을 줄여 다시 찾아보세요.'}</p><button class="button button-sage" type="button" data-reset>조건 초기화</button></div>`;
   document.querySelector('#list-pagination').innerHTML = paginationMarkup(result);
-  void hydrateImages(result.items);
+  updateSearchStatus();updateWriterSelection();
 }
 function catalogTags() {
   const term = state.tagQuery.normalize('NFKC').trim().toLocaleLowerCase('ko');
@@ -556,29 +565,13 @@ function renderRibbon(question) {
   }).join('')}</div>`;
 }
 function renderAnswer(question) {
-  if (question.answerStatus === 'source-conflict') {
-    return `<div class="conflict-alert" role="note"><strong>원본 문항·답안 불일치</strong><p>${esc(asText(question.answerIssue || question.answerWarning || question.answerConflict?.message) || '원본 표시 답안과 독립 풀이가 일치하지 않습니다. 보기 판단과 검수 참고를 함께 확인해 주세요. 원본은 그대로 보존했으며 공식 답안을 확정하지 않았습니다.')}</p><div class="conflict-source"><span>보존한 원본 표시 답안</span><b>${esc(CIRCLED[question.answer] || question.answer)} · 검토 필요</b></div>${question.derivedConclusion ? `<div class="conflict-derived"><strong>문언에 따른 자체 풀이</strong><p>${esc(question.derivedConclusion)}</p></div>` : ''}</div>`;
-  }
-  return `<div class="answer-strip"><div><span class="answer-caption">원본 표시 + 독립 풀이 대조</span><strong>정답 ${esc(CIRCLED[question.answer] || '확인 중')}</strong></div><p class="answer-basis">${esc(question.answerBasis || '원본 회색 강조와 독립 풀이를 대조했습니다.')}<br>공식정답 외부 대조 미완료</p></div>`;
+ const info=answerInfo(question,state.answerRegistry);
+ return `<div class="answer-strip"><div><span class="answer-caption">${esc(info.basisLabel)}</span><strong>답안 ${esc(info.bookLabel)}</strong></div><p class="answer-basis">${esc(info.verificationLabel)}<br>해설서 답안과 최종 처리 이력을 구분합니다.</p></div>${answerHistoryMarkup(question,state.answerRegistry)}${question.derivedConclusion?`<details class="review-notes"><summary>기존 독립 검토 의견 · 공식 처리 아님</summary><p>${esc(question.derivedConclusion)}</p></details>`:''}`;
 }
 function explanationSections(question) {
-  const steps = question.steps || [];
-  const statements = question.statements || [];
-  const allOptions = question.options || [];
-  const correctOptions = allOptions.filter(option => option.correct === true);
-  const verifiedSingleAnswer = question.answerStatus !== 'source-conflict' && correctOptions.length === 1;
-  const options = verifiedSingleAnswer ? correctOptions : allOptions;
-  const pitfalls = question.pitfalls || [];
-  const reviewNotes = question.reviewNotes || [];
-  return `${renderAnswer(question)}<section class="explanation-section"><h3 class="section-title"><span class="section-marker">01</span>핵심 해설</h3><p class="summary-text">${esc(question.summary || '이 문항의 해설은 준비 중입니다.')}</p></section>
-  ${steps.length ? `<section class="explanation-section"><h3 class="section-title"><span class="section-marker">02</span>풀이의 흐름</h3><ol class="steps-list">${steps.map((step, i) => `<li><span class="step-number">${i + 1}</span><div>${typeof step === 'object' && step.title ? `<strong>${esc(step.title)}</strong>` : ''}${esc(asText(step))}</div></li>`).join('')}</ol></section>` : ''}
-  ${statements.length ? `<section class="explanation-section"><h3 class="section-title"><span class="section-marker">03</span>보기 판단</h3><div class="verdict-list">${statements.map(statement => `<div class="verdict-item${statement.verdict === true ? ' is-true' : statement.verdict === false ? ' is-false' : ''}"><div class="verdict-heading"><span class="verdict-label">${esc(statement.label)}</span><span class="verdict-token">${statement.verdict === true ? '옳음' : statement.verdict === false ? '옳지 않음' : '검토 필요'}</span></div><p>${esc(statement.explanation)}</p></div>`).join('')}</div></section>` : ''}
-  ${options.length ? `<section class="explanation-section"><h3 class="section-title"><span class="section-marker">${statements.length ? '04' : '03'}</span>${verifiedSingleAnswer ? '정답 선택지 해설' : '선택지별 해설'}</h3><div class="option-list">${options.map(option => {
-    const conflict = question.answerStatus === 'source-conflict';
-    return `<div class="option-row${option.correct && !conflict ? ' is-correct' : ''}${conflict && Number(option.number) === Number(question.answer) ? ' source-conflict' : ''}"><span class="option-number">${esc(CIRCLED[option.number] || option.number)}</span><div>${option.correct && !conflict ? '<span class="option-correct-label">정답</span>' : ''}${conflict && Number(option.number) === Number(question.answer) ? '<span class="conflict-badge">원본 표시 · 불일치</span> ' : ''}${esc(option.explanation)}</div></div>`;
-  }).join('')}</div></section>` : ''}
-  ${pitfalls.length ? `<section class="explanation-section pitfall-box"><h3 class="section-title">놓치기 쉬운 지점</h3><ul>${pitfalls.map(pitfall => `<li>${esc(asText(pitfall))}</li>`).join('')}</ul></section>` : ''}
-  ${reviewNotes.length ? `<section class="review-notes"><h3 class="section-title">검수 참고${question.confidence ? ` · 해설 확신도 ${esc(question.confidence)}` : ''}</h3><ul class="review-notes-list">${reviewNotes.map(note => `<li>${esc(asText(note))}</li>`).join('')}</ul></section>` : ''}`;
+ const statements=question.statements||[],options=question.options||[],exception=answerInfo(question,state.answerRegistry).exception;
+ const body=`<section class="explanation-section"><h3 class="section-title">핵심 해설</h3><p class="summary-text">${esc(question.summary)}</p></section><section class="explanation-section"><h3 class="section-title">풀이의 흐름</h3><ol class="steps-list">${(question.steps||[]).map((step,i)=>`<li><span class="step-number">${i+1}</span><div>${esc(asText(step))}</div></li>`).join('')}</ol></section>${statements.length?`<details class="explanation-section" open><summary>보기별 판단 근거</summary><div class="verdict-list">${statements.map(statement=>`<div class="verdict-item${statement.verdict?' is-true':' is-false'}"><div class="verdict-heading"><strong>${esc(statement.label)}</strong><span>${statement.verdict?'옳음':'옳지 않음'}</span></div><p>${esc(statement.explanation)}</p></div>`).join('')}</div></details>`:''}<details class="explanation-section"><summary>전체 선택지 판정·오답 설계 참고 (${options.length}개)</summary><div class="option-list">${options.map(option=>`<div class="option-row"><span class="option-number">${esc(CIRCLED[option.number])}</span><div>${Number(option.number)===Number(question.answer)?'<strong>해설서 기준 정답 · </strong>':''}${esc(option.explanation)}</div></div>`).join('')}</div></details>${question.pitfalls?.length?`<section class="pitfall-box"><h3>오독·경계 사례</h3><ul>${question.pitfalls.map(v=>`<li>${esc(asText(v))}</li>`).join('')}</ul></section>`:''}${question.reviewNotes?.length?`<details class="review-notes"><summary>기존 검토 기록</summary>${question.reviewNotes.map(note=>`<p>${esc(asText(note))}</p>`).join('')}</details>`:''}`;
+ return renderAnswer(question)+(exception?`<details class="book-explanation"><summary>해설서 답안 기준 풀이 기록 펼치기</summary><p>이 기록은 표기 답안 기준입니다. 위 최종 처리 사유와 구분해 참고하세요.</p>${body}</details>`:body);
 }
 function classificationSections(question) {
   return `<div class="classification-notice" role="note"><strong>정답·해설 미검토</strong><p>원문을 바탕으로 소재와 태그를 분류했습니다. 정답과 선택지별 해설은 아직 검토하지 않았습니다.</p></div>${AXES.filter(axis => axis.id !== 'year').map(axis => {
@@ -605,8 +598,8 @@ function readerSource(question) {
   const displayedText = state.localTexts.get(question.id)?.text || question.text || question.rawText || '추출 텍스트가 없습니다. 원본 이미지를 확인해 주세요.';
   const corrections = question.textCorrections || [];
   const correctionNotice = corrections.length ? `<details class="text-corrections"><summary>원본 대조로 복원한 추출 오류 ${corrections.length}곳</summary><ul>${corrections.map(item => `<li><strong>${esc(item.to)}</strong><span>${esc(item.reason)}</span></li>`).join('')}</ul><p>원본 이미지와 복원 전 추출 텍스트는 보존되어 있습니다. 전체 내역은 문항 데이터 JSON에서 확인할 수 있습니다.</p></details>` : '';
-  return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} ${localSource ? '이 브라우저에 불러온 원문입니다.' : '원본 이미지를 그대로 보존했습니다.'} 문제지 ${esc(question.examPage)}쪽${localSource ? ` · 통합 PDF ${esc(localSource.sourcePage)}쪽` : question.sourcePdfPage || question.sourcePage ? ` · 제공 PDF ${esc(question.sourcePdfPage || question.sourcePage)}쪽` : ''}</div>
-  <div id="source-image-view"${state.sourceMode === 'image' ? '' : ' hidden'}><div ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="source"` : ''}>${sourceImageMarkup(question)}</div></div>
+  return `<section class="reader-panel source-panel" aria-label="문항 원문"><div class="panel-heading"><h2>문항 원문 <span>ORIGINAL</span></h2><div class="source-actions"><button class="button-text" data-source-fit>${state.sourceFit==='whole'?'너비 맞춤':'전체 맞춤'}</button><div class="segmented" role="group" aria-label="원문 보기 방식"><button type="button" data-source-mode="image" class="${state.sourceMode === 'image' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'image'}">원본 이미지</button><button type="button" data-source-mode="text" class="${state.sourceMode === 'text' ? 'is-active' : ''}" aria-pressed="${state.sourceMode === 'text'}">추출 텍스트</button></div><button class="icon-button" type="button" data-enlarge="${esc(question.id)}" aria-label="원본 이미지 확대">${icon('expand')}</button></div></div><div class="source-note">${icon('info')} ${localSource ? '이 브라우저에 불러온 원문입니다.' : '원본 이미지를 그대로 보존했습니다.'} 문제지 ${esc(question.examPage)}쪽${localSource ? ` · 통합 PDF ${esc(localSource.sourcePage)}쪽` : question.sourcePdfPage || question.sourcePage ? ` · 제공 PDF ${esc(question.sourcePdfPage || question.sourcePage)}쪽` : ''}</div>
+  <div id="source-image-view" class="${state.sourceFit==='width'?'source-fit-width':''}"${state.sourceMode === 'image' ? '' : ' hidden'}><div ${usesImageBundle(question) ? `data-image-question="${esc(question.id)}" data-image-kind="source"` : ''}>${sourceImageMarkup(question)}</div></div>
   <div id="source-text-view"${state.sourceMode === 'text' ? '' : ' hidden'}><div class="text-controls"><span>글자 크기</span><button type="button" class="icon-button" data-text-size="-1" aria-label="원문 글자 작게">가−</button><span id="text-size-label">${state.textSize}px</span><button type="button" class="icon-button" data-text-size="1" aria-label="원문 글자 크게">가+</button></div><pre class="source-text" style="--reading-size:${state.textSize}px">${esc(displayedText)}</pre><p class="text-warning">PDF 문자층에서 추출한 텍스트입니다. 공백·줄바꿈·표·수식은 원본과 다를 수 있으므로 원본 이미지를 함께 확인해 주세요.</p>${correctionNotice}${localSource ? `<button type="button" class="button-text local-text-more" data-clear-local-source="${esc(question.id)}">이 원문 지우기</button>` : state.localTexts.has(question.id) ? `<button type="button" class="button-text local-text-more" data-clear-local-text="${esc(question.id)}">이 본문 지우기</button>` : ''}</div></section>`;
 }
 function localTextPanel(question) {
@@ -692,10 +685,10 @@ function clearLocalText(id) {
 }
 function reviewWorkspace(question) {
   const review = state.reviews[question.id] || {};
-  return `<section class="review-workspace" aria-labelledby="review-title"><div class="review-workspace-heading"><h2 id="review-title">나의 검수 기록</h2><span id="save-hint" class="save-hint">이 브라우저에 자동 저장</span></div><div class="review-workspace-controls" role="group" aria-label="검수 상태">${[{ value: '', label: '미검수' }, { value: 'check', label: '재검토' }, { value: 'done', label: '검수 완료' }].map(item => `<button type="button" class="status-choice${(review.status || '') === item.value ? ' is-active' : ''}" data-review-status="${item.value}" aria-pressed="${(review.status || '') === item.value}">${item.label}</button>`).join('')}</div><label class="sr-only" for="review-note">${esc(question.id)}번 검수 메모</label><textarea id="review-note" data-note-for="${esc(question.id)}" placeholder="원문, 분류, 해설에서 확인할 내용을 적어 두세요.">${esc(review.note || '')}</textarea></section>`;
+  return `<section class="review-workspace" aria-labelledby="review-title"><div class="review-workspace-heading"><h2 id="review-title">나의 검수 기록</h2><span id="save-hint" class="save-hint">이 브라우저에 자동 저장</span></div><div class="review-workspace-controls" role="group" aria-label="검수 상태">${[{ value: '', label: '미검수' }, { value: 'check', label: '재검토' }, { value: 'done', label: '검수 완료' }].map(item => `<button type="button" class="status-choice${(review.status || '') === item.value ? ' is-active' : ''}" data-review-status="${item.value}" aria-pressed="${(review.status || '') === item.value}">${item.label}</button>`).join('')}</div><label class="sr-only" for="review-note">${esc(questionLabel(question))} 검수 메모</label><textarea id="review-note" data-note-for="${esc(question.id)}" placeholder="원문, 분류, 해설에서 확인할 내용을 적어 두세요.">${esc(review.note || '')}</textarea></section>`;
 }
 function questionNav(question, prev, next) {
-  return `<nav class="question-bottom-nav" aria-label="인접 문항">${prev ? `<a class="question-nav-card" href="${esc(buildRoute({ ...state.route, view: 'question', id: prev.id }))}">${icon('left')}<div><small>이전 문항 · ${esc(prev.id)}</small><strong>${esc(prev.title)}</strong></div></a>` : ''}${next ? `<a class="question-nav-card next" href="${esc(buildRoute({ ...state.route, view: 'question', id: next.id }))}"><div><small>다음 문항 · ${esc(next.id)}</small><strong>${esc(next.title)}</strong></div>${icon('right')}</a>` : ''}</nav>`;
+  return `<nav class="question-bottom-nav" aria-label="인접 문항">${prev ? `<a class="question-nav-card" href="${esc(buildRoute({ ...state.route, view: 'question', id: prev.id }))}">${icon('left')}<div><small>이전 문항 · ${esc(questionLabel(prev))}</small><strong>${esc(prev.title)}</strong></div></a>` : ''}${next ? `<a class="question-nav-card next" href="${esc(buildRoute({ ...state.route, view: 'question', id: next.id }))}"><div><small>다음 문항 · ${esc(questionLabel(next))}</small><strong>${esc(next.title)}</strong></div>${icon('right')}</a>` : ''}</nav>`;
 }
 function renderQuestion() {
   const question = state.questions.get(state.route.id);
@@ -704,8 +697,8 @@ function renderQuestion() {
     main.innerHTML = '<div class="error-state"><h1>문항을 찾을 수 없습니다.</h1><p>문항 목록에서 회차와 번호를 확인해 주세요.</p><a class="button" href="#/questions">문항 목록으로</a></div>';
     return;
   }
-  document.title = `${question.id} ${question.title} · LEET Atlas`;
-  const sorted = state.route.sort === 'accuracy' || state.searchMode === 'recommend' && state.query.trim() ? filteredQuestions() : filterQuestions(state.data.questions, { sort: state.route.sort });
+  document.title = `${questionLabel(question)} ${question.title} · LEET Atlas`;
+  const sorted = filteredQuestions();
   const index = sorted.findIndex(item => item.id === question.id);
   const prev = sorted[index - 1];
   const next = sorted[index + 1];
@@ -714,8 +707,8 @@ function renderQuestion() {
   const questionLayout = questionLength <= 950 ? 'short' : questionLength <= 1350 ? 'medium' : 'long';
   const listHref = buildRoute(state.returnRoute || { ...state.route, view: state.route.bookmark && state.route.bookmark !== 'all' ? 'bookmarks' : 'list', id: null });
   main.innerHTML = `<div class="question-breadcrumb"><a class="breadcrumb-link" href="${esc(listHref)}">${icon('left')} ${state.returnRoute?.view === 'analysis' ? '연도별 분석' : '문항 목록'} <span aria-hidden="true">/</span> ${esc(examLabel(question))}</a><nav class="question-pagination" aria-label="문항 이동"><button class="icon-button" type="button" ${prev ? `data-question-nav="${esc(prev.id)}"` : 'disabled'} aria-label="이전 문항" aria-keyshortcuts="ArrowLeft">${icon('left')}</button><span>${index + 1} <span aria-hidden="true">/</span> ${sorted.length}</span><span class="question-keyboard-hint" title="방향키로 문항 이동" aria-hidden="true">← →</span><button class="icon-button" type="button" ${next ? `data-question-nav="${esc(next.id)}"` : 'disabled'} aria-label="다음 문항" aria-keyshortcuts="ArrowRight">${icon('right')}</button></nav></div>
-  <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.id)}</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(examLabel(question))} 법학적성시험 · 추리논증 ${esc(question.number)}번</div></div></div><div class="question-heading-actions"><a class="button button-sage" href="author.html#ref=${esc(question.id)}">제작에 참고</a>${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
-  ${renderRibbon(question)}<div class="reader-grid reader-grid--${questionLayout}">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="${unreviewed ? '문항 분류 이유' : '문항 해설'}"><div class="panel-heading"><h2>${unreviewed ? '소재와 태그 분류' : '해설과 논증 구조'} <span>${unreviewed ? 'CLASSIFICATION' : 'ANALYSIS'}</span></h2></div><div class="analysis-body">${unreviewed ? classificationSections(question) : explanationSections(question)}</div></section>${reviewWorkspace(question)}</div></div>${questionNav(question, prev, next)}
+  <div class="question-heading"><div class="question-heading-main"><div class="question-number">${esc(question.number)}번</div><div><h1>${esc(question.title || `${question.number}번 문항`)}</h1><div class="question-subtitle">${esc(questionLabel(question))} · 추리논증</div></div></div><div class="question-heading-actions"><button class="button button-quiet" data-compare-id="${esc(question.id)}">비교</button><button class="button button-quiet" data-collect-id="${esc(question.id)}">자료 담기</button><a class="button button-sage" href="author.html#ref=${esc(question.id)}">제작에 참고</a>${bookmarkButton(question.id)}<button class="button button-quiet" type="button" data-copy-link aria-label="문항 주소 복사">${icon('link')}<span>주소 복사</span></button></div></div>
+  ${renderRibbon(question)}<div class="writer-detail-tools"><button class="button-text" data-writer-issue="${esc(question.id)}">검토 쟁점 기록</button><span>내부 ID ${esc(question.id)} · 원문·해설서 기준 기록 보존</span></div><div class="reader-grid reader-grid--${questionLayout}">${readerSource(question)}<div><section class="reader-panel analysis-panel" aria-label="${unreviewed ? '문항 분류 이유' : '문항 해설'}"><div class="panel-heading"><h2>${unreviewed ? '소재와 태그 분류' : '해설과 논증 구조'} <span>${unreviewed ? 'CLASSIFICATION' : 'ANALYSIS'}</span></h2></div><div class="analysis-body">${unreviewed ? classificationSections(question) : explanationSections(question)}</div></section>${writerDesignMarkup(question)}${reviewWorkspace(question)}${relatedMarkup(question)}</div></div>${questionNav(question, prev, next)}
   ${documentLinks(question)}`;
   void hydrateImages([question]);
 }
@@ -749,7 +742,7 @@ function renderAnnualPage() {
   if (!yearStatistics) yearStatistics = analyzeArchive(state.data.questions);
   const selectedExam = yearStatistics.byExam.get(state.route.id) || yearStatistics.exams.at(-1);
   if (selectedExam) document.title = `${selectedExam.label} 연도별 출제 분석 · LEET Atlas`;
-  main.innerHTML = renderYearAnalysis({ archive: state.data, analysis: yearStatistics, content: yearContent, examKey: state.route.id, comparisonKey: yearComparison });
+  main.innerHTML = renderYearAnalysis({ archive: state.data, analysis: yearStatistics, content: yearContent, examKey: state.route.id, comparisonKey: yearComparison,axisX:yearAxisX,axisY:yearAxisY });
 }
 function render() {
   if (!state.data) return;
@@ -758,6 +751,7 @@ function render() {
   hideTooltip();
   const previousRoute = state.route;
   state.route = parseRoute(location.hash);
+  if(state.route.query!==state.query||state.route.searchMode!==state.searchMode){state.query=state.route.query||'';state.searchMode=state.route.searchMode;state.searchDrafts[state.searchMode]=state.query;state.searchQueries[state.searchMode]=state.query;state.searchDirty=false;}
   keyboardQuestionId = state.route.view === 'question' ? state.route.id : null;
   if (previousRoute.sort !== state.route.sort) state.searchSort = state.route.sort === 'accuracy' ? 'accuracy' : 'date';
   const originalTagId = state.route.id;
@@ -783,8 +777,9 @@ function render() {
   if (state.route.view === 'question') renderQuestion();
   else if (state.route.view === 'analysis') renderAnnualPage();
   else if (state.route.view === 'tags') renderTags();
+  else if(state.route.view==='workspace')renderResearchPage();
   else renderList();
-  updateNavigation();
+  updateNavigation();updateWriterSelection();
   const focus = nextFocus;
   nextFocus = null;
   if (focus?.main) { window.scrollTo({ top: 0, behavior: 'instant' }); main.focus({ preventScroll: true }); }
@@ -881,7 +876,7 @@ function showImage(id) {
   const question = state.questions.get(id);
   if (!question || question.sourceAccess === 'local-only' && !state.localSources.has(id)) return;
   dialogQuestionId = id;
-  document.querySelector('#image-dialog-title').textContent = `${question.id} · ${question.title} · 원본 확대`;
+  document.querySelector('#image-dialog-title').textContent = `${questionLabel(question)} · ${question.title} · 원본 확대`;
   if (!imageDialog.open) imageDialog.showModal();
   updateImageDialog(question);
   if (usesImageBundle(question) && ['idle', 'pending'].includes(imageBundles.get(question).status)) {
@@ -905,6 +900,16 @@ async function copyLink() {
     input.remove();
     showToast(copied ? '문항 주소를 복사했습니다.' : '주소창의 문항 주소를 복사해 주세요.');
   }
+}
+function renderResearchPage(){writerTools?.renderPage();}
+function updateWriterSelection(){writerTools?.renderSelection();}
+function writerDesignMarkup(question){return writerTools?.designMarkup(question)||'';}
+function relatedMarkup(question){return writerTools?.relatedMarkup(question)||'';}
+function handleWriterClick(button){
+ if(button.hasAttribute('data-source-fit')){state.sourceFit=state.sourceFit==='whole'?'width':'whole';document.querySelector('#source-image-view')?.classList.toggle('source-fit-width',state.sourceFit==='width');button.textContent=state.sourceFit==='whole'?'너비 맞춤':'전체 맞춤';return true;}
+ if(button.hasAttribute('data-add-exclude')){const id=document.querySelector('#writer-exclude-tag')?.value;if(id)navigate(listRoute({excludedTags:[...new Set([...(state.route.excludedTags||[]),id])]}));return true;}
+ if(button.hasAttribute('data-remove-exclude')){navigate(listRoute({excludedTags:(state.route.excludedTags||[]).filter(id=>id!==button.dataset.removeExclude)}));return true;}
+ return writerTools?.handleClick(button)||false;
 }
 function exportReviews() {
   const payload = { schemaVersion: 2, app: 'LEET Atlas', examKeys: state.data.exams?.map(exam => exam.key) || [...new Set(state.data.questions.map(question => question.examKey || String(question.year)))], exportedAt: new Date().toISOString(), reviews: state.reviews };
@@ -951,6 +956,7 @@ window.addEventListener('resize', hideTooltip);
 document.addEventListener('scroll', hideTooltip, { passive: true, capture: true });
 window.addEventListener('storage', event => {
   if (event.key === STORAGE_KEY) { loadReviews(); render(); }
+  if (event.key === RESEARCH_KEY && researchStore) {researchStore.sync();if(state.route.view==='workspace')writerTools.renderPage();writerTools.renderSelection();if(researchStore.error)showToast(researchStore.error);}
 });
 document.addEventListener('click', event => {
   if (event.target.closest('.skip-link')) {
@@ -960,6 +966,7 @@ document.addEventListener('click', event => {
   }
   const button = event.target.closest('button');
   if (!button) return;
+  if(handleWriterClick(button))return;
   if (button.hasAttribute('data-retry-year-analysis')) { void loadYearContent(true); renderAnnualPage(); }
   else if (button.hasAttribute('data-filter-tag')) toggleTag(button.dataset.filterTag);
   else if (button.hasAttribute('data-remove-tag')) toggleTag(button.dataset.removeTag);
@@ -1024,7 +1031,7 @@ document.addEventListener('input', event => {
     document.querySelector(`[data-tag-empty="${axis}"]`).hidden = visible > 0;
     hideTooltip();
   } else if(event.target.id==='recommendation-query'){state.searchDrafts.recommend=event.target.value;state.searchDirty=state.searchDrafts.recommend!==state.query;cancelSemanticSearch();updateListResults();}
-  else if (event.target.id === 'question-search') { state.searchDrafts.keyword=event.target.value;state.searchQueries.keyword=event.target.value;state.query = event.target.value; state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); updateListResults(); }
+  else if (event.target.id === 'question-search') { state.searchDrafts.keyword=event.target.value;state.searchQueries.keyword=event.target.value;state.query = event.target.value;state.route.query=state.query;state.route.searchMode='keyword';history.replaceState(null,'',buildRoute(state.route)); state.searchSort = 'relevance'; scheduleSemanticSearch(); resetListPage(); updateListResults(); }
   else if (event.target.id === 'tag-catalog-search') { state.tagQuery = event.target.value; renderTagCatalogResults(); }
   else if (event.target.hasAttribute('data-note-for')) {
     const saved = saveReview(event.target.dataset.noteFor, { note: event.target.value });
@@ -1032,7 +1039,12 @@ document.addEventListener('input', event => {
     if (hint) hint.textContent = saved ? '저장됨 · 이 브라우저에 보관' : '저장 실패 · 기록을 내보내 주세요';
   }
 });
+document.addEventListener('submit',event=>writerTools?.handleSubmit(event));
 document.addEventListener('change', event => {
+  writerTools?.handleChange(event);
+  if(event.target.id==='writer-tag-mode')navigate(listRoute({tagMode:event.target.value}));
+  if(event.target.id==='analysis-axis-x'){yearAxisX=event.target.value;renderAnnualPage();}
+  if(event.target.id==='analysis-axis-y'){yearAxisY=event.target.value;renderAnnualPage();}
   if (event.target.id === 'analysis-year') { if (yearComparison === event.target.value) yearComparison = 'all'; navigate({ view: 'analysis', id: event.target.value }, { main: true }); }
   if (event.target.id === 'analysis-compare') { yearComparison = event.target.value; renderAnnualPage(); document.querySelector('#analysis-compare')?.focus(); }
   if (event.target.id === 'local-text-file') { const file = event.target.files?.[0]; if (file) void importSourceOrTextFile(file); event.target.value = ''; }
@@ -1070,6 +1082,7 @@ document.addEventListener('keydown', event => {
 document.addEventListener('error', event => {
   if (event.target.matches?.('.source-image')) {
     const button = event.target.closest('.source-image-button');
+    if(!button)return;
     button.classList.add('image-failure');
     button.disabled = true;
     button.textContent = '원본 이미지를 불러오지 못했습니다. 추출 텍스트를 선택하거나 원본 PDF를 확인해 주세요.';
@@ -1093,6 +1106,18 @@ try {
   });
   state.data.questions.forEach(question => (question.tags || []).forEach(id => state.tagCounts.set(id, (state.tagCounts.get(id) || 0) + 1)));
   state.data.questions.forEach(question => state.questions.set(String(question.id), question));
+  const metadata=await Promise.allSettled(['data/image-bounds.json','data/answer-exceptions.json'].map(async path=>{const response=await fetch(`${path}?v=${CACHE_VERSION}`);if(!response.ok)throw new Error(path);return response.json();}));
+  if(metadata[0].status==='fulfilled')state.imageBounds=metadata[0].value.items||{};
+  if(metadata[1].status==='fulfilled')state.answerRegistry=metadata[1].value;
+  let writerStorage;try{writerStorage=localStorage;}catch{}
+  researchStore=createResearchStore(writerStorage,new Set(state.questions.keys()));
+  writerTools=createWriterTools({document,state,store:researchStore,main,toast:showToast,navigate,filteredQuestions,saveReview,
+    getImage:imageFor,ensureImages:questions=>preparePrintImages(questions,{imageFor,load:async items=>{await Promise.all(items.filter(usesImageBundle).map(q=>imageBundles.load(q)));}}),
+    restoreReviews:reviews=>{state.reviews=normalizeReviews({...state.reviews,...reviews});try{localStorage.setItem(STORAGE_KEY,JSON.stringify({schemaVersion:2,reviews:state.reviews}));state.storageFailed=false;return true;}catch{state.storageFailed=true;return false;}},
+    runSearch:search=>{cancelSemanticSearch();state.query=search.query;state.searchMode=search.mode;state.searchDrafts[search.mode]=search.query;state.searchQueries[search.mode]=search.query;state.searchDirty=false;state.searchSort='relevance';navigate({view:'list',query:search.query,searchMode:search.mode,tags:search.tags.filter(id=>state.taxonomy.has(id)),excludedTags:search.excludedTags.filter(id=>state.taxonomy.has(id)),tagMode:search.tagMode});if(search.mode==='recommend'&&search.query)scheduleSemanticSearch();},
+    copySearch:()=>{const hash=buildRoute({...listRoute(),query:state.query,searchMode:state.searchMode});const url=new URL(location.href);url.hash=hash.slice(1);navigator.clipboard?.writeText(url.href).then(()=>showToast('검색 조건 주소를 복사했습니다.')).catch(()=>showToast('주소창의 검색 주소를 복사해 주세요.'));}
+  });
+  if(researchStore.error)showToast(researchStore.error);
   try { state.localTexts = loadLocalTexts(localStorage, state.data.questions); }
   catch { state.localTexts = new Map(); }
   try { state.localSources = await loadLocalSources(sourceStorage(), state.data.questions, {strict:true}); }
@@ -1101,6 +1126,7 @@ try {
   AXES.forEach(axis => groupTags([...state.taxonomy.values()], { axis: axis.id }).forEach(group => group.tags.forEach(tag => state.neighborhoods.set(tag.id, group.label))));
   if (!location.hash) history.replaceState(null, '', buildRoute({ view: 'list' }));
   render();
+  if(['list','bookmarks','tag'].includes(state.route.view)&&state.searchMode==='recommend'&&state.query.trim())scheduleSemanticSearch();
   if (state.sourceLoadFailed) showToast('저장된 원문을 읽지 못했습니다. 원문 파일을 다시 선택하면 복구할 수 있습니다.');
 } catch (error) {
   main.innerHTML = `<div class="error-state"><h1>문항 데이터를 불러오지 못했습니다.</h1><p>잠시 후 새로고침해 주세요. 파일을 직접 열었다면 배포된 웹 주소에서 접속해 주세요.</p><p><code>${esc(error.message)}</code></p><button class="button" type="button" id="reload-data">다시 불러오기</button></div>`;

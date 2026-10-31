@@ -1,3 +1,4 @@
+import * as writerEnv from './writer-test-env.mjs';
 import * as referenceSearch from '../reference-search.mjs';
 import * as semanticSearch from '../semantic-search.mjs';
 // Executes actual render/navigation code with a minimal DOM adapter.
@@ -12,8 +13,8 @@ import * as sidebar from '../sidebar.mjs';
 import * as localSources from '../local-sources.mjs';
 const data=JSON.parse(await readFile(new URL('../data/2027.json',import.meta.url),'utf8'));
 const source=(await readFile(new URL('../app.js',import.meta.url),'utf8')).replace(/^import[^\n]+\n/gm,'');
-async function boot(hash='',reviews={},mode='paged') {
- const elements=new Map();const events=new Map();
+async function boot(hash='',reviews={},mode='paged',savedMemory=null) {
+ const elements=new Map();const events=new Map();const downloads=[];
  function element(key){
   if(!elements.has(key))elements.set(key,{innerHTML:'',textContent:'',hidden:true,open:false,value:'',dataset:{},classList:{add(){},toggle(){}},style:{setProperty(){}},addEventListener(){},focus(){this.focusCount=(this.focusCount||0)+1},setAttribute(){},removeAttribute(){},getClientRects(){return [1]},getBoundingClientRect(){return {left:0,top:0,bottom:10,width:100,height:20}},showModal(){this.open=true},close(){this.open=false}});
   return elements.get(key);
@@ -22,18 +23,18 @@ async function boot(hash='',reviews={},mode='paged') {
  const location={hash,href:'https://afratoxin.github.io/leet-atlas/'+hash};
  const window={addEventListener(){},scrollTo(){},innerWidth:1440,innerHeight:900};
  const history={replaceState(_a,_b,path){location.hash=path}};
- const memory=new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})],['leet-atlas:list-mode',mode]]);
+ const memory=savedMemory||new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})],['leet-atlas:list-mode',mode]]);
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
- const env={...referenceSearch,...semanticSearch,document,location,window,history,localStorage,navigator:{},fetch:async()=>({ok:true,json:async()=>structuredClone(data)}),...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
+ const env={...writerEnv,createWriterTools:options=>writerEnv.createWriterTools({...options,download:(...args)=>downloads.push(args)}),...referenceSearch,...semanticSearch,document,location,window,history,localStorage,navigator:{},fetch:async path=>writerEnv.writerFixtureResponse(path)||({ok:true,json:async()=>structuredClone(data)}),...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
- const run=new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,toggleTag,saveReview,filteredQuestions,updateListResults,showBookmarkPalette,selectBookmarkColor,changeListMode,resetListPage};');
+ const run=new AsyncFunction(...Object.keys(env),source+'\nreturn {state,writerTools,render,toggleTag,saveReview,filteredQuestions,updateListResults,showBookmarkPalette,selectBookmarkColor,changeListMode,resetListPage};');
  const app=await run(...Object.values(env));
- return {app,elements,location,memory,events};
+ return {app,elements,location,memory,events,downloads};
 }
 const rowCount=html=>(html.match(/<article class="question-row(?: |")/g)||[]).length;
 test('default list has ten cards and page four shows the final ten',async()=>{
  const first=await boot();const html=first.elements.get('#question-list').innerHTML;
- assert.equal(rowCount(html),10);assert.match(html,/assets\/thumbs\/2701.webp\?v=/);assert.doesNotMatch(html,/assets\/thumbs\/2711.webp/);
+ assert.equal(rowCount(html),10);assert.match(html,/href="#\/question\/2701/);assert.doesNotMatch(html,/href="#\/question\/2711/);assert.doesNotMatch(html,/<img/);
  const last=await boot('#/questions?page=4');const h=last.elements.get('#question-list').innerHTML;assert.equal(rowCount(h),10);assert.match(h,/2731/);assert.match(h,/2740/);assert.doesNotMatch(h,/assets\/thumbs\/2701.webp/);
 });
 test('scroll mode shows all forty and an explicit paged URL overrides saved scroll mode',async()=>{
@@ -41,16 +42,34 @@ test('scroll mode shows all forty and an explicit paged URL overrides saved scro
  const saved=await boot('#/questions',{},'scroll');assert.equal(rowCount(saved.elements.get('#question-list').innerHTML),40);
  const paged=await boot('#/questions?mode=paged',{},'scroll');assert.equal(rowCount(paged.elements.get('#question-list').innerHTML),10);
 });
-test('reader renders original and the correct-option explanation',async()=>{
- const {elements}=await boot('#/question/2701');const html=elements.get('#main').innerHTML;assert.match(html,/assets\/questions\/2701.webp\?v=/);assert.match(html,/핵심 해설/);assert.equal((html.match(/class="option-row/g)||[]).length,1);
+test('reader renders original and all five option explanations in a collapsed disclosure',async()=>{
+ const {elements}=await boot('#/question/2701');const html=elements.get('#main').innerHTML;assert.match(html,/assets\/questions\/2701.webp\?v=/);assert.match(html,/핵심 해설/);assert.equal((html.match(/class="option-row/g)||[]).length,5);
 });
 test('updated 2708 has normal answer three and no obsolete conflict warning',async()=>{
- const {elements}=await boot('#/question/2708');const html=elements.get('#main').innerHTML;assert.match(html,/>정답 ③</);assert.doesNotMatch(html,/원본 문항·답안 불일치|ㄴ만 성립하지만/);
+ const {elements}=await boot('#/question/2708');const html=elements.get('#main').innerHTML;assert.match(html,/>답안 ③</);assert.doesNotMatch(html,/원본 문항·답안 불일치|ㄴ만 성립하지만/);
 });
 test('legacy bookmarks remain available in the dedicated page with notes and status',async()=>{
  const {app,elements,memory}=await boot('#/bookmarks',{'2701':{bookmark:true,note:'내 메모',status:'check'},'2703':{bookmark:false}});
  assert.equal(rowCount(elements.get('#question-list').innerHTML),1);assert.match(elements.get('#question-list').innerHTML,/2701/);assert.deepEqual(core.bookmarkColors(app.state.reviews['2701']),['red']);assert.equal(app.state.reviews['2701'].note,'내 메모');assert.equal(app.state.reviews['2701'].status,'check');
  assert.equal(JSON.parse(memory.get('leet-atlas:2027:reviews:v1')).reviews['2701'].note,'내 메모');
+});
+
+test('restoring a legacy review backup survives reopening the app and preserves unrelated existing notes',async()=>{
+ const first=await boot('#/question/2701',{'2702':{note:'기존 기록',bookmarkColors:['blue'],status:'done'}});
+ const payload=JSON.stringify({app:'LEET Atlas',schemaVersion:1,reviews:{'2701':{bookmark:true,note:'백업에서 복원한 메모',status:'check'}}});
+ await first.app.writerTools.restoreFile({size:Buffer.byteLength(payload),text:async()=>payload});
+ assert.equal(first.app.state.reviews['2701'].note,'백업에서 복원한 메모');
+ assert.deepEqual(core.bookmarkColors(first.app.state.reviews['2701']),['red']);
+ assert.equal(first.downloads.length,1,'the pre-restore backup remains downloadable');
+ const saved=JSON.parse(first.memory.get('leet-atlas:2027:reviews:v1'));
+ assert.equal(saved.schemaVersion,2);
+ assert.equal(saved.reviews['2701'].note,'백업에서 복원한 메모');
+ const reopened=await boot('#/bookmarks',{},'paged',first.memory);
+ assert.equal(reopened.app.state.reviews['2701'].note,'백업에서 복원한 메모');
+ assert.equal(reopened.app.state.reviews['2701'].status,'check');
+ assert.deepEqual(core.bookmarkColors(reopened.app.state.reviews['2702']),['blue']);
+ assert.equal(reopened.app.state.reviews['2702'].note,'기존 기록');
+ assert.equal(rowCount(reopened.elements.get('#question-list').innerHTML),2);
 });
 test('color-specific bookmark page excludes unmarked and differently colored questions',async()=>{
  const {elements}=await boot('#/bookmarks?bookmark=blue',{'2701':{bookmark:true},'2702':{bookmarkColors:['blue']},'2703':{bookmarkColors:['red','blue']}});

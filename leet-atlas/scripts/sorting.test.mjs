@@ -36,7 +36,7 @@ test('sort URLs round trip list, tag, bookmark and question pages', () => {
     {view:'tag',id:'logic-대우',tags:['law'],bookmark:'all',page:2,mode:'paged',sort:'newest'},
     {view:'bookmarks',id:null,tags:[],bookmark:'blue',page:1,mode:'scroll',sort:'newest'},
     {view:'question',id:'2701',tags:['law'],bookmark:'all',page:2,mode:'paged',sort:'newest'},
-  ]) assert.deepEqual(parseRoute(buildRoute(route)),{...route,tagMode:'auto'});
+  ]) assert.deepEqual(parseRoute(buildRoute(route)),{...route,tagMode:'auto',query:'',searchMode:'recommend',excludedTags:[]});
 });
 
 test('sort defaults to newest and explicit oldest links remain supported', () => {
@@ -76,7 +76,7 @@ test('all three sort choices round trip across list, collection and reader URLs'
     {view:'list',id:null},{view:'bookmarks',id:null},{view:'tag',id:'field-law'},{view:'question',id:'2401'},
   ]) {
     const full={...route,tags:['math'],bookmark:'blue',page:2,mode:'paged',sort};
-    assert.deepEqual(parseRoute(buildRoute(full)),{...full,tagMode:'auto'});
+    assert.deepEqual(parseRoute(buildRoute(full)),{...full,tagMode:'auto',query:'',searchMode:'recommend',excludedTags:[]});
   }
 });
 

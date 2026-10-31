@@ -14,7 +14,7 @@ const fixture={exam:{questionCount:3},questions:[
 test('year routes preserve preliminary as a separate exam and round trip',()=>{
  for(const id of [null,'preliminary','2009','2027']) {
   const route={view:'analysis',id,tags:[],bookmark:'all',page:1,mode:'paged',sort:'newest'};
-  assert.deepEqual(parseRoute(buildRoute(route)),{...route,tagMode:'auto'});
+  assert.deepEqual(parseRoute(buildRoute(route)),{...route,tagMode:'auto',query:'',searchMode:'recommend',excludedTags:[]});
  }
 });
 test('all 755 questions belong to exactly one of 20 correctly sized exams',()=>{
@@ -26,15 +26,16 @@ test('all 755 questions belong to exactly one of 20 correctly sized exams',()=>{
  assert.equal(analysis.byExam.get('2010').count,35);
  assert.equal(analysis.byExam.get('2027').count,40);
  for(const q of analysis.questions) {
-  assert.ok(Number.isFinite(q.score)&&q.score>=0&&q.score<=100,q.id);
-  assert.ok(Number.isInteger(q.burden)&&q.burden>=1&&q.burden<=5,q.id);
+  assert.ok(Number.isFinite(q.designProfile.reading.chars)&&q.designProfile.reading.chars>0,q.id);
+  assert.equal(q.score,undefined,'no synthetic difficulty');
+  assert.equal(q.designProfile.conditions.inferenceDepth,null,'actual inference depth is unmeasured');
   assert.equal(q.correctRate,undefined,'no inferred correct rates');
  }
 });
 test('source features distinguish reading, rules, negative prompts and combination choices',()=>{
  const analysis=analyzeArchive(fixture.questions);
  const simple=analysis.questions.find(q=>q.id==='p001'), complex=analysis.questions.find(q=>q.id==='0901');
- assert.ok(complex.score>simple.score);
+ assert.ok(complex.features.readingChars>simple.features.readingChars);
  assert.ok(complex.features.conditionMarkers>simple.features.conditionMarkers);
  assert.equal(complex.features.negativePrompt,true);
  assert.equal(complex.features.combination,true);
@@ -42,20 +43,20 @@ test('source features distinguish reading, rules, negative prompts and combinati
  assert.equal(analysis.byExam.get('2009').distributions.fields[0].percent,100);
  assert.equal(analysis.byExam.get('2009').distributions.fields[1].percent,100);
 });
-test('difficulty is source-based, deterministic and does not mutate answer or solution data',()=>{
+test('design observations are source-based, deterministic and do not mutate answer or solution data',()=>{
  const before=structuredClone(fixture.questions);
  const first=analyzeArchive(fixture.questions);
  const changed=fixture.questions.map(q=>({...q,answer:5,confidence:'low',summary:'해설을 길게 바꿔도'.repeat(100),steps:Array(100).fill('따라서')}));
- assert.deepEqual(analyzeArchive(changed).questions.map(q=>q.score),first.questions.map(q=>q.score));
+ assert.deepEqual(analyzeArchive(changed).questions.map(q=>q.designProfile),first.questions.map(q=>q.designProfile));
  assert.deepEqual(fixture.questions,before);
  assert.deepEqual(analyzeArchive([]).exams,[]);
  const equal=analyzeArchive([fixture.questions[0]]).questions[0];
- assert.ok(Number.isFinite(equal.score));
+ assert.ok(Number.isFinite(equal.designProfile.reading.chars));
 });
 test('missing observed rates stay missing and threshold bands never become exact percentages',()=>{
  const content={profiles:[],sources:[{id:'s',title:'표본 통계',url:'https://example.com/review',kind:'sample-statistics',examKeys:['2027'],sampleDescription:'자발적 참여 표본',caveats:'전수 통계 아님'}],questionRates:[{questionId:'2701',examKey:'2027',correctRate:null,upperBoundPercent:40,sourceId:'s',booklet:'단일형'}]};
  const html=renderYearAnalysis({archive:fixture,analysis:analyzeArchive(fixture.questions),content,examKey:'2027'});
- assert.match(html,/풀이 부담 추정/);
+ assert.match(html,/설계 요구 프로필/);
  assert.match(html,/40% 이하/);
  assert.match(html,/정확한 정답률.*미확보/);
  assert.doesNotMatch(html,/정답률 0%/);

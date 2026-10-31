@@ -108,12 +108,12 @@ test('filter groups describe OR years and AND operators for every other selected
 test('old global-mode links migrate without losing their selected tags or list position',()=>{
  for(const mode of ['or','and','invalid']) {
   const route=parseRoute(`#/questions?tag=${Y2025}&tag=${Y2026}&tag=${PUZZLE}&tagMode=${mode}&sort=newest&page=2`);
-  assert.equal(route.tagMode,'auto');
+  assert.equal(route.tagMode,mode==='or'?'or':'auto');
   assert.equal(route.page,2);
   assert.equal(route.sort,'newest');
   assert.deepEqual(ids(filterQuestions(questions,{...route,taxonomy})),['2632','2633','2634','2512','2533','2534','2535']);
   const canonical=buildRoute(route);
-  assert.equal(new URLSearchParams(canonical.split('?')[1]).has('tagMode'),false);
+  assert.equal(new URLSearchParams(canonical.split('?')[1]).has('tagMode'),mode==='or');
   assert.deepEqual(parseRoute(canonical),route);
  }
 });

@@ -1,3 +1,4 @@
+import * as writerEnv from './writer-test-env.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -18,7 +19,7 @@ async function boot({hash='#/questions',createSemanticSearch=()=>({search:async(
   return elements.get(key);
  };
  const location={hash,href:'https://afratoxin.github.io/leet-atlas/'+hash};
- const env={document:{querySelector:element,querySelectorAll:()=>[],addEventListener:(k,f)=>events.set(k,f)},location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)},navigator:{},fetch:async()=>({ok:true,json:async()=>structuredClone(archive)}),...core,...tagGroups,...localText,...localSources,...sidebar,...references,createSemanticSearch};
+ const env={...writerEnv,document:{querySelector:element,querySelectorAll:()=>[],addEventListener:(k,f)=>events.set(k,f)},location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)},navigator:{},fetch:async path=>writerEnv.writerFixtureResponse(path)||({ok:true,json:async()=>structuredClone(archive)}),...core,...tagGroups,...localText,...localSources,...sidebar,...references,createSemanticSearch};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,filteredQuestions,refreshSemanticSearch:typeof refreshSemanticSearch === "function" ? refreshSemanticSearch : null,changeSearchMode:typeof changeSearchMode === "function"?changeSearchMode:null,submitSearch:typeof submitSearch === "function"?submitSearch:null};')(...Object.values(env));
  return {app,elements,events,location};
@@ -26,15 +27,15 @@ async function boot({hash='#/questions',createSemanticSearch=()=>({search:async(
 
 test('recommendation search exposes two modes and explains actual reference matches',async()=>{
  const {app,elements}=await boot();
- assert.match(elements.get('#main').innerHTML,/설명으로 추천받기/);
- assert.match(elements.get('#main').innerHTML,/단어로 검색하기/);
- assert.match(elements.get('#main').innerHTML,/찾고 싶은 문항의 특징/);
+ assert.match(elements.get('#main').innerHTML,/조건·설명으로 찾기/);
+ assert.match(elements.get('#main').innerHTML,/단어·번호로 찾기/);
+ assert.match(elements.get('#main').innerHTML,/찾고 싶은 문항의 조건/);
  assert.doesNotMatch(elements.get('#main').innerHTML,/<select id="search-mode"/);
  assert.equal(app.state.searchMode,'recommend');
- app.state.query=example;app.render();
+ app.state.searchDrafts.recommend=example;await app.submitSearch();app.render();
  const ids=app.filteredQuestions().slice(0,10).map(q=>q.id);
  assert.ok(['1321','1512','1717','2218','2318'].filter(id=>ids.includes(id)).length>=3,ids.join(','));
- assert.match(elements.get('#question-list').innerHTML,/추천 근거/);
+ assert.match(elements.get('#question-list').innerHTML,/일치 근거/);
  assert.match(elements.get('#search-status').textContent,/관련 표현|문장/);
  app.state.searchMode='keyword';
  assert.equal(app.filteredQuestions().length,0);
@@ -43,13 +44,13 @@ test('recommendation search exposes two modes and explains actual reference matc
 test('free recommendation drafts and literal keywords are kept separately and only a submitted description runs',async()=>{
  let calls=0;
  const {app,events,elements}=await boot({createSemanticSearch:()=>({search:async q=>{if(q)calls++;return new Map()},dispose(){}})});
- const input=value=>events.get('input')({target:{id:'recommendation-query',value,hasAttribute:()=>false}});
+ const input=value=>events.get('input')({target:{hasAttribute(){return false},id:'recommendation-query',value,hasAttribute:()=>false}});
  input('사전에 없던 문장으로도 관련 문항을 찾아줘');
  assert.equal(app.state.query,'');assert.equal(calls,0);
- assert.match(elements.get('#search-status').textContent,/찾기.*누르|실행/);
+ assert.match(elements.get('#search-status').textContent,/찾기.*(?:누르|눌러)|실행/);
  assert.equal(typeof app.changeSearchMode,'function');assert.equal(typeof app.submitSearch,'function');
  app.changeSearchMode('keyword');
- events.get('input')({target:{id:'question-search',value:'2218',hasAttribute:()=>false}});
+ events.get('input')({target:{hasAttribute(){return false},id:'question-search',value:'2218',hasAttribute:()=>false}});
  assert.equal(app.state.query,'2218');
  assert.equal(calls,0);
  app.changeSearchMode('recommend');
@@ -61,11 +62,11 @@ test('free recommendation drafts and literal keywords are kept separately and on
 
 test('editing a submitted recommendation cancels its ownership and marks results as pending',async()=>{
  const {app,events,elements}=await boot();
- events.get('input')({target:{id:'recommendation-query',value:'두 사람의 논쟁',hasAttribute:()=>false}});
+ events.get('input')({target:{hasAttribute(){return false},id:'recommendation-query',value:'두 사람의 논쟁',hasAttribute:()=>false}});
  await app.submitSearch();
- events.get('input')({target:{id:'recommendation-query',value:'전혀 다른 질문',hasAttribute:()=>false}});
+ events.get('input')({target:{hasAttribute(){return false},id:'recommendation-query',value:'전혀 다른 질문',hasAttribute:()=>false}});
  assert.equal(app.state.searchDirty,true);
- assert.match(elements.get('#search-status').textContent,/찾기.*누르|실행/);
+ assert.match(elements.get('#search-status').textContent,/찾기.*(?:누르|눌러)|실행/);
  assert.equal(elements.get('#question-list').hidden,true);
 });
 
@@ -75,7 +76,7 @@ test('actual semantic evidence labels and non-answer explanations are safely ren
  app.state.searchDrafts.recommend='양쪽에 다 맞는 사실을 잘못 평가한 문제';
  await app.submitSearch();
  const html=elements.get('#question-list').innerHTML;
- assert.match(html,/1번 ① 선택지와 해설/);
+ assert.match(html,/관련 선택지·해설 확인/);assert.match(html,/① 선택지/);assert.match(html,/두 가설 모두 얼굴 인식 영역/);
  assert.match(html,/&lt;script&gt;/);assert.doesNotMatch(html,/<script>/);
 });
 
@@ -114,7 +115,7 @@ test('late semantic responses cannot overwrite a newer query or keyword mode',as
 test('failed semantic initialization leaves useful lightweight search and a truthful status',async()=>{
  const {app,elements}=await boot({createSemanticSearch:()=>({search:async()=>{throw new Error('network failed')},dispose(){}})});
  assert.equal(typeof app.refreshSemanticSearch,'function');
- app.state.query=example;app.render();await app.refreshSemanticSearch();
+ app.state.searchDrafts.recommend=example;await app.submitSearch();app.render();
  assert.equal(app.state.semanticStatus.state,'fallback');
  assert.match(elements.get('#search-status').textContent,/관련 표현|준비하지 못/);
  assert.ok(app.filteredQuestions().length>0);
@@ -134,7 +135,7 @@ test('cancelled query statuses cannot label a pending query or poison its semant
   clients.push(client);return client;
  }});
  app.state.query='첫 검색';const old=app.refreshSemanticSearch();
- events.get('input')({target:{id:'question-search',value:'다음 검색',hasAttribute:()=>false}});
+ events.get('input')({target:{hasAttribute(){return false},id:'question-search',value:'다음 검색',hasAttribute:()=>false}});
  clients[0].emit({state:'ready'});
  assert.notEqual(app.state.semanticStatus.state,'ready');
  clients[0].emit({state:'fallback'});
@@ -149,17 +150,19 @@ test('cancelled query statuses cannot label a pending query or poison its semant
 
 test('history restores chronological and accuracy sorts without a stale local override',async()=>{
  const {app,events,location,elements}=await boot();
- app.state.query='법률';
- events.get('change')({target:{id:'question-sort',value:'oldest'}});app.render();
+ app.state.searchDrafts.recommend='법률';await app.submitSearch();
+ events.get('change')({target:{hasAttribute(){return false},id:'question-sort',value:'oldest'}});app.render();
  const oldest=app.filteredQuestions().slice(0,10).map(q=>q.id);
- events.get('change')({target:{id:'question-sort',value:'accuracy'}});app.render();
+ const oldestRoute=location.hash;
+ events.get('change')({target:{hasAttribute(){return false},id:'question-sort',value:'accuracy'}});app.render();
  const accuracy=app.filteredQuestions().slice(0,10).map(q=>q.id);
+ const accuracyRoute=location.hash;
  assert.notDeepEqual(oldest,accuracy);
- location.hash='#/questions?sort=oldest';app.render();
+ location.hash=oldestRoute;app.render();
  assert.equal(elements.get('#question-sort').value,'oldest');
  assert.deepEqual(app.filteredQuestions().slice(0,10).map(q=>q.id),oldest);
- location.hash='#/questions?sort=accuracy';app.render();
+ location.hash=accuracyRoute;app.render();
  assert.deepEqual(app.filteredQuestions().slice(0,10).map(q=>q.id),accuracy);
- events.get('change')({target:{id:'question-sort',value:'relevance'}});app.render();
+ events.get('change')({target:{hasAttribute(){return false},id:'question-sort',value:'relevance'}});app.render();
  assert.equal(elements.get('#question-sort').value,'relevance');
 });

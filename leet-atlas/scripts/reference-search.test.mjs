@@ -69,7 +69,8 @@ test('principle labels and incidental combat examples are not speaker evidence',
   ];
   const matches=rankReferences(questions,'인문 논리학 2명이 싸우는 문항');
   assert.equal(matches.find(match=>match.id==='dialogue').score,matches.find(match=>match.id==='combatExample').score);
-  assert.ok(!matches.find(match=>match.id==='principles').reasons.join(' ').includes('화자'));
+  // Explicit two-speaker requests are now eligibility constraints.
+  assert.ok(!matches.some(match=>match.id==='principles'));
   assert.ok(!buildSearchDocuments([questions[0]]).some(document=>document.text.includes('화자 2명')));
 });
 
@@ -164,8 +165,8 @@ test('a circled source annotation and an unrelated “몰아넣을” verb are n
   const question=archive.find(q=>q.id==='2113');
   const scores=new Map([['2113',.93],['2112',.70]]);
   const [match]=rankReferences([question], '빈칸에 들어갈 말을 선택하는 문제', {semanticScores:scores});
-  assert.ok(match);
-  assert.ok(!match.reasons.some(reason=>reason.includes('답안이 들어갈 자리')||reason.includes('빈칸')));
+  // A semantic score cannot override an explicit required completion form.
+  assert.equal(match,undefined);
 });
 
 test('unseen paraphrases can be found by meaningful raw E5 scores without lexical overlap',()=>{
@@ -194,8 +195,9 @@ test('natural-law field is not labelled law and a year in a sentence is not an e
   assert.ok(matches.some(m=>m.id==='2218'));
   for(const query of ['법률 문제 2022년도 기출처럼 계산이 들어가면 좋겠어','법률 계산 2022']){
     const results=rankReferences(archive,query);
-    assert.ok(results.some(match=>match.id==='1022'),query);
-    assert.ok(results.some(match=>match.id==='2307'),query);
+    // An embedded year is an explicit facet; a bare standalone 2022 remains an ID.
+    assert.ok(results.length>0,query);
+    assert.ok(results.every(match=>archive.find(q=>q.id===match.id).year===2022));
     assert.ok(!results.some(match=>match.id==='2022'&&match.reasons.some(reason=>reason.startsWith('문항번호:'))),query);
   }
 });

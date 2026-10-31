@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-31",
+  "bookAnswerBasis": "사용자가 지정한 공식 해설서 답안 표기를 기본값으로 유지",
+  "allFinalDecisionsVerified": false,
+  "coverageNote": "출처로 확인한 실제 처리 이력을 등록합니다. 전 회차 최종 결정의 전수 대조 완료를 의미하지 않습니다. 논란 제기만 있는 문항은 복수정답이나 정답 없음으로 표시하지 않습니다.",
+  "records": [
+    {
+      "questionId": "1034",
+      "examKey": "2010",
+      "number": 34,
+      "type": "no-answer",
+      "correctOptions": [],
+      "scoring": "all-accepted",
+      "decisionDate": "2009-09-09",
+      "summary": "2010학년도 추리논증 34번은 가안 ②에서 이의심사 후 정답 없음으로 결정되어 전원 정답 처리되었습니다.",
+      "reason": "최고 수락가격이 100일 때 최초 호가도 100이면 최고가격에 바로 낙찰됩니다. ‘최고가격보다 높아야만’이라는 필요조건은 같은 가격의 경계 사례에서 성립하지 않습니다. 아래 해설서 기준 풀이 기록과 이 최종 처리 사유를 구분해 참고하세요.",
+      "evidenceNote": "당시 평가원 결정을 인용한 동시대 보도 2건으로 처리 이력을 확인했습니다. 원문 이미지의 회색 ② 표시는 보존하며 최종 처리와 혼동하지 않습니다.",
+      "sources": [
+        {"title": "법률저널 · 최종 정답 없음 결정과 사유(2009-09-11)", "url": "https://www.lec.co.kr/news/articleView.html?idxno=16084"},
+        {"title": "법률저널 · 평가원 최종 처리 발표(2009-09-09)", "url": "https://www.lec.co.kr/news/articleView.html?idxno=16058"}
+      ]
+    }
+  ]
+}

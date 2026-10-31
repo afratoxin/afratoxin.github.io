@@ -1,3 +1,4 @@
+import * as writerEnv from './writer-test-env.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -15,7 +16,7 @@ async function boot(hash='#/analysis',respond=async()=>({ok:true,json:async()=>s
  const element=key=>{if(!elements.has(key))elements.set(key,{innerHTML:'',textContent:'',hidden:true,open:false,value:'',dataset:{},classList:{add(){},toggle(){}},style:{setProperty(){}},addEventListener(){},focus(){},setAttribute(){},removeAttribute(){},getClientRects(){return[1]},getBoundingClientRect(){return{left:0,top:0,bottom:10,width:100,height:20}}});return elements.get(key);};
  const document={querySelector:element,querySelectorAll(){return[]},addEventListener(k,fn){events.set(k,fn)}};
  const location={hash,href:'https://example.invalid/'+hash};
- const env={document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},navigator:{},localStorage:{getItem(){return null},setItem(){}},fetch:async path=>{requests.push(path);return String(path).startsWith('data/archive.json')?{ok:true,json:async()=>structuredClone(data)}:respond(path)},...core,...tagGroups,...localText,...sidebar,...localSources,...annual};
+ const env={...writerEnv,document,location,window:{addEventListener(){},scrollTo(){}},history:{replaceState(_a,_b,path){location.hash=path}},navigator:{},localStorage:{getItem(){return null},setItem(){}},fetch:async path=>{requests.push(path);if(writerEnv.writerFixtureResponse(path))return writerEnv.writerFixtureResponse(path);return String(path).startsWith('data/archive.json')?{ok:true,json:async()=>structuredClone(data)}:respond(path)},...core,...tagGroups,...localText,...sidebar,...localSources,...annual};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const app=await new AsyncFunction(...Object.keys(env),source+'\nreturn {state,render,loadYearContent};')(...Object.values(env));
  return {app,elements,events,location,requests,document,html:()=>elements.get('#main').innerHTML};
@@ -25,11 +26,11 @@ test('analysis tab loads content once, defaults to 2027 and changes exam and com
  assert.match(page.html(),/연도별 출제 분석/);
  assert.match(page.html(),/2027학년도 · 자체 원문 분석/);
  assert.match(page.html(),/정확한 수치 확보 4\/40/);
- page.events.get('change')({target:{id:'analysis-year',value:'2010'}});page.app.render();
+ page.events.get('change')({target:{hasAttribute(){return false},id:'analysis-year',value:'2010'}});page.app.render();
  assert.match(page.location.hash,/#\/analysis\/2010/);
  assert.match(page.html(),/2010학년도 · 자체 원문 분석/);
  assert.match(page.html(),/전체 35문항/);
- page.events.get('change')({target:{id:'analysis-compare',value:'2009'}});page.app.render();
+ page.events.get('change')({target:{hasAttribute(){return false},id:'analysis-compare',value:'2009'}});page.app.render();
  assert.match(page.html(),/2009학년도 대비/);
  assert.equal(page.requests.filter(p=>p.startsWith('data/year-analysis.json')).length,1);
 });
@@ -59,6 +60,17 @@ test('compiled year content covers all exams with valid question and source refe
  assert.equal(content.profiles.length,20);
  assert.deepEqual(annual.validateYearContent(content,data.questions),[]);
  for(const p of content.profiles)for(const section of ['logic','prompts','choices','materials'])assert.ok(p[section].text&&p[section].questionIds.length>=2,p.examKey);
+});
+
+test('changing map axes updates the plotted metrics and retains the chosen axes when selecting another year',async()=>{
+ const page=await boot();await page.app.loadYearContent();page.app.render();
+ page.events.get('change')({target:{hasAttribute(){return false},id:'analysis-axis-x',value:'visualRate'}});
+ page.events.get('change')({target:{hasAttribute(){return false},id:'analysis-axis-y',value:'argumentRate'}});
+ assert.match(page.html(),/<title id="year-plane-title">시각 자료 표지 문항 비중.*논증·증거 판정 문항 비중<\/title>/);
+ page.events.get('change')({target:{hasAttribute(){return false},id:'analysis-year',value:'2010'}});page.app.render();
+ assert.match(page.html(),/<option value="visualRate" selected>/);
+ assert.match(page.html(),/<option value="argumentRate" selected>/);
+ assert.match(page.location.hash,/#\/analysis\/2010/);
 });
 
 test('opening a representative question retains a return link to its analysis year',async()=>{

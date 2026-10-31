@@ -1,3 +1,4 @@
+import * as writerEnv from './writer-test-env.mjs';
 import * as referenceSearch from '../reference-search.mjs';
 import * as semanticSearch from '../semantic-search.mjs';
 // Runs the actual app against a mixed archive. The adapter supplies browser I/O;
@@ -44,7 +45,7 @@ async function boot(hash='',reviews={},data=fixture,blockedStorage=false,savedTe
  const memory=new Map([['leet-atlas:2027:reviews:v1',JSON.stringify({schemaVersion:1,reviews})]]);
  if(savedTexts!==null) memory.set(localText.LOCAL_TEXT_STORAGE_KEY,savedTexts);
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
- const env={...referenceSearch,...semanticSearch,document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);return {ok:true,json:async()=>structuredClone(data)}},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
+ const env={...writerEnv,...referenceSearch,...semanticSearch,document,location,window,history,localStorage,navigator:{},fetch:async path=>{requests.push(path);if(writerEnv.writerFixtureResponse(path))return writerEnv.writerFixtureResponse(path);return {ok:true,json:async()=>structuredClone(data)}},...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
  const previous=Object.getOwnPropertyDescriptor(globalThis,'localStorage');
  if(blockedStorage) {
@@ -59,7 +60,7 @@ async function boot(hash='',reviews={},data=fixture,blockedStorage=false,savedTe
  }
  return {app,elements,document,location,memory,events,requests};
 }
-const rows=html=>[...html.matchAll(/class="row-index"[^>]*>([^<]+)</g)].map(match=>match[1]);
+const rows=html=>[...html.matchAll(/class="row-index"[^>]*href="#\/question\/([^?\"]+)/g)].map(match=>match[1]);
 
 test('blocked browser storage does not prevent public questions and explanations loading',async()=>{
  const {elements}=await boot('#/question/2701',{},fixture,true);
@@ -74,8 +75,8 @@ test('automatic filtering combines multiple exam years and keeps bookmark constr
  assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2701','p001']);
  assert.match(elements.get('#main').innerHTML,/연도끼리는 OR/);
  assert.doesNotMatch(elements.get('#main').innerHTML,/id="tag-match-mode"/);
- assert.equal(app.state.route.tagMode,'auto');
- assert.doesNotMatch(elements.get('#question-list').innerHTML,/tagMode=/);
+ assert.equal(app.state.route.tagMode,'or');
+ assert.match(elements.get('#question-list').innerHTML,/tagMode=or/);
 });
 
 test('tag collection remains required while selected year filters use OR',async()=>{
@@ -119,7 +120,7 @@ test('private text import renders escaped text, enables body search, and never s
  app.state.query='브라우저전용본문';
  assert.deepEqual(app.filteredQuestions().map(q=>q.id),['0901']);
  assert.equal(JSON.parse(memory.get('leet-atlas:local-texts:v1')).questions.length,1);
- assert.equal(requests.length,1);
+ assert.deepEqual(requests.map(p=>String(p).split('?')[0]).sort(),['data/answer-exceptions.json','data/archive.json','data/image-bounds.json']);
 });
 
 test('invalid local text leaves imported text and review records intact',async()=>{
@@ -147,9 +148,8 @@ test('newest order applies to questions, bookmarks and tag collections while pre
 
 test('changing sort resets pagination and retains search, tags and bookmark color',async()=>{
  const reviews=Object.fromEntries(fixture.questions.map(q=>[q.id,{bookmarkColors:['blue']}]));
- const {app,events,location,elements}=await boot('#/bookmarks?bookmark=blue&tag=field-law&page=2',reviews);
- app.state.query='제도';
- events.get('change')({target:{id:'question-sort',value:'newest'}});
+ const {app,events,location,elements}=await boot('#/bookmarks?bookmark=blue&tag=field-law&page=2&q=제도&searchMode=keyword',reviews);
+ events.get('change')({target:{hasAttribute(){return false},id:'question-sort',value:'newest'}});
  app.render();
  assert.equal(app.state.route.sort,'newest');
  assert.equal(app.state.route.page,1);
@@ -185,10 +185,9 @@ test('accuracy selection ranks the active search and preserves filtering and rea
  Object.assign(data.questions.find(q=>q.id==='0901'),{title:'학교 조사',text:'혈액형 비율에 관한 문제이다.'});
  Object.assign(data.questions.find(q=>q.id==='2701'),{title:'건강 조사',text:'혈액형을 조사한 뒤 학생 비율을 계산한다.'});
  const reviews=Object.fromEntries(data.questions.map(q=>[q.id,{bookmarkColors:['blue']}]));
- const {app,elements,events,location}=await boot('#/bookmarks?bookmark=blue&tag=field-law&page=2',reviews,data);
- app.state.query='혈액형 비율';
- assert.match(elements.get('#main').innerHTML,/<option value="accuracy">정확도 순<\/option>/);
- events.get('change')({target:{id:'question-sort',value:'accuracy'}});app.render();
+ const {app,elements,events,location}=await boot('#/bookmarks?bookmark=blue&tag=field-law&page=2&q=혈액형%20비율&searchMode=keyword',reviews,data);
+ assert.match(elements.get('#main').innerHTML,/<option value="accuracy">텍스트 일치순<\/option>/);
+ events.get('change')({target:{hasAttribute(){return false},id:'question-sort',value:'accuracy'}});app.render();
  assert.equal(app.state.route.sort,'accuracy');
  assert.equal(app.state.route.page,1);
  assert.equal(app.state.route.bookmark,'blue');
@@ -198,9 +197,9 @@ test('accuracy selection ranks the active search and preserves filtering and rea
  assert.match(elements.get('#main').innerHTML,/data-question-nav="0902"/);
  assert.match(elements.get('#main').innerHTML,/data-question-nav="2701"/);
  assert.match(elements.get('#main').innerHTML,/sort=accuracy/);
- app.state.query='학교';location.hash='#/questions?sort=accuracy';app.render();
+ location.hash='#/questions?sort=accuracy&q=학교&searchMode=keyword';app.render();
  assert.deepEqual(rows(elements.get('#question-list').innerHTML),['0901']);
- app.state.query='';app.render();
+ location.hash='#/questions?sort=accuracy';app.render();
  assert.equal(rows(elements.get('#question-list').innerHTML)[0],'2701');
 });
 
@@ -244,7 +243,7 @@ test('existing 2027 explanations and legacy bookmarks remain available with arch
  const reviewed=await boot('#/question/2701');
  const html=reviewed.elements.get('#main').innerHTML;
  assert.match(html,/핵심 해설/);
- assert.equal((html.match(/class="option-row/g)||[]).length,1);
+ assert.equal((html.match(/class="option-row/g)||[]).length,5);
  const {app,elements,memory}=await boot('#/bookmarks',{'2701':{bookmark:true,note:'남겨 둔 메모',status:'check'},'p001':{bookmarkColors:['blue']}});
  assert.deepEqual(rows(elements.get('#question-list').innerHTML),['2701','p001']);
  assert.equal(app.state.reviews['2701'].note,'남겨 둔 메모');
@@ -318,13 +317,12 @@ test('metadata-only reader gives an exact local PDF reference and classification
  assert.doesNotMatch(html,/<img|data-enlarge|data-source-mode|원본 이미지를 그대로 보존|href="[^\"]*\.pdf/);
 });
 
-test('missing card thumbnails render question-and-field placeholders with working detail links',async()=>{
+test('compact text cards keep year, question, field and detail links when source thumbnails are unavailable',async()=>{
  const {elements}=await boot('#/questions?sort=oldest',{},metadataOnlyArchive());
  const html=elements.get('#question-list').innerHTML;
  assert.equal(rows(html).length,10);
- assert.match(html,/class="row-thumb[^\"]*is-placeholder/);
- assert.match(html,/>01<\/strong>/);
- assert.match(html,/>법학<\/span>/);
+ assert.match(html,/2009학년도 예비시험 1번/);
+ assert.match(html,/>법학<\/a>/);
  assert.match(html,/href="#\/question\/p001/);
  assert.doesNotMatch(html,/<img|src=""/);
 });
@@ -404,7 +402,7 @@ test('all 715 local bodies import across the real 755-question archive, restore,
  }
  app.state.query='';location.hash='#/questions';app.render();
  assert.equal((elements.get('#question-list').innerHTML.match(/class="question-row question-card"/g)||[]).length,10);
- assert.equal(requests.length,1);
+ assert.deepEqual(requests.map(p=>String(p).split('?')[0]).sort(),['data/answer-exceptions.json','data/archive.json','data/image-bounds.json']);
  const restored=await boot('#/question/2632',reviews,legacyArchive,false,memory.get(localText.LOCAL_TEXT_STORAGE_KEY));
  assert.equal(restored.app.state.localTexts.size,715);
  assert.equal(localText.localTextCoverage(restored.app.state.data.questions,restored.app.state.localTexts).available,755);
@@ -420,7 +418,7 @@ test('real archive applies year AND puzzle even from an old global-OR URL',async
  assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2632','2633','2634']);
  assert.match(elements.get('#main').innerHTML,/연도끼리는 OR/);
  assert.doesNotMatch(elements.get('#main').innerHTML,/id="tag-match-mode"/);
- assert.doesNotMatch(location.hash,/tagMode=/);
+ assert.match(location.hash,/tagMode=or/);
 });
 
 test('real archive combines multiple years with puzzle and explains the current expression',async()=>{
@@ -443,8 +441,8 @@ test('year collection can add another year without contradicting its pinned year
 
 test('adding and removing year tags preserves puzzle, query, review and bookmark restrictions',async()=>{
  const reviews={'2632':{bookmarkColors:['blue'],status:'check'},'2512':{bookmarkColors:['blue'],status:'check'},'2533':{bookmarkColors:['red'],status:'check'}};
- const {app}=await boot(`#/bookmarks?bookmark=blue&tag=${year2026}&tag=${puzzle}&sort=newest`,reviews,fullArchive);
- app.state.searchMode='keyword';app.state.query='논리';app.state.review='check';
+ const {app}=await boot(`#/bookmarks?bookmark=blue&tag=${year2026}&tag=${puzzle}&sort=newest&q=논리&searchMode=keyword`,reviews,fullArchive);
+ app.state.review='check';
  app.toggleTag(year2025);app.render();
  assert.deepEqual(app.filteredQuestions().map(q=>q.id),['2632','2512']);
  assert.equal(app.state.query,'논리');assert.equal(app.state.review,'check');

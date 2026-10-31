@@ -1,6 +1,8 @@
 // Recommendation signals are derived from the supplied records, never question IDs.
 import {questionSearchSections,questionForm} from './search-documents.mjs?v=20261026-general-search2';
 export {buildSearchDocuments} from './search-documents.mjs?v=20261026-general-search2';
+import {compileSearchIntent,describeSearchIntent,normalizeSearchText} from './search-intent.mjs?v=20261031-author-db';
+export {compileSearchIntent,describeSearchIntent} from './search-intent.mjs?v=20261031-author-db';
 const clean=value=>String(value??'').normalize('NFKC').replace(/\s+/g,' ').trim();
 const normalized=value=>clean(value).toLocaleLowerCase('ko');
 const compact=value=>normalized(value).replace(/\s/g,'');
@@ -94,7 +96,14 @@ function featuresOf(q){
   const physicalTitle=/몸싸움|폭행|상해|주먹|구타|멱살|정당방위/.test(title);
   const physical=physicalTitle||!debate&&/때렸|때려|때리|폭행(?:하|을|한|당|으로)|구타|멱살|주먹|몸싸움/.test(source)&&/형사|형법|상해|정당방위/.test(metadata+' '+text);
   const profileArithmetic=sections.some(section=>section.kind==='profile'&&/계산(?:한다|해|하여|함|한(?:다|뒤))|산출(?:한다|해|하여|함)|단위.{0,5}환산/.test(section.text));
-  const feature={source,searchSource,title,labels,labelText,analysis,metadata,text,all,speaker,puzzle,debate,dialogue,physical,sections,visual,choiceCount,hasRItem,form,calculation:(q.logic||[]).includes('수식 계산')||profileArithmetic};
+  // Taxonomy can omit the calculation tag. Require both quantitative context
+  // and an actual operation, so article numbers, dates and penalty thresholds
+  // alone do not turn ordinary legal rule application into arithmetic.
+  const quantitativeContext=(q.fields||[]).some(field=>/^(?:수학|통계학)$/.test(field))||(q.types||[]).some(type=>/모형.*수리|계산하기/.test(type));
+  const numericQuantities=(searchSource.match(/\d+(?:[.,]\d+)?/g)||[]).length>=2;
+  const operationPattern=/(?:\d+(?:[.,]\d+)?\s*[+＋−–×÷*/=]\s*\d)|(?:더한|더하면|더하여|뺀|빼면|빼서|뺄셈|덧셈|곱한|곱하면|곱하여|나눈|나누면|합산|가감|차액|순이익|합계|총액|평균을\s*(?:구|계산)|단위.{0,5}환산)/;
+  const calculationEvidence=quantitativeContext&&numericQuantities?sections.find(section=>section.kind!=='metadata'&&operationPattern.test(section.text)):null;
+  const feature={source,searchSource,title,labels,labelText,analysis,metadata,text,all,speaker,puzzle,debate,dialogue,physical,sections,visual,choiceCount,hasRItem,form,calculationEvidence,calculation:(q.logic||[]).includes('수식 계산')||(q.types||[]).includes('계산하기')||profileArithmetic||Boolean(calculationEvidence)};
   featureCache.set(q,feature);
   return feature;
 }
@@ -145,7 +154,7 @@ function snippetFor(feature,terms){
   return (start?'…':'')+original.slice(start,end)+(end<original.length?'…':'');
 }
 
-export function rankReferences(questions,query,{semanticScores=new Map()}={}){
+function rankByRelevance(questions,query,{semanticScores=new Map()}={}){
   const intent=interpret(query);
   if(!intent.raw||!/[가-힣a-z\d]/i.test(intent.raw))return [];
   if(intent.requestedId)return questions.filter(q=>String(q.id).toLowerCase()===intent.requestedId).map(q=>({id:q.id,score:10000,reasons:[`문항번호: ${q.id}`],snippet:snippetFor(featuresOf(q),[])}));
@@ -233,4 +242,123 @@ export function rankReferences(questions,query,{semanticScores=new Map()}={}){
     results.push({id:q.id,score:Math.round(score*100)/100,reasons:[...new Set(reasons)].slice(0,3),snippet:evidenceSection?snippetFor({...feature,source:evidenceSection.text},terms):snippetFor(feature,terms),...(evidenceSection?{evidenceLabel:evidenceSection.label,evidenceKind:evidenceSection.kind,evidenceSupport:evidenceSection.support}:{}),evidenceText:evidenceSection?.text});
   }
   return results.sort((a,b)=>b.score-a.score||String(a.id).localeCompare(String(b.id),'ko'));
+}
+
+const conditionCompact=value=>normalizeSearchText(value).replace(/[\s·ㆍ,–−-]/g,'');
+function conditionSupport(q,feature,clause){
+  const exactLabel=terms=>feature.labels.find(label=>terms.some(term=>conditionCompact(label)===conditionCompact(term)));
+  const sectionWith=terms=>feature.sections.find(section=>terms.some(term=>conditionCompact(section.text).includes(conditionCompact(term))));
+  let actual=false,section=null,text='',label='문항 분류',kind='metadata';
+  if(clause.kind==='tag'){
+    text=exactLabel(clause.terms)||'';actual=Boolean(text);
+    if(!actual&&clause.key==='probability'){section=sectionWith(['조건부 확률','조건부확률']);actual=Boolean(section);}
+  }else if(clause.kind==='literal'){
+    // Quotes preserve word order; only spacing and compatibility typography are normalized.
+    section=feature.sections.find(s=>clause.terms.some(term=>compact(s.text).includes(compact(term))));actual=Boolean(section);
+  }else if(clause.kind==='id'){actual=String(q.id).toLowerCase()===clause.value;text=`내부 ID: ${q.id}`;}
+  else if(clause.kind==='year'){actual=Number(q.year)===clause.value;text=`${q.year}학년도`;}
+  else if(clause.kind==='yearRange'){actual=Number(q.year)>=clause.from&&Number(q.year)<=clause.to;text=`${q.year}학년도`;}
+  else if(clause.kind==='number'){actual=Number(q.questionNumber??q.number)===clause.value;text=`실제 문항번호: ${q.questionNumber??q.number??'미상'}`;}
+  else if(clause.kind==='exam'){actual=clause.value==='예비시험'?q.examKey==='preliminary'||/예비시험/.test(q.examLabel||''):/본시험/.test(q.examLabel||'')||/^20\d{2}$/.test(q.examKey||'');text=q.examLabel||String(q.examKey||'');}
+  else{
+    const k=clause.key;
+    const featureValues={calculation:feature.calculation,independent:feature.form.choice==='statements',combination:['combination','ordering'].includes(feature.form.choice),completion:feature.visual.blankSlot,table:feature.visual.table,diagram:feature.visual.diagram,arrangement:feature.visual.arrangement,container:feature.visual.container,fiveChoice:feature.choiceCount===5,rItem:feature.hasRItem,physical:feature.physical,two:feature.speaker.names.length===2};
+    actual=Boolean(featureValues[k]);
+    if(k==='two')text=`원문 화자 ${feature.speaker.names.length}명: ${feature.speaker.names.join(' · ')||'확인되지 않음'}`;
+    else if(k==='fiveChoice')text=`선택지 ${feature.choiceCount}개`;
+    else if(k==='independent'||k==='combination')text=feature.form.choice==='statements'?'완결된 진술로 이루어진 독립 선택지 5개':['combination','ordering'].includes(feature.form.choice)?'보기 기호를 조합하거나 순서대로 배열한 선택지 5개':`현재 텍스트에서 독립·조합 형식을 확인할 수 없음`;
+    else if(k==='completion')text=feature.visual.blankKind;
+    if(actual&&!text){
+      const evidencePatterns={calculation:/수식\s*계산|계산(?:한다|해|하여)|산출(?:한다|해|하여)/,table:/(?:도표|시간표|조건표|점수표|(?:^|[\s<(])표\s*(?:에서|에|로|의|를|가|는|와|과))/,diagram:/그림|그래프|도식|순서도|흐름도|배치도|관계도/,arrangement:/일렬|배열|배치|배정|위치관계/,container:/상자|박스/,rItem:/ㄹ[.．)〉:]/,physical:/몸싸움|주먹|폭행|구타|멱살|때렸|때려|때리/};
+      section=k==='calculation'&&feature.calculationEvidence?feature.calculationEvidence:feature.sections.find(s=>evidencePatterns[k]?.test(s.text));text=clause.label;
+    }
+    label='출제 형식과 풀이';kind='features';
+  }
+  if(section){({label,kind}=section);text=section.text;}
+  const satisfied=clause.negated?!actual:actual;
+  if(clause.negated&&!actual){
+    text=`${clause.label}: 현재 분류·추출 텍스트에서 해당 근거 없음${clause.kind==='feature'?' (이미지의 미추출 정보는 미확인)':''}${text?`; ${text}`:''}`;
+  }
+  return {conditionId:clause.id,condition:clause.label,negated:clause.negated,satisfied,matched:actual,label,kind,text:text||`${clause.label}: 근거 없음`,...(section?.support?{support:section.support}:{})};
+}
+
+function eligibleForIntent(q,intent){
+ const feature=featuresOf(q),byId=new Map(intent.clauses.map(clause=>[clause.id,conditionSupport(q,feature,clause)]));
+ const evaluate=node=>!node?true:node.op==='clause'?byId.get(node.id).satisfied:node.op==='or'?node.children.some(evaluate):node.children.every(evaluate);
+ const eligible=evaluate(intent.expression);
+ // OR evidence contains only satisfied alternatives; an unused branch is never
+ // misrepresented as a satisfied requirement.
+ return {eligible,evidence:[...byId.values()].filter(e=>e.satisfied)};
+}
+
+function residualEvidence(feature,intent,specificity){
+ const tokens=[...specificity.keys()];
+ const commonEvidence=/(?:두|둘|양쪽|양자|모두|공통)/.test(intent.unparsed)&&/(?:동의|예측|들어맞|양립|지지|설명)/.test(intent.unparsed)&&/(?:증거|관찰|정보|사실)/.test(intent.unparsed);
+ let best={score:0,section:null};
+ for(const section of feature.sections){
+   const text=compact(section.text);
+   let score=tokens.reduce((sum,token)=>sum+(text.includes(compact(token))?specificity.get(token):0),0);
+   if(section.kind==='metadata')score*=.25;
+   else if(section.kind==='features')score*=.5;
+   else if(commonEvidence){
+     // A small compositional paraphrase aid supplements full-text retrieval.
+     // It is a ranking signal only; actual quoted evidence remains attached.
+     for(let start=0;start<text.length;start+=100){
+       const window=text.slice(start,start+200);
+       if(/모두|양쪽|양자|공통|둘다|두가설|두견해|두주장/.test(window)&&/동의|예측|양립|설명/.test(window)&&/증거|관찰|사실|정보|판별/.test(window)){
+         score+=35+(/모두(?:가)?(?:예측|설명|양립)|양쪽.{0,12}(?:예측|설명|양립)/.test(window)?15:0);break;
+       }
+     }
+   }
+   if(score>best.score)best={score,section};
+ }
+ return best;
+}
+
+export function rankReferences(questions,query,{semanticScores=new Map()}={}){
+ const intent=compileSearchIntent(query),description=describeSearchIntent(intent);
+ const finish=(matches,status)=>{
+   const message=status==='contradiction'?`서로 충돌하는 검색 조건: ${intent.contradictions.join(', ')}`:status==='no-match'?'모든 필수·제외 조건을 만족하는 관련 문항이 없습니다. 조건은 자동으로 완화하지 않았습니다.':status==='empty'?'검색어를 입력하세요.':`${matches.length}개 문항`;
+   // Non-enumerable array metadata preserves existing map/JSON/deep-equality callers.
+   Object.defineProperties(matches,{intent:{value:intent},status:{value:status},message:{value:message},description:{value:description}});return matches;
+ };
+ if(!intent.raw||!/[가-힣a-z\d]/i.test(intent.raw))return finish([],'empty');
+ if(intent.contradictions.length)return finish([],'contradiction');
+ const constraints=new Map(),eligible=questions.filter(q=>{const result=eligibleForIntent(q,intent);constraints.set(q.id,result.evidence);return result.eligible;});
+ if(!eligible.length)return finish([],'no-match');
+ const matches=rankByRelevance(eligible,query,{semanticScores});
+ if(intent.clauses.length){
+   const seen=new Set(matches.map(match=>match.id));
+   for(const q of eligible)if(!seen.has(q.id)){
+     const feature=featuresOf(q),evidence=constraints.get(q.id);
+     const terms=intent.required.flatMap(c=>c.terms||[c.label]);
+     const section=feature.sections.map(s=>({section:s,count:queryTokens(intent.unparsed).reduce((sum,token)=>sum+Number(compact(s.text).includes(compact(token))),0)})).sort((a,b)=>b.count-a.count)[0]?.section;
+     const raw=Number(semanticScores.get(q.id));
+     // Eligibility evidence admits a constrained record even if the old lexical
+     // scorer cannot spell the normalized tag. Prose and embeddings still order it.
+     const lexical=queryTokens(intent.unparsed).reduce((sum,token)=>sum+(compact(feature.all).includes(compact(token))?6:0),0);
+     matches.push({id:q.id,score:10+lexical+(Number.isFinite(raw)?Math.max(0,raw-.72)*100:0),reasons:evidence.map(e=>`${e.negated?'제외 확인':'조건'}: ${e.condition}`).slice(0,3),snippet:snippetFor({...feature,source:section?.text||feature.source},terms),evidenceLabel:section?.label,evidenceKind:section?.kind,evidenceText:section?.text,...(section?.support?{evidenceSupport:section.support}:{})});
+   }
+ }
+ const proseTokens=intent.clauses.length?[...new Set(queryTokens(intent.unparsed).map(token=>token.replace(/(?:하는|되는|있는|한다|된다|하며|하고|이고|이다)$/,'').replace(/하$/,'')).filter(token=>token.length>=2))]:[];
+ const specificity=new Map(proseTokens.map(token=>{
+   const frequency=eligible.reduce((count,q)=>count+Number(compact(featuresOf(q).all).includes(compact(token))),0);
+   return [token,Math.min(12,3*Math.log(1+(eligible.length+1)/(frequency+1)))];
+ }));
+ const byId=new Map(eligible.map(q=>[q.id,q]));
+ for(const match of matches){
+   if(intent.clauses.length&&proseTokens.length){
+     const feature=featuresOf(byId.get(match.id)),residual=residualEvidence(feature,intent,specificity);
+     match.score=Math.round((match.score+residual.score)*100)/100;
+     if(residual.section&&residual.score>0&&!semanticScores.evidence?.get(match.id)){
+       const section=residual.section;match.snippet=snippetFor({...feature,source:section.text},proseTokens);match.evidenceLabel=section.label;match.evidenceKind=section.kind;match.evidenceText=section.text;
+       if(section.support)match.evidenceSupport=section.support;else delete match.evidenceSupport;
+     }
+   }
+   match.conditionEvidence=constraints.get(match.id)||[];
+   // Source-backed hard conditions are visible even when semantic evidence wins.
+   match.reasons=[...new Set([...match.conditionEvidence.map(e=>`${e.negated?'제외 확인':'조건'}: ${e.condition}${e.condition==='원문 화자 2명'?` (${e.text})`:''}`),...match.reasons])].slice(0,5);
+ }
+ matches.sort((a,b)=>b.score-a.score||String(a.id).localeCompare(String(b.id),'ko'));
+ return finish(matches,matches.length?'ok':'no-match');
 }

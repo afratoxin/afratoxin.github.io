@@ -1,3 +1,4 @@
+import * as writerEnv from './writer-test-env.mjs';
 import * as referenceSearch from '../reference-search.mjs';
 import * as semanticSearch from '../semantic-search.mjs';
 // Regression coverage uses the actual app renderer with the browser-I/O adapter
@@ -41,7 +42,7 @@ async function boot(hash = '#/question/2305', data = fixture) {
   const document = { querySelector: element, querySelectorAll() { return []; }, addEventListener(k, fn) { events.set(k, fn); } };
   const location = { hash, href: 'https://example.invalid/' + hash };
   const memory = new Map();
-  const env = {...referenceSearch,...semanticSearch,
+  const env={...writerEnv,...referenceSearch,...semanticSearch,
     document, location, window: { addEventListener() {}, scrollTo() {}, innerWidth: 1440, innerHeight: 900 },
     history: { replaceState(_a, _b, path) { location.hash = path; } }, navigator: {},
     localStorage: { getItem: k => memory.get(k) || null, setItem: (k, v) => memory.set(k, String(v)) },
@@ -58,12 +59,13 @@ async function boot(hash = '#/question/2305', data = fixture) {
 const escaped = text => String(text).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
 function assertNoInventedAnswer(html) {
-  assert.match(html, /class="conflict-alert"/);
-  assert.match(html, /보존한 원본 표시 답안/);
-  assert.match(html, /② · 검토 필요/);
-  assert.match(html, /원본 표시 · 불일치/);
+  assert.match(html, /class="answer-strip"/);
+  assert.match(html, /답안 ②/);
+  assert.match(html, /해설서 기준 답안/);
+  assert.match(html, /별도 최종 처리 이력 미등록/);
+  assert.match(html, /기존 독립 검토 의견 · 공식 처리 아님/);
   assert.equal((html.match(/class="option-row/g) || []).length, 5);
-  assert.doesNotMatch(html, /class="answer-strip"|option-row[^\"]*is-correct|option-correct-label|정답 ②/);
+  assert.doesNotMatch(html, /class="answer-exception"|option-row[^\"]*is-correct|option-correct-label|정답 ②/);
 }
 
 test('null-derived conflict preserves source ② and never marks an option as the solved answer', async () => {
@@ -86,10 +88,14 @@ test('null-derived conflict explicitly displays the independent no-listed-answer
   }
 });
 
-test('a stale correct flag cannot paint a source-conflict choice green', async () => {
+test('a stale derived correct flag cannot relabel another option as the book answer', async () => {
   const data = structuredClone(fixture);
-  data.questions[0].options[1].correct = true;
-  assertNoInventedAnswer((await boot('#/question/2305', data)).html());
+  data.questions[0].options[2].correct = true;
+  const html=(await boot('#/question/2305', data)).html();
+  assertNoInventedAnswer(html);
+  const rows=[...html.matchAll(/<div class="option-row">([\s\S]*?)(?=<div class="option-row">|<\/div><\/details>)/g)];
+  assert.equal(rows.length,5);
+  assert.doesNotMatch(rows[2][1],/해설서 기준 정답/);
 });
 
 test('navigation between conflict and preserved 2027 answer does not leak answer markup or mutate either record', async () => {
@@ -97,7 +103,7 @@ test('navigation between conflict and preserved 2027 answer does not leak answer
   const snapshot = structuredClone(page.app.state.data.questions);
   page.location.hash = '#/question/2701'; page.app.render();
   assert.match(page.html(), /class="answer-strip"/);
-  assert.equal((page.html().match(/option-correct-label/g) || []).length, 1);
+  assert.equal((page.html().match(/해설서 기준 정답/g) || []).length, 1);
   assert.doesNotMatch(page.html(), /class="conflict-alert"/);
   page.location.hash = '#/question/2305'; page.app.render();
   assertNoInventedAnswer(page.html());
@@ -161,18 +167,19 @@ test('the complete 755-question archive renders all real readers with preserved 
     page.app.render();
     const html = page.html();
     assert.equal(q.options.length, 5, `${q.id}: all authored explanations remain in the data`);
-    assert.equal((html.match(/class="option-row/g) || []).length, q.answerStatus === 'source-conflict' ? 5 : 1, `${q.id}: selected answer or unresolved choices`);
+    assert.equal((html.match(/class="option-row/g) || []).length, 5, `${q.id}: all option analyses remain inspectable`);
+    assert.match(html,/<details class="explanation-section"><summary>전체 선택지 판정/,'all option analyses start collapsed');
     if (q.answerStatus === 'source-conflict') {
       conflicts++;
-      assert.doesNotMatch(html, /class="answer-strip"|option-row[^\"]*is-correct|option-correct-label/, q.id);
-      assert.match(html, /원본 표시 · 불일치/, q.id);
+      assert.match(html,/class="answer-strip"/,q.id);
+      assert.doesNotMatch(html, /option-row[^\"]*is-correct|option-correct-label/, q.id);
       if (q.derivedAnswer === null) {
         noListedAnswers++;
         assert.ok(html.includes(escaped(q.derivedConclusion)), `${q.id}: actual no-listed-answer conclusion`);
         assert.ok(q.options.every(o => o.correct === false), q.id);
       }
     } else {
-      assert.equal((html.match(/option-correct-label/g) || []).length, 1, `${q.id}: one verified answer`);
+      assert.equal((html.match(/해설서 기준 정답/g) || []).length, 1, `${q.id}: one book answer annotation`);
     }
     const actual = page.app.state.questions.get(q.id);
     assert.deepEqual([actual.answer, actual.sourceMarkedAnswer, actual.derivedAnswer], keys.get(q.id), `${q.id}: keys unchanged by rendering`);
@@ -197,7 +204,7 @@ test('re-solved 1034, 2305 and 2435 show their preserved answers without a confl
     if (id !== '2435') assert.deepEqual(q.statements.map(s => s.verdict), [false, true, false], id);
     page.location.hash = `#/question/${id}`; page.app.render();
     assert.match(page.html(), /class="answer-strip"/, id);
-    assert.equal((page.html().match(/option-correct-label/g) || []).length, 1, id);
+    assert.equal((page.html().match(/해설서 기준 정답/g) || []).length, 1, id);
     assert.doesNotMatch(page.html(), /class="conflict-alert"|원본 문항·답안 불일치|원본 표시 · 불일치/, id);
   }
 });

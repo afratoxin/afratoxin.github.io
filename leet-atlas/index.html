@@ -6,9 +6,10 @@
   <meta name="theme-color" content="#172f3a">
   <meta name="description" content="예비시험부터 2027학년도까지 LEET 추리논증 20회분 755문항의 자체 해설·선지별 분석·소재 분류를 탐색하는 학습 도구">
   <title>LEET Atlas · 추리논증 전체 아카이브</title>
-  <link rel="stylesheet" href="styles.css?v=20261026-general-search4">
-  <link rel="stylesheet" href="year-plane.css?v=20261026-contrast-focus1">
-  <script type="module" src="app.js?v=20261031-author1"></script>
+  <link rel="stylesheet" href="styles.css?v=20261031-author-db1">
+  <link rel="stylesheet" href="year-plane.css?v=20261031-author-db1">
+  <link rel="stylesheet" href="writer-ui.css?v=20261031-author-db1">
+  <script type="module" src="app.js?v=20261031-author-db1"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -18,13 +19,14 @@
       <span class="brand-name">LEET <strong>Atlas</strong><small>추리논증의 구조를 읽다</small></span>
     </a>
     <div class="header-edition"><span id="archive-edition">20회분 · 전체 아카이브</span><strong>추리논증 <span id="archive-count" class="edition-count">755</span></strong></div>
-    <div class="header-actions"><button type="button" class="button button-quiet" data-import-local-text>본문·이미지 불러오기</button><input id="local-text-file" type="file" accept=".json,application/json" aria-label="내 원문 JSON 파일 선택" hidden><button id="export-reviews" class="button button-quiet" type="button">검수 기록 내보내기</button></div>
+    <div class="header-actions"><span class="author-db-label">출제자를 위한 기출 데이터베이스</span><details class="header-management"><summary>자료 관리</summary><button type="button" class="button button-quiet" data-import-local-text>본문·이미지 불러오기</button><input id="local-text-file" type="file" accept=".json,application/json" aria-label="내 원문 JSON 파일 선택" hidden><button id="export-reviews" class="button button-quiet" type="button">검수 기록 내보내기</button><button class="button button-quiet" data-writer-backup>출제 자료 전체 백업</button><label class="button button-quiet file-label">백업 복원<input id="header-backup-input" type="file" accept=".json,application/json" hidden></label></details></div>
   </header>
   <nav id="site-tabs" class="site-tabs" aria-label="주요 메뉴">
     <a href="#/questions" data-nav-view="list">문항 탐색</a>
     <a href="#/bookmarks" data-nav-view="bookmarks">모든 북마크 <span id="bookmark-total" class="nav-count">0</span></a>
     <a href="#/tags" data-nav-view="tags">태그 사전</a>
     <a href="#/analysis" data-nav-view="analysis">연도별 분석</a>
+    <a href="#/workspace" data-nav-view="workspace">출제 자료실</a>
     <a href="author.html">문항 제작</a>
   </nav>
   <main id="main" tabindex="-1"><div class="loading-state"><span class="loading-dot"></span>문항과 분류를 불러오고 있습니다.</div></main>
@@ -33,8 +35,10 @@
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
   <dialog id="image-dialog" class="image-dialog" aria-labelledby="image-dialog-title">
     <div class="dialog-toolbar"><strong id="image-dialog-title">문항 원본 확대</strong><span class="dialog-hint">이미지를 가로로 이동해 확인할 수 있습니다.</span><button class="icon-button" id="close-image" type="button" aria-label="원본 확대 닫기">✕</button></div>
-    <div class="dialog-image-wrap"><div id="image-dialog-status" hidden></div><img id="enlarged-image" alt="" hidden></div>
+    <div class="dialog-image-wrap"><div id="image-dialog-status" hidden></div><span id="enlarged-image-frame"><img id="enlarged-image" alt="" hidden></span></div>
   </dialog>
+  <dialog id="writer-dialog" class="writer-dialog" aria-labelledby="writer-dialog-title"></dialog>
+  <div id="writer-selection-bar" class="writer-selection-bar" hidden></div>
   <dialog id="bookmark-dialog" class="bookmark-dialog" aria-labelledby="bookmark-dialog-title">
     <div class="bookmark-dialog-heading"><div><strong id="bookmark-dialog-title">북마크 색 선택</strong><p>한 문항에 여러 색을 함께 붙일 수 있습니다.</p></div><button class="icon-button" id="close-bookmarks" type="button" aria-label="북마크 색 선택 닫기">✕</button></div>
     <div id="bookmark-palette" class="bookmark-palette"></div>

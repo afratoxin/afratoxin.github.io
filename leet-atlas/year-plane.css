@@ -11,3 +11,25 @@
 .annual-plane-label line{stroke:#aebbb3}.annual-plane-selected{border-color:#d4dbd8}.annual-plane-selected>span,.annual-plane-selected dt,.annual-plane-selected dd em,.annual-plane-key,.annual-plane-selected p{color:#56666a}
 .annual-plane-selected dd{color:#28563a}.annual-plane-selected dd small{color:#5b6b70}
 .annual-plane-definition caption{color:#47585e}.annual-plane-definition th,.annual-plane-definition td{border-color:#d8dedb;color:#4f6065}.annual-plane-definition a{color:#28563a}
+
+/* Writer-facing observations retain their units and unknown fields. */
+.annual-axis-controls{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0 10px}
+.annual-axis-controls label{display:grid;gap:6px;flex:1;min-width:220px;font-size:12px;font-weight:600;color:#34484f}
+.annual-axis-controls select{width:100%;min-height:44px;border:1px solid #bdc9c2;border-radius:7px;background:#fff;padding:8px 12px;color:#263c43;font:inherit}
+.annual-plane-selected dd{font-size:25px}.annual-plane-selected dt{font-size:12px;line-height:1.5}.annual-plane-selected dd em{font-size:12px}.annual-plane-selected p{font-size:12px}
+.annual-demand-list{display:grid;gap:8px;margin-top:16px}
+.annual-demand-item{border:1px solid #d5ded8;border-radius:8px;overflow:hidden}
+.annual-demand-item>summary{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;cursor:pointer;min-height:52px;padding:12px 16px;background:#f6f8f6;color:#34484f;line-height:1.5}
+.annual-demand-item>summary::before{content:'＋';font-size:16px;color:#4e6857}
+.annual-demand-item[open]>summary::before{content:'−'}
+.annual-demand-item>summary a{font-weight:700;text-decoration:underline;text-underline-offset:3px;color:#28563a}
+.annual-demand-item>summary small{margin-left:auto;color:#53676c;font-size:12px;font-variant-numeric:tabular-nums}
+.annual-demand-item>.annual-note,.annual-review-recommendation{margin:14px 16px;line-height:1.7;font-size:13px;color:#475d62}
+.annual-demand-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0 16px 12px}
+.annual-demand-dimension{padding:14px;border:1px solid #e0e6e2;border-radius:6px;line-height:1.7;font-size:13px;min-width:0;color:#34484f}
+.annual-demand-dimension:last-child{grid-column:1/-1}.annual-demand-dimension strong{font-size:14px}
+.annual-demand-dimension p{margin:7px 0}.annual-demand-dimension ul{margin:8px 0 0;padding-left:19px;color:#52666c;overflow-wrap:anywhere}.annual-demand-dimension small{font-size:12px;color:#5d6e72}
+.annual-review-recommendation{padding:12px;background:#f1f5f2;border-radius:5px}.annual-review-recommendation strong{display:block;color:#344f40}
+.annual-plane-definition .annual-example-links{display:flex;gap:8px;flex-wrap:wrap}.annual-plane-definition .annual-example-links a{padding:7px 9px;min-height:36px}
+.annual-table-scroll small{display:block;line-height:1.6;margin-top:4px}.annual-demand-item a:focus-visible,.annual-axis-controls select:focus-visible{outline:2px solid #28563a;outline-offset:3px}
+@media(max-width:620px){.annual-axis-controls{gap:10px}.annual-axis-controls label{min-width:0;flex-basis:100%}.annual-demand-grid{grid-template-columns:1fr;padding:0 10px 10px}.annual-demand-item>summary{padding:10px;gap:4px 8px}.annual-demand-item>summary small{flex-basis:100%;margin-left:24px}.annual-demand-dimension:last-child{grid-column:auto}.annual-plane-selected dl{flex-wrap:wrap;gap:20px}.annual-plane-selected dd{font-size:23px}.annual-demand-item>.annual-note,.annual-review-recommendation{margin:12px 10px}}
