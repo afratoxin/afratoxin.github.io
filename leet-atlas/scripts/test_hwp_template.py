@@ -21,6 +21,52 @@ def template():
         for c in cols:
             cell = E.SubElement(row, 'CELL', RowAddr=str(r), ColAddr=str(c), Width='30000')
             para = E.SubElement(E.SubElement(cell, 'PARALIST'), 'P'); E.SubElement(E.SubElement(para, 'TEXT'), 'CHAR').text = '양식 예시'
+    cells={(int(c.get('RowAddr')),int(c.get('ColAddr'))):c for row in table.findall('ROW') for c in row.findall('CELL')}
+    def p(parent,text,shape,style,char):
+        n=E.SubElement(parent,'P',ParaShape=str(shape),Style=str(names.index(style)))
+        E.SubElement(E.SubElement(n,'TEXT',CharShape=str(char)),'CHAR').text=text
+        return n
+    def nested(parent,cols,rows,width):
+        t=E.SubElement(E.SubElement(parent,'TEXT',CharShape='38'),'TABLE',ColCount=str(cols),RowCount=str(rows),BorderFill='4',PageBreak='Cell')
+        s=E.SubElement(t,'SHAPEOBJECT',InstId=str(width));E.SubElement(s,'SIZE',Width=str(width),Height='1100');E.SubElement(s,'POSITION',TreatAsChar='true')
+        for ri in range(rows):
+            row=E.SubElement(t,'ROW')
+            for ci in range(cols):
+                cell=E.SubElement(row,'CELL',RowAddr=str(ri),ColAddr=str(ci),Width=str(width//cols),Height='1100',BorderFill='4',HasMargin='false')
+                E.SubElement(cell,'PARALIST',VertAlign='Center')
+        return t
+    labels={(0,0):'파일명',(0,1):'old.hwp',(0,5):'메모',(0,6):'출제 의도 / 간단 풀이 / 해설',(1,0):'테마',(1,1):'00',(1,2):'출제자',(1,3):'Xx'}
+    for addr,text in labels.items():
+        pl=cells[addr].find('PARALIST');pl.clear();p(pl,text,1,'바탕글',19 if addr==(0,6) else 18)
+    guide=cells[(2,5)].find('.//CHAR');guide.text='―1'
+    left=cells[(2,0)].find('PARALIST');left.clear()
+    stem=p(left,'99.',4,'문제',4);E.SubElement(stem.find('TEXT/CHAR'),'TAB')
+    stem_run=E.SubElement(stem,'TEXT',CharShape='1');E.SubElement(stem_run,'CHAR').text='첫줄 발문'
+    # The real source has a hidden memo using the same named choice style.
+    memo=E.SubElement(E.SubElement(stem_run,'FIELDBEGIN',Type='Memo'),'PARALIST')
+    p(memo,'메모 서식 안내',0,'선택지',35)
+    carrier=p(left,'',2,'보기박스',1);box=nested(carrier,1,1,30809);box.set('BorderFill','5')
+    boxcell=box.find('ROW/CELL');boxcell.set('BorderFill','11');inside=boxcell.find('PARALIST')
+    p(inside,'박스내용',3,'박스내용(들여쓰기)',6)
+    p(inside,'◦ 조건',7,'보기내용(내어쓰기)',1)
+    p(inside,'[규정]',12,'<사례견해>',13)
+    tablecarrier=p(inside,'',7,'보기내용(내어쓰기)',1);fact=nested(tablecarrier,2,2,29054)
+    for cell in fact.findall('ROW/CELL'):p(cell.find('PARALIST'),'표 내용',6,'표-가운데',3)
+    p(left,'① 선지',5,'선택지',2)
+    right=cells[(2,6)].find('PARALIST');right.clear()
+    p(right,'제재 / 주제',38,'글 주제',36)
+    meta=nested(p(right,'',48,'바탕글',38),4,2,24108)
+    for row in meta.findall('ROW'):
+        for cell in row.findall('CELL'):p(cell.find('PARALIST'),'정보',49,'바탕글',40)
+    comment=nested(p(right,'',50,'바탕글',38),2,3,24153)
+    for row in comment.findall('ROW'):
+        for cell in row.findall('CELL'):p(cell.find('PARALIST'),'논평',41,'코멘트내용 9pt',43)
+    p(comment.findall('ROW')[0].findall('CELL')[1].find('PARALIST'),'제목',29,'바탕글',42)
+    capsule=p(right,'',40,'바탕글',46);rect=E.SubElement(capsule.find('TEXT'),'RECTANGLE',Ratio='40')
+    E.SubElement(E.SubElement(E.SubElement(E.SubElement(rect,'DRAWTEXT'),'PARALIST'),'P'),'TEXT')
+    E.SubElement(rect.find('.//TEXT'),'CHAR').text='정오판단'
+    p(right,'① 선지 (○×)',43,'정오판단_선지',44)
+    p(right,'↳ 근거',46,'정오판단_설명',41)
     return root
 
 
@@ -29,6 +75,42 @@ def draft():
 
 
 class TemplateTests(unittest.TestCase):
+    def test_real_template_blocks_and_paragraph_overrides_are_not_rebuilt(self):
+        source=template();result=build_document(source,draft(),{'blocks':[{'kind':'paragraph','text':'◦ 적용 규칙'}]})
+        old=source.find('.//TABLE').findall('ROW')[2].findall('CELL')
+        new=result.find('.//TABLE').findall('ROW')[2].findall('CELL')
+        right=new[2].find('PARALIST')
+        meta=right.findall('P')[1].find('./TEXT/TABLE')
+        self.assertIsNotNone(meta,'원본 정답·난도 표가 사라짐')
+        self.assertEqual(meta.attrib,old[2].find('PARALIST').findall('P')[1].find('./TEXT/TABLE').attrib)
+        self.assertEqual(len(meta.findall('ROW/CELL')),8)
+        self.assertTrue(right.findall('.//TABLE[@RowCount="3"]'),'원본 논평 상자가 사라짐')
+        self.assertTrue(right.findall('.//RECTANGLE'),'원본 정오판단 캡슐이 사라짐')
+        self.assertEqual(new[0].find('PARALIST/P/TEXT').get('CharShape'),'4')
+        choice=new[0].find('PARALIST').findall('P')[2]
+        self.assertEqual(choice.get('ParaShape'),'5')
+        self.assertEqual(choice.find('TEXT').get('CharShape'),'2')
+        bullet=next(p for p in new[0].findall('.//P') if ''.join(n.text or '' for n in p.findall('./TEXT/CHAR'))=='◦ 적용 규칙')
+        self.assertEqual(bullet.get('ParaShape'),'7')
+        self.assertEqual(bullet.find('TEXT').get('CharShape'),'1')
+        self.assertEqual(E.tostring(new[2].find('.//TABLE/SHAPEOBJECT')),E.tostring(old[2].find('.//TABLE/SHAPEOBJECT')))
+
+    def test_header_fonts_and_native_table_body_font_remain_template_values(self):
+        source=template();result=build_document(source,draft(),{'blocks':[{'kind':'table','rows':[['기업','금액'],['갑','8,200']]}]})
+        old=source.find('.//TABLE');new=result.find('.//TABLE')
+        memo=new.findall('ROW')[0].findall('CELL')[-1]
+        self.assertEqual(E.tostring(memo),E.tostring(old.findall('ROW')[0].findall('CELL')[-1]))
+        left=new.findall('ROW')[2].findall('CELL')[0]
+        cell=next(c for c in left.findall('.//CELL') if ''.join(c.itertext())=='8,200')
+        self.assertEqual(cell.find('PARALIST/P/TEXT').get('CharShape'),'3')
+
+    def test_document_macros_are_not_carried_into_completed_question(self):
+        source=template();script=E.SubElement(E.SubElement(source,'TAIL'),'SCRIPTCODE')
+        E.SubElement(script,'SCRIPTSOURCE').text='function OnDocument_New(){ /* unrelated template utility */ }'
+        result=build_document(source,draft())
+        self.assertIsNone(result.find('.//SCRIPTCODE'))
+        self.assertIsNotNone(source.find('.//SCRIPTCODE'))
+
     def test_original_geometry_styles_and_source_tree_are_preserved(self):
         source = template(); before = E.tostring(source)
         result = build_document(source, draft(), {}, '완성.hwp')
@@ -51,7 +133,7 @@ class TemplateTests(unittest.TestCase):
         pub = {'blocks':[{'kind':'table','rows':[['기업','금액'],['갑','8,200']]}], 'optionTruth':[True, True, True, True, False]}
         result = build_document(template(), draft(), pub, '완성.hwp')
         text = ''.join(result.find('BODY').itertext())
-        self.assertIn('8,200', text); self.assertIn('⑤ (×)', text)
+        self.assertIn('8,200', text); self.assertIn('⑤ 선택지5 (×)', text)
         self.assertGreater(len(result.findall('.//TABLE')), 1)
 
     def test_unrecognized_template_and_invalid_choice_counts_fail(self):
