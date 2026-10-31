@@ -38,7 +38,6 @@
   }
   function evaluateFormula(expression,calculate){
     const used=(expression.match(/[1-9]/g)||[]).map(Number);
-    if(used.length<7||used.length>8)throw new Error('숫자 카드를 7~8장 사용해 수식을 만드세요. 코드를 위해 최소 4장을 남겨야 합니다.');
     const remaining=removeCards(STOCK,used);
     const value=calculate(expression,STOCK);
     return {value,used,remaining};
