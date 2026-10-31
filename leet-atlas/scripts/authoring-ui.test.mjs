@@ -1,0 +1,57 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createSemanticSearch} from '../semantic-search.mjs';
+const api=await import('../authoring-ui.mjs').catch(()=>({}));
+const archive=JSON.parse(await readFile(new URL('../data/archive.json',import.meta.url),'utf8'));
+const fixture=()=>({schemaVersion:1,title:'지원금 산정',passage:'기본 지원금100만원에 교육 가산20만원을 더한다. 미납자는 그 금액의25%를 감액한다. 기한 내 신청자는 마지막에10만원을 더한다. 갑은 교육을 이수한 미납자로서 기한 내 신청했다.',question:'갑의 지원금은?',choices:['80만원','85만원','90만원','100만원','110만원'],answer:4,solution:'(100+20)×0.75+10=100',steps:['교육 가산120만원','미납 감액90만원','마지막10만원 가산'],optionAnalyses:[1,2,3,4,5].map(number=>({number,isAnswer:number===4,reason:number===4?'규칙을 순서대로 적용하면100이다.':'정해진 순서의 계산 결과100과 다르다.'})),classifications:[{axis:'domain',label:'법률',reason:'규칙에 따라 지급액을 정한다.'},{axis:'type',label:'규칙·사례 적용',reason:'조건을 갑에 적용한다.'},{axis:'logic',label:'수식 계산',reason:'가산과 비율 감액을 수행한다.'}],review:['answerUniqueness','sufficiency','optionValidity','originality','classification'].map(criterion=>({criterion,status:'pass',evidence:'조건과 결과를 대조했다.'}))});
+function boot(extra={}){const root={innerHTML:'',querySelector(){return null;},addEventListener(){},removeEventListener(){}};const store=new Map();return {root,app:api.createAuthoringWorkspace(root,{archive,storage:{getItem:k=>store.get(k),setItem:(k,v)=>store.set(k,v)},semanticSearch:{search:async()=>new Map(),dispose(){}},...extra})};}
+
+test('workspace links selected references to a complete prompt, displays source logic and invalidates edited prompt',()=>{
+ const {app,root}=boot({hash:'#ref=1022'});app.setBrief('새로운 가산 감액과 조건 경계 문항');app.setNotes('순서를 바꾼 오답을 설계');app.createPrompt();
+ assert.match(app.state.prompt,/해설 원형/);assert.match(root.innerHTML,/출제 논리/);assert.match(root.innerHTML,/ChatGPT/);
+ app.setNotes('수정된 출제 방향');assert.equal(app.state.prompt,'');
+ app.createPrompt();app.select('1807');assert.equal(app.state.prompt,'');
+});
+test('out-of-order semantic results and editing brief cannot replace current search',async()=>{
+ const deferred=[];const {app}=boot({semanticSearch:{search:q=>new Promise(resolve=>deferred.push({q,resolve})),dispose(){}}});
+ app.setBrief('지원금 비율 계산');const first=app.search();app.setBrief('두 철학자의 논박');const second=app.search();
+ const scores=new Map([['1321',1]]);deferred[1].resolve(scores);await second;const ids=app.state.matches.map(v=>v.id);
+ deferred[0].resolve(new Map([['1022',1]]));await first;assert.deepEqual(app.state.matches.map(v=>v.id),ids);assert.equal(app.state.searchedBrief,'두 철학자의 논박');
+});
+test('draft import renders escaped text, classifications and AI review separately from human checks; invalid import preserves draft',()=>{
+ const {app,root}=boot();const data=fixture();data.title='<script>alert(1)</script>';app.importDraft(JSON.stringify(data));
+ assert.match(root.innerHTML,/&lt;script&gt;/);assert.doesNotMatch(root.innerHTML,/<script>alert/);assert.match(root.innerHTML,/독립 검증 전/);assert.match(root.innerHTML,/수식 계산/);
+ app.confirmReview('answerUniqueness',true);const previous=app.project.draft;assert.equal(app.importDraft('{'),false);assert.equal(app.project.draft,previous);
+ data.title='수정';app.importDraft(JSON.stringify(data));assert.deepEqual(app.project.humanReview,{});
+});
+test('storage failure leaves exportable work and invalid project import cannot erase it',()=>{
+ const {app}=boot({storage:{getItem(){return null;},setItem(){throw new Error('quota');}}});app.setBrief('원하는 문항');app.select('1022');app.importDraft(JSON.stringify(fixture()));
+ assert.equal(app.state.storageFailed,true);assert.match(app.exportProject(),/지원금 산정/);const previous=app.project;
+ assert.equal(app.importProject('{"schemaVersion":1}'),false);assert.equal(app.project,previous);
+});
+test('existing site offers authoring navigation and reference entry links',async()=>{
+ const html=await readFile(new URL('../index.html',import.meta.url),'utf8'),source=await readFile(new URL('../app.js',import.meta.url),'utf8');
+ assert.match(html,/href="author.html"/);assert.match(source,/author\.html#ref=/);
+ const {app}=boot();for(const id of ['1022','1807','2307','2703','2607','2211'])app.select(id);assert.equal(app.project.referenceIds.length,5);
+});
+test('real worker failure is reported honestly and a subsequent search creates a fresh client',async()=>{
+ let attempts=0;
+ const {app}=boot({semanticSearch:undefined,semanticFactory:options=>createSemanticSearch({...options,workerFactory(){attempts++;throw new Error('offline');}})});
+ app.setBrief('계산을 통해 가중 처벌을 판단');await app.search();assert.match(app.state.searchMessage,/못해|실패/);await app.search();assert.equal(attempts,2);
+});
+test('malformed project draft values cannot erase a successfully imported draft',()=>{
+ const {app}=boot();app.importDraft(JSON.stringify(fixture()));const previous=app.project;
+ for(const draft of [false,0,'',undefined]){const imported=JSON.parse(app.exportProject());imported.draft=draft;assert.equal(app.importProject(JSON.stringify(imported)),false);assert.equal(app.project,previous);}
+});
+test('review changes invalidate revision prompts and a fresh project exports previous work before clearing',()=>{
+ const backups=[];const {app}=boot({hash:'#ref=1022',download:(name,text)=>backups.push({name,text})});app.setBrief('의도');app.importDraft(JSON.stringify(fixture()));app.createPrompt();app.confirmReview('answerUniqueness',true);assert.equal(app.state.prompt,'');
+ app.newProject();assert.equal(backups.length,1);assert.match(backups[0].text,/지원금 산정/);assert.equal(app.project.draft,null);assert.equal(app.project.referenceIds.length,0);assert.equal(app.project.brief,'');
+});
+test('initial inaccessible storage is never represented as successfully saved',()=>{
+ const {app,root}=boot({storage:{getItem(){throw new Error('disabled');},setItem(){throw new Error('disabled');}}});assert.equal(app.state.storageFailed,true);assert.match(root.innerHTML,/브라우저 저장에 실패/);
+});
+test('rejected responses can generate a fresh independent repair prompt with original request and sources',()=>{
+ const {app}=boot({hash:'#ref=1022'});app.setBrief('순차적 가산과 감액을 결합한 문항');app.createPrompt();app.importDraft('{"broken":true,}');assert.equal(app.state.prompt,'');app.repairPrompt();
+ assert.match(app.state.prompt,/broken/);assert.match(app.state.prompt,/JSON 하나만/);assert.match(app.state.prompt,/독립적으로/);assert.match(app.state.prompt,/참고 기출 1022/);assert.equal(app.project.draft,null);
+});
