@@ -45,4 +45,4 @@
 
 - [x] Verify local browser actual E5 search and complete coherent draft roundtrip, narrow view and keyboard controls.
 - [x] Obtain independent whole-change review and fix significant findings; run relevant tests and publication validators.
-- [ ] Preserve current master, publish through authorized GitHub connection, verify Pages and production workflow; record evidence and screenshots.
+- [x] Preserve current master, publish through authorized GitHub connection, verify Pages and production workflow; record evidence and screenshots.
