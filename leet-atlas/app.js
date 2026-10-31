@@ -1,4 +1,4 @@
-import {createWriterTools} from './writer-tools.mjs?v=20261031-author-db1';
+import {createWriterTools} from './writer-tools.mjs?v=20261031-author-db2';
 import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261031-author-db1';
 import { groupTags } from './tag-groups.mjs?v=20261026-general-search4';
 import { renderSidebar } from './sidebar.mjs?v=20261026-general-search4';

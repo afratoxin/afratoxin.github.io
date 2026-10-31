@@ -12,4 +12,5 @@
 - Root fresh full verification:332 JavaScript tests passed;52 Python tests passed after incorporating upstream HWP fidelity commit98a6c78. Archive/publication/data validators pass. All755 source bounds enclose foreground; archive answers/source files unchanged.
 - Browser evidence:1440×900 and390×844 no horizontal page overflow;2021 frame bounded to756px desktop and546px mobile with whitespace removed. Manual design review persists after reload. Axes can change; saved-search dialog/set comparison work. Actual two-question source export contains2 embedded images,0 relative links,2 crop frames,157299bytes.
 - Browser screenshot capture unavailable: both screenshot APIs and Page.captureScreenshot failed/time out; geometry/DOM/interaction verification used. No claim of visual screenshot verification.
-- Pending: publish verified files with expected-HEAD protection and verify public Pages deployment.
+- Published feature commit78b74d00ce7094e6629c878e1fb6bf1ba4ffef70 with expected-HEAD protection; Pages workflow41209602904 completed successfully and public browser loads author-DB navigation.
+- Final refinement: manual design-review persistence failure must not report a successful save; red/green regression added. Fresh333/333 JavaScript tests pass;52 Python tests and archive checks unchanged. Final module cache token advanced to author-db2 for this fix.
