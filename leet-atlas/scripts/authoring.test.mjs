@@ -7,7 +7,7 @@ export const draft=()=>({schemaVersion:1,title:'신고 시점과 지원금 산�
 
 test('creation prompt preserves unseen brief and complete source evidence, not only correct explanation',()=>{
  const q={id:'1022',title:'기출',sourceText:'원문 끝까지 보존',sourceOptions:[1,2,3,4,5].map(number=>({number,text:'선택지'+number})),options:[1,2,3,4,5].map(number=>({number,explanation:'해설 꼬리'+number})),steps:['등급 가감 적용'],pitfalls:['반수 경계 오류'],domains:['법률'],types:['규칙·사례 적용'],logic:['수식 계산'],summary:'사례에서 규칙 도출',answer:4};
- const prompt=api.buildCreationPrompt({brief:'기한의 경계와 반사실적 규칙을 결합하고 싶다',designNotes:'경계 조건을 바꾸고 순서를 비교',questions:[q],taxonomy});
+ const prompt=api.buildCreationPrompt({outputMode:'json',brief:'기한의 경계와 반사실적 규칙을 결합하고 싶다',designNotes:'경계 조건을 바꾸고 순서를 비교',questions:[q],taxonomy});
  for(const s of ['기한의 경계와 반사실적','원문 끝까지 보존','해설 꼬리1','해설 꼬리5','반수 경계 오류','answerUniqueness','classifications','독립적으로','경계 조건을 바꾸고 순서를 비교'])assert.ok(prompt.includes(s),s);
  assert.throws(()=>api.buildCreationPrompt({brief:'의도',questions:[],taxonomy}),/기출/);
  assert.throws(()=>api.buildCreationPrompt({brief:'의도',questions:Array(6).fill(q),taxonomy}),/5/);
@@ -54,4 +54,33 @@ test('real archive source packets preserve all selected options and tail evidenc
  const prompt=api.buildCreationPrompt({brief:'지원금과 기간 경계를 결합한 새 규칙 문항',questions,taxonomy:archive.taxonomy});
  for(const q of questions)for(const o of q.options)assert.ok(prompt.includes(o.explanation),q.id+':'+o.number);
  assert.ok(prompt.includes(questions[0].sourceText.trim()));
+});
+
+test('default prompt requests question-first plain output without a JSON or solution contract',()=>{
+ const prompt=api.buildCreationPrompt({brief:'기한 경계와 지원 규칙을 결합',questions:[{id:'1022',title:'참고',sourceText:'원문 보존',options:[{number:5,explanation:'마지막 해설 보존'}]}],taxonomy});
+ assert.match(prompt,/번호를 붙인 발문/);assert.match(prompt,/①.*⑤/);assert.match(prompt,/정답.*해설.*출력하지/);
+ assert.doesNotMatch(prompt,/JSON 객체 하나만|전체 JSON|응답 JSON 형식|review\.status|선택 이유를 전체 풀이에 설명|분류 어휘/);
+ assert.match(prompt,/원문 보존/);assert.match(prompt,/마지막 해설 보존/);
+});
+test('solution mode separates concise solution; JSON retains review ordering and repair',()=>{
+ const input={brief:'새 규칙 문항',questions:[{id:'1022',title:'참고',sourceText:'자료'}],taxonomy,draft:draft(),rejectedResponse:'잘못된 응답',validationError:'검사 실패'};
+ const solved=api.buildCreationPrompt({...input,outputMode:'question-solution'});
+ assert.match(solved,/문항 다음.*정답 및 해설/);assert.doesNotMatch(solved,/JSON 객체 하나만|전체 JSON|응답 JSON 형식|review\.status/);
+ const json=api.buildCreationPrompt({...input,outputMode:'json'});
+ assert.match(json,/응답 JSON 형식/);assert.match(json,/전체 완성 JSON/);assert.match(json,/이전 정답과 pass 표시를 가정하지/);assert.match(json,/solution과 steps.*choices와 answer/s);
+ const shape=JSON.parse(json.split('[응답 JSON 형식]\n')[1].split('\n검토 status:')[0]);
+ assert.ok(Object.keys(shape).indexOf('solution')<Object.keys(shape).indexOf('choices'));
+ assert.throws(()=>api.buildCreationPrompt({...input,outputMode:'unknown'}),/출력/);
+});
+test('publication text puts numbered question first and preserves content without metadata',()=>{
+ const value=draft();value.question='12. 갑의 지원금은?';value.passage='정답이라는 말을 사용한 규칙.\n<보기>\nㄱ. 조건 A\nㄴ. 조건 B';value.choices[0]='해설이라는 단어가 있는 선택지 (②와 비교)';
+ assert.equal(api.questionText(value),'12. 갑의 지원금은?\n\n정답이라는 말을 사용한 규칙.\n<보기>\nㄱ. 조건 A\nㄴ. 조건 B\n\n① 해설이라는 단어가 있는 선택지 (②와 비교)\n② 85만 원\n③ 90만 원\n④ 100만 원\n⑤ 110만 원\n');
+ value.question='갑의 지원금은?';assert.match(api.questionText(value),/^1\. 갑의 지원금은\?/);
+ const solution=api.solutionText(value);assert.match(solution,/^정답: ④/);assert.match(solution,/④.*120만 원/s);assert.doesNotMatch(solution,/분류 근거|정답 유일성|신고 시점과 지원금 산정/);
+});
+test('projects restore legacy question mode, roundtrip explicit modes and reject invalid modes',()=>{
+ const project={schemaVersion:1,kind:'leet-authoring-project',brief:'의도',designNotes:'',referenceIds:[],draft:null};
+ assert.equal(api.parseProject(JSON.stringify(project),taxonomy,new Set()).outputMode,'question');
+ for(const outputMode of ['question','question-solution','json'])assert.equal(api.parseProject(JSON.stringify({...project,outputMode}),taxonomy,new Set()).outputMode,outputMode);
+ for(const outputMode of [null,'unknown',3])assert.throws(()=>api.parseProject(JSON.stringify({...project,outputMode}),taxonomy,new Set()),/출력/);
 });

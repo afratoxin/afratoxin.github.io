@@ -5,7 +5,7 @@ import {createSemanticSearch} from '../semantic-search.mjs';
 const api=await import('../authoring-ui.mjs').catch(()=>({}));
 const archive=JSON.parse(await readFile(new URL('../data/archive.json',import.meta.url),'utf8'));
 const fixture=()=>({schemaVersion:1,title:'지원금 산정',passage:'기본 지원금100만원에 교육 가산20만원을 더한다. 미납자는 그 금액의25%를 감액한다. 기한 내 신청자는 마지막에10만원을 더한다. 갑은 교육을 이수한 미납자로서 기한 내 신청했다.',question:'갑의 지원금은?',choices:['80만원','85만원','90만원','100만원','110만원'],answer:4,solution:'(100+20)×0.75+10=100',steps:['교육 가산120만원','미납 감액90만원','마지막10만원 가산'],optionAnalyses:[1,2,3,4,5].map(number=>({number,isAnswer:number===4,reason:number===4?'규칙을 순서대로 적용하면100이다.':'정해진 순서의 계산 결과100과 다르다.'})),classifications:[{axis:'domain',label:'법률',reason:'규칙에 따라 지급액을 정한다.'},{axis:'type',label:'규칙·사례 적용',reason:'조건을 갑에 적용한다.'},{axis:'logic',label:'수식 계산',reason:'가산과 비율 감액을 수행한다.'}],review:['answerUniqueness','sufficiency','optionValidity','originality','classification'].map(criterion=>({criterion,status:'pass',evidence:'조건과 결과를 대조했다.'}))});
-function boot(extra={}){const root={innerHTML:'',querySelector(){return null;},addEventListener(){},removeEventListener(){}};const store=new Map();return {root,app:api.createAuthoringWorkspace(root,{archive,storage:{getItem:k=>store.get(k),setItem:(k,v)=>store.set(k,v)},semanticSearch:{search:async()=>new Map(),dispose(){}},...extra})};}
+function boot(extra={}){const root={innerHTML:'',handlers:{},querySelector(){return null;},addEventListener(type,handler){this.handlers[type]=handler;},removeEventListener(){}};const store=new Map();return {root,app:api.createAuthoringWorkspace(root,{archive,storage:{getItem:k=>store.get(k),setItem:(k,v)=>store.set(k,v)},semanticSearch:{search:async()=>new Map(),dispose(){}},...extra})};}
 
 test('workspace links selected references to a complete prompt, displays source logic and invalidates edited prompt',()=>{
  const {app,root}=boot({hash:'#ref=1022'});app.setBrief('새로운 가산 감액과 조건 경계 문항');app.setNotes('순서를 바꾼 오답을 설계');app.createPrompt();
@@ -54,4 +54,29 @@ test('initial inaccessible storage is never represented as successfully saved',(
 test('rejected responses can generate a fresh independent repair prompt with original request and sources',()=>{
  const {app}=boot({hash:'#ref=1022'});app.setBrief('순차적 가산과 감액을 결합한 문항');app.createPrompt();app.importDraft('{"broken":true,}');assert.equal(app.state.prompt,'');app.repairPrompt();
  assert.match(app.state.prompt,/broken/);assert.match(app.state.prompt,/JSON 하나만/);assert.match(app.state.prompt,/독립적으로/);assert.match(app.state.prompt,/참고 기출 1022/);assert.equal(app.project.draft,null);
+});
+
+test('output mode changes invalidate prompt and persist without losing draft; JSON import is optional',()=>{
+ const {app,root}=boot({hash:'#ref=1022'});app.setBrief('의도');app.importDraft(JSON.stringify(fixture()));app.createPrompt();
+ assert.equal(app.project.outputMode,'question');assert.match(root.innerHTML,/문항만.*기본/);assert.match(root.innerHTML,/JSON.*선택/);
+ const previous=app.project.draft;app.setOutputMode('json');assert.equal(app.state.prompt,'');assert.equal(app.project.draft,previous);app.createPrompt();assert.match(app.state.prompt,/응답 JSON 형식/);
+ const exported=app.exportProject();app.setOutputMode('question-solution');assert.equal(app.state.prompt,'');app.importProject(exported);assert.equal(app.project.outputMode,'json');
+ app.setOutputMode('bogus');assert.equal(app.project.outputMode,'json');
+});
+test('copy and TXT actions export question-first publication content with optional solution and no review metadata',async()=>{
+ const copies=[],files=[];const {app,root}=boot({clipboard:{writeText:async value=>copies.push(value)},download:(name,text,type)=>files.push({name,text,type})});app.importDraft(JSON.stringify(fixture()));
+ assert.match(root.innerHTML,/id="publication-question"/);assert.match(root.innerHTML,/문항만 복사/);
+ const click=action=>root.handlers.click({target:{closest:()=>({dataset:{authorAction:action}})}});
+ await click('copy-question');await click('download-question');await click('copy-question-solution');await click('download-question-solution');
+ assert.match(copies[0],/^1\. 갑의 지원금은\?/);assert.match(copies[0],/⑤ 110만원/);assert.doesNotMatch(copies[0],/정답:|지원금 산정|분류|확인 표시/);
+ assert.match(copies[1],/\n\n정답 및 해설\n\n정답: ④/);assert.doesNotMatch(copies[1],/분류|검토|참고 기출|\\n/);
+ const selectable=root.innerHTML.match(/id="publication-question-solution"[^>]*>([\s\S]*?)<\/textarea>/)[1];assert.match(selectable,/\n\n정답 및 해설\n\n정답: ④/);assert.doesNotMatch(selectable,/\\n/);
+ assert.deepEqual(files.map(v=>[v.name,v.type]),[['leet-question.txt','text/plain'],['leet-question-solution.txt','text/plain']]);assert.equal(files[0].text,copies[0]);assert.equal(files[1].text,copies[1]);
+});
+test('clipboard failure reveals and selects the complete question and solution for manual copy',async()=>{
+ const {app,root}=boot({clipboard:{writeText:async()=>{throw new Error('unavailable');}}});app.importDraft(JSON.stringify(fixture()));
+ const details={open:false};let selected=false;const field={closest:()=>details,select(){selected=true;}};
+ root.querySelector=selector=>selector==='#publication-question-solution'?field:null;
+ await root.handlers.click({target:{closest:()=>({dataset:{authorAction:'copy-question-solution'}})}});
+ assert.equal(details.open,true);assert.equal(selected,true);assert.match(app.state.message,/선택해 복사/);
 });
