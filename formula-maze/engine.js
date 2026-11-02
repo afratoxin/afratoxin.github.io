@@ -1,0 +1,13 @@
+(function(root){'use strict';
+const letter=i=>String.fromCharCode(65+i);
+function neighbors(i){return [i-4,i+1,i+4,i-1].filter(j=>j>=0&&j<16&&Math.abs((i>>2)-(j>>2))+Math.abs(i%4-j%4)===1)}
+function random(seed){let a=seed>>>0;return()=>{a+=0x6D2B79F5;let t=Math.imul(a^a>>>15,1|a);t^=t+Math.imul(t^t>>>7,61|t);return((t^t>>>14)>>>0)/4294967296}}
+function shuffled(a,r){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function check(board,q,path){if(path.length<2)return {ok:false,reason:'출발점과 도착점을 이어 주세요.'};if(!((path[0]===q.start&&path.at(-1)===q.end)||(path[0]===q.end&&path.at(-1)===q.start)))return {ok:false,reason:'지정된 두 지점에서 시작하고 끝나야 합니다.'};if(path.some(i=>!Number.isInteger(i)||i<0||i>15)||new Set(path).size!==path.length)return {ok:false,reason:'같은 칸을 두 번 지날 수 없습니다.'};for(let n=1;n<path.length;n++)if(!neighbors(path[n-1]).includes(path[n]))return {ok:false,reason:'상하좌우로 맞닿은 칸만 연결할 수 있습니다.'};const sum=path.reduce((v,i)=>v+board[i],0);return {ok:sum===q.target,reason:sum===q.target?'정답입니다.':'기억한 숫자를 다시 생각해 보세요. 합이 목표값과 다릅니다.',sum}}
+function generate(seed,count=2){const r=random(seed),board=shuffled(Array.from({length:19},(_,i)=>i+1),r).slice(0,16),candidates=[];
+// Enumerate every simple path, so a shorter accidental solution is never overlooked.
+for(let start=0;start<16;start++){const groups=new Map();function dfs(at,mask,path,sum){if(path.length>=2&&Math.abs((start>>2)-(at>>2))+Math.abs(start%4-at%4)>=3){const key=at+':'+sum,g=groups.get(key);if(g){g.count++;if(path.length<g.path.length)g.path=path.slice()}else groups.set(key,{start,end:at,target:sum,path:path.slice(),count:1})}for(const n of neighbors(at))if(!(mask&(1<<n)))dfs(n,mask|(1<<n),path.concat(n),sum+board[n])}dfs(start,1<<start,[start],board[start]);for(const g of groups.values())if(g.path.length>=6&&g.path.length<=10&&g.count<=5)candidates.push(g)}
+const pool=shuffled(candidates,r),questions=[];for(const q of pool){if(questions.some(p=>(p.start===q.start&&p.end===q.end)||(p.start===q.end&&p.end===q.start)))continue;questions.push({start:q.start,end:q.end,target:q.target,solution:q.path,solutions:q.count});if(questions.length===count)break}if(questions.length!==count)throw Error('Unable to generate a complete round');return {board,questions,seed}}
+function parse(text){const s=text.toUpperCase().trim();if(!s||!/^[A-P\s,+→\-]+$/.test(s))return null;return (s.match(/[A-P]/g)||[]).map(c=>c.charCodeAt(0)-65)}
+const api={generate,neighbors,check,parse,letter};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.FormulaMaze=api;
+})(typeof globalThis==='undefined'?this:globalThis);
