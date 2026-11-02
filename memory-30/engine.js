@@ -45,6 +45,10 @@ const questions=[...pool.slice(0,5),pool[5],pick([pool[6],pool[15]]),pick([pool[
 // Substitute unrelated details to avoid leaking a chain's answer.
 questions[2]={...questions[2],text:`${i}이 물건을 두고 온 장소는?`,answer:place,options:shuffle(['도서관','수영장','기차역','미술관']),refs:[{id:'location',number:number('location'),text:facts.find(f=>f.id==='location').text}],explain:`${place}에 두고 왔다.`,depth:1};questions[2].correct=questions[2].options.indexOf(place);
 questions[4]={...questions[4],text:`${b}의 목요일 야근 종료 시각은?`,answer:'밤 10시',options:shuffle(['밤 8시','밤 9시','밤 10시','밤 11시']),refs:[{id:'late',number:number('late'),text:facts.find(f=>f.id==='late').text}],explain:'목요일 야근은 밤 10시까지이다.',depth:1};questions[4].correct=questions[4].options.indexOf('밤 10시');
+// Use the correct Korean particle for each generated person's name.
+function natural(text){for(const name of names){const final=(name.charCodeAt(name.length-1)-0xAC00)%28!==0;for(const [withFinal,withoutFinal] of [['은','는'],['이','가'],['을','를'],['과','와']])text=text.replaceAll(name+withFinal,name+(final?withFinal:withoutFinal))}return text}
+for(const f of shown)f.text=natural(f.text);
+for(const q of questions){q.text=natural(q.text);q.explain=natural(q.explain);for(const f of q.refs)f.text=natural(f.text)}
 return {seed,round,facts:shown,questions:shuffle(questions),model:{names,price,discount,quantity,height,gain,unit,count,coupon,distance,speed,age,anchor,visit,baseDay}};
 }
 const api={build};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.Memory30=api;
