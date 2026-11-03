@@ -14,18 +14,40 @@ const el=(tag,attrs={},...children)=>{
 const norm=s=>String(s||'').normalize('NFKC').toLocaleLowerCase('ko').replace(/\s+/g,'');
 const params=new URLSearchParams(location.search);
 const state={subject:params.get('subject')||'',unit:params.get('unit')||'',exam:params.get('exam')||'',points:params.get('points')||'',chapter:params.get('chapter')||'',search:params.get('search')||'',id:params.get('q')||'',mode:'original'};
+const cohorts=['확률과 통계','미적분','기하','가형','나형'];
+state.order=params.get('order')==='wrong'?'wrong':'';
+state.cohort=cohorts.includes(params.get('cohort'))?params.get('cohort'):cohorts[0];
+state.logic=params.get('logic')||'';
+if(params.get('view')==='solution')state.mode='solution';
 let archive,items=[],filtered=[],selected,toastTimer;
+let ebsi={exams:{},rates:{}}, solutions={groups:{},items:{}};
 const unitNav=$('#unit-nav'),results=$('#results'),detail=$('#detail');
-const modeNames={original:'시험지 원문',latex:'LaTeX',concept:'개념'};
+const modeNames={original:'시험지 원문',latex:'LaTeX',concept:'개념',solution:'해설·풀이 논리'};
 function toast(message){const t=$('#toast');t.textContent=message;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true},2200)}
 function examLabel(q,full=false){const t=q.paper_type||q.type;return `${q.year}${full?'학년도':''} ${q.session}${['가형','나형'].includes(t)?` ${t}`:''}`}
-function writeURL(){const p=new URLSearchParams();for(const key of ['subject','unit','exam','points','chapter','search'])if(state[key])p.set(key,state[key]);if(selected)p.set('q',selected.id);history.replaceState(null,'',location.pathname+(p.size?'?'+p:''))}
+function writeURL(){
+  const p=new URLSearchParams();
+  for(const key of ['subject','unit','exam','points','chapter','search','order','logic'])if(state[key])p.set(key,state[key]);
+  if(state.cohort!==cohorts[0])p.set('cohort',state.cohort);
+  if(selected){
+    p.set('q',selected.id);
+    if(state.mode==='solution'&&selected.points===4)p.set('view','solution');
+  }
+  history.replaceState(null,'',location.pathname+(p.size?'?'+p:''));
+}
+const rate=(q,cohort=state.cohort)=>ebsi.rates[q.id]?.[cohort];
+const percent=n=>`${n.toFixed(1)}%`;
+const cohortFor=q=>q.paper_type==='가형'||q.paper_type==='나형'?q.paper_type:q.number>=23?cohorts[0]:state.cohort;
+const externalLink=(text,href)=>el('a',{text,href,target:'_blank',rel:'noopener noreferrer'});
 function matches(q){
   if(state.subject&&q.subject!==state.subject||state.unit&&q.unit!==state.unit||state.exam&&q.exam_id!==state.exam||state.points&&String(q.points)!==state.points||state.chapter&&!q.textbook_chapters?.some(c=>String(c.number)===state.chapter))return false;
+  if(state.logic&&!solutions.items[q.id]?.logic?.includes(state.logic))return false;
+  if(state.order==='wrong'&&rate(q)===undefined)return false;
   const query=state.search.trim();if(!query)return true;
   if(/^\d{1,2}\s*번?$/.test(query))return q.number===parseInt(query,10);
   const a=subjects.find(s=>s.name===q.subject);
-  const hay=norm([q.id,examLabel(q,true),q.subject,a?.alias,q.unit,...q.concepts,...(q.textbook_chapters||[]).map(c=>c.title),q.number+'번',q.statement_latex].join(' '));
+  const logic=(solutions.items[q.id]?.logic||[]).map(key=>solutions.groups[key]?.title);
+  const hay=norm([q.id,examLabel(q,true),q.subject,a?.alias,q.unit,...q.concepts,...logic,...(q.textbook_chapters||[]).map(c=>c.title),q.number+'번',q.statement_latex].join(' '));
   return query.split(/\s+/).every(w=>hay.includes(norm(w)));
 }
 function chooseSubject(subject='',unit=''){state.subject=subject;state.unit=unit;state.chapter='';state.id='';render();}
@@ -44,10 +66,15 @@ function renderNav(){
 function openQuestion(q,focus=false){state.id=q.id;selected=q;renderResults();renderDetail();writeURL();if(focus){detail.focus({preventScroll:true});if(innerWidth<591)detail.scrollIntoView({block:'start',behavior:'smooth'})}}
 function renderResults(){
   const scroll=results.scrollTop;
-  results.replaceChildren(...filtered.map(q=>el('button',{type:'button',class:'result',...(q.id===state.id?{'aria-current':'true'}:{}),onclick:()=>openQuestion(q,true)},
-    el('span',{class:'result-title'},el('span',{text:examLabel(q)}),el('strong',{text:`${q.number}번`})),
-    el('span',{class:'result-unit',text:`${q.subject} · ${q.unit}${q.points?` · ${q.points}점`:''}`})
-  )));
+  let rank=0;
+  results.replaceChildren(...filtered.map((q,index)=>{
+    const wrong=rate(q,state.order==='wrong'?state.cohort:cohortFor(q));
+    if(state.order==='wrong'&&(index===0||wrong!==rate(filtered[index-1])))rank=index+1;
+    return el('button',{type:'button',class:'result',...(q.id===state.id?{'aria-current':'true'}:{}),onclick:()=>openQuestion(q,true)},
+      el('span',{class:'result-title'},el('span',{text:`${state.order==='wrong'?`${rank}위 · `:''}${examLabel(q)}`}),el('strong',{text:`${q.number}번`})),
+      el('span',{class:'result-unit',text:`${q.subject} · ${q.unit} · ${q.points}점${wrong===undefined?'':state.order==='wrong'?` · 오답 ${percent(wrong)}`:` · 정답 ${percent(100-wrong)}`}`})
+    );
+  }));
   if(!filtered.length)results.append(el('p',{class:'result-empty',text:'조건에 맞는 문항이 없습니다.'}));
   results.scrollTop=scroll;
   $('#result-count').textContent=`${filtered.length.toLocaleString('ko-KR')}개 문항`;
@@ -61,6 +88,47 @@ function originalCrop(q,zoom=false){
 }
 async function copy(s,message){try{await navigator.clipboard.writeText(s);toast(message)}catch{toast('복사할 수 없습니다. 소스에서 직접 선택해 복사하세요.')}}
 function typeset(node){const run=()=>window.MathJax?.typesetPromise?.([node]).catch(()=>{});if(window.MathJax?.typesetPromise)run();else $('#mathjax').addEventListener('load',()=>{window.MathJax?.startup?.promise?.then(run).catch(()=>{})},{once:true})}
+function rateDetails(q){
+  const cohort=cohortFor(q);
+  const wrong=rate(q,cohort);
+  const text=wrong===undefined?`EBSi 정답률 미확인 · ${cohort} 응시`:`EBSi 정답률 ${percent(100-wrong)} · ${cohort} 응시`;
+  const box=el('details',{class:'rate-details'},el('summary',{text}));
+  const rows=Object.entries(ebsi.rates[q.id]||{});
+  if(rows.length){
+    box.append(el('ul',{},...rows.map(([cohort,n])=>el('li',{text:`${cohort} 응시 · 정답 ${percent(100-n)} · 오답 ${percent(n)}` }))));
+  }
+  const exam=ebsi.exams[q.exam_id.replace(/-[ab]$/,'')];
+  box.append(el('p',{text:exam?'정답률은 100%에서 EBSi 오답률을 뺀 값입니다. 집단별 오답률 TOP15에 공개된 값만 표시합니다.':'이 문항의 EBSi 응시 집계는 확인되지 않았습니다.'}));
+  if(exam)box.append(externalLink('EBSi 풀서비스 출처 ↗',exam));
+  return box;
+}
+function chooseLogic(logic,id=''){
+  Object.assign(state,{logic,id,subject:'',unit:'',exam:'',points:'4',chapter:'',search:'',order:'',mode:'solution'});
+  syncFilters();
+  render();
+}
+function renderSolution(q,panel){
+  const solution=solutions.items[q.id];
+  const box=el('div',{class:'solution-panel'});
+  if(solution?.answer)box.append(el('p',{class:'solution-answer',text:`정답 ${solution.answer}`}));
+  if(solution?.steps?.length){
+    box.append(el('h3',{text:'해설'}),el('ol',{class:'solution-steps'},...solution.steps.map(text=>el('li',{text}))));
+  }
+  for(const key of solution?.logic||[]){
+    const group=solutions.groups[key];
+    const related=items.filter(item=>item.id!==q.id&&solutions.items[item.id]?.logic?.includes(key));
+    box.append(el('section',{class:'logic-card'},el('h3',{text:group.title}),
+      el('p',{text:group.description}),
+      related.length?el('button',{class:'secondary',type:'button',text:`같은 풀이 논리 ${related.length}문항 보기`,onclick:()=>chooseLogic(key,q.id)}):null));
+  }
+  if(solution?.reference){
+    const reference=solution.reference;
+    box.append(el('p',{},externalLink(reference.label,reference.url)));
+  }
+  if(!solution?.steps?.length)box.append(el('p',{class:'notice',text:solution?.reference?'문항별 전개는 위 출처의 정답 및 풀이에서 확인할 수 있습니다.':'작성된 해설을 아직 확인할 수 없습니다.'}));
+  panel.append(box);
+  typeset(box);
+}
 function renderPanel(q,panel){
   if(state.mode==='original'){
     panel.append(el('div',{class:'paper-frame'},originalCrop(q)),el('div',{class:'paper-meta'},el('span',{text:`한국교육과정평가원 · 시험지 ${q.page_in_exam}쪽`}),el('button',{type:'button',class:'secondary',text:'원문 확대',onclick:()=>{$('#zoom-content').replaceChildren(originalCrop(q,true));$('#zoom-dialog').showModal()}})));
@@ -71,6 +139,8 @@ function renderPanel(q,panel){
     if(q.transcription_status!=='verified')body.append(el('p',{class:'notice',text:'LaTeX 변환본입니다. 복잡한 수식과 표·도형은 시험지 원문과 대조해 주세요.'}));
     body.append(el('div',{class:'latex-actions'},el('button',{type:'button',class:'secondary',text:'LaTeX 복사',onclick:()=>copy(q.statement_latex,'LaTeX를 복사했습니다.')})),rendered,el('details',{},el('summary',{text:'LaTeX 소스 펼치기'}),source),el('details',{},el('summary',{text:'원문과 대조하기'}),originalCrop(q)));
     panel.append(body);typeset(rendered);
+  }else if(state.mode==='solution'){
+    renderSolution(q,panel);
   }else{
     const box=el('div',{class:'concept-panel'},el('h3',{text:`${q.subject} / ${q.unit}`}),el('ul',{},...q.concepts.map(c=>el('li',{text:c}))));
     if(q.concept_note)box.append(el('p',{text:q.concept_note}));
@@ -86,18 +156,32 @@ function renderDetail(){
   if(!selected){detail.replaceChildren(el('div',{class:'empty'},el('div',{class:'empty-symbol','aria-hidden':'true',text:'∑'}),el('h2',{text:'문항이 없습니다'}),el('p',{text:'회차나 단원 필터를 바꿔 보세요.'})));return}
   const q=selected,subject=subjects.find(s=>s.name===q.subject),i=filtered.indexOf(q);
   const tabs=el('div',{class:'tabs',role:'tablist','aria-label':'문항 보기'});
-  const modes=Object.keys(modeNames);
+  const modes=q.points===4?Object.keys(modeNames):['original','latex','concept'];
+  if(!modes.includes(state.mode))state.mode='original';
   for(const mode of modes){
-    const b=el('button',{type:'button',class:'tab',id:`tab-${mode}`,role:'tab','aria-controls':'question-panel','aria-selected':String(state.mode===mode),tabindex:state.mode===mode?'0':'-1',text:modeNames[mode],onclick:()=>{state.mode=mode;renderDetail();$(`#tab-${mode}`).focus()}});
-    b.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const j=modes.indexOf(mode);const next=e.key==='Home'?0:e.key==='End'?modes.length-1:(j+(e.key==='ArrowLeft'?-1:1)+modes.length)%modes.length;state.mode=modes[next];renderDetail();$(`#tab-${state.mode}`).focus()});tabs.append(b);
+    const selectMode=nextMode=>{state.mode=nextMode;renderDetail();writeURL();$(`#tab-${nextMode}`).focus()};
+    const b=el('button',{type:'button',class:'tab',id:`tab-${mode}`,role:'tab','aria-controls':'question-panel','aria-selected':String(state.mode===mode),tabindex:state.mode===mode?'0':'-1',text:modeNames[mode],onclick:()=>selectMode(mode)});
+    b.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const j=modes.indexOf(mode);const next=e.key==='Home'?0:e.key==='End'?modes.length-1:(j+(e.key==='ArrowLeft'?-1:1)+modes.length)%modes.length;selectMode(modes[next])});tabs.append(b);
   }
   const panel=el('div',{id:'question-panel',role:'tabpanel','aria-labelledby':`tab-${state.mode}`});
   const previous=el('button',{type:'button',class:'secondary',text:'← 이전 문항',onclick:()=>openQuestion(filtered[i-1],true)});previous.disabled=i<1;
   const next=el('button',{type:'button',class:'secondary',text:'다음 문항 →',onclick:()=>openQuestion(filtered[i+1],true)});next.disabled=i<0||i>=filtered.length-1;
   detail.replaceChildren(el('div',{class:'detail-head'},el('div',{},el('p',{class:'detail-kicker',text:'평가원 수학 영역'}),el('h2',{text:`${examLabel(q,true)} ${q.number}번`})),el('button',{class:'quiet',type:'button',text:'문항 링크 복사',onclick:()=>copy(location.href,'문항 링크를 복사했습니다.')})),el('div',{class:'tag-row'},el('span',{class:`tag ${subject?.cls||''}`,text:q.subject}),el('span',{class:'tag',text:q.unit}),q.points?el('span',{class:'tag',text:`${q.points}점`}):null),tabs,panel,el('div',{class:'pagination'},previous,next));
+  tabs.before(rateDetails(q));
   renderPanel(q,panel);
 }
-function render(){filtered=items.filter(matches);selected=filtered.find(q=>q.id===state.id)||filtered[0];state.id=selected?.id||'';renderNav();renderResults();renderDetail();writeURL()}
+function render(){
+  filtered=items.filter(matches);
+  if(state.order==='wrong')filtered.sort((a,b)=>rate(b)-rate(a));
+  selected=filtered.find(q=>q.id===state.id)||filtered[0];
+  state.id=selected?.id||'';
+  $('#ranking-note').hidden=state.order!=='wrong';
+  renderNav();renderResults();renderDetail();writeURL();
+}
+function syncFilters(){
+  $('#search').value=state.search;
+  for(const field of ['exam','points','chapter','order','cohort','logic'])$(`#${field}-select`).value=state[field];
+}
 function coverage(){
   const out=$('#coverage-content');
   const table=el('table',{class:'coverage-table'},el('thead',{},el('tr',{},...['회차','수학Ⅰ·Ⅱ','확률과 통계'].map(text=>el('th',{scope:'col',text})))));
@@ -107,7 +191,10 @@ function coverage(){
     body.append(el('tr',{},el('td',{text:examLabel(ex,true)}),el('td',{text:`${qs.length-ps}문항`}),el('td',{class:ps?'':'pending',text:ps?`${ps}문항`:'선택과목 원문 미수록'})));
   }
   table.append(body);
-  out.replaceChildren(el('p',{text:archive.scope_note}),table,el('p',{},el('a',{href:'https://www.ebsi.co.kr/ebs/xip/xipc/previousPaperList.ebs?targetCd=D300',target:'_blank',rel:'noopener noreferrer',text:'EBSi 평가원 기출문제 원문 찾아보기 ↗'})));
+  const notes=Object.values(solutions.items);
+  out.replaceChildren(el('p',{text:archive.scope_note}),
+    el('p',{text:`EBSi 공개 정답률 ${Object.keys(ebsi.rates).length}문항 · 4점 풀이 논리 ${notes.length}문항 · 직접 작성 해설 ${notes.filter(item=>item.steps?.length).length}문항`}),
+    table,el('p',{},externalLink('EBSi 평가원 기출문제 원문 찾아보기 ↗','https://www.ebsi.co.kr/ebs/xip/xipc/previousPaperList.ebs?targetCd=D300')));
   $('#coverage-dialog').showModal();
 }
 $('#coverage-open').addEventListener('click',()=>{if(archive)coverage()});
@@ -116,16 +203,41 @@ $('#search').addEventListener('input',e=>{state.search=e.target.value;state.id='
 $('#exam-select').addEventListener('change',e=>{state.exam=e.target.value;state.id='';render()});
 $('#points-select').addEventListener('change',e=>{state.points=e.target.value;state.id='';render()});
 $('#chapter-select').addEventListener('change',e=>{state.chapter=e.target.value;state.id='';render()});
-$('#reset').addEventListener('click',()=>{Object.assign(state,{subject:'',unit:'',exam:'',points:'',chapter:'',search:'',id:'',mode:'original'});$('#search').value='';$('#exam-select').value='';$('#points-select').value='';render()});
+for(const field of ['order','cohort','logic']){
+  $(`#${field}-select`).addEventListener('change',e=>{state[field]=e.target.value;state.id='';render()});
+}
+$('#reset').addEventListener('click',()=>{
+  Object.assign(state,{subject:'',unit:'',exam:'',points:'',chapter:'',search:'',id:'',mode:'original',order:'',cohort:cohorts[0],logic:''});
+  syncFilters();render();
+});
 if(matchMedia('(max-width:800px)').matches)$('#unit-menu').open=false;
+async function loadData(path){
+  const response=await fetch(path);
+  if(!response.ok)throw new Error(`HTTP ${response.status} for ${path}`);
+  return response.json();
+}
 try{
-  const r=await fetch('data/questions.json');if(!r.ok)throw new Error(`HTTP ${r.status}`);
-  archive=await r.json();items=archive.items.sort((a,b)=>b.exam_id.localeCompare(a.exam_id)||a.number-b.number);
+  const [catalog,rates,notes]=await Promise.all([
+    loadData('data/questions.json?v=ebsi'),
+    loadData('data/ebsi-rates.json').catch(()=>null),
+    loadData('data/solutions.json').catch(()=>null),
+  ]);
+  archive=catalog;
+  if(rates)ebsi=rates;
+  if(notes)solutions=notes;
+  items=archive.items.sort((a,b)=>b.exam_id.localeCompare(a.exam_id)||a.number-b.number);
   const es=$('#exam-select');
   for(const ex of [...archive.exams].sort((a,b)=>b.id.localeCompare(a.id)))es.append(el('option',{value:ex.id,text:examLabel(ex,true)}));
   if(state.exam&&!archive.exams.some(ex=>ex.id===state.exam))state.exam='';
   for(const [number,[title]] of Object.entries(archive.probability_reference.chapters))$('#chapter-select').append(el('option',{value:number,text:`${String(number).padStart(2,'0')}. ${title}`}));
-  $('#search').value=state.search;es.value=state.exam;$('#points-select').value=state.points;
+  if(!solutions.groups[state.logic])state.logic='';
+  const logicSelect=$('#logic-select');
+  for(const [key,group] of Object.entries(solutions.groups)){
+    const count=items.filter(q=>solutions.items[q.id]?.logic?.includes(key)).length;
+    if(count)logicSelect.append(el('option',{value:key,text:`${group.title} (${count})`}));
+  }
+  $('#logic-filter').hidden=logicSelect.options.length<=1;
+  syncFilters();
   $('#total-count').textContent=items.length.toLocaleString('ko-KR');render();
 }catch(e){detail.replaceChildren(el('div',{class:'empty'},el('h2',{text:'문항 자료를 불러오지 못했습니다'}),el('p',{text:'페이지를 새로 고쳐 다시 확인해 주세요.'})));$('#result-count').textContent='자료 불러오기 실패';}
 finally{$('#archive').setAttribute('aria-busy','false')}

@@ -1,0 +1,3504 @@
+{
+  "groups": {
+    "motion": {
+      "title": "위치·속도·가속도와 상대 위치",
+      "description": "위치·속도·가속도를 미분과 적분으로 잇는다. 만남이나 같은 속도는 차가 0인 때로 바꾼다."
+    },
+    "expo-shift": {
+      "title": "지수·로그 그래프의 같은 높이 또는 길이",
+      "description": "점근선과 공통 높이로 교점의 좌표를 나타내고, 두 지수식을 나누거나 거리 조건을 대입한다."
+    },
+    "integral-differentiate": {
+      "title": "변하는 적분 구간을 미분해 피적분함수 찾기",
+      "description": "적분 조건의 양변을 미분해 함수 관계를 얻고, 원래 식의 기준점에 대입해 상수를 복원한다."
+    },
+    "integral-positivity": {
+      "title": "모든 구간의 적분 조건을 점별 부호로 바꾸기",
+      "description": "함숫값이 음수인 점 주변에서 적분이 음수가 된다는 사실로 조건을 피적분함수의 최솟값에 옮긴다."
+    },
+    "integral-cancel": {
+      "title": "정적분을 더하거나 빼 공통 구간 없애기",
+      "description": "구간을 분할하거나 적분의 선형성을 적용해 공통 항을 소거하고 남은 식만 계산한다."
+    },
+    "circumcircle": {
+      "title": "공통 외접원에서 현과 각을 변환하기",
+      "description": "코사인법칙이나 원주각으로 필요한 변·각을 얻고, 현의 길이와 맞은각의 사인 비를 지름으로 연결한다."
+    },
+    "signed-area": {
+      "title": "부호가 바뀌는 곳에서 적분 나누기",
+      "description": "교점이나 영점으로 구간을 나눈 뒤 부호 있는 적분을 실제 넓이나 이동거리로 바꾼다."
+    },
+    "exceptional-indices": {
+      "title": "규칙이 바뀌는 지표만 골라 합 계산하기",
+      "description": "대부분의 항을 기본 규칙으로 합하고 예외 지표에서 생기는 차이만 보정한다."
+    },
+    "vanishing-order": {
+      "title": "분모의 영점과 분자의 소거 조건 맞추기",
+      "description": "분모가 0이 되는 후보를 먼저 찾고, 유한한 극한을 갖도록 분자도 필요한 차수만큼 0이 되게 한다."
+    },
+    "boundary-values": {
+      "title": "식이 갈리는 경계에서 값·기울기 맞추기",
+      "description": "경계 양쪽의 함수값과 필요한 경우 미분계수를 비교해 조건을 매개변수 식으로 바꾼다."
+    },
+    "trig-symmetry": {
+      "title": "삼각함수 대칭으로 좌표와 넓이 줄이기",
+      "description": "주기 이동과 점·축 대칭을 이용해 여러 교점의 좌표를 한 변수로 표현한다."
+    },
+    "cancel-corners": {
+      "title": "절댓값 꼭짓점의 기울기 변화 상쇄하기",
+      "description": "단순근에서 생기는 좌우 기울기 차를 찾아, 합성된 식의 같은 위치에서 변화량이 상쇄되도록 한다."
+    },
+    "inverse-coordinate": {
+      "title": "역함수 관계로 교점의 좌표 옮기기",
+      "description": "로그식을 지수식으로 바꾸어 반사·평행이동·배율에 따른 좌표 대응을 찾는다."
+    },
+    "state-transitions": {
+      "title": "반복 시행에서 상태별 경로 수 누적하기",
+      "description": "현재 배열이나 위치를 상태로 두고 한 시행에서 가능한 이동을 세어 다음 단계의 경로 수를 구한다."
+    },
+    "conditional-space": {
+      "title": "조건을 만족하는 표본공간부터 다시 세기",
+      "description": "조건이 성립하는 전체 경우를 분모로 두고, 두 사건을 동시에 만족하는 경우를 분자로 센다."
+    },
+    "bounded-compositions": {
+      "title": "합 조건의 정수 해에서 제한 처리하기",
+      "description": "최솟값을 빼거나 합이 정해진 비음수 정수 해로 바꾼 뒤, 불가능한 해를 제외하거나 상한에 따라 나눈다."
+    },
+    "moments": {
+      "title": "제곱의 평균을 평균과 분산으로 분리하기",
+      "description": "확률질량을 모두 나열하기 전에 합이나 표본평균의 평균·분산으로 필요한 적률을 계산한다."
+    },
+    "log-substitute": {
+      "title": "로그 밑을 통일하고 대수식으로 바꾸기",
+      "description": "밑을 통일하고 로그값을 변수로 두어 방정식을 푼 뒤 진수 조건과 원래 구할 값을 확인한다."
+    },
+    "progression-ratio": {
+      "title": "등차·등비수열의 일정한 간격 이용하기",
+      "description": "항을 첫째항과 공차·공비로 나타내고, 같은 간격의 항이나 부분합을 비교해 매개변수를 없앤다."
+    },
+    "period-count": {
+      "title": "한 주기의 해를 세고 구간 끝점 확인하기",
+      "description": "목표 높이가 최댓값·최솟값에 닿는 경우를 따로 보고 주기 수와 끝점 포함 여부를 반영한다."
+    },
+    "inverse-branch": {
+      "title": "높이 변화에 따른 가장 오른쪽 교점 추적하기",
+      "description": "가로선을 움직이며 원하는 교점 가지를 따라가고 극값의 높이에서 가지가 새로 생기거나 사라지는지 본다."
+    },
+    "reverse-recurrence": {
+      "title": "점화식을 거슬러 올라가 가능한 이전 항 세기",
+      "description": "목표 항에서 각 분기의 역상을 만들고 부호나 홀짝 조건을 통과한 후보만 남긴다."
+    },
+    "forward-recurrence": {
+      "title": "점화식의 분기를 따라 항·주기 찾기",
+      "description": "항의 부호나 나머지를 상태로 보아 다음 항을 결정하고 반복되는 블록을 찾아 계산을 줄인다."
+    },
+    "flip-parity": {
+      "title": "뒤집기 횟수의 홀짝만 추적하기",
+      "description": "각 자리의 변화는 뒤집은 총횟수의 홀짝으로 정해진다. 시행 순서 대신 홀짝 조건을 풀어 가능한 횟수를 센다."
+    },
+    "separator-gaps": {
+      "title": "구분자를 먼저 놓고 틈에 배치하기",
+      "description": "빈 자리나 다른 종류의 대상을 구분자로 삼아 틈을 만든 뒤, 인접 조건에 따라 쓸 수 있는 틈을 고른다."
+    },
+    "tangent-parameter": {
+      "title": "접점을 변수로 놓고 접선 조건 풀기",
+      "description": "접점 $t$에서의 기울기와 함숫값을 이용해 접선 식을 세우고, 통과하는 점이나 다른 직선과의 관계를 대입한다."
+    },
+    "integer-parameter": {
+      "title": "실수 조건을 정수 후보 범위로 좁히기",
+      "description": "부등식이나 경계값으로 가능한 구간을 얻은 뒤 정수 조건으로 후보를 세고 끝점을 검산한다."
+    },
+    "roots-as-factors": {
+      "title": "근을 인수로 놓아 함수의 계수 줄이기",
+      "description": "주어진 영점이나 교점의 좌표로 차함수를 인수분해하고 남은 인수와 계수를 다른 조건에서 결정한다."
+    },
+    "difference-sums": {
+      "title": "연속한 누적합을 빼 일반항 복원하기",
+      "description": "누적합을 한 단계씩 빼 공통 항을 지우고 $S_n-S_{n-1}=a_n$으로 필요한 항을 복원한다."
+    },
+    "derivative-level": {
+      "title": "도함수의 부호로 극값과 교점 개수 정하기",
+      "description": "도함수의 영점과 부호로 증가·감소 구간을 나누고, 극값의 높이와 경계에서 등식이 되는 경우를 비교한다."
+    },
+    "modular-count": {
+      "title": "홀짝 또는 나머지에 따라 경우 나누기",
+      "description": "원소를 같은 나머지끼리 묶고 합·곱의 나머지 조건이 허용하는 조합만 센다."
+    },
+    "sum-distribution": {
+      "title": "시행 결과의 합을 만드는 조합과 순서 세기",
+      "description": "목표 합을 이루는 값의 조합을 먼저 나누고, 각 조합의 순서 수와 독립시행의 확률을 곱해 더한다."
+    },
+    "normal-approximation": {
+      "title": "한 시행의 확률로 이항분포를 만들고 정규근사하기",
+      "description": "한 시행의 성공확률을 구하고 반복 횟수로 평균과 분산을 만든 뒤 표준화한다."
+    },
+    "normal-symmetry": {
+      "title": "정규분포의 대칭과 표준화로 기준 맞추기",
+      "description": "평균을 중심으로 대칭인 확률을 옮겨 놓고 서로 다른 분포의 경계값을 표준점수로 비교한다."
+    },
+    "confidence-width": {
+      "title": "신뢰구간의 중심과 반폭을 따로 쓰기",
+      "description": "끝점의 평균은 표본평균으로, 반폭은 임계값과 표준오차의 곱으로 해석한다."
+    },
+    "count-function": {
+      "title": "함수의 치역 조건을 원소별 배정으로 바꾸기",
+      "description": "각 정의역 원소가 가질 수 있는 함숫값을 분류하고, 중복이나 순서 제한을 만족하는 배정 수를 센다."
+    },
+    "complement-count": {
+      "title": "여사건 또는 겹치는 경우를 빼서 세기",
+      "description": "직접 세기 복잡한 사건을 전체에서 제외되는 경우로 바꾸거나, 겹쳐 센 경우를 포함배제로 조정한다."
+    },
+    "arrangement-blocks": {
+      "title": "붙어야 하는 대상을 묶고 배치하기",
+      "description": "인접 조건을 블록으로 나타낸 뒤 내부 순서, 바깥 배열, 회전이나 동일 원소의 중복을 반영한다."
+    },
+    "trig-identity": {
+      "title": "삼각비 항등식으로 식을 한 변수로 줄이기",
+      "description": "기본 관계식과 각의 범위를 이용해 사인·코사인 중 한 값으로 식을 정리하고 부호를 결정한다."
+    },
+    "independent-trials": {
+      "title": "독립시행에서 성공 횟수와 위치 나누기",
+      "description": "한 시행의 경우를 먼저 분류하고 반복 횟수나 성공 위치를 고른 뒤 독립확률의 곱을 더한다."
+    }
+  },
+  "items": {
+    "2022-example-09": {
+      "logic": [
+        "tangent-parameter"
+      ],
+      "answer": "②",
+      "steps": [
+        "접점을 $(t,f(t))$로 두면 원점을 지나는 조건은 $f(t)=tf'(t)$이다. $f(x)=-x^3-x^2+x$를 넣으면 $t^2(2t+1)=0$이므로 $t=0,-1/2$이다.",
+        "두 기울기는 $f'(0)=1$, $f'(-1/2)=5/4$이다. 합은 $9/4$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-10": {
+      "logic": [
+        "log-substitute",
+        "integer-parameter"
+      ],
+      "answer": "①",
+      "steps": [
+        "$n=1/3+(\\log a)/2$라고 두면 주어진 범위는 $7/12<n<37/12$로 바뀐다. 따라서 가능한 자연수는 $1,2,3$이다.",
+        "$\\log a=2n-2/3$이므로 세 로그의 합은 $10$이다. 구하는 곱은 $10^{10}$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-11": {
+      "logic": [
+        "roots-as-factors",
+        "progression-ratio"
+      ],
+      "answer": "②",
+      "steps": [
+        "$f(x)-9$의 세 근을 $a,b,c$라 하자. 상수항이 $-8$이므로 $abc=8$, 등비수열 조건에서 $ac=b^2$이다. 따라서 $b=2$이다.",
+        "$f'(2)=(2-a)(2-c)=-2$이고 $ac=4$여서 $a+c=5$이다. 나머지 근은 $1,4$이다.",
+        "$f(x)=9+(x-1)(x-2)(x-4)$이므로 $f(3)=7$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-12": {
+      "logic": [
+        "integral-positivity"
+      ],
+      "answer": "②",
+      "steps": [
+        "모든 양의 구간에서 적분이 양수이려면 적분함수 $u(x)=x^3-3x+k$가 양의 영역에서 음수가 되어서는 안 된다. 음수인 점이 있다면 연속성으로 그 주변 구간의 적분이 음수이다.",
+        "$u'(x)=3(x^2-1)$에서 $x=1$이 최소점이고 $u(1)=k-2$이다. $k=2$이면 한 점에서만 $0$이라 길이가 양수인 모든 구간의 적분은 양수다. 최솟값은 $2$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-13": {
+      "logic": [
+        "difference-sums"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "연속한 두 누적합을 빼면 $S_n/n!=1/(n+1)!-1/n!=-n/(n+1)!$이다. 따라서 (가)는 $n$이다.",
+        "$S_n=-n/(n+1)$을 다시 차분하면 $n\\ge3$에서 $a_n=-1/[n(n+1)]$이다. (나)는 $1/[n(n+1)]$이다.",
+        "$\\sum k(k+1)=\\sum k^2+\\sum k$이므로 (다)는 $k^2$이다. $5\\cdot(1/12)\\cdot36=15$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-14": {
+      "logic": [
+        "motion",
+        "signed-area"
+      ],
+      "answer": "④",
+      "steps": [
+        "가속도를 적분하고 초기 속도를 넣으면 $v(t)=t(t-3)^2+k$이다. $t>3$에서 가속도가 양수이므로 ㄱ은 참이다.",
+        "$k=-4$일 때 $v(t)=(t-1)^2(t-4)$이다. 중근 $1$에서는 속도의 부호가 바뀌지 않으므로 방향은 $4$에서 한 번만 바뀐다.",
+        "변위와 이동거리가 같으려면 $[0,5]$에서 속도가 음수가 되지 않아야 한다. $t(t-3)^2$의 최솟값은 $0$이므로 $k\\ge0$이고 ㄷ은 참이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-15": {
+      "logic": [
+        "reverse-recurrence"
+      ],
+      "answer": "③",
+      "steps": [
+        "다음 항이 $y$라면 이전 항 후보는 $y+6$과 $(3-y)/2$이다. 각각 원래 규칙의 부호 조건을 만족시킬 때만 남긴다.",
+        "$a_5=5$에서 네 단계 역추적하면 $a_1=-10,-4,5,8,17,29$가 가능하다.",
+        "$a_5$ 이후는 $5,-1$의 교대이므로 96항의 합은 $192$이다. 앞 네 항의 합은 각각 $41,11,8,17,32,80$이다. 차는 $80-8=72$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-20": {
+      "logic": [
+        "progression-ratio",
+        "signed-area"
+      ],
+      "answer": "25",
+      "steps": [
+        "등차수열에서 $a_3+a_5=2a_4=0$이므로 $a_k=(k-4)d$이다. $|a_k|+a_k$는 양의 항만 두 배 센다.",
+        "$d>0$이면 첫 여섯 항에서 양의 항의 합이 $3d$라서 $6d=30$이다. $d<0$이면 $-12d=30$이라 정수 공차가 나오지 않는다.",
+        "$d=5$이므로 $a_9=5d=25$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-21": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "26",
+      "steps": [
+        "외접원 반지름을 $R,r$이라 하면 공통 현 $AC$에 사인법칙을 적용하여 $R\\sin\\alpha=r\\sin\\beta$이고 $r=2R/3$이다.",
+        "두 외심은 현의 수직이등분선 위에 있다. 그림의 두 삼각형이 현의 서로 반대편에 있으므로, 현 중점에서 각 외심까지의 부호 있는 거리를 합쳐 $OO'^2=(R\\cos\\alpha+r\\cos\\beta)^2$이다.",
+        "공통 현에서 $(R\\sin\\alpha)^2=(r\\sin\\beta)^2$이므로 제곱식을 정리하면 $R^2+r^2+2Rr\\cos(\\alpha+\\beta)=17R^2/9=1$이다. 따라서 $p+q=17+9=26$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-22": {
+      "logic": [
+        "derivative-level",
+        "integer-parameter"
+      ],
+      "answer": "14",
+      "steps": [
+        "$f'(x)=3x(x-2p)$이므로 두 극값은 $q$와 $q-4p^3$이다. $|f|$에 극점이 다섯 개 생기려면 원래 극점 두 개에 서로 다른 영점 세 개가 더해져야 하므로 $0<q<4p^3$이다.",
+        "두 구간에서 $f$의 최대는 $q$이고 최소는 왼쪽 끝점이다. 왼쪽 끝점을 $-1$에서 $-2$로 옮기면 최소값이 엄격히 작아지므로 절댓값의 최대를 유지하려면 $f(-2)\\ge-q$여야 한다. 이는 $q\\ge6p+4$이다.",
+        "$q\\le25$에서 가능한 $p$는 $2,3$이고, $q$의 범위는 각각 $16$부터 $25$, $22$부터 $25$이다. 합계 $14$쌍이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-06-09": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=3"
+      }
+    },
+    "2022-06-10": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=3"
+      }
+    },
+    "2022-06-11": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=4"
+      }
+    },
+    "2022-06-12": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=4"
+      }
+    },
+    "2022-06-13": {
+      "logic": [
+        "difference-sums"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=5"
+      }
+    },
+    "2022-06-14": {
+      "logic": [
+        "cancel-corners"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=5"
+      }
+    },
+    "2022-06-15": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=6"
+      }
+    },
+    "2022-06-20": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "8",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=9"
+      }
+    },
+    "2022-06-21": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "24",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=10"
+      }
+    },
+    "2022-06-22": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "61",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=11"
+      }
+    },
+    "2022-09-09": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=3"
+      }
+    },
+    "2022-09-10": {
+      "logic": [
+        "trig-symmetry"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=3"
+      }
+    },
+    "2022-09-11": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=4"
+      }
+    },
+    "2022-09-12": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=4"
+      }
+    },
+    "2022-09-13": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=5"
+      }
+    },
+    "2022-09-14": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=5"
+      }
+    },
+    "2022-09-15": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=7"
+      }
+    },
+    "2022-09-20": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "21",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=9"
+      }
+    },
+    "2022-09-21": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "192",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=10"
+      }
+    },
+    "2022-09-22": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "108",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=11"
+      }
+    },
+    "2022-11-09": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "④",
+      "steps": [
+        "두 지수함수는 감소하고 두 번째 그래프가 첫 번째보다 항상 위에 있으므로 직선과의 교점 $Q$는 $P$보다 오른쪽이다. 직선 기울기가 $2$이고 거리가 $\\sqrt5$이므로 두 점의 좌표 차는 $(1,2)$이다.",
+        "$P$의 $x$좌표를 $p$, $w=(2/3)^{p+3}$이라 하면 $Q$의 지수항은 $3w/2$이다. 높이 차에서 $(3w/2+8/3)-(w+1)=2$, 따라서 $w=2/3$이다.",
+        "$p=-2$이고 $P$의 높이는 $5/3$이므로 $k=5/3-2(-2)=17/3$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=4"
+      }
+    },
+    "2022-11-10": {
+      "logic": [
+        "tangent-parameter"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=4"
+      }
+    },
+    "2022-11-11": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=5"
+      }
+    },
+    "2022-11-12": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=5"
+      }
+    },
+    "2022-11-13": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=6"
+      }
+    },
+    "2022-11-14": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=7"
+      }
+    },
+    "2022-11-15": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=7"
+      }
+    },
+    "2022-11-20": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "110",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=9"
+      }
+    },
+    "2022-11-21": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "678",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=9"
+      }
+    },
+    "2022-11-22": {
+      "logic": [
+        "vanishing-order"
+      ],
+      "answer": "9",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=10"
+      }
+    },
+    "2023-06-09": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=3"
+      }
+    },
+    "2023-06-10": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=4"
+      }
+    },
+    "2023-06-11": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=4"
+      }
+    },
+    "2023-06-12": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=5"
+      }
+    },
+    "2023-06-13": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=5"
+      }
+    },
+    "2023-06-14": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=6"
+      }
+    },
+    "2023-06-15": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=8"
+      }
+    },
+    "2023-06-20": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "13",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=9"
+      }
+    },
+    "2023-06-21": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "426",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=10"
+      }
+    },
+    "2023-06-22": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "19",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=11"
+      }
+    },
+    "2023-09-09": {
+      "logic": [
+        "trig-identity"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=3"
+      }
+    },
+    "2023-09-10": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=4"
+      }
+    },
+    "2023-09-11": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=4"
+      }
+    },
+    "2023-09-12": {
+      "logic": [
+        "vanishing-order"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=4"
+      }
+    },
+    "2023-09-13": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=5"
+      }
+    },
+    "2023-09-14": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=7"
+      }
+    },
+    "2023-09-15": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=8"
+      }
+    },
+    "2023-09-20": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "80",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=10"
+      }
+    },
+    "2023-09-21": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "220",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=11"
+      }
+    },
+    "2023-09-22": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "58",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=12"
+      }
+    },
+    "2023-11-09": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=3"
+      }
+    },
+    "2023-11-10": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=4"
+      }
+    },
+    "2023-11-11": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=4"
+      }
+    },
+    "2023-11-12": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=5"
+      }
+    },
+    "2023-11-13": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=6"
+      }
+    },
+    "2023-11-14": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=7"
+      }
+    },
+    "2023-11-15": {
+      "logic": [
+        "reverse-recurrence"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=9"
+      }
+    },
+    "2023-11-20": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "17",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=11"
+      }
+    },
+    "2023-11-21": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "33",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=12"
+      }
+    },
+    "2023-11-22": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "13",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=13"
+      }
+    },
+    "2024-06-09": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=3"
+      }
+    },
+    "2024-06-10": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=4"
+      }
+    },
+    "2024-06-11": {
+      "logic": [
+        "vanishing-order"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=4"
+      }
+    },
+    "2024-06-12": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=5"
+      }
+    },
+    "2024-06-13": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=6"
+      }
+    },
+    "2024-06-14": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=7"
+      }
+    },
+    "2024-06-15": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=8"
+      }
+    },
+    "2024-06-20": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "39",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=11"
+      }
+    },
+    "2024-06-21": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "110",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=12"
+      }
+    },
+    "2024-06-22": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "380",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=13"
+      }
+    },
+    "2024-09-09": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 2쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=2"
+      }
+    },
+    "2024-09-10": {
+      "logic": [
+        "tangent-parameter"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=3"
+      }
+    },
+    "2024-09-11": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=3"
+      }
+    },
+    "2024-09-12": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=4"
+      }
+    },
+    "2024-09-13": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=5"
+      }
+    },
+    "2024-09-14": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=6"
+      }
+    },
+    "2024-09-15": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=7"
+      }
+    },
+    "2024-09-20": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "98",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=9"
+      }
+    },
+    "2024-09-21": {
+      "logic": [
+        "progression-ratio"
+      ],
+      "answer": "19",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=9"
+      }
+    },
+    "2024-09-22": {
+      "logic": [
+        "integral-differentiate",
+        "roots-as-factors"
+      ],
+      "answer": "10",
+      "steps": [
+        "조건 (가)를 미분해 $xf'(x)=4x$를 얻는다. $x=1$을 원래 식에 대입하면 $f(1)=3$이므로 $f(x)=4x-1$, $F(x)=2x^2-x+c$이다.",
+        "조건 (나)는 $(FG)'=8x^3+3x^2+1$이다. 적분하면 $FG=2x^4+x^3+x+d$이다. 차수와 최고차항에서 $G(x)=x^2+ux+v$로 놓을 수 있다.",
+        "$x^3,x^2,x$의 계수를 차례로 맞추면 $u=1$, $2v+c=1$, $c-v=1$이어서 $v=0,c=1$이다. 따라서 $G(3)-G(1)=10$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=10"
+      }
+    },
+    "2024-11-09": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=3"
+      }
+    },
+    "2024-11-10": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=3"
+      }
+    },
+    "2024-11-11": {
+      "logic": [
+        "progression-ratio"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=4"
+      }
+    },
+    "2024-11-12": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=5"
+      }
+    },
+    "2024-11-13": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=6"
+      }
+    },
+    "2024-11-14": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=6"
+      }
+    },
+    "2024-11-15": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=8"
+      }
+    },
+    "2024-11-20": {
+      "logic": [
+        "tangent-parameter"
+      ],
+      "answer": "25",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=12"
+      }
+    },
+    "2024-11-21": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "10",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=12"
+      }
+    },
+    "2024-11-22": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "483",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=13"
+      }
+    },
+    "2025-06-09": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=3"
+      }
+    },
+    "2025-06-10": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=3"
+      }
+    },
+    "2025-06-11": {
+      "logic": [
+        "tangent-parameter"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=3"
+      }
+    },
+    "2025-06-12": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=4"
+      }
+    },
+    "2025-06-13": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=5"
+      }
+    },
+    "2025-06-14": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=5"
+      }
+    },
+    "2025-06-15": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=6"
+      }
+    },
+    "2025-06-20": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "24",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=9"
+      }
+    },
+    "2025-06-21": {
+      "logic": [
+        "roots-as-factors"
+      ],
+      "answer": "15",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=10"
+      }
+    },
+    "2025-06-22": {
+      "logic": [
+        "reverse-recurrence"
+      ],
+      "answer": "231",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=12"
+      }
+    },
+    "2025-09-09": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=3"
+      }
+    },
+    "2025-09-10": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=3"
+      }
+    },
+    "2025-09-11": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=4"
+      }
+    },
+    "2025-09-12": {
+      "logic": [
+        "progression-ratio"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=4"
+      }
+    },
+    "2025-09-13": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=5"
+      }
+    },
+    "2025-09-14": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=6"
+      }
+    },
+    "2025-09-15": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=6"
+      }
+    },
+    "2025-09-20": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "15",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=8"
+      }
+    },
+    "2025-09-21": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "31",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=9"
+      }
+    },
+    "2025-09-22": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "8",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=10"
+      }
+    },
+    "2025-11-09": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=3"
+      }
+    },
+    "2025-11-10": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=3"
+      }
+    },
+    "2025-11-11": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=4"
+      }
+    },
+    "2025-11-12": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=4"
+      }
+    },
+    "2025-11-13": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=4"
+      }
+    },
+    "2025-11-14": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=5"
+      }
+    },
+    "2025-11-15": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=6"
+      }
+    },
+    "2025-11-20": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "36",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=9"
+      }
+    },
+    "2025-11-21": {
+      "logic": [
+        "vanishing-order"
+      ],
+      "answer": "16",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=10"
+      }
+    },
+    "2025-11-22": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "64",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=11"
+      }
+    },
+    "2026-06-09": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 2쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=2"
+      }
+    },
+    "2026-06-10": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=3"
+      }
+    },
+    "2026-06-11": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=3"
+      }
+    },
+    "2026-06-12": {
+      "logic": [
+        "reverse-recurrence"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=4"
+      }
+    },
+    "2026-06-13": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=4"
+      }
+    },
+    "2026-06-14": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=5"
+      }
+    },
+    "2026-06-15": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=5"
+      }
+    },
+    "2026-06-20": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "85",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=8"
+      }
+    },
+    "2026-06-21": {
+      "logic": [
+        "vanishing-order"
+      ],
+      "answer": "42",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=8"
+      }
+    },
+    "2026-06-22": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "38",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=11"
+      }
+    },
+    "2026-09-09": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "②",
+      "steps": [
+        "차함수 $H(x)=G(x)-2F(x)$의 도함수는 $(2f(x)+1)-2f(x)=1$이다.",
+        "$H(3)=0$이므로 $H(x)=x-3$이다. 따라서 $H(5)=2$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 2쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=2"
+      }
+    },
+    "2026-09-10": {
+      "logic": [
+        "difference-sums",
+        "progression-ratio"
+      ],
+      "answer": "③",
+      "steps": [
+        "교대로 더한 부분합을 두 개씩 묶으면 $(S_2-S_1)+(S_4-S_3)+(S_6-S_5)=a_2+a_4+a_6$이다.",
+        "공비를 $r>0$이라 하면 $1+r^2+r^4=21$이다. $u=r^2$로 놓으면 $(u-4)(u+5)=0$이므로 $r=2$이다.",
+        "$a_1=1/2$이고 $S_2=3/2$, $S_7=127/2$이므로 합은 $65$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=3"
+      }
+    },
+    "2026-09-11": {
+      "logic": [
+        "motion",
+        "signed-area"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "$v(t)=(t-1)(3t-7)$이므로 $t=1$에서 속도의 부호가 바뀐다. ㄱ은 참이다.",
+        "원점에서 출발하므로 위치는 $V(t)=t^3-5t^2+7t$이다. $V(1)=3$이므로 ㄴ도 참이다.",
+        "$t=0$부터 $2$까지는 $1$에서만 방향을 바꾼다. 이동거리는 $V(1)-V(0)+V(1)-V(2)=4$이다. ㄷ도 참이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=3"
+      }
+    },
+    "2026-09-12": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "①",
+      "steps": [
+        "$B,C$의 $x$좌표가 같고 $AB=AC$이므로 $A$의 높이는 선분 $BC$의 중점 높이이다. $a^{2t}=2a^t$에서 $a^t=2$이다.",
+        "따라서 $BC=4$이고 $A$에서 직선 $BC$까지의 거리는 $t$이다. 넓이 조건 $4t/2=8$에서 $t=4$이다. $a t=4\\cdot2^{1/4}=2^{9/4}$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=4"
+      }
+    },
+    "2026-09-13": {
+      "logic": [
+        "vanishing-order",
+        "integer-parameter"
+      ],
+      "answer": "④",
+      "steps": [
+        "$f(x)=(x+3)^2+3$은 항상 양수이다. 따라서 분모의 영점은 $Q(x)=x^2+(6-k)x+12-2k$의 영점뿐이다.",
+        "$Q$가 영점을 갖지 않으면 극한은 모든 곳에서 존재한다. 판별식 $(k-6)(k+2)<0$에서 가능한 정수는 $-1$부터 $5$까지 일곱 개다.",
+        "영점 $a$가 있다면 분자 $ax^2$가 $a$에서 $0$이어야 하므로 $a=0$이다. $Q(0)=0$에서 $k=6$이고, 실제 이때 $Q=x^2$이며 $a=0$에서는 분자가 항등적으로 $0$이다. 총 여덟 개다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=4"
+      }
+    },
+    "2026-09-14": {
+      "logic": [
+        "trig-symmetry"
+      ],
+      "answer": "③",
+      "steps": [
+        "탄젠트의 주기가 $k\\pi$라서 $AB=k\\pi$이다. $AB=3PA$이므로 $x_A=k\\pi/3$이고 $p=\\tan(\\pi/3)=\\sqrt3$이다.",
+        "$(k\\pi,0)$을 중심으로 탄젠트 그래프를 점대칭하면 $B$가 $C$에 대응한다. 따라서 $BC$가 $x$축을 만나는 점은 $(k\\pi,0)$이고, 두 삼각형의 넓이를 더하면 $k\\pi p$이다.",
+        "$k\\pi\\sqrt3=5\\pi/3$에서 $k=5\\sqrt3/9$이다. 따라서 $k+p=14\\sqrt3/9$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=5"
+      }
+    },
+    "2026-09-15": {
+      "logic": [
+        "integral-differentiate",
+        "roots-as-factors"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "$f(x)=xH(x)$로 쓰면 $g'(x)=|x|(|H(x)|-1)$이다. 위로 열린 이차함수 $H$가 $x=2,6$에서 높이 $1$ 또는 $-1$을 통과한다. $0$ 외의 영점은 총 세 개여야 한다.",
+        "두 높이가 모두 $1$이면 $(0,2)$에서 $H>1$이라 $g(2)>0$이고 $f(6)>0$이라 탈락한다. 두 높이가 모두 $-1$이면 $H=1$의 두 근 중 하나가 $0$이어야 한다. 이때 $(0,2)$에서 $-1<H<1$이므로 $g(2)<0$, $f(6)<0$이라 탈락한다.",
+        "서로 다른 높이를 지나면 두 높이에 두 교점씩 있고 하나가 $0$이다. $H(2)=1,H(6)=-1$이면 $H(0)=\\pm1$ 어느 쪽에서도 이차항 계수가 음수가 된다. $H(2)=-1,H(6)=1$에서는 $H(0)=-1$이면 $g(2)>0$이라 탈락한다. $H(0)=1$일 때 $H(x)=1+x(x-6)/4$이며 $g(2)<0$을 만족한다.",
+        "따라서 $f(8)=8H(8)=40$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=6"
+      }
+    },
+    "2026-09-20": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "12",
+      "steps": [
+        "$PB=7k$, $PC=5k$, $AB=l$, $CD=3l$로 둔다. 두 할선이 만든 삼각형 $BPC,DPA$는 닮음이므로 $7/5=(5k+3l)/(7k+l)$이다.",
+        "$l=3k$, $PD=14k$여서 닮음비는 $1:2$이다. 따라서 $BC=AD/2=2\\sqrt{13}$이다.",
+        "코사인법칙으로 $\\cos\\theta=6/7$이므로 $\\sin\\theta=\\sqrt{13}/7$이다. 사인법칙으로 $R=BC/(2\\sin\\theta)=7$이어서 $3+2+7=12$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=10"
+      }
+    },
+    "2026-09-21": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "296",
+      "steps": [
+        "$f=x^3+ax^2+bx+c$로 두면 가운데 식은 $4x^2+2ax+b$이다. 왼쪽 부등식에서 $x\\to0$으로 보내면 $b/2-2\\le b$, 즉 $b\\ge-4$이다.",
+        "오른쪽 부등식에 $x=\\pm\\sqrt2$를 각각 넣으면 $b\\le-4-2\\sqrt2|a|$이다. 따라서 $a=0,b=-4$이다.",
+        "이 계수에서 두 부등식의 차는 각각 $3x^2/2$, $(x^2-2)^2$로 모두 음이 아니다. $f'(10)=300-4=296$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=10"
+      }
+    },
+    "2026-09-22": {
+      "logic": [
+        "inverse-coordinate"
+      ],
+      "answer": "73",
+      "steps": [
+        "두 수선의 기울기는 $-1$이라 $y$절편은 해당 점의 두 좌표 합이다. $A-B$의 좌표 차를 $(u,v)$라 하면 $u+v=13/2$, $v/u=6/7$이다. 따라서 $(u,v)=(7/2,3)$이다.",
+        "로그 높이 차 $3$에서 $x_A/x_B=8$이다. $x_A-x_B=7/2$로부터 $A=(4,2),B=(1/2,-1)$이다.",
+        "$AP=2/\\sqrt2$, $BQ=3/\\sqrt2$이고 두 평행한 직선 사이 거리는 $13/(2\\sqrt2)$이다. 사다리꼴 넓이는 $65/8$이므로 $p+q=73$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=11"
+      }
+    },
+    "2026-11-09": {
+      "logic": [
+        "derivative-level",
+        "tangent-parameter"
+      ],
+      "answer": "④",
+      "steps": [
+        "수평 접선이므로 접점에서 $f'(x)=3(x+3a)(x-a)=0$이다. 두 후보는 $-3a,a$이다.",
+        "$f(a)=4-5a^3<5$이므로 $f(-3a)=4+27a^3=5$여야 한다. $a=1/3$을 대입하면 $f(2)=14$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=3"
+      }
+    },
+    "2026-11-10": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "③",
+      "steps": [
+        "점근선은 $y=-2$이다. $\\overline{AB}=\\overline{BC}=2$이므로 $A$의 높이는 $2$이고, $\\overline{AC}=4$이다.",
+        "세로 변 $AC$에 대한 삼각형의 높이는 $OB$이다. $2\\cdot OB=8$이라서 $A=(4,2)$, $a^4=4$이다.",
+        "따라서 $a\\cdot OB=4\\sqrt2=2^{5/2}$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=3"
+      }
+    },
+    "2026-11-11": {
+      "logic": [
+        "motion",
+        "signed-area"
+      ],
+      "answer": "③",
+      "steps": [
+        "$k=0$이면 $t=1$까지의 변위는 $\\int_0^1(t^2+4)dt=13/3$이다. $k=3$이면 속도가 $(t-3/2)^2+7/4$로 양수라 방향은 바뀌지 않는다.",
+        "$k=5$이면 $v(t)=(t-1)(t-4)$이다. 원시함수 $V(t)=t^3/3-5t^2/2+4t$로 거리 $2V(1)-V(0)-V(2)=3$을 얻는다. ㄱ, ㄷ이 참이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=4"
+      }
+    },
+    "2026-11-12": {
+      "logic": [
+        "progression-ratio"
+      ],
+      "answer": "②",
+      "steps": [
+        "공비를 $r$로 놓으면 $a_4+a_7+a_{10}=r^3(a_1+a_4+a_7)$이다. 두 합이 $6,3$이므로 $r^3=2$이다.",
+        "$a_1(1+2+4)=3$이므로 $a_1=3/7$이다. $a_{10}=a_1(r^3)^3=24/7$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=4"
+      }
+    },
+    "2026-11-13": {
+      "logic": [
+        "tangent-parameter"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "$f'(1)=-2$이므로 $l$은 $y=-2x-4$이다. 곱의 미분법으로 $g'(1)=(-6)+(-1)(-2)=-4$이므로 $m$은 $y=-4x+10$이다.",
+        "두 직선의 교점의 $x$좌표는 $7$이다. 두 $y$절편 사이의 길이 $14$를 밑변으로 삼으면 넓이는 $14\\cdot7/2=49$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=5"
+      }
+    },
+    "2026-11-14": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "④",
+      "steps": [
+        "$AC=5$, $AE=AG=2$, $CG^2=24$이다. 삼각형 $ACG$에서 코사인법칙으로 $\\cos\\angle CAG=(25+4-24)/20=1/4$이다.",
+        "$AC$ 방향으로 본 $G$의 좌표가 $1/2$, 수직 거리가 $\\sqrt{15}/2$이므로 $EG=\\sqrt6$, $\\sin\\angle CEG=\\sqrt{10}/4$이다.",
+        "원 $CEG$의 지름은 $CG/\\sin\\angle CEG=8\\sqrt{15}/5$이다. $\\sin\\angle HCG=\\sin\\angle BAC=4/5$이므로 $GH=32\\sqrt{15}/25$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=5"
+      }
+    },
+    "2026-11-15": {
+      "logic": [
+        "integral-differentiate",
+        "derivative-level"
+      ],
+      "answer": "④",
+      "steps": [
+        "$h'=g-f$이다. $x<-1$에서 $h'=x^2+a(x+1)$이고 $-1<x<1$에서는 $h'$가 음수가 되지 않는다. $a>4$이면 앞의 이차식이 $x<-1$에서 두 번 부호를 바꾸어 극값을 추가한다.",
+        "$x>1$에서는 $h'=(x-1)(a-x)$이다. $a=4$일 때 왼쪽의 이중 영점에서는 부호가 바뀌지 않고 $x=4$에서만 바뀌므로 $k=4$이다.",
+        "$h(3)=\\int_0^1(x-x^2)dx+\\int_1^3(x-1)(4-x)dx=7/2$이다. 따라서 $k+h(3)=15/2$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=6"
+      }
+    },
+    "2026-11-20": {
+      "logic": [
+        "difference-sums"
+      ],
+      "answer": "130",
+      "steps": [
+        "연속한 두 누적합 조건을 빼면 차는 $a_{n+1}$이다. 다항식 부분의 차는 $n/3$이라서 $f(n)=n/3$이고 $2a_n+a_{n+1}=n$이다.",
+        "원 조건에 $n=2$와 $a_1=7$을 넣으면 $a_2=10$이다. 두 합을 홀수항과 다음 짝수항의 쌍으로 모으면 $q=7+10+(3+5+7+9+11)=52$이다.",
+        "$p=10$, $f(12)=4$이므로 답은 $130$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=8"
+      }
+    },
+    "2026-11-21": {
+      "logic": [
+        "vanishing-order",
+        "integer-parameter"
+      ],
+      "answer": "65",
+      "steps": [
+        "연속 조건에서 $f(t)=0$이고, 분모가 $0$인 $0,2$에서 분자도 $0$이어야 한다. $f(x)=c x(x-2)(x-k)$로 놓으면 약분한 우극한은 $m<t$일 때 $-c(m-k)$, $m\\ge t$일 때 $c(m-k)$이다.",
+        "$m=1$이 음수 집합에 속하면 $g(1)>0$이 되어 그 집합의 원소 $-7g(1)/2$가 음수가 되므로 모순이다. 두 원소 중 하나는 $3$ 이상이어서 $k>3$이다. $g(-1)>0>g(1)$에서 $-1<t\\le1$은 부호를 맞추지 못하고, 정확히 $-1<t$ 및 $1<t$가 필요하다. $t$는 근이라서 $t=2$ 또는 $k$이다. $t=k$이면 약분식이 항상 음수가 아니므로 $t=2$이다.",
+        "음수 자연수 집합이 $\\{2,3\\}$이므로 $3<k\\le4$이다. $g(-1)=3c(k+1)$, $-7g(1)/2=7c(k-1)/2$를 $2,3$에 대응시키면 가능한 것은 각각 $3,2$일 때뿐이다. $k=11/3,c=3/14$이므로 $g(-5)=65$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=9"
+      }
+    },
+    "2026-11-22": {
+      "logic": [
+        "inverse-coordinate"
+      ],
+      "answer": "457",
+      "steps": [
+        "$A$의 로그식은 $2a=4^{2b-1}-1/2$로 바뀐다. 따라서 $(2b,2a)$가 $B$의 지수곡선과 직선 $OB$에 모두 놓인다.",
+        "그 직선의 양의 반직선과 지수곡선의 교점은 하나다. 지수함수에서 직선의 식을 뺀 함수는 아래에서 출발하는 엄격한 볼록함수로, 양의 영역에서 $0$을 한 번만 통과한다. 따라서 $B=(2b,2a)$이다.",
+        "중점에서 $a+2b=77/4$, $b+2a=133/4$라서 $a=63/4,b=7/4$이다. $ab=441/16$에서 답은 $457$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=11"
+      }
+    },
+    "2027-06-09": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "③",
+      "steps": [
+        "동시에 원점에서 출발했으므로 상대 위치는 속도 차의 누적값 $\\int_0^t(u^2-2u)\\,du=t^3/3-t^2$이다.",
+        "출발 시각 $0$을 제외하면 $t/3-1=0$에서 $k=3$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 2쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=2"
+      }
+    },
+    "2027-06-10": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "③",
+      "steps": [
+        "$u=\\log_3 a$, $v=\\log_3 b$로 두면 두 조건은 $u/2+v=2$와 $u=4v$이다.",
+        "$v=2/3$, $u=8/3$이므로 $\\log_3(a/b)=u-v=2$이다. 따라서 $a/b=9$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=3"
+      }
+    },
+    "2027-06-11": {
+      "logic": [
+        "vanishing-order"
+      ],
+      "answer": "①",
+      "steps": [
+        "$a=0$에서 분모는 반드시 $0$이므로 유한한 극한이 존재하려면 $f(2)=0$이다. $a=3$에서 분모가 $0$이 아니면 연속이어서 극한이 존재하므로 $f(3)=3$이다.",
+        "두 점을 지나는 일차함수는 $f(x)=3(x-2)$이다. $x=0$에서는 $f(x+2)=3x$로 소거되고 $x=3$에서는 분자가 $9$로 남는다. 따라서 $f(4)=6$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=3"
+      }
+    },
+    "2027-06-12": {
+      "logic": [
+        "progression-ratio"
+      ],
+      "answer": "①",
+      "steps": [
+        "$a_1=A$, 공비를 $r>0$로 놓는다. 첫 두 식을 $A^2$로 나누면 $2(1+r^2)=5r(1+r)$이다.",
+        "$(3r-1)(r+2)=0$에서 $r=1/3$이고, 첫 식에 대입해 $A^2=9$를 얻는다. $a_1a_6=9(1/3)^5=1/27$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=4"
+      }
+    },
+    "2027-06-13": {
+      "logic": [
+        "integral-differentiate",
+        "signed-area"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "$f-g>0$이므로 $S(t)=\\int_0^t(f-g)(x)\\,dx$이다. 미분하면 $f(t)-g(t)=t^2-2t+a$이고 $t=1$에서 이 값은 $1$이므로 $a=2$이다.",
+        "$S(3)=[t^3/3-t^2+2t]_0^3=6$이다. $f-g=(x-1)^2+1$은 $x=1$에 대해 대칭이라 $[-2,2]$와 $[0,4]$에서 적분값이 같다. ㄴ, ㄷ이 참이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=4"
+      }
+    },
+    "2027-06-14": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "③",
+      "steps": [
+        "한 주기마다 $\\cos(b\\pi x)=1/2$의 해가 두 개이고, 구간 $[0,2]$에는 $b$주기가 있다.",
+        "다른 인수는 $\\cos(b\\pi x)=-1/2-1/a$를 준다. $a<2,=2,>2$일 때 각각 한 주기당 해가 $0,1,2$개이다.",
+        "따라서 전체 해 개수는 $2b,3b,4b$ 중 하나다. $15$가 가능한 것은 $a=2,b=5$뿐이므로 $a+b=7$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=5"
+      }
+    },
+    "2027-06-15": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "④",
+      "steps": [
+        "적분의 부등식은 열린 구간 안에서 함수의 부호가 바뀔 때만 생긴다. 부호가 바뀌는 근 $r$이 만드는 시작점 집합은 $(r-3,r)$이다. 주어진 집합 $(0,3)$으로부터 부호가 바뀌는 근은 $3$ 하나다.",
+        "$0$은 부호를 바꾸지 않는 근이므로 $f(x)=cx^2(x-3)$이다. $[0,3]$에서 $x^2(x-3)$의 최솟값은 $x=2$에서 $-4$이고 최댓값은 $0$이다.",
+        "$f(x)+q$가 양·음의 값을 모두 갖는 $q$의 범위가 $(0,1)$이려면 $c=1/4$이다. 따라서 $f(6)=27$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=5"
+      }
+    },
+    "2027-06-20": {
+      "logic": [
+        "inverse-coordinate"
+      ],
+      "answer": "48",
+      "steps": [
+        "교점 식을 로그로 바꾸면 $\\alpha=\\log_b\\beta$, $\\beta=-\\log_b\\alpha$이다. 곱 조건에 로그를 취해 $3\\alpha-\\beta=0$을 얻으므로 $p=m=3$이다.",
+        "$\\beta^4=m\\alpha\\beta^3=3$이어서 $q=3^{1/4}$이다. $\\alpha=\\beta/3=3^{-3/4}$이고 $\\log_b\\alpha=-\\beta$이므로 $\\log_b3=4\\beta/3$이다.",
+        "$r=-4\\beta/3$이고 $(pqr)^2=(-4\\beta^2)^2=16\\beta^4=48$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=7"
+      }
+    },
+    "2027-06-21": {
+      "logic": [
+        "inverse-branch"
+      ],
+      "answer": "11",
+      "steps": [
+        "$H(t)=f'(t)-4t^2+4$는 아래로 열린 이차함수이다. $f(x)=H(t)$의 가장 오른쪽 해가 뛰는 것은 $H(t)$가 삼차함수 $f$의 오른쪽 극솟값에 아래에서 닿을 때다.",
+        "불연속점이 $3$ 하나이므로 $H$의 꼭짓점이 $t=3$이고, 이때 가장 오른쪽 해 $1$은 $f$의 극소점이다. $f(x)=x^3+bx^2+cx+d$로 놓으면 $H$의 꼭짓점 조건에서 $b=3$, $f'(1)=0$에서 $c=-9$이다.",
+        "$H(3)=4=f(1)$이므로 $d=9$이다. 따라서 $f(2)=11$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=8"
+      }
+    },
+    "2027-06-22": {
+      "logic": [
+        "reverse-recurrence"
+      ],
+      "answer": "32",
+      "steps": [
+        "지표를 거꾸로 따라간다. 짝수 지표는 부모의 값에 $1$을 더하고, $1,3$을 제외한 각 홀수 지표는 부모의 값에 $4$를 더한다. 각 부모에는 뒤의 유형 자식이 두 개 있다.",
+        "값이 $m$인 지표 개수를 $C_m$이라 하면 $C_m=C_{m-1}+2C_{m-4}+[m=1]+[m=4]$이고, $m\\le0$이면 $C_m=0$이다.",
+        "$m=1$부터 순서대로 $1,1,1,2,4,6,8,12,20,32$이므로 답은 $32$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=9"
+      }
+    },
+    "2021-06-a-14": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-a-15": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-a-17": {
+      "logic": [
+        "sum-distribution"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-a-18": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-a-19": {
+      "logic": [
+        "complement-count"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-a-21": {
+      "logic": [
+        "log-substitute",
+        "integer-parameter"
+      ],
+      "answer": "④",
+      "steps": [
+        "로그의 합을 곱으로 바꾸면 $\\prod_{k=1}^m 2(k+1)/(k+2)=2^{m+1}/(m+2)$이다. 합을 $N$이라 하면 $m+2=2^{m+1-2N}$이다.",
+        "$m+2=2^j$로 쓰면 $j\\ge2$이고 $N=(2^j-1-j)/2$이다. 정수이려면 $j$가 홀수여야 한다. $j=3,5,7$에서 $N=2,13,60$이고 $j\\ge8$이면 $N>100$이다.",
+        "따라서 가능한 $m$은 $6,30,126$이고 합은 $162$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-a-26": {
+      "logic": [
+        "progression-ratio"
+      ],
+      "answer": "7",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-a-27": {
+      "logic": [
+        "conditional-space"
+      ],
+      "answer": "46",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-a-29": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "114",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-14": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-15": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-16": {
+      "logic": [
+        "complement-count"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-17": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-18": {
+      "logic": [
+        "progression-ratio"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-19": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-20": {
+      "logic": [
+        "conditional-space"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-21": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-26": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "3",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-27": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "74",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-28": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "58",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-29": {
+      "logic": [
+        "sum-distribution"
+      ],
+      "answer": "15",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-06-b-30": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "38",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200618/go3/math_main_sol_F62UB64D.zip"
+      }
+    },
+    "2021-09-a-14": {
+      "logic": [
+        "normal-symmetry"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-a-16": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-a-17": {
+      "logic": [
+        "complement-count"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-a-19": {
+      "logic": [
+        "sum-distribution"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-a-21": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-a-26": {
+      "logic": [
+        "moments"
+      ],
+      "answer": "121",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-a-27": {
+      "logic": [
+        "progression-ratio"
+      ],
+      "answer": "9",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-a-29": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "168",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-14": {
+      "logic": [
+        "arrangement-blocks"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-15": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-16": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-17": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-18": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-19": {
+      "logic": [
+        "complement-count"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-20": {
+      "logic": [
+        "integral-cancel"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-21": {
+      "logic": [
+        "reverse-recurrence"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-26": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "12",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-27": {
+      "logic": [
+        "moments"
+      ],
+      "answer": "121",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-28": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "5",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-29": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "168",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-09-b-30": {
+      "logic": [
+        "cancel-corners"
+      ],
+      "answer": "105",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20200916/go3/math_main_sol_A6XIY4J1.zip"
+      }
+    },
+    "2021-11-a-16": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-a-17": {
+      "logic": [
+        "moments"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-a-19": {
+      "logic": [
+        "independent-trials"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-a-21": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-a-26": {
+      "logic": [
+        "separator-gaps"
+      ],
+      "answer": "36",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-a-27": {
+      "logic": [
+        "log-substitute"
+      ],
+      "answer": "13",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-a-29": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "201",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-14": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-15": {
+      "logic": [
+        "separator-gaps"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-16": {
+      "logic": [
+        "period-count"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-17": {
+      "logic": [
+        "derivative-level"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-18": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-19": {
+      "logic": [
+        "normal-symmetry"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-20": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-21": {
+      "logic": [
+        "forward-recurrence"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 8쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-26": {
+      "logic": [
+        "boundary-values"
+      ],
+      "answer": "6",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-27": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "36",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-28": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "21",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-29": {
+      "logic": [
+        "independent-trials"
+      ],
+      "answer": "587",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2021-11-b-30": {
+      "logic": [
+        "cancel-corners"
+      ],
+      "answer": "39",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · 압축 파일의 해당 유형 PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20201203/go3/math_main_sol_5R651PXB_4.zip"
+      }
+    },
+    "2022-example-28": {
+      "logic": [
+        "conditional-space",
+        "modular-count"
+      ],
+      "answer": "③",
+      "steps": [
+        "곱이 짝수인 표본공간의 크기는 $\\binom{10}3-\\binom53=110$이다.",
+        "전체에서 합이 $3$의 배수인 조합은 세 나머지가 모두 같거나 모두 다르다. 나머지 $0,1,2$의 원소가 $3,4,3$개이므로 $1+4+1+36=42$가지다.",
+        "홀수 다섯 수의 나머지별 개수는 $2,2,1$이라 모두 다른 경우만 $4$가지다. 이를 빼면 조건부확률은 $38/110=19/55$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-29": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "332",
+      "steps": [
+        "전체 비음이 아닌 정수 해는 $\\binom{15}3=455$이다. 제외해야 할 조건은 $a=2$ 또는 $d=2$이고, 각각 세 변수의 합이 $10$인 $\\binom{12}2=66$가지다.",
+        "두 조건을 모두 만족하면 $b+c=8$이라 $9$가지다. 포함배제로 $455-66-66+9=332$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-example-30": {
+      "logic": [
+        "sum-distribution"
+      ],
+      "answer": "71",
+      "steps": [
+        "한 번의 결과에서 $1,2$는 각각 확률 $1/4$, $3,4,5$는 각각 $1/6$이다. 표본평균이 $2$이려면 세 결과의 합이 $6$이어야 한다.",
+        "가능한 값의 다중집합은 $\\{1,1,4\\},\\{1,2,3\\},\\{2,2,2\\}$이고, 서로 다른 순서는 각각 $3,6,1$개이다.",
+        "독립시행이므로 확률은 $3(1/4)^2(1/6)+6(1/4)^2(1/6)+(1/4)^3=7/64$이다. 따라서 $p+q=71$이다."
+      ],
+      "reference": {
+        "label": "평가원 예시문항 정답표 · PDF 136쪽 ↗",
+        "url": "https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs?fileGbn=1&bbsCd=B122&datNo=127360#page=136"
+      }
+    },
+    "2022-06-28": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=14"
+      }
+    },
+    "2022-06-29": {
+      "logic": [
+        "arrangement-blocks"
+      ],
+      "answer": "48",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=14"
+      }
+    },
+    "2022-06-30": {
+      "logic": [
+        "complement-count"
+      ],
+      "answer": "47",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210603/go3/math_main_sol_6VN282P6.pdf#page=15"
+      }
+    },
+    "2022-09-28": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 16쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=16"
+      }
+    },
+    "2022-09-29": {
+      "logic": [
+        "moments"
+      ],
+      "answer": "78",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 16쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=16"
+      }
+    },
+    "2022-09-30": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "218",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 17쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20210901/go3/math_main_sol_2O98U9QP_2.pdf#page=17"
+      }
+    },
+    "2022-11-28": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "①",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=13"
+      }
+    },
+    "2022-11-29": {
+      "logic": [
+        "sum-distribution"
+      ],
+      "answer": "31",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=14"
+      }
+    },
+    "2022-11-30": {
+      "logic": [
+        "conditional-space"
+      ],
+      "answer": "191",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20211118/go3/math_main_sol_71881A12_3.pdf#page=15"
+      }
+    },
+    "2023-06-28": {
+      "logic": [
+        "complement-count"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=14"
+      }
+    },
+    "2023-06-29": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "115",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=15"
+      }
+    },
+    "2023-06-30": {
+      "logic": [
+        "conditional-space"
+      ],
+      "answer": "9",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220609/go3/math_main_hsj_2D86863U.pdf#page=15"
+      }
+    },
+    "2023-09-28": {
+      "logic": [
+        "complement-count"
+      ],
+      "answer": "③",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 17쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=17"
+      }
+    },
+    "2023-09-29": {
+      "logic": [
+        "independent-trials"
+      ],
+      "answer": "175",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 17쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=17"
+      }
+    },
+    "2023-09-30": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "260",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 18쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20220901/go3/math_main_hsj_36QA12I5.pdf#page=18"
+      }
+    },
+    "2023-11-28": {
+      "logic": [
+        "sum-distribution"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 18쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=18"
+      }
+    },
+    "2023-11-29": {
+      "logic": [
+        "conditional-space"
+      ],
+      "answer": "49",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 19쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=19"
+      }
+    },
+    "2023-11-30": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "100",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 20쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20221117/go3/math_main_hsj_P52NTAX1_3.pdf#page=20"
+      }
+    },
+    "2024-06-28": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 16쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=16"
+      }
+    },
+    "2024-06-29": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "25",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 17쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=17"
+      }
+    },
+    "2024-06-30": {
+      "logic": [
+        "sum-distribution"
+      ],
+      "answer": "51",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 18쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230601/go3/math_main_hsj_HG6PP72L_2.pdf#page=18"
+      }
+    },
+    "2024-09-28": {
+      "logic": [
+        "conditional-space"
+      ],
+      "answer": "⑤",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=13"
+      }
+    },
+    "2024-09-29": {
+      "logic": [
+        "flip-parity"
+      ],
+      "answer": "62",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=14"
+      }
+    },
+    "2024-09-30": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "336",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20230906/go3/math_main_hsj_VU14OSH9_1.pdf#page=14"
+      }
+    },
+    "2024-11-28": {
+      "logic": [
+        "conditional-space"
+      ],
+      "answer": "④",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 17쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=17"
+      }
+    },
+    "2024-11-29": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "196",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 18쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=18"
+      }
+    },
+    "2024-11-30": {
+      "logic": [
+        "normal-symmetry"
+      ],
+      "answer": "673",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 19쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20231116/go3/math_main_hsj_CD3C3NY2_4.pdf#page=19"
+      }
+    },
+    "2025-06-28": {
+      "logic": [
+        "flip-parity",
+        "conditional-space",
+        "state-transitions"
+      ],
+      "answer": "①",
+      "steps": [
+        "모두 앞면이 되려면 처음 뒷면이던 동전 하나만 홀수 번 뒤집어야 한다. 그 동전의 횟수가 $5,3,1$인 경우의 순서 수는 각각 $1,30,105$로, 총 $136$이다.",
+        "모두 뒷면이 되려면 처음 앞면이던 동전 세 개가 각각 홀수 번 뒤집혀야 한다. 한 번씩 배정하고 남은 두 번이 세 동전 중 하나 또는 나머지 동전에 가는 경우는 각각 $60,60$가지이다.",
+        "조건부확률은 $136/(136+120)=17/32$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=14"
+      }
+    },
+    "2025-06-29": {
+      "logic": [
+        "sum-distribution"
+      ],
+      "answer": "6",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 16쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=16"
+      }
+    },
+    "2025-06-30": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "108",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 16쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240604/go3/math_main_hsj_9Y3T2PDY_5.pdf#page=16"
+      }
+    },
+    "2025-09-28": {
+      "logic": [
+        "conditional-space",
+        "count-function"
+      ],
+      "answer": "④",
+      "steps": [
+        "약수 조건에서 $f(1)$은 나머지 모든 값의 약수여야 하고, 추가로 $f(2)$가 $f(4)$를 나누어야 한다. $f(3)$은 $f(1)$의 배수라면 자유롭게 정한다.",
+        "$f(1)=1,2,3,4$ 순서로 가능한 배정 수는 $32,6,1,1$이다. 예를 들어 $f(1)=1$이면 $f(2)=1,2,3,4$에서 $f(4)$의 후보가 $4,2,1,1$개이고 $f(3)$은 네 가지이다.",
+        "$f(4)$를 짝수로 제한하면 각 배정 수는 $20,6,0,1$이므로 확률은 $27/40$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=15"
+      }
+    },
+    "2025-09-29": {
+      "logic": [
+        "normal-approximation"
+      ],
+      "answer": "994",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 16쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=16"
+      }
+    },
+    "2025-09-30": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "93",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 17쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20240904/go3/math_main_hsj_724Y538P.pdf#page=17"
+      }
+    },
+    "2025-11-28": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "②",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=14"
+      }
+    },
+    "2025-11-29": {
+      "logic": [
+        "normal-symmetry"
+      ],
+      "answer": "25",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=15"
+      }
+    },
+    "2025-11-30": {
+      "logic": [
+        "flip-parity"
+      ],
+      "answer": "19",
+      "steps": [
+        "처음 뒷면인 세 동전만 홀수 번 뒤집어야 한다. 눈 $6$이 한 번도 안 나오면 세 동전을 각각 한 번 뒤집는 $3!=6$가지이다.",
+        "눈 $6$이 한 번이면 앞면이었던 두 동전만 추가로 한 번씩 뒤집어야 하므로 역시 $3!=6$가지이다. 두 번 나오면 남은 한 번으로 세 동전을 뒤집을 수 없고, 세 번 나오면 모든 동전의 홀짝이 바뀌어 탈락한다.",
+        "확률은 $12/6^3=1/18$이므로 $p+q=19$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 16쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20241114/go3/math_main_hsj_M17Q9V46_2.pdf#page=16"
+      }
+    },
+    "2026-06-28": {
+      "logic": [
+        "conditional-space",
+        "independent-trials"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "다섯 시행 중 $3$의 배수가 나온 횟수를 $X$라 두면, 상자 $B$에는 $5+X$개가 있고 $A,C$의 합은 $10-X$이다. 따라서 조건은 $X$가 짝수이고 구할 사건은 $X\\le2$이다.",
+        "확률의 공통 분모 $3^5$를 생략하면 $X=0,2,4$의 가중치는 각각 $32,80,10$이다. 답은 $(32+80)/(32+80+10)=56/61$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=14"
+      }
+    },
+    "2026-06-29": {
+      "logic": [
+        "complement-count"
+      ],
+      "answer": "44",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=15"
+      }
+    },
+    "2026-06-30": {
+      "logic": [
+        "count-function"
+      ],
+      "answer": "115",
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250604/go3/math_main_hsj_2Q28XKZA_2.pdf#page=15"
+      }
+    },
+    "2026-09-28": {
+      "logic": [
+        "bounded-compositions",
+        "complement-count"
+      ],
+      "answer": "②",
+      "steps": [
+        "색마다 따로 배분하면 제한 없는 경우는 $3^2\\binom52^2=900$이다. $A$ 또는 $B$가 비는 경우는 각각 $2^2\\cdot4^2=64$이고 둘 다 비는 경우는 하나다. 두 사람이 모두 받는 경우는 $773$이다.",
+        "그중 $A$가 모든 색을 받는 경우에는 빨강·파랑을 $A$에게 주고, 노랑·보라에서 $A$ 몫 한 장씩을 떼어 낸다. 남은 배분은 $6^2=36$가지이고, $B$가 비는 $3^2=9$가지를 빼면 $27$가지다.",
+        "따라서 $773-27=746$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=15"
+      }
+    },
+    "2026-09-29": {
+      "logic": [
+        "normal-approximation"
+      ],
+      "answer": "23",
+      "steps": [
+        "공통 후보 $2,3$ 각각은 두 부분집합에 모두 들 확률이 $1/4$이고 서로 독립이다. 교집합 크기가 $1$일 확률은 $2(1/4)(3/4)=3/8$이다.",
+        "횟수의 평균은 $15360(3/8)=5760$, 분산은 $15360(3/8)(5/8)=3600$이다.",
+        "$5880$의 표준점수는 $2$이다. 표에서 오른쪽 꼬리는 $0.5-0.477=0.023$이므로 답은 $23$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 16쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=16"
+      }
+    },
+    "2026-09-30": {
+      "logic": [
+        "independent-trials"
+      ],
+      "answer": "80",
+      "steps": [
+        "$B$가 카드를 내려놓을 확률을 $b$라 하자. 그때 $A$가 카드를 내려놓으면 $8$로 이기고, 내려놓지 않으면 유일하게 내려놓지 않은 사람으로 이긴다. 따라서 $p=b$이다.",
+        "$B$가 이기는 경우는 $A$만 내려놓을 때라서 $q=(1-b)/2$이다. $p=q$이면 $b=1/3$이다.",
+        "$B$의 여섯 카드 중 $2,3$ 두 장이 해당하므로 $n=3$, $p=1/3$이다. $24(n+p)=80$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 17쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20250903/go3/math_main_hsj_1194A154_2.pdf#page=17"
+      }
+    },
+    "2026-11-28": {
+      "logic": [
+        "conditional-space",
+        "modular-count"
+      ],
+      "answer": "②",
+      "steps": [
+        "한 시행에서 총공의 수가 홀수만큼 늘어나는 눈은 $1,3,4,5$이다. 네 시행에서 이 부류의 횟수가 홀수인 경우는 $4(4\\cdot2^3+4^3\\cdot2)=640$가지다.",
+        "상자 $3$과 $2$의 개수 차는 홀수 눈이면 $+1$, $2,4$이면 $-1$, $6$이면 $0$만큼 바뀐다. 최종 차가 $1$이려면 $6$이 홀수 번 나온다. 총공의 홀수 조건까지 적용하면 $2$는 짝수 번 나와야 한다.",
+        "$6$이 세 번인 경우는 나머지 한 눈이 홀수로 $12$가지다. 한 번인 경우는 홀수 눈 두 번과 $4$ 한 번으로 $12\\cdot3^2=108$가지다. 확률은 $120/640=3/16$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=13"
+      }
+    },
+    "2026-11-29": {
+      "logic": [
+        "normal-approximation"
+      ],
+      "answer": "977",
+      "steps": [
+        "한 시행에서 $3$을 기록할 확률은 $p=(a/6)\\binom53/2^5+(1-a/6)/2^3=1/8+a/32$이다.",
+        "$19200p=4800$에서 $p=1/4,a=4$이다. 이항분포의 분산은 $19200(1/4)(3/4)=3600$이다.",
+        "표준편차가 $60$이므로 경계 $4800+30a$는 표준점수 $2$에 해당한다. 표에 따라 $k=0.5+0.477=0.977$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 14쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=14"
+      }
+    },
+    "2026-11-30": {
+      "logic": [
+        "separator-gaps",
+        "bounded-compositions"
+      ],
+      "answer": "262",
+      "steps": [
+        "공이 든 주머니만 먼저 배열한 뒤 그 사이와 양끝에 빈 주머니를 넣는다. 공 두 개짜리와 인접한 내부 틈에는 최소 하나의 빈 주머니를 둔다.",
+        "공 두 개짜리가 하나라면 비어 있지 않은 자리 7개 중 양끝 두 곳에서는 필수 틈이 1개, 내부 다섯 곳에서는 2개이다. 나머지 빈 주머니를 8틈에 분배하면 $2\\binom97+5\\binom87=112$이다.",
+        "공 두 개짜리가 둘이면 6자리 중 둘을 고른다. 필수 틈이 2,3,4개인 배열은 각각 3,9,3가지다. 이는 두 자리가 끝에 놓이거나 서로 이웃할 때 필수 틈이 하나 줄어드는 것으로 센다. 나머지 빈 주머니를 7틈에 분배하면 $3\\binom86+9\\binom76+3=150$이다. 합은 $262$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20251113/go3/math_main_hsj_1M9MTYWF_5.pdf#page=15"
+      }
+    },
+    "2027-06-28": {
+      "logic": [
+        "flip-parity"
+      ],
+      "answer": "③",
+      "steps": [
+        "각 눈 $i$가 나온 횟수의 홀짝을 $e_i$라 한다. 카드 $1,2$의 조건을 비교하면 $e_1+e_2=1$, 카드 $3,4$에서는 $e_3=e_4$, 카드 $5,6$에서는 $e_5+e_6=1$이다. 카드 $2$는 $e_2+e_3+e_5$가 짝수여야 한다. 이 식들을 풀면 가능한 홀수 등장 집합은 $\\{1,6\\},\\{2,5\\},\\{1,3,4,5\\},\\{2,3,4,6\\}$이다.",
+        "홀수 등장 집합의 크기가 2이면 두 눈에 $3,1$번을 배정하는 $8$가지와 나머지 네 눈 중 하나가 두 번 나오는 $48$가지가 있다. 크기가 4이면 네 눈이 한 번씩 나와 $24$가지다.",
+        "경우의 수는 $2(8+48)+2\\cdot24=160$이므로 확률은 $160/6^4=10/81$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 11쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=11"
+      }
+    },
+    "2027-06-29": {
+      "logic": [
+        "conditional-space",
+        "bounded-compositions"
+      ],
+      "answer": "98",
+      "steps": [
+        "곱이 홀수라는 조건은 다섯 눈이 모두 $1,3,5$라는 뜻이므로 조건부 표본공간은 $3^5$개의 같은 확률을 갖는 순서쌍이다.",
+        "각 눈에서 $3$을 빼고 $2$로 나누면 $-1,0,1$이 된다. 합이 $15$이려면 $1$과 $-1$의 개수가 같아야 한다. 각 개수가 $0,1,2$인 경우는 $1,5\\cdot4,\\binom52\\binom32$가지다.",
+        "따라서 확률은 $51/243=17/81$이고 $p+q=98$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=12"
+      }
+    },
+    "2027-06-30": {
+      "logic": [
+        "separator-gaps"
+      ],
+      "answer": "780",
+      "steps": [
+        "검은 공 네 개를 먼저 놓으면 공을 넣을 수 있는 틈이 다섯 개 생긴다. 한 틈에 노란색과 보라색이 함께 들어가면 반드시 서로 이웃하므로 각 틈은 한 색만 쓴다.",
+        "노란색이 차지하는 틈을 $i$, 보라색 틈을 $j$라 하면 틈 선택은 $\\binom5i\\binom{5-i}j$이다. 선택된 틈에 네 공을 양의 정수 개수로 나누는 방법은 각각 $\\binom3{i-1}$, $\\binom3{j-1}$이다.",
+        "$1\\le i,j\\le4$, $i+j\\le5$에서 이 곱을 더하면 $780$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 13쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260604/go3/math_main_hsj_2968RL64.pdf#page=13"
+      }
+    },
+    "2027-09-09": {
+      "logic": [
+        "motion"
+      ],
+      "answer": "①",
+      "steps": [
+        "상대 위치를 $s=x_1-x_2=4t^3-3t^2-18t-3$으로 놓는다. 속도가 같을 때는 $s'(t)=6(2t-3)(t+1)=0$이고 $t\\ge0$이므로 $t=3/2$이다.",
+        "가속도의 차는 $s''(t)=24t-6$이다. 따라서 $p-q=s''(3/2)=30$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=3"
+      }
+    },
+    "2027-09-10": {
+      "logic": [
+        "expo-shift"
+      ],
+      "answer": "③",
+      "steps": [
+        "두 교점의 $x$좌표를 $u,v$라 하면 $a^u=7/16$, $a^v=28$이다. 같은 높이에서 두 값을 나누면 $a^{v-u}=64$가 된다.",
+        "$a>1$이라서 $v>u$이고, 수평 거리 $v-u$는 $4$이다. $a^4=64$의 양의 해는 $2\\sqrt2$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 3쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=3"
+      }
+    },
+    "2027-09-11": {
+      "logic": [
+        "integral-differentiate"
+      ],
+      "answer": "③",
+      "steps": [
+        "위끝이 변수인 정적분을 미분하면 왼쪽이 $f(x)$가 된다. 오른쪽을 미분해 같은 항을 소거하면 $xf'(x)=6x^2+6x$이다.",
+        "$f'$가 다항함수이므로 $x=0$에서도 $f'(x)=6x+6$이다. 따라서 $f(x)=3x^2+6x+C$이다.",
+        "원래 식에 $x=-1$을 대입하면 $f(-1)=5$이다. $C-3=5$이므로 $f(0)=8$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=4"
+      }
+    },
+    "2027-09-12": {
+      "logic": [
+        "circumcircle"
+      ],
+      "answer": "④",
+      "steps": [
+        "코사인법칙으로 $BC^2=4^2+5^2-2\\cdot4\\cdot5/8=36$이고, $\\sin\\angle BAC=3\\sqrt7/8$이다.",
+        "같은 외접원의 지름은 $BC/\\sin\\angle BAC=16/\\sqrt7$이다. 현 $BD$에도 사인법칙을 적용하면 $BD=(16/\\sqrt7)(\\sqrt{14}/4)=4\\sqrt2$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 4쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=4"
+      }
+    },
+    "2027-09-13": {
+      "logic": [
+        "signed-area"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "$f(x)=6x^2+bx$를 적분 조건에 대입하면 $16+2b=4$이다. $f(x)=6x(x-1)$에서 음의 부분 $[0,1]$의 적분은 $-1$이므로 절댓값 적분은 $4+2=6$이다.",
+        "$g(x)=m(x-1)$의 적분은 $[0,2]$의 가운데 $x=1$에서 부호가 바뀌는 대칭으로 $0$이다. 따라서 ㄴ도 참이다.",
+        "$h(x)=m(x-1)$로 두면 부호 있는 적분은 항상 $4$이다. 절댓값 적분은 $m$에 대해 연속이고 $m=0$에서 $6$이다. 또한 $\\int_0^2|f+h|\\ge |m|-6$이므로 임의의 $k>6$에 도달한다. ㄷ도 참이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 5쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=5"
+      }
+    },
+    "2027-09-14": {
+      "logic": [
+        "exceptional-indices"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "$k$가 세제곱수가 아니면 합의 항은 $k$이다. $k=j^3$인 자리에서만 항이 $j^2/5$로 바뀌므로, 합이 정수인지 여부는 $\\sum_{j=1}^{\\lfloor\\sqrt[3]n\\rfloor}j^2$의 $5$로 나눈 나머지로 결정된다.",
+        "$n\\le300$에서 가능한 $j$는 $1,\\dots,6$이다. 누적 나머지는 차례로 $1,0,4,0,0,1$이라서 마지막 세제곱근의 정수 부분이 $2,4,5$인 구간이 남는다.",
+        "$[8,26]$, $[64,124]$, $[125,215]$의 정수 개수를 더하면 $19+61+91=171$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 6쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=6"
+      }
+    },
+    "2027-09-15": {
+      "logic": [
+        "vanishing-order"
+      ],
+      "answer": "④",
+      "steps": [
+        "$f(x)=(x-m)^2-r^2$로 두면 분모는 $2[(x-m-t/2)^2+t^2/4-r^2]$이다. 분모의 근이 막 사라지는 경계 $t=3/2$에서 중근이 생기므로 $r=3/4$이다. 경계가 그보다 크면 열린 구간의 분모 영점이 변해 분자의 고정된 영점만으로는 모두 상쇄할 수 없다.",
+        "경계의 중근 $m+3/4$는 이미 $f$의 단순근이므로, 유한한 극한을 위해 분자의 다른 인수 $2x+1$도 그곳에서 $0$이어야 한다. 따라서 $m+3/4=-1/2$, $f(x)=(x+1/2)(x+2)$이다.",
+        "$0<t<3/2$에서는 분모의 두 근이 분자의 두 영점과 모두 같아야 하지만 근의 합이 $t$만큼 달라 불가능하다. $f(2)=10$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 7쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=7"
+      }
+    },
+    "2027-09-20": {
+      "logic": [
+        "trig-symmetry"
+      ],
+      "answer": "17",
+      "steps": [
+        "교점의 $x$좌표를 $a$라 하면 $\\pi$만큼 이동한 교점이 $B$라서 $x_B=\\pi+a$이다. 코사인 그래프의 $x=\\pi$ 대칭을 쓰면 $x_D=\\pi-a$이다.",
+        "$DB=2a$이고 $C$에서 직선 $DB$까지의 높이는 $2\\sin a$이다. 한편 $AD$가 $x$축과 만나는 위치는 $\\pi/2$이므로 두 넓이는 각각 $2a\\sin a$, $(\\pi/2)\\sin a$이다.",
+        "넓이비 $14:5$로부터 $a=7\\pi/10$이다. $3(\\pi+a)/(\\pi-a)=17$을 얻는다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 9쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=9"
+      }
+    },
+    "2027-09-21": {
+      "logic": [
+        "cancel-corners"
+      ],
+      "answer": "12",
+      "steps": [
+        "$f(x)=(x-\\alpha)^2(x-\\beta)$로 두면 $g$의 기울기가 불연속인 곳은 단순근 $\\beta$뿐이다. 절댓값 항도 꼭짓점이 하나여야 하므로 $1,a,4-a$ 중 두 근이 같아야 한다. 가능한 $a$는 $1,2,3$이다.",
+        "$a=1,3$이면 절댓값 내부는 $(x-1)^2(x-3)$이고 $\\beta=3$이다. $g$의 기울기 변화량 $-8(3-\\alpha)^2$과 절댓값 항의 변화량 $8$을 더해 $0$으로 놓으면 $\\alpha=2,4$이다.",
+        "$a=2$이면 $\\beta=1$이고 같은 계산은 $-8(1-\\alpha)^2+2=0$이므로 $\\alpha=1/2,3/2$이다. 네 후보의 $f(0)=-\\beta\\alpha^2$ 중 최댓값은 $-1/4$, 최솟값은 $-48$이라 곱은 $12$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 10쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=10"
+      }
+    },
+    "2027-09-22": {
+      "logic": [
+        "inverse-coordinate"
+      ],
+      "answer": "97",
+      "steps": [
+        "두 이차함수를 $F,G$라 하면 $G(x)=F(x-1)-1$이다. $A,B,C,D$의 $x$좌표를 $r,s,u,v$라 놓으면 두 평행한 변의 기울기에서 $u+v=r+s+2$, 대각선 중점에서 $u-v=s-r$이다. 따라서 $C=B+(1,-1)$, $D=A+(1,-1)$이다.",
+        "$BC$의 기울기가 $-1$이므로 $AB$는 $y=x+k$ 위에 있다. $x=r,s$에서 $a^x=x+k$이고, 대응하는 로그 곡선 위의 점을 지수식으로 바꾸면 $x+3/4=(x+k)a^{k-3/4}$이다.",
+        "두 식의 차에서 $a^{k-3/4}=1$이라서 $k=3/4$이다. $F(x)=x+3/4$의 두 근은 $3/4,3/2$이므로 $a^{3/4}=3/2$이다. $a^3=81/16$에서 답은 $97$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 12쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=12"
+      }
+    },
+    "2027-09-28": {
+      "logic": [
+        "state-transitions",
+        "conditional-space"
+      ],
+      "answer": "⑤",
+      "steps": [
+        "카드의 배열을 상태로 두고, 각 상태에서 여섯 눈에 대응하는 다음 상태로 경로 수를 더한다. 같은 문자끼리 바꾸거나 눈이 $6$이면 자기 상태로 가는 경로도 더한다.",
+        "초기 상태 $S=AAABBB$와 가운데 두 장만 바뀐 $T=AABABB$의 경로 수는 2회 후 $(26,8)$, 3회 후 $(138,52)$이다. 마지막에 $S$로 들어오는 길은 $S$에서 5개, $T$에서 1개뿐이라서 4회 복귀는 $5\\cdot138+52=742$가지다.",
+        "세 번째 눈을 $6$으로 고정하면 그 시행을 지워도 상태가 같다. 분자에 해당하는 경로는 3회 복귀 $138$가지이므로 조건부확률은 $138/742=69/371$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 15쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=15"
+      }
+    },
+    "2027-09-29": {
+      "logic": [
+        "bounded-compositions"
+      ],
+      "answer": "190",
+      "steps": [
+        "양의 정수 네 수의 합이 $14$인 경우는 $\\binom{13}{3}=286$이다. $c\\ge d^2$인 경우는 $d=1,2,3$에서만 가능하다.",
+        "$d=1$이면 $a+b+c=13$의 $66$가지, $d=2$이면 $c-3\\ge1$로 바꿔 $28$가지, $d=3$이면 $(a,b,c)=(1,1,9)$ 한 가지이다.",
+        "$10a<d$인 해는 $(1,1,1,11)$ 하나이고 앞의 제외 집합과 겹치지 않는다. $286-66-28-1-1=190$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 17쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=17"
+      }
+    },
+    "2027-09-30": {
+      "logic": [
+        "moments"
+      ],
+      "answer": "170",
+      "steps": [
+        "다섯 번에 얻은 수의 합을 $S=5\\overline X$라 하면, 합에서 $k=0$ 항은 $0$이라 주어진 값은 $E(S^2)$이다.",
+        "한 번의 추출은 평균 $1$, 분산 $2/3$이다. 복원추출의 독립성으로 $E(S)=5$, $V(S)=10/3$이다.",
+        "$E(S^2)=V(S)+E(S)^2=85/3$이므로 $6a=170$이다."
+      ],
+      "reference": {
+        "label": "EBSi 정답 및 풀이 · PDF 18쪽 ↗",
+        "url": "https://wdown.ebsi.co.kr/W61001/01exam/20260902/go3/math_main_hsj_61UP92BU_1.pdf#page=18"
+      }
+    }
+  }
+}
