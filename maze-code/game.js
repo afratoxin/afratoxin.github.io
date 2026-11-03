@@ -4,7 +4,26 @@ let phase='ready',maps=[],mapIndex=0,qi=0,chosen=null,score=0,elapsed=0,total=0,
 const map=()=>maps[mapIndex],question=()=>map().questions[qi],fmt=ms=>{let n=Math.floor(ms/1000);return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')};
 function message(text,type=''){$('message').textContent=text;$('message').className=type}
 function drawPlan(){const m=map(),n=m.size,s=(720-margin*2)/n;pc.fillStyle='#141517';pc.fillRect(0,0,720,720);pc.font='13px system-ui';pc.textAlign='center';pc.textBaseline='middle';for(let i=0;i<n;i++){pc.fillStyle='#dedbd0';pc.fillText(String(i+1),margin+(i+.5)*s,16);pc.fillText(String(i+1),margin+(i+.5)*s,704);pc.fillText(String.fromCharCode(65+i),15,margin+(i+.5)*s);pc.fillText(String.fromCharCode(65+i),705,margin+(i+.5)*s)}for(let y=0;y<n;y++)for(let x=0;x<n;x++){pc.fillStyle=E.wall(m,x,y)?'#101113':'#eeeae7';pc.fillRect(margin+x*s,margin+y*s,s+.2,s+.2);if(!E.wall(m,x,y)){pc.strokeStyle='#d5d0cb';pc.lineWidth=.5;pc.strokeRect(margin+x*s,margin+y*s,s,s)}}const mark=(x,y,color)=>{pc.strokeStyle=color;pc.lineWidth=3;pc.strokeRect(margin+x*s+1,margin+y*s+1,s-2,s-2)};if(chosen)mark(chosen.x,chosen.y,'#e5a169');if(['revealed','complete'].includes(phase)){const q=question();mark(q.x,q.y,'#38b17b');const [dx,dy]=E.directions[q.dir],cx=margin+(q.x+.5)*s,cy=margin+(q.y+.5)*s;pc.strokeStyle='#136943';pc.lineWidth=3;pc.beginPath();pc.moveTo(cx-dx*s*.25,cy-dy*s*.25);pc.lineTo(cx+dx*s*.25,cy+dy*s*.25);pc.lineTo(cx+dx*s*.1-dy*s*.13,cy+dy*s*.1+dx*s*.13);pc.moveTo(cx+dx*s*.25,cy+dy*s*.25);pc.lineTo(cx+dx*s*.1+dy*s*.13,cy+dy*s*.1-dx*s*.13);pc.stroke()}}
-function drawScene(){const m=map(),q=question(),w=scene.width,h=scene.height,horizon=h*.45,scale=h*.8;sc.fillStyle='#fcfbf9';sc.fillRect(0,0,w,h);sc.fillStyle='#e4e2df';sc.fillRect(0,horizon,w,h-horizon);sc.strokeStyle='#c7c4c0';sc.lineWidth=1;for(let d=1;d<20;d++){const y=horizon+scale*.5/d;sc.beginPath();sc.moveTo(0,y);sc.lineTo(w,y);sc.stroke()}let previous=null;for(let x=0;x<w;x++){const hit=E.cast(m,q.x+.5,q.y+.5,q.dir,((x+.5)/w*2-1)*.85),height=scale/hit.distance,top=horizon-height*.5,bottom=horizon+height*.5;sc.fillStyle=hit.front?'#262729':'#b7b8bd';sc.fillRect(x,top,1,bottom-top);if(previous&&hit.cell!==previous.cell){sc.fillStyle='#4d4e50';sc.fillRect(x,top,1,bottom-top)}sc.fillStyle='#727277';sc.fillRect(x,top,1,1);sc.fillRect(x,bottom,1,1);previous=hit}}
+function drawScene(){
+const m=map(),q=question(),w=scene.width,h=scene.height,horizon=h*.45;
+sc.fillStyle='#fcfbf9';sc.fillRect(0,0,w,h);
+sc.fillStyle='#e4e2df';sc.fillRect(0,horizon,w,h-horizon);
+let previous=null;
+for(let x=0;x<w;x++){
+const hit=E.cast(m,q.x+.5,q.y+.5,q.dir,((x+.5)/w*2-1)*.85),p=E.wallProjection(hit.distance,w,h);
+sc.fillStyle=hit.front?'#262729':'#b7b8bd';sc.fillRect(x,p.top,1,p.bottom-p.top);
+// Adjacent exposed wall faces meet at integer world coordinates: one seam per map cell.
+const seam=previous&&(hit.cell!==previous.cell||hit.side!==previous.side);
+if(seam){sc.fillStyle=hit.front?'#737479':'#73757b';sc.fillRect(x,p.top,1,p.bottom-p.top)}
+// Project wall heights z=0,1,2 using the same focal length as horizontal map units.
+sc.fillStyle=hit.front?'#737479':'#73757b';
+for(const y of [p.top,p.middle,p.bottom]){
+const thickness=Math.max(1,Math.min(3,p.unit*.012)),from=Math.max(p.top,y-thickness*.5),to=Math.min(p.bottom,y+thickness*.5);
+if(to>from)sc.fillRect(x,from,1,to-from);
+}
+previous=hit;
+}
+}
 function controls(){$('phase').textContent=({ready:'게임 준비',solve:'좌표 추론',cooldown:'오답 · 제출 제한',revealed:'정답 공개',complete:'SESSION COMPLETE'})[phase]+(practice?' · 연습':'');$('progress').textContent=phase==='ready'?'2 MAPS · 6 QUESTIONS':`MAP ${mapIndex+1} / 2 · Q${qi+1} / 3`;$('score').textContent=score+' / 6';$('selected').textContent=chosen?E.code(chosen.x,chosen.y):'—';$('settings').classList.toggle('hidden',!['ready','complete'].includes(phase));$('entry').classList.toggle('hidden',!['solve','cooldown'].includes(phase));$('next').classList.toggle('hidden',!['ready','revealed','complete'].includes(phase));for(const id of ['submit','coordinate','giveup'])$(id).disabled=phase!=='solve';$('submit').disabled=phase!=='solve'||!chosen;$('pause').disabled=!['solve','cooldown'].includes(phase);$('cover').classList.toggle('hidden',phase!=='ready');$('marker').classList.toggle('hidden',phase==='ready');$('mapLabel').textContent=map().size+' × '+map().size;$('clock').textContent=phase==='cooldown'?Math.ceil(cooldown/1000)+'초':fmt(['complete','ready'].includes(phase)?total:elapsed)}
 function start(){seed=crypto.getRandomValues(new Uint32Array(1))[0];const size=Number($('size').value);maps=[E.generate(seed,size),E.generate((seed+7919)>>>0,size)];mapIndex=qi=score=total=0;answers=[];practice=size!==25;solve()}
 function solve(){phase='solve';elapsed=0;cooldown=0;chosen=null;last=performance.now();$('coordinate').value='';$('explanation').classList.add('hidden');$('explanation').innerHTML='';$('marker').textContent='?';$('sceneCaption').textContent='물음표는 현재 발밑의 한 칸입니다. 이동·시점 회전 없이 위치를 찾으세요.';$('mapCaption').textContent='행은 알파벳 · 열은 숫자. 지도에서 통로를 눌러 좌표를 선택하세요.';message('앞쪽 막다른 길까지의 거리, 왼쪽과 오른쪽의 갈림길을 비교하세요.');drawPlan();drawScene();controls()}
