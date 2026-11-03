@@ -4,7 +4,7 @@ The original crop is authoritative. Transcriptions never silently become verifie
 Only 2015-curriculum items are selected; the 2021 A/B papers keep their provenance.
 """
 from __future__ import annotations
-import base64, collections, hashlib, io, json, math, re
+import base64, collections, hashlib, io, json, math, re, sys
 from pathlib import Path
 import fitz
 from PIL import Image
@@ -246,6 +246,31 @@ def transcription(chars,gray,scale):
     # Text lines are rebuilt from character origins; mathematical groups are atomic.
     for c in normal:
       blocks.append({'text':c['c'],'bbox':c['bbox'],'math':False})
+    labels='①②③④⑤'
+    options=[]
+    markers=[next((b for b in blocks if b['text']==s),None) for s in labels]
+    if all(markers) and all(sum(b['text']==s for b in blocks)==1 for s in labels):
+      rows=[]
+      for marker in sorted(markers,key=lambda b:(b['bbox'][1],b['bbox'][0])):
+        cy=(marker['bbox'][1]+marker['bbox'][3])/2
+        row=next((r for r in rows if abs(cy-r[0])<4),None)
+        if row is None:rows.append((cy,[marker]))
+        else:row[1].append(marker)
+      parts={s:[] for s in labels}
+      top=min(r[0] for r in rows)
+      score_y=max(((b['bbox'][1]+b['bbox'][3])/2 for b in blocks if b['text']=='점'),default=0)
+      for b in blocks:
+        if b in markers:continue
+        x=(b['bbox'][0]+b['bbox'][2])/2;cy=(b['bbox'][1]+b['bbox'][3])/2
+        if cy<top-12 or cy<=score_y+5:continue
+        ry,ms=min(rows,key=lambda r:abs(r[0]-cy))
+        if abs(ry-cy)>(12 if b['math'] else 6):continue
+        preceding=[m for m in ms if x>=m['bbox'][2]-1]
+        if preceding:parts[max(preceding,key=lambda m:m['bbox'][0])['text']].append(b)
+      if all(any(b['text'].strip() for b in v) for v in parts.values()):
+        options=[(m,parts[m['text']]) for m in markers]
+        taken={id(b) for m,bs in options for b in [m,*bs]}
+        blocks=[b for b in blocks if id(b) not in taken]
     lines=[]
     for b in sorted(blocks,key=lambda b:(b['bbox'][1],b['bbox'][0])):
       cy=(b['bbox'][1]+b['bbox'][3])/2
@@ -262,6 +287,15 @@ def transcription(chars,gray,scale):
         if prev and (p['bbox'][0]-prev['bbox'][2]>3 or p['math'] or prev['math']):s+=' '
         s+=p['text'];prev=p
       out.append(s.strip())
+    if options:
+      values=[]
+      for marker,bs in options:
+        s=marker['text']+' ';prev=None
+        for p in sorted(bs,key=lambda b:b['bbox'][0]):
+          if prev and (p['bbox'][0]-prev['bbox'][2]>3 or p['math'] or prev['math']):s+=' '
+          s+=p['text'];prev=p
+        values.append(s.strip())
+      out.append('   '.join(values))
     return '\n'.join(out),formulas
 
 def classify(text,stats_only=False):
@@ -317,7 +351,7 @@ def classify(text,stats_only=False):
       if word in t:evidence.append(word)
     return subject,unit,concepts,evidence
 
-def build():
+def build(text_only=False):
     items=[];exams=[];warnings=[];excluded=[]
     selections=[(SOURCE/'01-17-2205-2706-_only-.pdf',0,136,8,'common'),(SOURCE/'03-30-1706-2111-_-.pdf',288,360,12,'legacy'),(ROOT.parent/'tmp'/'probability-17.pdf',0,68,4,'stats'),(ROOT.parent/'tmp'/'2027-09.pdf',0,12,12,'full')]
     for filename,start,end,step,kind in selections:
@@ -378,16 +412,20 @@ def build():
           warnings.append({'exam':eid,'markers':sorted(expected),'reason':'문항 번호 누락 또는 중복'})
         if not atlas_parts:continue
         maxw=max(p.width for p in atlas_parts)
-        atlas=Image.new('RGB',(maxw,atlas_y),'white');yy=0
-        for crop in atlas_parts:atlas.paste(crop,(0,yy));yy+=crop.height+4
         # PNG has no WebP height limit; use PNG only for exceptionally long atlases.
         ext='webp' if atlas_y<16384 else 'png'
-        buf=io.BytesIO()
-        if ext=='webp':atlas.save(buf,format='WEBP',lossless=True,method=5)
-        if ext=='png' or len(buf.getbuffer())==0:
-          ext='png';buf=io.BytesIO();atlas.save(buf,format='PNG',optimize=True)
-        img=Image.open(buf);assert img.size==(maxw,atlas_y);img.verify()
-        (ROOT/'assets'/f'{atlas_id}.{ext}').write_bytes(buf.getvalue())
+        if text_only:
+          with Image.open(ROOT/'assets'/f'{atlas_id}.{ext}') as existing:
+            assert existing.size==(maxw,atlas_y)
+        else:
+          atlas=Image.new('RGB',(maxw,atlas_y),'white');yy=0
+          for crop in atlas_parts:atlas.paste(crop,(0,yy));yy+=crop.height+4
+          buf=io.BytesIO()
+          if ext=='webp':atlas.save(buf,format='WEBP',lossless=True,method=5)
+          if ext=='png' or len(buf.getbuffer())==0:
+            ext='png';buf=io.BytesIO();atlas.save(buf,format='PNG',optimize=True)
+          img=Image.open(buf);assert img.size==(maxw,atlas_y);img.verify()
+          (ROOT/'assets'/f'{atlas_id}.{ext}').write_bytes(buf.getvalue())
         for q in exam_items:
           q['original']['atlas']=f'assets/{atlas_id}.{ext}'
           q['original']['atlas_width']=maxw;q['original']['atlas_height']=atlas_y
@@ -403,4 +441,4 @@ def build():
     print('TOTAL',len(items),'WARNINGS',len(warnings),'EXCLUDED',len(excluded))
     print(json.dumps(warnings,ensure_ascii=False))
 
-if __name__=='__main__':build()
+if __name__=='__main__':build(text_only='--text-only' in sys.argv)
