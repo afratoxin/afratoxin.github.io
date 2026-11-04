@@ -107,27 +107,17 @@ function chooseLogic(logic,id=''){
   syncFilters();
   render();
 }
-function calculationView(q, calculation){
-  const {image, top, width, height, imageHeight}=calculation;
-  const viewport=el('div',{class:'calculation-crop',style:`width:min(100%,${width}px);aspect-ratio:${width}/${height}`});
-  const bitmap=el('img',{
-    src:image,alt:`${examLabel(q,true)} ${q.number}번의 수식 전개`,
-    style:`height:${100*imageHeight/height}%;top:${-100*top/height}%`,
-  });
-  bitmap.addEventListener('error',()=>{
-    viewport.style.aspectRatio='auto';
-    viewport.replaceChildren(el('p',{class:'notice',text:'계산식을 불러오지 못했습니다. 페이지를 새로 고쳐 주세요.'}));
-  });
-  viewport.append(bitmap);
-  return el('section',{class:'calculation-view'},el('h3',{text:'계산 전개'}),viewport,
-    el('p',{class:'calculation-credit',text:'EBSi 공개 정답 및 풀이의 수식을 바탕으로 정리했습니다.'}));
-}
 function renderSolution(q,panel){
   const solution=solutions.items[q.id];
   const box=el('div',{class:'solution-panel'});
   if(solution?.answer)box.append(el('p',{class:'solution-answer',text:`정답 ${solution.answer}`}));
-  if(solution?.steps?.length){
-    box.append(el('h3',{text:'해설'}),el('ol',{class:'solution-steps'},...solution.steps.map(text=>el('li',{text}))));
+  if(solution?.idea&&solution.steps?.length){
+    box.append(
+      el('section',{class:'solution-idea'},el('h3',{text:'핵심 아이디어'}),el('p',{text:solution.idea})),
+      el('section',{class:'solution-steps'},el('h3',{text:'해설'}),...solution.steps.map(text=>el('p',{text})))
+    );
+  }else{
+    box.append(el('p',{class:'notice',text:'이 문항의 서술형 해설은 아직 작성되지 않았습니다.'}));
   }
   for(const key of solution?.logic||[]){
     const group=solutions.groups[key];
@@ -136,7 +126,6 @@ function renderSolution(q,panel){
       el('p',{text:group.description}),
       related.length?el('button',{class:'secondary',type:'button',text:`같은 풀이 논리 ${related.length}문항 보기`,onclick:()=>chooseLogic(key,q.id)}):null));
   }
-  if(solution?.calculation)box.append(calculationView(q,solution.calculation));
   panel.append(box);
   typeset(box);
 }
@@ -204,7 +193,7 @@ function coverage(){
   table.append(body);
   const notes=Object.values(solutions.items);
   out.replaceChildren(el('p',{text:archive.scope_note}),
-    el('p',{text:`EBSi 공개 정답률 ${Object.keys(ebsi.rates).length}문항 · 4점 풀이 ${notes.length}문항 · 직접 작성 ${notes.filter(item=>item.steps?.length).length}문항 · 수식 전개 ${notes.filter(item=>item.calculation).length}문항`}),
+    el('p',{text:`EBSi 공개 정답률 ${Object.keys(ebsi.rates).length}문항 · 4점 문항 ${notes.length}개 중 서술형 해설 ${notes.filter(item=>item.idea&&item.steps?.length).length}개`}),
     table,el('p',{},externalLink('EBSi 평가원 기출문제 원문 찾아보기 ↗','https://www.ebsi.co.kr/ebs/xip/xipc/previousPaperList.ebs?targetCd=D300')));
   $('#coverage-dialog').showModal();
 }
@@ -231,7 +220,7 @@ try{
   const [catalog,rates,notes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
-    loadData('data/solutions.json?v=inline').catch(()=>null),
+    loadData('data/solutions.json?v=written').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;

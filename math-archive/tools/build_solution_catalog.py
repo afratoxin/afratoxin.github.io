@@ -124,24 +124,25 @@ def suggested_logic(question, reference):
     return 'moments' if re.search('분산|기댓값|표준편차', context) else 'sum-distribution'
 
 
-def read_authored(directory):
+def read_authored(directory, existing_ideas):
     items = {}
     for path in sorted(directory.glob('*.txt')):
         for line in path.read_text().splitlines():
             if not line.strip():
                 continue
             question_id, keys, answer, *steps = re.split(r'\|(?=(?:[^$]*\$[^$]*\$)*[^$]*$)', line)
+            idea = existing_ideas.get(question_id)
+            if idea is None:
+                idea, *steps = steps
             assert question_id not in items and steps, question_id
-            assert all(step.strip() and step.count('$') % 2 == 0 for step in steps), question_id
-            items[question_id] = {'logic': keys.split(','), 'answer': answer, 'steps': steps}
+            assert all(text.strip() and text.count('$') % 2 == 0 for text in [idea, *steps]), question_id
+            items[question_id] = {'logic': keys.split(','), 'answer': answer, 'idea': idea, 'steps': steps}
     return items
 
 
 def build(sections, authored, overrides, rates):
     archive = json.loads((ROOT / 'data/questions.json').read_text())
     results = {}
-    example_url = ('https://www.ebsi.co.kr/ebs/ent/com/downLoadFileDefaultNew.ebs'
-                   '?fileGbn=1&bbsCd=B122&datNo=127360#page=136')
     for question in archive['items']:
         if question['points'] != 4:
             continue
@@ -153,13 +154,7 @@ def build(sections, authored, overrides, rates):
             assert item['answer'] == known_answer, (qid, item['answer'], known_answer)
         if not item:
             item = {'logic': overrides.get(qid, [suggested_logic(question, source)]), 'answer': known_answer}
-        if question['exam_id'] == '2022-example':
-            item['reference'] = {'label': '평가원 예시문항 정답표 · PDF 136쪽 ↗', 'url': example_url}
-        elif source:
-            label = f"EBSi 정답 및 풀이 · {'압축 파일의 해당 유형 PDF ' if source['is_zip'] else 'PDF '}{source['page']}쪽 ↗"
-            url = source['url'] if source['is_zip'] else source['url'] + f"#page={source['page']}"
-            item['reference'] = {'label': label, 'url': url}
-        assert item['answer'] and item.get('reference'), qid
+        assert item['answer'], qid
         assert all(key in GROUPS for key in item['logic']), qid
         results[qid] = item
     assert set(authored) <= set(results)
@@ -172,8 +167,11 @@ if __name__ == '__main__':
     parser.add_argument('sections', type=Path)
     parser.add_argument('authored', type=Path)
     parser.add_argument('overrides', type=Path)
+    parser.add_argument('--existing-ideas', type=Path)
     args = parser.parse_args()
-    data = build(json.loads(args.sections.read_text()), read_authored(args.authored),
+    ideas = dict(line.split('|', 1) for line in args.existing_ideas.read_text().splitlines()
+                 if line.strip()) if args.existing_ideas else {}
+    data = build(json.loads(args.sections.read_text()), read_authored(args.authored, ideas),
                  json.loads(args.overrides.read_text()), json.loads((ROOT / 'data/ebsi-rates.json').read_text()))
     (ROOT / 'data/solutions.json').write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
     print(len(data['items']), 'solution records,', sum('steps' in item for item in data['items'].values()), 'authored.')

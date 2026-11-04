@@ -46,13 +46,23 @@
   color: #284981;
   font-weight: 750;
 }
-.solution-steps {
-  margin: 0 0 16px;
-  padding-left: 23px;
+.solution-idea {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-left: 3px solid #4269a8;
+  border-radius: 6px;
+  background: #edf4ff;
 }
-.solution-steps li {
-  margin: 0 0 9px;
+.solution-idea p,
+.solution-steps p {
+  margin: 0;
   line-height: 1.8;
+}
+.solution-steps p + p {
+  margin-top: 10px;
+}
+.solution-steps {
+  margin-bottom: 18px;
 }
 .logic-card {
   margin-top: 9px;
@@ -65,22 +75,3 @@
   font-size: 13px;
 }
 
-.calculation-view {
-  margin-top: 18px;
-}
-.calculation-crop {
-  position: relative;
-  overflow: hidden;
-  background: #fff;
-}
-.calculation-crop img {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  max-width: none;
-}
-.calculation-credit {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-size: 12px;
-}
