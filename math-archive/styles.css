@@ -64,3 +64,23 @@
   margin: 0 0 8px;
   font-size: 13px;
 }
+
+.calculation-view {
+  margin-top: 18px;
+}
+.calculation-crop {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+}
+.calculation-crop img {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-width: none;
+}
+.calculation-credit {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
