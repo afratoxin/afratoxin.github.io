@@ -75,3 +75,10 @@
   font-size: 13px;
 }
 
+
+.solution-sequence {margin:0;padding-left:1.6em;}
+.solution-sequence li {padding-left:0.35em;margin:0 0 16px;}
+.solution-sequence li::marker {color:var(--blue);font-weight:750;}
+.solution-steps p {word-break:keep-all;overflow-wrap:break-word;line-height:1.95;}
+.solution-panel mjx-container {max-width:100%;}
+.related-heading {padding-top:14px;border-top:1px solid var(--line);}

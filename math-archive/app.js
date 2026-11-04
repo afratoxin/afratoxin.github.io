@@ -114,11 +114,12 @@ function renderSolution(q,panel){
   if(solution?.idea&&solution.steps?.length){
     box.append(
       el('section',{class:'solution-idea'},el('h3',{text:'핵심 아이디어'}),el('p',{text:solution.idea})),
-      el('section',{class:'solution-steps'},el('h3',{text:'해설'}),...solution.steps.map(text=>el('p',{text})))
+      el('section',{class:'solution-steps'},el('h3',{text:'해설'}),el('ol',{class:'solution-sequence'},...solution.steps.map(text=>el('li',{},el('p',{text})))))
     );
   }else{
     box.append(el('p',{class:'notice',text:'이 문항의 서술형 해설은 아직 작성되지 않았습니다.'}));
   }
+  if(solution?.logic?.length)box.append(el('h3',{class:'related-heading',text:'풀이 논리로 함께 보기'}));
   for(const key of solution?.logic||[]){
     const group=solutions.groups[key];
     const related=items.filter(item=>item.id!==q.id&&solutions.items[item.id]?.logic?.includes(key));
@@ -220,7 +221,7 @@ try{
   const [catalog,rates,notes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
-    loadData('data/solutions.json?v=written').catch(()=>null),
+    loadData('data/solutions.json?v=prose-297').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;
