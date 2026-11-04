@@ -221,7 +221,7 @@ try{
   const [catalog,rates,notes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
-    loadData('data/solutions.json?v=prose-297').catch(()=>null),
+    loadData('data/solutions.json?v=stacked-fractions-1').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;
