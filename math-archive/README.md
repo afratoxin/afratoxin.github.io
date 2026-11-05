@@ -34,3 +34,11 @@
 `tools/geometry_plots.py`의 함수·정의역·영역·점 명세를 `graphs.js`가 SVG로 그린다. 결정된 수치의 그래프와 구조도·예시 그림을 구분해서 표시한다. 수평선, 움직이는 적분 구간, 반사 경계, 할선의 점을 조작할 수 있다. 경계값 버튼은 슬라이더 눈금으로 반올림하지 않고 정확한 값을 유지한다.
 
 기존 해설을 수정한 뒤에는 `python tools/build_geometry_solutions.py`로 `data/geometry.json`을 재생성한다. `node tools/verify_geometry.mjs`는 접점·서로 다른 교점 수·끝점 포함 여부·넓이 상쇄 등 54개 수치 및 경계 검사를 수행한다.
+
+# 학생에게 설명하는 해설 문체
+
+`content/reader-guidance-2021.txt`부터 `reader-guidance-2027.txt`까지는 297문항의 795단계에서 학생이 다음으로 무엇을 생각해야 하는지 문항별로 설명한다. 해요체로 설명하고, 계산을 시작하기 전에 왜 그 계산이 필요한지 짚는다. `content/graph-solutions.txt`의 71문항도 같은 문체로 작성했다. 계산을 자세히 다시 쓴 15문항은 `content/teacher-body-overrides.json`에 보관한다.
+
+원본 해설·형광펜 연결을 다시 만든 뒤 `python tools/build_lecture_solutions.py`를 마지막에 실행한다. 이 과정은 문항별로 작성한 설명과 계산 문단을 합치고 그래프 해설도 다시 만든다. `tools/lecture_voice.py`는 남아 있는 계산 서술의 문체만 맞추며 수식 내부에는 손대지 않는다. 문항의 정답·단계 수·형광펜 좌표는 유지한다. 2027학년도 9월 15번의 원문 대조로 확인한 OCR 오류 `(2ax+1)`은 실제 인쇄된 `(2x+1)`로 바로잡았다.
+
+`python tools/verify_lecture.py`로 전체 설명의 수식 표기와 원문 연결을 검사하고, `node tools/verify_geometry.mjs`와 `python tools/verify_written_math.py`로 수학적 경계 및 독립 계산 검사를 실행한다.

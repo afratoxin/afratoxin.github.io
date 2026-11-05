@@ -1,4 +1,4 @@
-import {createMathGraph} from './graphs.js?v=geometry-2';
+import {createMathGraph} from './graphs.js?v=lecture-1';
 
 const subjects = [
   {name:'수학Ⅰ',alias:'수1',cls:'math1',units:['지수함수와 로그함수','삼각함수','수열']},
@@ -201,7 +201,7 @@ function sourceExcerpts(q,sources){
   });
 }
 function guidedSolution(q,solution){
-  const host=el('div',{class:'walkthrough',tabindex:'-1','aria-label':'문항과 함께 보는 단계별 해설'});
+  const host=el('div',{class:'walkthrough',tabindex:'-1','aria-label':'문항을 보면서 한 단계씩 따라가는 풀이'});
   let showHighlights=true;
   function draw(focusHeading=false){
     const teaching=solution.teaching||{};
@@ -228,24 +228,24 @@ function guidedSolution(q,solution){
       el('p',{class:'walk-legend',text:sources.length?'노란색 · 이 단계에서 읽는 조건':index?'앞 단계에서 얻은 결과를 이어서 계산합니다.':'문항의 조건을 함께 확인합니다.'}),viewport,
       el('button',{type:'button',class:'quiet walk-highlight-toggle','aria-pressed':String(showHighlights),text:showHighlights?'형광펜 숨기기':'형광펜 보이기',onclick:()=>{showHighlights=!showHighlights;draw()}})
     );
-    const reading=el('section',{class:`walk-reading${key?' is-key-step':''}`,'aria-label':'조건의 해석과 계산'});
-    if(sources.length)reading.append(el('div',{class:'walk-source-quote'},el('h4',{text:'문항의 표현 · 원문 그대로'}),...sourceExcerpts(q,sources)));
-    else if(index>0)reading.append(el('div',{class:'walk-source-quote walk-prior-result'},el('h4',{text:'앞 단계의 결과에서 출발'}),el('p',{text:teaching.stage_result?.[index-1]||solutionSentences(solution.steps[index-1]).at(-1)})));
+    const reading=el('section',{class:`walk-reading${key?' is-key-step':''}`,'aria-label':'한 단계씩 따라가는 풀이'});
+    if(sources.length)reading.append(el('div',{class:'walk-source-quote'},el('h4',{text:'지금 볼 조건'}),...sourceExcerpts(q,sources)));
+    else if(index>0)reading.append(el('div',{class:'walk-source-quote walk-prior-result'},el('h4',{text:'여기까지 알아냈어요'}),el('p',{text:teaching.stage_result?.[index-1]||solutionSentences(solution.steps[index-1]).at(-1)})));
     const approach=teaching.approach?.[index];
     if(approach){
-      reading.append(el('div',{class:`walk-approach${key?' is-key-approach':''}`},el('h4',{text:index?'이어서 생각할 점':'풀이의 출발점'}),el('p',{class:'walk-approach-reason',text:approach.reason}),el('p',{text:approach.bridge})));
-      reading.append(el('div',{class:'walk-calculation walk-reviewed-calculation'},el('h4',{text:teaching.step_titles?.[index]||'식으로 옮기고 계산하면'}),...(teaching.stage_body[index]||[]).map((text,i)=>el('p',{class:key&&i===(teaching.key_paragraph||0)?'walk-key-result':'',text}))));
+      reading.append(el('div',{class:`walk-approach${key?' is-key-approach':''}`},el('h4',{text:index?'이어서 살펴볼게요':'어디서부터 볼까요?'}),el('p',{class:'walk-approach-reason',text:approach.reason}),el('p',{text:approach.bridge})));
+      reading.append(el('div',{class:'walk-calculation walk-reviewed-calculation'},el('h4',{text:teaching.step_titles?.[index]||'차근차근 계산해 볼게요'}),...(teaching.stage_body[index]||[]).map((text,i)=>el('p',{class:key&&i===(teaching.key_paragraph||0)?'walk-key-result':'',text}))));
       if(geometry.plots[teaching.plots?.[index]])reading.append(createMathGraph(geometry.plots[teaching.plots[index]]));
     }else{
-    if(key&&teaching.why)reading.append(el('div',{class:'walk-why'},el('h4',{text:'이 조건에 주목하는 이유'}),el('p',{text:teaching.why})));
+    if(key&&teaching.why)reading.append(el('div',{class:'walk-why'},el('h4',{text:'여기서 이 조건을 쓰는 이유'}),el('p',{text:teaching.why})));
     const interpretation=teaching.readings?.[index];
-    reading.append(el('div',{class:'walk-interpretation'},el('h4',{text:sources.length?'이렇게 해석합니다':'여기서 얻는 식과 의미'}),el('p',{text:interpretation||sentences[0]})));
+    reading.append(el('div',{class:'walk-interpretation'},el('h4',{text:sources.length?'이 말은 무슨 뜻일까요?':'여기서 알 수 있는 것'}),el('p',{text:interpretation||sentences[0]})));
     const calculation=interpretation?sentences:sentences.slice(1);
-    if(calculation.length)reading.append(el('div',{class:'walk-calculation'},el('h4',{text:'풀이를 이어가면'}),...calculation.map(text=>el('p',{text}))));
+    if(calculation.length)reading.append(el('div',{class:'walk-calculation'},el('h4',{text:'이어서 풀어 볼게요'}),...calculation.map(text=>el('p',{text}))));
     const details=teaching.details?.[index]||[];
-    if(details.length)reading.append(el('div',{class:'walk-calculation walk-detail-calculation'},el('h4',{text:'계산과 논리를 풀어 보면'}),...details.map(text=>el('p',{text}))));
+    if(details.length)reading.append(el('div',{class:'walk-calculation walk-detail-calculation'},el('h4',{text:'한 번 더 풀어서 보면'}),...details.map(text=>el('p',{text}))));
     }
-    if(index>0)reading.append(el('details',{class:'walk-history'},el('summary',{text:'지금까지의 풀이 확인'}),el('ol',{},...solution.steps.slice(0,index).map(text=>el('li',{text})))));
+    if(index>0)reading.append(el('details',{class:'walk-history'},el('summary',{text:'앞에서 어떻게 풀었는지 다시 보기'}),el('ol',{},...solution.steps.slice(0,index).map(text=>el('li',{text})))));
     const controls=el('div',{class:'walk-controls'},previous,el('span',{class:'walk-counter','aria-live':'polite',text:`${index+1} / ${solution.steps.length}`}),next);
     if(index===solution.steps.length-1)reading.append(el('p',{class:'walk-finished',text:`풀이 완료 · 정답 ${solution.answer}`}));
     window.MathJax?.typesetClear?.([host]);
@@ -293,7 +293,7 @@ function renderSolution(q,panel){
       if(content.isConnected)typeset(content);
     };
     for(const [mode,label] of [['guided','단계별로 보기'],['full','전체 해설 보기']])views.append(el('button',{type:'button',class:'secondary','data-view':mode,text:label,onclick:()=>show(mode)}));
-    box.append(views,content,el('details',{class:'solution-idea solution-idea-toggle'},el('summary',{text:'핵심 아이디어 모아 보기'}),el('p',{text:solution.idea})));
+    box.append(views,content,el('details',{class:'solution-idea solution-idea-toggle'},el('summary',{text:'이 문제를 푸는 생각 정리'}),el('p',{text:solution.idea})));
     show(solutionViews.get(q.id)||'guided');
   }else{
     box.append(el('p',{class:'notice',text:'이 문항의 서술형 해설은 아직 작성되지 않았습니다.'}));
@@ -407,8 +407,8 @@ try{
   const [catalog,rates,notes,graphNotes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
-    loadData('data/solutions.json?v=reader-first-1').catch(()=>null),
-    loadData('data/geometry.json?v=geometry-1').catch(()=>null),
+    loadData('data/solutions.json?v=lecture-1').catch(()=>null),
+    loadData('data/geometry.json?v=lecture-1').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;
@@ -428,4 +428,5 @@ try{
   $('#total-count').textContent=items.length.toLocaleString('ko-KR');render();
 }catch(e){console.error('Archive render failed',e);detail.replaceChildren(el('div',{class:'empty'},el('h2',{text:'문항 자료를 불러오지 못했습니다'}),el('p',{text:'페이지를 새로 고쳐 다시 확인해 주세요.'})));$('#result-count').textContent='자료 불러오기 실패';}
 finally{$('#archive').setAttribute('aria-busy','false')}
+
 

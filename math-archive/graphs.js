@@ -110,7 +110,7 @@ function secantFigure(mode){
     const h=p*p-p+1,z=Math.sqrt(h/3),a={x:-1,y:-1,label:'A'},t={x:.5,y:.125,label:'T'};
     if(mode==='branches'){
       canvas.replaceChildren(plot({title:'두 접점의 위치를 입력에 따라 이어 그린 그림',x:[-2,3],y:[-2,2],ticks:false,xlabel:'P의 가로 위치',ylabel:'접점의 가로 위치',curves:[{fn:{type:'branch',sign:1},label:'오른쪽 접점의 가지'},{fn:{type:'branch',sign:-1},color:'#bd5144',label:'왼쪽 접점의 가지'}],points:[{x:p,y:z,label:'R'},{x:p,y:-z,label:'L',color:'#bd5144'},{x:.5,y:.5,label:'최소 위치',dx:10,dy:19}],verticals:[.5]}));
-      extra.replaceChildren();status.textContent='두 가지 사이에는 항상 간격이 있습니다. 연속인 접점 위치는 한 가지를 계속 따라가야 합니다.';
+      extra.replaceChildren();status.textContent='두 접점의 위치가 계속 떨어져 있죠. 연속인 g는 중간에 반대쪽으로 뛰어갈 수 없어서 한쪽을 계속 따라가야 해요.';
     }else{
       const curves=[{fn:f,label:'삼차곡선'},{fn:{type:'poly',c:[h,h-1]},color:'#b17c14',label:'할선 AP'},{fn:{type:'poly',c:[h,-2*z**3]},color:'#2f8a7a',dash:true,label:'오른쪽 접선'},{fn:{type:'poly',c:[h,2*z**3]},color:'#bd5144',dash:true,label:'왼쪽 접선'}];
       const atT=Math.abs(p-.5)<1e-6;
@@ -123,12 +123,12 @@ function secantFigure(mode){
         const spec2={title:'도함수 그래프와 할선 기울기 높이',x:[-2,2.3],y:[-.5,7],ticks:false,xlabel:'접점의 가로 위치',ylabel:'접선 기울기',curves:[{fn:derivative,label:'도함수 그래프'},{fn:{type:'poly',c:[h]},color:'#b17c14',label:'할선 기울기의 높이'}],points:[{x:z,y:h,label:'R',color:'#2f8a7a'},{x:-z,y:h,label:'L',color:'#bd5144'}]};
         extra.replaceChildren(plot(spec2),graphLegend(spec2));
       }else extra.replaceChildren();
-      status.textContent=atT?'P=T이면 할선 AP가 오른쪽 접선 AT와 겹칩니다. 이때 할선 기울기가 최소입니다.':Math.abs(p+1)<1e-6?'P가 A에 겹치면 할선은 A에서의 접선으로 이어집니다.':'점을 옮겨도 할선 AP와 두 접선의 기울기는 같습니다.';
+      status.textContent=atT?'P=T가 되면 할선 AP가 접선 AT와 겹쳐요. 이때 할선의 기울기가 가장 작아요.':Math.abs(p+1)<1e-6?'P가 A에 가까워지면 할선의 기울기는 A에서의 접선 기울기로 가까워져요.':'P가 움직이면 접점도 함께 움직여요. 할선과 두 접선은 계속 평행해요.';
     }
   }
-  const control=slider('점 P를 곡선 위에서 움직이기',-1.8,2.1,p,.01,n=>{p=n;draw()},false);
+  const control=slider('P를 움직여 보세요',-1.8,2.1,p,.01,n=>{p=n;draw()},false);
   const reset=html('button','secondary graph-preset','P를 T에 놓기');reset.type='button';reset.addEventListener('click',()=>{p=.5;control.input.value=p;draw()});
-  host.append(canvas,extra,control.row,reset,status,html('p','graph-structure-note','점의 대응과 평행 관계를 보는 구조도입니다. A의 실제 입력은 1이고, 다른 좌표값은 풀이에서 결정합니다. 눈금의 숫자를 읽어 답을 구하는 그림이 아닙니다.'));
+  host.append(canvas,extra,control.row,reset,status,html('p','graph-structure-note','지금은 A와 P, 접선들의 위치 관계를 보는 그림이에요. A의 실제 가로 좌표는 1이에요. 나머지 좌표는 풀이를 따라가며 구할게요.'));
   draw();return host;
 }
 export function createMathGraph(spec){
@@ -202,3 +202,4 @@ function controlledFigure(spec){
 
 // Shared by the plot renderer and independent boundary checks.
 export {value as graphValue, roots as graphRoots, integrate as graphIntegral};
+

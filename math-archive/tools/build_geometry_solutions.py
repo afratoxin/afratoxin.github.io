@@ -57,7 +57,7 @@ def build():
                 j=str(len(out['steps']));t['approach'][j]=copy.deepcopy(teaching['approach'][str(i)])
                 t['stage_body'][j]=copy.deepcopy(teaching['stage_body'][str(i)])
                 t['stage_result'][j]=teaching['stage_result'][str(i)];t['focus'].append(teaching['focus'][i])
-                t['step_titles'][j]='그래프에서 읽은 관계를 식으로 확인'
+                t['step_titles'][j]='이제 계산을 이어갈게요'
                 out['steps'].append(step)
         assert len(out['steps'])==len(t['focus'])
         result[qid]=out
@@ -67,3 +67,4 @@ def build():
     return result,diagrams
 
 if __name__=='__main__':build()
+
