@@ -19,8 +19,11 @@ state.order=params.get('order')==='wrong'?'wrong':'';
 state.cohort=cohorts.includes(params.get('cohort'))?params.get('cohort'):cohorts[0];
 state.logic=params.get('logic')||'';
 if(params.get('view')==='solution')state.mode='solution';
-let archive,items=[],filtered=[],selected,toastTimer;
+let archive,items=[],filtered=[],selected,toastTimer,mathQueue=Promise.resolve();
 let ebsi={exams:{},rates:{}}, solutions={groups:{},items:{}};
+const walkthroughPositions=new Map(),solutionViews=new Map();
+const initialWalkStep=Number(params.get('step'));
+if(state.id&&Number.isInteger(initialWalkStep)&&initialWalkStep>0)walkthroughPositions.set(state.id,initialWalkStep-1);
 const unitNav=$('#unit-nav'),results=$('#results'),detail=$('#detail');
 const modeNames={original:'시험지 원문',latex:'LaTeX',concept:'개념',solution:'해설·풀이 논리'};
 function toast(message){const t=$('#toast');t.textContent=message;t.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true},2200)}
@@ -32,6 +35,8 @@ function writeURL(){
   if(selected){
     p.set('q',selected.id);
     if(state.mode==='solution'&&selected.points===4)p.set('view','solution');
+    const step=walkthroughPositions.get(selected.id)||0;
+    if(state.mode==='solution'&&step)p.set('step',String(step+1));
   }
   history.replaceState(null,'',location.pathname+(p.size?'?'+p:''));
 }
@@ -113,15 +118,20 @@ function renderResults(){
   results.scrollTop=scroll;
   $('#result-count').textContent=`${filtered.length.toLocaleString('ko-KR')}개 문항`;
 }
-function originalCrop(q,zoom=false){
+function originalCrop(q,zoom=false,regions=[]){
   const o=q.original;
   const wrap=el('div',{class:'paper-crop',style:`width:min(100%, ${zoom?o.width*1.6:o.width}px);aspect-ratio:${o.width}/${o.height}`});
   const image=el('img',{src:o.atlas,alt:`${examLabel(q,true)} ${q.number}번 시험지 원문`,style:`width:${100*o.atlas_width/o.width}%;top:${-100*o.y/o.height}%;left:${-100*o.x/o.width}%;`});
   image.addEventListener('error',()=>{wrap.replaceChildren(el('p',{class:'notice',text:'원문을 불러오지 못했습니다. 페이지를 새로 고쳐 주세요.'}));wrap.style.aspectRatio='auto'});
-  wrap.append(image);return wrap;
+  wrap.append(image);
+  for(const [index,region] of regions.entries()){
+    const [x0,y0,x1,y1]=region.rect;
+    wrap.append(el('span',{class:'question-highlight','aria-hidden':'true',style:`left:${x0*100}%;top:${y0*100}%;width:${(x1-x0)*100}%;height:${(y1-y0)*100}%;`,'data-region':String(index)}));
+  }
+  return wrap;
 }
 async function copy(s,message){try{await navigator.clipboard.writeText(s);toast(message)}catch{toast('복사할 수 없습니다. 소스에서 직접 선택해 복사하세요.')}}
-function typeset(node){const run=()=>window.MathJax?.typesetPromise?.([node]).catch(()=>{});if(window.MathJax?.typesetPromise)run();else $('#mathjax').addEventListener('load',()=>{window.MathJax?.startup?.promise?.then(run).catch(()=>{})},{once:true})}
+function typeset(node){const run=()=>{mathQueue=mathQueue.catch(()=>{}).then(()=>node.isConnected?window.MathJax?.typesetPromise?.([node]):undefined).catch(()=>{})};if(window.MathJax?.typesetPromise)run();else $('#mathjax').addEventListener('load',()=>{window.MathJax?.startup?.promise?.then(run).catch(()=>{})},{once:true})}
 function rateDetails(q){
   const cohort=cohortFor(q);
   const wrong=rate(q,cohort);
@@ -141,24 +151,121 @@ function chooseLogic(logic,id='',subject=selected?.subject||state.subject){
   syncFilters();
   render();
 }
+function solutionSentences(text){
+  const maths=[];
+  const protectedText=text.replace(/\$[^$]*\$/g,value=>`\u0001${maths.push(value)-1}\u0002`);
+  return protectedText.split(/(?<=[다요죠음임])\.\s+/).map((part,index,array)=>
+    (part+(index<array.length-1?'.':'')).replace(/\u0001(\d+)\u0002/g,(_,i)=>maths[Number(i)])
+  ).filter(Boolean);
+}
+function fullSolutionSteps(solution){
+  const teaching=solution.teaching;
+  return el('section',{class:'solution-steps'},el('h3',{text:'전체 해설'}),el('ol',{class:'solution-sequence'},...solution.steps.map((text,index)=>{
+    const key=teaching?.key_step===index;
+    const row=el('li',{class:key?'solution-key-step':'solution-step'});
+    if(key)row.append(el('p',{class:'solution-clue'},el('span',{class:'solution-clue-label',text:'조건에서 읽을 단서'}),el('span',{text:teaching.why})),el('span',{class:'solution-key-label',text:'핵심 단계'}));
+    row.append(el('p',{class:key?'solution-key-text':'',text}));
+    for(const detail of teaching?.details?.[index]||[])row.append(el('p',{class:'solution-step-detail',text:detail}));
+    return row;
+  })));
+}
+function sourceExcerpts(q,sources){
+  const groups=[];
+  for(const source of [...sources].sort((a,b)=>a.rect[1]-b.rect[1])){
+    const box=[...source.rect],last=groups.at(-1);
+    if(last&&box[1]<=last[3]+18/q.original.height){
+      last[0]=Math.min(last[0],box[0]);last[1]=Math.min(last[1],box[1]);last[2]=Math.max(last[2],box[2]);last[3]=Math.max(last[3],box[3]);
+    }else groups.push(box);
+  }
+  return groups.map(rect=>{
+    const o=q.original;
+    const left=Math.max(0,Math.floor(rect[0]*o.width)),top=Math.max(0,Math.floor(rect[1]*o.height));
+    const right=Math.min(o.width,Math.ceil(rect[2]*o.width)),bottom=Math.min(o.height,Math.ceil(rect[3]*o.height));
+    const part=originalCrop({...q,original:{...o,x:o.x+left,y:o.y+top,width:right-left,height:bottom-top}});
+    part.classList.add('walk-source-excerpt');
+    part.querySelector('img').alt='이 단계에서 참고하는 문항 원문의 조건';
+    return part;
+  });
+}
+function guidedSolution(q,solution){
+  const host=el('div',{class:'walkthrough',tabindex:'-1','aria-label':'문항과 함께 보는 단계별 해설'});
+  let showHighlights=true;
+  function draw(focusHeading=false){
+    const teaching=solution.teaching||{};
+    const index=Math.min(Math.max(0,walkthroughPositions.get(q.id)||0),solution.steps.length-1);
+    walkthroughPositions.set(q.id,index);
+    const sources=(teaching.focus?.[index]||[]).map(i=>teaching.sources?.[i]).filter(Boolean);
+    const sentences=solutionSentences(solution.steps[index]);
+    const key=index===teaching.key_step;
+    const heading=el('h3',{class:'walk-step-heading',tabindex:'-1',text:`${index+1}단계 · ${solution.steps.length}단계 중${key?' · 핵심 단계':''}`});
+    const change=next=>{walkthroughPositions.set(q.id,next);draw(true);writeURL()};
+    const previous=el('button',{type:'button',class:'secondary',text:'← 이전 단계',onclick:()=>change(index-1)});
+    previous.disabled=index===0;
+    const next=el('button',{type:'button',class:'walk-next',text:index===solution.steps.length-1?'마지막 단계':'다음 단계 →',onclick:()=>change(index+1)});
+    next.disabled=index===solution.steps.length-1;
+    const progress=el('div',{class:'walk-progress',role:'group','aria-label':'풀이 단계 선택'},...solution.steps.map((_,i)=>el('button',{
+      type:'button',class:`walk-dot${i<index?' is-complete':''}`,text:String(i+1),'aria-label':`${i+1}단계${i===teaching.key_step?' 핵심 단계':''}`,...(i===index?{'aria-current':'step'}:{}),onclick:()=>change(i)
+    })));
+    const crop=originalCrop(q,false,showHighlights?sources:[]);
+    const viewport=el('div',{class:'walk-paper-viewport'},crop);
+    const source=el('section',{class:'walk-source','aria-label':'문항 원문과 현재 단계의 조건'},
+      el('div',{class:'walk-source-head'},el('h3',{text:'문항 원문'}),el('button',{type:'button',class:'secondary',text:'원문 확대',onclick:()=>{
+        $('#zoom-content').replaceChildren(originalCrop(q,true,showHighlights?sources:[]));$('#zoom-dialog').showModal();
+      }})),
+      el('p',{class:'walk-legend',text:sources.length?'노란색 · 이 단계에서 읽는 조건':index?'앞 단계에서 얻은 결과를 이어서 계산합니다.':'문항의 조건을 함께 확인합니다.'}),viewport,
+      el('button',{type:'button',class:'quiet walk-highlight-toggle','aria-pressed':String(showHighlights),text:showHighlights?'형광펜 숨기기':'형광펜 보이기',onclick:()=>{showHighlights=!showHighlights;draw()}})
+    );
+    const reading=el('section',{class:`walk-reading${key?' is-key-step':''}`,'aria-label':'조건의 해석과 계산'});
+    if(sources.length)reading.append(el('div',{class:'walk-source-quote'},el('h4',{text:'문항의 표현 · 원문 그대로'}),...sourceExcerpts(q,sources)));
+    else if(index>0)reading.append(el('div',{class:'walk-source-quote walk-prior-result'},el('h4',{text:'앞 단계의 결과에서 출발'}),el('p',{text:solutionSentences(solution.steps[index-1]).at(-1)})));
+    if(key&&teaching.why)reading.append(el('div',{class:'walk-why'},el('h4',{text:'이 조건에 주목하는 이유'}),el('p',{text:teaching.why})));
+    const interpretation=teaching.readings?.[index];
+    reading.append(el('div',{class:'walk-interpretation'},el('h4',{text:sources.length?'이렇게 해석합니다':'여기서 얻는 식과 의미'}),el('p',{text:interpretation||sentences[0]})));
+    const calculation=interpretation?sentences:sentences.slice(1);
+    if(calculation.length)reading.append(el('div',{class:'walk-calculation'},el('h4',{text:'풀이를 이어가면'}),...calculation.map(text=>el('p',{text}))));
+    const details=teaching.details?.[index]||[];
+    if(details.length)reading.append(el('div',{class:'walk-calculation walk-detail-calculation'},el('h4',{text:'계산과 논리를 풀어 보면'}),...details.map(text=>el('p',{text}))));
+    if(index>0)reading.append(el('details',{class:'walk-history'},el('summary',{text:'지금까지의 풀이 확인'}),el('ol',{},...solution.steps.slice(0,index).map(text=>el('li',{text})))));
+    const controls=el('div',{class:'walk-controls'},previous,el('span',{class:'walk-counter','aria-live':'polite',text:`${index+1} / ${solution.steps.length}`}),next);
+    if(index===solution.steps.length-1)reading.append(el('p',{class:'walk-finished',text:`풀이 완료 · 정답 ${solution.answer}`}));
+    window.MathJax?.typesetClear?.([host]);
+    host.replaceChildren(el('div',{class:'walk-toolbar'},heading,progress),el('div',{class:'walkthrough-grid'},source,el('div',{class:'walk-step-body'},reading,controls)));
+    if(host.isConnected)typeset(host);
+    requestAnimationFrame(()=>{
+      if(sources.length){
+        const top=Math.min(...sources.map(s=>s.rect[1]));
+        const bottom=Math.max(...sources.map(s=>s.rect[3]));
+        viewport.scrollTop=Math.max(0,(top+bottom)*crop.getBoundingClientRect().height/2-viewport.clientHeight/2);
+      }
+      if(focusHeading)heading.focus({preventScroll:true});
+    });
+  }
+  host.addEventListener('keydown',event=>{
+    if(!['ArrowLeft','ArrowRight'].includes(event.key)||event.altKey||event.ctrlKey||event.metaKey||event.target.closest('input,select,textarea'))return;
+    event.preventDefault();
+    const current=walkthroughPositions.get(q.id)||0;
+    const next=Math.max(0,Math.min(solution.steps.length-1,current+(event.key==='ArrowLeft'?-1:1)));
+    if(next!==current){walkthroughPositions.set(q.id,next);draw(true);writeURL()}
+  });
+  draw();return host;
+}
 function renderSolution(q,panel){
   const solution=solutions.items[q.id];
   const box=el('div',{class:'solution-panel'});
   if(solution?.answer)box.append(el('p',{class:'solution-answer',text:`정답 ${solution.answer}`}));
   if(solution?.idea&&solution.steps?.length){
-    const teaching=solution.teaching;
-    const steps=solution.steps.map((text,index)=>{
-      const key=teaching?.key_step===index;
-      const row=el('li',{class:key?'solution-key-step':'solution-step'});
-      if(key)row.append(el('p',{class:'solution-clue'},el('span',{class:'solution-clue-label',text:'조건에서 읽을 단서'}),el('span',{text:teaching.why})),el('span',{class:'solution-key-label',text:'핵심 단계'}));
-      row.append(el('p',{class:key?'solution-key-text':'',text}));
-      for(const detail of teaching?.details?.[index]||[])row.append(el('p',{class:'solution-step-detail',text:detail}));
-      return row;
-    });
-    box.append(
-      el('section',{class:'solution-idea'},el('h3',{text:'핵심 아이디어'}),el('p',{text:solution.idea})),
-      el('section',{class:'solution-steps'},el('h3',{text:'해설'}),el('ol',{class:'solution-sequence'},...steps))
-    );
+    const content=el('div',{class:'solution-view-content'});
+    const views=el('div',{class:'solution-view-switch',role:'group','aria-label':'해설 읽기 방식'});
+    const show=mode=>{
+      solutionViews.set(q.id,mode);
+      for(const button of views.children)button.setAttribute('aria-pressed',String(button.dataset.view===mode));
+      window.MathJax?.typesetClear?.([content]);
+      content.replaceChildren(mode==='guided'?guidedSolution(q,solution):el('div',{},el('div',{class:'paper-frame full-solution-paper'},originalCrop(q)),fullSolutionSteps(solution)));
+      if(content.isConnected)typeset(content);
+    };
+    for(const [mode,label] of [['guided','단계별로 보기'],['full','전체 해설 보기']])views.append(el('button',{type:'button',class:'secondary','data-view':mode,text:label,onclick:()=>show(mode)}));
+    box.append(views,content,el('details',{class:'solution-idea solution-idea-toggle'},el('summary',{text:'핵심 아이디어 모아 보기'}),el('p',{text:solution.idea})));
+    show(solutionViews.get(q.id)||'guided');
   }else{
     box.append(el('p',{class:'notice',text:'이 문항의 서술형 해설은 아직 작성되지 않았습니다.'}));
   }
@@ -197,6 +304,7 @@ function renderPanel(q,panel){
   }
 }
 function renderDetail(){
+  $('#archive').classList.toggle('solution-open',state.mode==='solution'&&selected?.points===4);
   if(!selected){detail.replaceChildren(el('div',{class:'empty'},el('div',{class:'empty-symbol','aria-hidden':'true',text:'∑'}),el('h2',{text:'문항이 없습니다'}),el('p',{text:'회차나 단원 필터를 바꿔 보세요.'})));return}
   const q=selected,subject=subjects.find(s=>s.name===q.subject),i=filtered.indexOf(q);
   const tabs=el('div',{class:'tabs',role:'tablist','aria-label':'문항 보기'});
@@ -270,7 +378,7 @@ try{
   const [catalog,rates,notes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
-    loadData('data/solutions.json?v=teaching-steps-1').catch(()=>null),
+    loadData('data/solutions.json?v=walkthrough-1').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;

@@ -183,7 +183,7 @@ def math_tex(chars,depth=0):
     tex=tex.replace('BAR','').replace(r'\sqrt{',r'\sqrt{')
     return tex
 
-def transcription(chars,gray,scale):
+def transcription(chars,gray,scale,with_regions=False):
     for c in chars:
       if c['c'] in ['′','″']:
         c['c']="'" if c['c']=='′' else "''";c['math']=True
@@ -280,13 +280,14 @@ def transcription(chars,gray,scale):
           best=line;break
       if best is None:lines.append({'cy':cy,'blocks':[b]})
       else:best['blocks'].append(b)
-    out=[]
+    out=[];regions=[]
     for ln in sorted(lines,key=lambda l:l['cy']):
       pieces=sorted(ln['blocks'],key=lambda b:b['bbox'][0]);s='';prev=None
       for p in pieces:
         if prev and (p['bbox'][0]-prev['bbox'][2]>3 or p['math'] or prev['math']):s+=' '
         s+=p['text'];prev=p
       out.append(s.strip())
+      regions.append({'text':s.strip(),'bbox':bbox_union(pieces)})
     if options:
       values=[]
       for marker,bs in options:
@@ -296,6 +297,7 @@ def transcription(chars,gray,scale):
           s+=p['text'];prev=p
         values.append(s.strip())
       out.append('   '.join(values))
+    if with_regions:return '\n'.join(out),formulas,regions
     return '\n'.join(out),formulas
 
 def classify(text,stats_only=False):

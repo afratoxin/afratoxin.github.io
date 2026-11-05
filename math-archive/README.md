@@ -10,6 +10,15 @@
 `data/questions.json`에 회차, 번호, 주 단원, 개념, LaTeX 및 원문 이미지 좌표가 있습니다. `index.html`과 같은 경로에서 정적 파일을 제공하면 사이트가 작동합니다.
 
 - `data/ebsi-rates.json`은 EBSi 풀서비스 오답률 TOP15에서 확인한 응시 집단별 수치입니다. 정답률은 (100\%-\text{오답률})로 표시하며 미공개 값은 정렬에 포함하지 않습니다. 수집 자료에서 다시 만들려면 `tools/import_ebsi.py`에 회차별 공개 응답을 저장한 폴더를 넘깁니다.
-- `data/solutions.json`은 4점 문항의 정답과 풀이 논리 분류를 담습니다. 해설을 작성한 문항에는 문항별 핵심 아이디어와 단계별 풀이가 들어가며, 수식은 LaTeX로 표시합니다. 집필 중인 문항은 정답과 분류를 표시합니다.
+- `data/solutions.json`은 4점 문항의 정답과 풀이 논리 분류를 담습니다. 4점 문항 297개 모두 문항별 핵심 아이디어와 서술형 풀이를 제공합니다. 설명은 일반 문장, 수식은 LaTeX로 작성합니다. 계산식 이미지와 외부 해설 링크는 사용하지 않습니다.
+
+해설 원고는 `content/`에 보존합니다. `python tools/build_written_solutions.py`로 문항별 해설을 다시 생성합니다. `content/logic-classification.json`은 실제 풀이를 검토해 지정한 풀이 논리 분류입니다.
 
 문항 저작권: 한국교육과정평가원. 교과 분류 참고: 교육부 고시 제2015-74호 별책 8 및 EBS 수능특강.
+
+
+4점 해설은 단계별 읽기를 기본으로 제공합니다. 문항 원문 이미지와 현재 단계의 조건을 나란히 표시하고, 노란 형광펜과 원문 확대 조각을 해석·계산에 연결합니다. 단계 번호, 이전·다음 버튼, 좌우 방향키로 이동할 수 있고 전체 해설 보기로 전환해도 읽던 단계가 유지됩니다.
+
+`content/walkthrough-focus.json`은 각 단계가 참고하는 원문 줄을 지정하고, `content/walkthrough-extra-regions.json`은 정확한 수식 영역을 추가합니다. `content/walkthrough-readings.json`은 원문의 표현을 풀이의 의미로 옮기는 설명입니다. 계산을 풀어 쓴 문장은 `content/teaching-details.json`에 있습니다.
+
+해설과 원문 연결 정보를 다시 만들려면 `python tools/build_written_solutions.py`에 이어 `python tools/build_walkthrough.py`를 실행합니다. 두 번째 명령은 원본 PDF의 글자 좌표를 기존 문항 이미지 좌표로 옮기며, 앞 단계의 결과만 쓰는 계산에는 임의의 문항 영역을 강조하지 않습니다.

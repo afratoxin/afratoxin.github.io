@@ -1,0 +1,555 @@
+{
+  "groups": {
+    "density-area": {
+      "title": "확률밀도 아래 넓이와 누적확률 비교하기",
+      "description": "확률을 도형의 넓이로 읽고, 전체 넓이와 구간별 누적확률에서 높이와 경계를 결정한다."
+    },
+    "continuous-branches": {
+      "title": "연속성을 지키며 대수식의 가지 고르기",
+      "description": "함숫값이 만족하는 식을 인수분해하고, 가지가 만나는 점과 값의 범위로 연속인 함수를 결정한다."
+    },
+    "absolute-root-pairing": {
+      "title": "절댓값 곱에서 단순근을 짝지어 없애기",
+      "description": "절댓값이 단순근에서 만드는 꼭짓점을 없애도록 원래 영점과 이동·반사된 영점을 겹친다."
+    },
+    "level-set-symmetry": {
+      "title": "같은 높이의 모든 교점에 대칭 조건 적용하기",
+      "description": "한 교점에서 끝내지 않고 같은 함숫값을 갖는 입력 전체를 주기와 반사로 만들고 다른 함수와 대조한다."
+    },
+    "moments": {
+      "title": "분포를 나열하지 않고 평균·분산으로 계산하기",
+      "description": "일차변환과 독립인 합의 평균·분산, 또는 평균에서의 거리 제곱을 이용해 필요한 기댓값을 구한다."
+    },
+    "graph-order": {
+      "title": "간단한 입력의 높이 비교로 교점 범위 정하기",
+      "description": "교점 자체를 풀지 않고 양끝의 함수값을 비교해 좌표를 제한한다. 교점에서 성립하는 두 식을 함께 써 높이의 관계를 구한다."
+    }
+  },
+  "items": {
+    "2024-06-09": [
+      "difference-sums"
+    ],
+    "2024-06-10": [
+      "signed-area"
+    ],
+    "2024-06-11": [
+      "tangent-parameter"
+    ],
+    "2024-06-12": [
+      "progression-ratio"
+    ],
+    "2024-06-13": [
+      "circumcircle"
+    ],
+    "2024-06-14": [
+      "motion"
+    ],
+    "2024-06-15": [
+      "forward-recurrence"
+    ],
+    "2024-06-20": [
+      "integral-differentiate",
+      "derivative-level"
+    ],
+    "2024-06-21": [
+      "expo-shift"
+    ],
+    "2024-06-22": [
+      "derivative-level",
+      "integer-parameter"
+    ],
+    "2024-06-28": [
+      "count-function"
+    ],
+    "2024-06-29": [
+      "separator-gaps"
+    ],
+    "2024-06-30": [
+      "modular-count"
+    ],
+    "2024-09-09": [
+      "trig-symmetry"
+    ],
+    "2024-09-10": [
+      "tangent-parameter"
+    ],
+    "2024-09-11": [
+      "motion"
+    ],
+    "2024-09-12": [
+      "reverse-recurrence"
+    ],
+    "2024-09-13": [
+      "derivative-level"
+    ],
+    "2024-09-14": [
+      "expo-shift",
+      "integer-parameter"
+    ],
+    "2024-09-15": [
+      "vanishing-order"
+    ],
+    "2024-09-20": [
+      "circumcircle"
+    ],
+    "2024-09-21": [
+      "difference-sums",
+      "integer-parameter"
+    ],
+    "2024-09-28": [
+      "sum-distribution"
+    ],
+    "2024-09-29": [
+      "flip-parity"
+    ],
+    "2024-09-30": [
+      "bounded-compositions",
+      "modular-count"
+    ],
+    "2023-06-09": [
+      "derivative-level"
+    ],
+    "2023-06-10": [
+      "circumcircle"
+    ],
+    "2023-06-11": [
+      "motion"
+    ],
+    "2023-06-12": [
+      "progression-ratio"
+    ],
+    "2023-06-13": [
+      "expo-shift"
+    ],
+    "2023-06-14": [
+      "boundary-values"
+    ],
+    "2023-06-15": [
+      "forward-recurrence"
+    ],
+    "2023-06-20": [
+      "integral-differentiate"
+    ],
+    "2023-06-21": [
+      "log-substitute",
+      "integer-parameter"
+    ],
+    "2023-06-22": [
+      "vanishing-order",
+      "boundary-values"
+    ],
+    "2023-06-28": [
+      "complement-count"
+    ],
+    "2023-06-29": [
+      "count-function"
+    ],
+    "2023-06-30": [
+      "conditional-space"
+    ],
+    "2023-09-09": [
+      "trig-symmetry"
+    ],
+    "2023-09-10": [
+      "motion"
+    ],
+    "2023-09-11": [
+      "log-substitute",
+      "integer-parameter"
+    ],
+    "2023-09-12": [
+      "roots-as-factors"
+    ],
+    "2023-09-13": [
+      "circumcircle"
+    ],
+    "2023-09-14": [
+      "signed-area"
+    ],
+    "2023-09-15": [
+      "forward-recurrence",
+      "reverse-recurrence"
+    ],
+    "2023-09-20": [
+      "derivative-level",
+      "signed-area"
+    ],
+    "2023-09-21": [
+      "expo-shift"
+    ],
+    "2023-09-22": [
+      "derivative-level"
+    ],
+    "2023-09-28": [
+      "modular-count"
+    ],
+    "2023-09-29": [
+      "bounded-compositions"
+    ],
+    "2023-09-30": [
+      "count-function"
+    ],
+    "2023-11-09": [
+      "period-count"
+    ],
+    "2023-11-10": [
+      "integral-cancel"
+    ],
+    "2023-11-11": [
+      "circumcircle"
+    ],
+    "2023-11-12": [
+      "signed-area"
+    ],
+    "2023-11-13": [
+      "integer-parameter"
+    ],
+    "2023-11-14": [
+      "boundary-values"
+    ],
+    "2023-11-15": [
+      "reverse-recurrence"
+    ],
+    "2023-11-20": [
+      "motion"
+    ],
+    "2023-11-21": [
+      "derivative-level",
+      "expo-shift"
+    ],
+    "2023-11-22": [
+      "continuous-branches"
+    ],
+    "2023-11-28": [
+      "density-area"
+    ],
+    "2023-11-29": [
+      "flip-parity",
+      "conditional-space"
+    ],
+    "2023-11-30": [
+      "count-function"
+    ],
+    "2022-06-09": [
+      "forward-recurrence"
+    ],
+    "2022-06-10": [
+      "log-substitute"
+    ],
+    "2022-06-11": [
+      "integral-cancel"
+    ],
+    "2022-06-12": [
+      "circumcircle"
+    ],
+    "2022-06-13": [
+      "exceptional-indices"
+    ],
+    "2022-06-14": [
+      "cancel-corners"
+    ],
+    "2022-06-15": [
+      "trig-symmetry"
+    ],
+    "2022-06-20": [
+      "integral-differentiate",
+      "derivative-level"
+    ],
+    "2022-06-21": [
+      "roots-as-factors",
+      "integer-parameter"
+    ],
+    "2022-06-22": [
+      "tangent-parameter",
+      "derivative-level"
+    ],
+    "2022-06-28": [
+      "sum-distribution"
+    ],
+    "2022-06-29": [
+      "arrangement-blocks",
+      "complement-count"
+    ],
+    "2022-06-30": [
+      "complement-count"
+    ],
+    "2022-09-09": [
+      "motion"
+    ],
+    "2022-09-10": [
+      "trig-symmetry"
+    ],
+    "2022-09-11": [
+      "integral-differentiate"
+    ],
+    "2022-09-12": [
+      "circumcircle"
+    ],
+    "2022-09-13": [
+      "progression-ratio",
+      "integer-parameter"
+    ],
+    "2022-09-14": [
+      "boundary-values"
+    ],
+    "2022-09-15": [
+      "reverse-recurrence"
+    ],
+    "2022-09-20": [
+      "derivative-level"
+    ],
+    "2022-09-21": [
+      "inverse-coordinate"
+    ],
+    "2022-09-22": [
+      "cancel-corners"
+    ],
+    "2022-09-28": [
+      "count-function"
+    ],
+    "2022-09-29": [
+      "moments"
+    ],
+    "2022-09-30": [
+      "bounded-compositions",
+      "modular-count"
+    ],
+    "2022-11-10": [
+      "tangent-parameter"
+    ],
+    "2022-11-11": [
+      "trig-symmetry"
+    ],
+    "2022-11-12": [
+      "continuous-branches"
+    ],
+    "2022-11-13": [
+      "log-substitute"
+    ],
+    "2022-11-14": [
+      "motion"
+    ],
+    "2022-11-15": [
+      "circumcircle"
+    ],
+    "2022-11-20": [
+      "boundary-values"
+    ],
+    "2022-11-21": [
+      "progression-ratio",
+      "integer-parameter"
+    ],
+    "2022-11-22": [
+      "derivative-level",
+      "boundary-values"
+    ],
+    "2022-11-28": [
+      "count-function"
+    ],
+    "2022-11-29": [
+      "density-area"
+    ],
+    "2021-06-a-15": [
+      "difference-sums"
+    ],
+    "2021-06-a-17": [
+      "arrangement-blocks"
+    ],
+    "2021-06-a-18": [
+      "graph-order"
+    ],
+    "2021-06-a-19": [
+      "complement-count"
+    ],
+    "2021-06-a-26": [
+      "progression-ratio"
+    ],
+    "2021-06-a-27": [
+      "conditional-space",
+      "complement-count"
+    ],
+    "2021-06-a-29": [
+      "bounded-compositions"
+    ],
+    "2021-06-b-14": [
+      "forward-recurrence"
+    ],
+    "2021-06-b-15": [
+      "motion"
+    ],
+    "2021-06-b-16": [
+      "complement-count"
+    ],
+    "2021-06-b-17": [
+      "integral-cancel"
+    ],
+    "2021-06-b-18": [
+      "progression-ratio"
+    ],
+    "2021-06-b-19": [
+      "derivative-level"
+    ],
+    "2021-06-b-20": [
+      "conditional-space",
+      "complement-count"
+    ],
+    "2021-06-b-21": [
+      "graph-order"
+    ],
+    "2021-06-b-26": [
+      "tangent-parameter"
+    ],
+    "2021-06-b-27": [
+      "bounded-compositions",
+      "complement-count"
+    ],
+    "2021-06-b-28": [
+      "difference-sums"
+    ],
+    "2021-06-b-29": [
+      "count-function"
+    ],
+    "2021-06-b-30": [
+      "boundary-values",
+      "derivative-level"
+    ],
+    "2021-09-a-14": [
+      "normal-symmetry"
+    ],
+    "2021-09-a-27": [
+      "progression-ratio"
+    ],
+    "2021-09-a-19": [
+      "complement-count"
+    ],
+    "2021-09-a-21": [
+      "level-set-symmetry"
+    ],
+    "2021-09-a-26": [
+      "moments"
+    ],
+    "2021-09-a-29": [
+      "bounded-compositions"
+    ],
+    "2021-09-b-14": [
+      "arrangement-blocks"
+    ],
+    "2021-09-b-15": [
+      "expo-shift"
+    ],
+    "2021-09-b-16": [
+      "progression-ratio"
+    ],
+    "2021-09-b-17": [
+      "log-substitute"
+    ],
+    "2021-09-b-26": [
+      "derivative-level"
+    ],
+    "2021-09-b-19": [
+      "complement-count"
+    ],
+    "2021-09-b-20": [
+      "continuous-branches"
+    ],
+    "2021-09-b-21": [
+      "forward-recurrence"
+    ],
+    "2021-09-b-27": [
+      "moments"
+    ],
+    "2021-09-b-28": [
+      "integral-differentiate"
+    ],
+    "2021-09-b-29": [
+      "bounded-compositions"
+    ],
+    "2021-09-b-30": [
+      "absolute-root-pairing"
+    ],
+    "2021-11-a-16": [
+      "expo-shift",
+      "progression-ratio"
+    ],
+    "2021-11-a-17": [
+      "moments"
+    ],
+    "2021-11-a-19": [
+      "sum-distribution"
+    ],
+    "2021-11-a-21": [
+      "forward-recurrence"
+    ],
+    "2021-11-a-26": [
+      "arrangement-blocks",
+      "complement-count"
+    ],
+    "2021-11-a-27": [
+      "log-substitute",
+      "integer-parameter"
+    ],
+    "2021-11-a-29": [
+      "bounded-compositions"
+    ],
+    "2021-11-b-14": [
+      "motion"
+    ],
+    "2021-11-b-15": [
+      "arrangement-blocks",
+      "complement-count"
+    ],
+    "2021-11-b-16": [
+      "trig-identity"
+    ],
+    "2021-11-b-17": [
+      "vanishing-order"
+    ],
+    "2021-11-b-18": [
+      "expo-shift"
+    ],
+    "2021-11-b-19": [
+      "normal-symmetry"
+    ],
+    "2021-11-b-20": [
+      "integral-differentiate",
+      "derivative-level"
+    ],
+    "2021-11-b-21": [
+      "forward-recurrence"
+    ],
+    "2021-11-b-26": [
+      "vanishing-order",
+      "boundary-values"
+    ],
+    "2021-11-b-27": [
+      "signed-area"
+    ],
+    "2021-11-b-28": [
+      "circumcircle"
+    ],
+    "2021-11-b-29": [
+      "sum-distribution"
+    ],
+    "2021-11-b-30": [
+      "cancel-corners",
+      "boundary-values"
+    ],
+    "2021-09-a-17": [
+      "complement-count"
+    ],
+    "2021-09-b-18": [
+      "derivative-level"
+    ],
+    "2022-11-09": [
+      "expo-shift"
+    ],
+    "2022-11-30": [
+      "state-transitions",
+      "conditional-space"
+    ],
+    "2024-11-14": [
+      "derivative-level",
+      "boundary-values"
+    ]
+  }
+}
