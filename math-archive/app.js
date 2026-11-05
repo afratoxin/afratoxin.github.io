@@ -1,3 +1,5 @@
+import {createMathGraph} from './graphs.js?v=geometry-1';
+
 const subjects = [
   {name:'수학Ⅰ',alias:'수1',cls:'math1',units:['지수함수와 로그함수','삼각함수','수열']},
   {name:'수학Ⅱ',alias:'수2',cls:'math2',units:['함수의 극한과 연속','미분','적분']},
@@ -20,8 +22,9 @@ state.cohort=cohorts.includes(params.get('cohort'))?params.get('cohort'):cohorts
 state.logic=params.get('logic')||'';
 if(params.get('view')==='solution')state.mode='solution';
 let archive,items=[],filtered=[],selected,toastTimer,mathQueue=Promise.resolve();
-let ebsi={exams:{},rates:{}}, solutions={groups:{},items:{}};
-const walkthroughPositions=new Map(),solutionViews=new Map();
+let ebsi={exams:{},rates:{}}, solutions={groups:{},items:{}},geometry={items:{},plots:{}};
+const walkthroughPositions=new Map(),solutionViews=new Map(),solutionMethods=new Map();
+if(state.id&&params.get('method')==='algebra')solutionMethods.set(state.id,'algebra');
 const initialWalkStep=Number(params.get('step'));
 if(state.id&&Number.isInteger(initialWalkStep)&&initialWalkStep>0)walkthroughPositions.set(state.id,initialWalkStep-1);
 const unitNav=$('#unit-nav'),results=$('#results'),detail=$('#detail');
@@ -35,6 +38,7 @@ function writeURL(){
   if(selected){
     p.set('q',selected.id);
     if(state.mode==='solution'&&selected.points===4)p.set('view','solution');
+    if(state.mode==='solution'&&solutionMethods.get(selected.id)==='algebra')p.set('method','algebra');
     const step=walkthroughPositions.get(selected.id)||0;
     if(state.mode==='solution'&&step)p.set('step',String(step+1));
   }
@@ -167,7 +171,9 @@ function fullSolutionSteps(solution){
     if(approach){
       if(key)row.append(el('span',{class:'solution-key-label',text:'핵심 단계'}));
       row.append(el('div',{class:'solution-stage-plan'},el('p',{class:'solution-stage-reason',text:approach.reason}),el('p',{text:approach.bridge})));
+      if(teaching.step_titles?.[index])row.append(el('h4',{class:'graph-stage-title',text:teaching.step_titles[index]}));
       for(const [i,paragraph] of (teaching.stage_body[index]||[]).entries())row.append(el('p',{class:key&&i===(teaching.key_paragraph||0)?'solution-key-text':'solution-step-detail',text:paragraph}));
+      if(geometry.plots[teaching.plots?.[index]])row.append(createMathGraph(geometry.plots[teaching.plots[index]]));
       return row;
     }
     if(key)row.append(el('p',{class:'solution-clue'},el('span',{class:'solution-clue-label',text:'조건에서 읽을 단서'}),el('span',{text:teaching.why})),el('span',{class:'solution-key-label',text:'핵심 단계'}));
@@ -228,7 +234,8 @@ function guidedSolution(q,solution){
     const approach=teaching.approach?.[index];
     if(approach){
       reading.append(el('div',{class:`walk-approach${key?' is-key-approach':''}`},el('h4',{text:index?'이어서 생각할 점':'풀이의 출발점'}),el('p',{class:'walk-approach-reason',text:approach.reason}),el('p',{text:approach.bridge})));
-      reading.append(el('div',{class:'walk-calculation walk-reviewed-calculation'},el('h4',{text:'식으로 옮기고 계산하면'}),...(teaching.stage_body[index]||[]).map((text,i)=>el('p',{class:key&&i===(teaching.key_paragraph||0)?'walk-key-result':'',text}))));
+      reading.append(el('div',{class:'walk-calculation walk-reviewed-calculation'},el('h4',{text:teaching.step_titles?.[index]||'식으로 옮기고 계산하면'}),...(teaching.stage_body[index]||[]).map((text,i)=>el('p',{class:key&&i===(teaching.key_paragraph||0)?'walk-key-result':'',text}))));
+      if(geometry.plots[teaching.plots?.[index]])reading.append(createMathGraph(geometry.plots[teaching.plots[index]]));
     }else{
     if(key&&teaching.why)reading.append(el('div',{class:'walk-why'},el('h4',{text:'이 조건에 주목하는 이유'}),el('p',{text:teaching.why})));
     const interpretation=teaching.readings?.[index];
@@ -250,7 +257,7 @@ function guidedSolution(q,solution){
         const bottom=Math.max(...sources.map(s=>s.rect[3]));
         viewport.scrollTop=Math.max(0,(top+bottom)*crop.getBoundingClientRect().height/2-viewport.clientHeight/2);
       }
-      if(focusHeading)heading.focus({preventScroll:true});
+      if(focusHeading){heading.focus({preventScroll:true});heading.scrollIntoView({block:'start',behavior:'auto'})}
     });
   }
   host.addEventListener('keydown',event=>{
@@ -263,10 +270,19 @@ function guidedSolution(q,solution){
   draw();return host;
 }
 function renderSolution(q,panel){
-  const solution=solutions.items[q.id];
+  const original=solutions.items[q.id],graph=original?geometry.items[q.id]:null;
+  const method=graph&&solutionMethods.get(q.id)!=='algebra'?'geometry':'algebra';
+  const solution=method==='geometry'?{...original,...graph,teaching:{...graph.teaching,sources:original.teaching.sources}}:original;
   const box=el('div',{class:'solution-panel'});
   if(solution?.answer)box.append(el('p',{class:'solution-answer',text:`정답 ${solution.answer}`}));
   if(solution?.idea&&solution.steps?.length){
+    if(graph){
+      const methods=el('div',{class:'solution-method-switch',role:'group','aria-label':'풀이 방법'});
+      for(const [key,label] of [['geometry','그래프로 읽고 풀기'],['algebra','기존 식 풀이']])methods.append(el('button',{type:'button',class:'secondary','aria-pressed':String(method===key),text:label,onclick:()=>{
+        solutionMethods.set(q.id,key);walkthroughPositions.set(q.id,0);window.MathJax?.typesetClear?.([panel]);panel.replaceChildren();renderSolution(q,panel);typeset(panel);writeURL();
+      }}));
+      box.append(methods);
+    }
     const content=el('div',{class:'solution-view-content'});
     const views=el('div',{class:'solution-view-switch',role:'group','aria-label':'해설 읽기 방식'});
     const show=mode=>{
@@ -388,14 +404,16 @@ async function loadData(path){
   return response.json();
 }
 try{
-  const [catalog,rates,notes]=await Promise.all([
+  const [catalog,rates,notes,graphNotes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
     loadData('data/solutions.json?v=reader-first-1').catch(()=>null),
+    loadData('data/geometry.json?v=geometry-1').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;
   if(notes)solutions=notes;
+  if(graphNotes)geometry=graphNotes;
   for(const q of archive.items){
     const correction=solutions.question_overrides?.[q.id];
     if(correction)Object.assign(q,correction);
@@ -408,6 +426,6 @@ try{
   if(!solutions.groups[state.logic])state.logic='';
   syncFilters();
   $('#total-count').textContent=items.length.toLocaleString('ko-KR');render();
-}catch(e){detail.replaceChildren(el('div',{class:'empty'},el('h2',{text:'문항 자료를 불러오지 못했습니다'}),el('p',{text:'페이지를 새로 고쳐 다시 확인해 주세요.'})));$('#result-count').textContent='자료 불러오기 실패';}
+}catch(e){console.error('Archive render failed',e);detail.replaceChildren(el('div',{class:'empty'},el('h2',{text:'문항 자료를 불러오지 못했습니다'}),el('p',{text:'페이지를 새로 고쳐 다시 확인해 주세요.'})));$('#result-count').textContent='자료 불러오기 실패';}
 finally{$('#archive').setAttribute('aria-busy','false')}
 

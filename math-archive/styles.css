@@ -31,7 +31,7 @@
   border-radius: 11px;
   padding: 15px;
   background: white;
-  overflow-x: auto;
+  overflow: visible;
 }
 .solution-panel h3 {
   margin: 0 0 7px;
@@ -164,3 +164,24 @@
 .solution-sequence .solution-step-detail{margin:9px 0 13px;line-height:2}
 @media(max-width:590px){.walk-approach{padding:11px 12px}.walk-reviewed-calculation .walk-key-result{padding:9px 10px}}
 @media(min-width:800px){body:has(.solution-open) .hero{padding-top:13px;padding-bottom:13px}body:has(.solution-open) .hero h1{font-size:29px}body:has(.solution-open) .hero-description{display:none}body:has(.solution-open) .total strong{font-size:29px}}
+.solution-method-switch{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding-bottom:14px;border-bottom:1px solid #dbe4ee}
+.solution-method-switch button[aria-pressed="true"]{background:#225b90;color:#fff;border-color:#225b90}
+.graph-stage-title{margin:16px 0 12px;font-size:1rem;color:#234f77}
+.math-graph-figure{margin:20px 0 12px;padding:16px;border:1px solid #cddfed;border-radius:12px;background:#f8fbfe;min-width:0;overflow:hidden}
+.math-graph-title{font-weight:750;font-size:1rem;color:#234f77;line-height:1.6;margin-bottom:10px}
+.math-plot{display:block;width:100%;height:auto;overflow:visible;background:#fff;border-radius:7px}
+.graph-tick{font-size:15px;fill:#65768a;font-family:system-ui,sans-serif}
+.graph-point-label{font-size:18px;font-weight:650;font-family:system-ui,sans-serif;paint-order:stroke;stroke:#fff;stroke-width:3;stroke-linejoin:round}
+.graph-axis-label{font-size:16px;fill:#53657b;font-family:system-ui,sans-serif}
+.graph-legend{display:flex;flex-wrap:wrap;gap:7px 15px;padding:10px 0 4px;font-size:.86rem;line-height:1.6;color:#42576a}
+.graph-legend-item{display:inline-flex;gap:6px;align-items:center}
+.graph-swatch{display:inline-block;width:18px;height:3px;flex:none;border-radius:2px}
+.graph-slider-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px 10px;margin:14px 0 9px;align-items:center;font-size:.88rem;color:#304d67}
+.graph-slider-row input{grid-row:2;grid-column:1/-1;width:100%;min-width:0;accent-color:#2b68ae;cursor:pointer}
+.graph-slider-value{grid-row:1;grid-column:2;font-variant-numeric:tabular-nums}
+.graph-presets{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.graph-preset{font-size:.81rem;padding:7px 9px;line-height:1.5;white-space:normal}
+.graph-live-note{font-size:.88rem!important;color:#275c85;font-weight:650;margin:12px 0 0!important;line-height:1.7}
+.graph-caption,.graph-structure-note{font-size:.84rem!important;color:#566b7f;line-height:1.8!important;margin:12px 0 0!important}
+.slope-figure .graph-canvas+.graph-canvas:not(:empty){margin-top:16px}
+@media(max-width:600px){.math-graph-figure{padding:10px;margin-top:16px}.graph-legend{gap:6px 10px;font-size:.8rem}.solution-method-switch button{flex:1;font-size:.86rem}.math-graph-title{font-size:.94rem}}
