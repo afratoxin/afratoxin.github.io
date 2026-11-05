@@ -22,3 +22,6 @@
 `content/walkthrough-focus.json`은 각 단계가 참고하는 원문 줄을 지정하고, `content/walkthrough-extra-regions.json`은 정확한 수식 영역을 추가합니다. `content/walkthrough-readings.json`은 원문의 표현을 풀이의 의미로 옮기는 설명입니다. 계산을 풀어 쓴 문장은 `content/teaching-details.json`에 있습니다.
 
 해설과 원문 연결 정보를 다시 만들려면 `python tools/build_written_solutions.py`에 이어 `python tools/build_walkthrough.py`를 실행합니다. 두 번째 명령은 원본 PDF의 글자 좌표를 기존 문항 이미지 좌표로 옮기며, 앞 단계의 결과만 쓰는 계산에는 임의의 문항 영역을 강조하지 않습니다.
+
+
+조합·순열은 각각 ${}_n\mathrm{C}_r$, ${}_n\mathrm{P}_r$로 표기합니다. 조합을 쓸 때에는 무엇을 고르고 왜 순서를 구별하지 않는지, 순열을 쓸 때에는 어떤 자리가 구별되는지를 문항의 대상에 맞춰 설명합니다. 중복조합은 점과 구분선의 대응으로 두 수가 어디서 나오는지 밝힙니다. `tools/combinatorics_notation.py`는 해설을 다시 만들 때에도 이 표기를 유지합니다.

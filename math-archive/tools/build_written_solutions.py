@@ -74,8 +74,11 @@ def rebuild():
         }
     }
     catalog = convert_tree(catalog)
+    from combinatorics_notation import convert_tree as combinatorics_tree
+    catalog = combinatorics_tree(catalog)
     (ROOT/'data/solutions.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2)+'\n')
     print(f'{len(notes)} complete prose solutions with individual ideas')
 
 if __name__=='__main__':
     rebuild()
+

@@ -378,7 +378,7 @@ try{
   const [catalog,rates,notes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
-    loadData('data/solutions.json?v=walkthrough-1').catch(()=>null),
+    loadData('data/solutions.json?v=counting-notation-1').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;
@@ -397,3 +397,4 @@ try{
   $('#total-count').textContent=items.length.toLocaleString('ko-KR');render();
 }catch(e){detail.replaceChildren(el('div',{class:'empty'},el('h2',{text:'문항 자료를 불러오지 못했습니다'}),el('p',{text:'페이지를 새로 고쳐 다시 확인해 주세요.'})));$('#result-count').textContent='자료 불러오기 실패';}
 finally{$('#archive').setAttribute('aria-busy','false')}
+

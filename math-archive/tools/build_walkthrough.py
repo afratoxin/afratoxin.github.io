@@ -112,8 +112,11 @@ def build():
             focus.append(ids)
             report.append({'id':qid,'step':i,'source':[regions[j]['quote'] for j in ids],'reading':step})
         teaching['sources']=regions;teaching['focus']=focus
+    from combinatorics_notation import convert_tree
+    catalog=convert_tree(catalog)
     (ROOT/'data/solutions.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')
     cache_path.write_text(json.dumps(cache,ensure_ascii=False))
     (ROOT.parent/'tmp/walkthrough-focus-review.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     print(f'{len(catalog["items"])} question images, {len(report)} linked steps; {fallback} steps use prior results without guessing an image highlight')
 if __name__=='__main__':build()
+
