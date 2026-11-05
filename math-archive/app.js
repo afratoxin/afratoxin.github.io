@@ -163,6 +163,13 @@ function fullSolutionSteps(solution){
   return el('section',{class:'solution-steps'},el('h3',{text:'전체 해설'}),el('ol',{class:'solution-sequence'},...solution.steps.map((text,index)=>{
     const key=teaching?.key_step===index;
     const row=el('li',{class:key?'solution-key-step':'solution-step'});
+    const approach=teaching?.approach?.[index];
+    if(approach){
+      if(key)row.append(el('span',{class:'solution-key-label',text:'핵심 단계'}));
+      row.append(el('div',{class:'solution-stage-plan'},el('p',{class:'solution-stage-reason',text:approach.reason}),el('p',{text:approach.bridge})));
+      for(const [i,paragraph] of (teaching.stage_body[index]||[]).entries())row.append(el('p',{class:key&&i===(teaching.key_paragraph||0)?'solution-key-text':'solution-step-detail',text:paragraph}));
+      return row;
+    }
     if(key)row.append(el('p',{class:'solution-clue'},el('span',{class:'solution-clue-label',text:'조건에서 읽을 단서'}),el('span',{text:teaching.why})),el('span',{class:'solution-key-label',text:'핵심 단계'}));
     row.append(el('p',{class:key?'solution-key-text':'',text}));
     for(const detail of teaching?.details?.[index]||[])row.append(el('p',{class:'solution-step-detail',text:detail}));
@@ -217,7 +224,12 @@ function guidedSolution(q,solution){
     );
     const reading=el('section',{class:`walk-reading${key?' is-key-step':''}`,'aria-label':'조건의 해석과 계산'});
     if(sources.length)reading.append(el('div',{class:'walk-source-quote'},el('h4',{text:'문항의 표현 · 원문 그대로'}),...sourceExcerpts(q,sources)));
-    else if(index>0)reading.append(el('div',{class:'walk-source-quote walk-prior-result'},el('h4',{text:'앞 단계의 결과에서 출발'}),el('p',{text:solutionSentences(solution.steps[index-1]).at(-1)})));
+    else if(index>0)reading.append(el('div',{class:'walk-source-quote walk-prior-result'},el('h4',{text:'앞 단계의 결과에서 출발'}),el('p',{text:teaching.stage_result?.[index-1]||solutionSentences(solution.steps[index-1]).at(-1)})));
+    const approach=teaching.approach?.[index];
+    if(approach){
+      reading.append(el('div',{class:`walk-approach${key?' is-key-approach':''}`},el('h4',{text:index?'이어서 생각할 점':'풀이의 출발점'}),el('p',{class:'walk-approach-reason',text:approach.reason}),el('p',{text:approach.bridge})));
+      reading.append(el('div',{class:'walk-calculation walk-reviewed-calculation'},el('h4',{text:'식으로 옮기고 계산하면'}),...(teaching.stage_body[index]||[]).map((text,i)=>el('p',{class:key&&i===(teaching.key_paragraph||0)?'walk-key-result':'',text}))));
+    }else{
     if(key&&teaching.why)reading.append(el('div',{class:'walk-why'},el('h4',{text:'이 조건에 주목하는 이유'}),el('p',{text:teaching.why})));
     const interpretation=teaching.readings?.[index];
     reading.append(el('div',{class:'walk-interpretation'},el('h4',{text:sources.length?'이렇게 해석합니다':'여기서 얻는 식과 의미'}),el('p',{text:interpretation||sentences[0]})));
@@ -225,6 +237,7 @@ function guidedSolution(q,solution){
     if(calculation.length)reading.append(el('div',{class:'walk-calculation'},el('h4',{text:'풀이를 이어가면'}),...calculation.map(text=>el('p',{text}))));
     const details=teaching.details?.[index]||[];
     if(details.length)reading.append(el('div',{class:'walk-calculation walk-detail-calculation'},el('h4',{text:'계산과 논리를 풀어 보면'}),...details.map(text=>el('p',{text}))));
+    }
     if(index>0)reading.append(el('details',{class:'walk-history'},el('summary',{text:'지금까지의 풀이 확인'}),el('ol',{},...solution.steps.slice(0,index).map(text=>el('li',{text})))));
     const controls=el('div',{class:'walk-controls'},previous,el('span',{class:'walk-counter','aria-live':'polite',text:`${index+1} / ${solution.steps.length}`}),next);
     if(index===solution.steps.length-1)reading.append(el('p',{class:'walk-finished',text:`풀이 완료 · 정답 ${solution.answer}`}));
@@ -378,7 +391,7 @@ try{
   const [catalog,rates,notes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
-    loadData('data/solutions.json?v=counting-notation-1').catch(()=>null),
+    loadData('data/solutions.json?v=reader-first-1').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;

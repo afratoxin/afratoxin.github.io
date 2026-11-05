@@ -65,6 +65,8 @@ def rebuild():
             assert re.search('[가-힣]', re.sub(r'\$[^$]*\$', '', text)), (qid,text)
             assert all(not re.search('[가-힣]', math) for math in re.findall(r'\$([^$]*)\$',text)), (qid,text)
         assert all(key in catalog['groups'] for key in item['logic']), qid
+    from reader_guidance import apply as apply_reader_guidance
+    apply_reader_guidance(catalog, ROOT, ALIASES)
     from stack_fractions import convert_tree
     catalog['question_overrides'] = {
         '2022-example-15': {
