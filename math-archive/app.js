@@ -1,4 +1,4 @@
-import {createMathGraph} from './graphs.js?v=geometry-1';
+import {createMathGraph} from './graphs.js?v=geometry-2';
 
 const subjects = [
   {name:'수학Ⅰ',alias:'수1',cls:'math1',units:['지수함수와 로그함수','삼각함수','수열']},

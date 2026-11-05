@@ -117,7 +117,7 @@ function secantFigure(mode){
       const points=[a,{x:p,y:p**3,label:atT?'P=T':'P',color:'#b17c14',dy:24},...(!atT?[{x:z,y:z**3,label:'R',color:'#2f8a7a'}]:[]),{x:-z,y:-(z**3),label:'L',color:'#bd5144'}];
       if(mode==='minimum'){curves.push({fn:{type:'poly',c:[.75,-.25]},color:'#8c63a8',dash:true,label:'최소 기울기 AT'});if(!atT)points.push(t)}
       if(mode==='inflection'){points.push({x:0,y:0,label:'M',color:'#785b98',dy:24});if(!atT)points.push(t)}
-      const spec={title:'할선과 평행한 두 접선',x:[-2.1,2.25],y:[-4.5,8],ticks:false,curves,points};
+      const spec={title:'할선과 평행한 두 접선',x:[-2.1,2.25],y:[Math.min(-2.5,p**3-.6),Math.max(5,p**3+.6)],ticks:false,curves,points};
       canvas.replaceChildren(plot(spec),graphLegend(spec));
       if(mode==='contacts'){
         const spec2={title:'도함수 그래프와 할선 기울기 높이',x:[-2,2.3],y:[-.5,7],ticks:false,xlabel:'접점의 가로 위치',ylabel:'접선 기울기',curves:[{fn:derivative,label:'도함수 그래프'},{fn:{type:'poly',c:[h]},color:'#b17c14',label:'할선 기울기의 높이'}],points:[{x:z,y:h,label:'R',color:'#2f8a7a'},{x:-z,y:h,label:'L',color:'#bd5144'}]};
