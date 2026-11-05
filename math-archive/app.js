@@ -50,7 +50,7 @@ function matches(q){
   const hay=norm([q.id,examLabel(q,true),q.subject,a?.alias,q.unit,...q.concepts,...logic,...(q.textbook_chapters||[]).map(c=>c.title),q.number+'번',q.statement_latex].join(' '));
   return query.split(/\s+/).every(w=>hay.includes(norm(w)));
 }
-function chooseSubject(subject='',unit=''){state.subject=subject;state.unit=unit;state.chapter='';state.id='';render();}
+function chooseSubject(subject='',unit=''){Object.assign(state,{subject,unit,chapter:'',logic:'',id:''});render();}
 function categoryButton(label,count,active,cls,fn){return el('button',{type:'button',class:cls,...(active?{'aria-current':'true'}:{}),onclick:fn},el('span',{text:label}),el('span',{class:'unit-count',text:String(count)}))}
 function renderNav(){
   unitNav.replaceChildren(categoryButton('전체 문항',items.length,!state.subject,'unit-title',()=>chooseSubject()));
@@ -63,7 +63,41 @@ function renderNav(){
   $('#chapter-filter').hidden=state.subject!=='확률과 통계';
   $('#chapter-select').value=state.chapter;
 }
-function openQuestion(q,focus=false){state.id=q.id;selected=q;renderResults();renderDetail();writeURL();if(focus){detail.focus({preventScroll:true});if(innerWidth<591)detail.scrollIntoView({block:'start',behavior:'smooth'})}}
+function buildLogicCatalog(scopeSubject,scopeUnit=''){
+  return subjects.filter(s=>!scopeSubject||s.name===scopeSubject).flatMap(subject=>
+    subject.units.filter(unit=>!scopeUnit||unit===scopeUnit).map(unit=>{
+      const counts=new Map();
+      for(const q of items){
+        if(q.subject!==subject.name||q.unit!==unit||q.points!==4)continue;
+        for(const key of solutions.items[q.id]?.logic||[])counts.set(key,(counts.get(key)||0)+1);
+      }
+      return {subject:subject.name,unit,options:[...counts].filter(([key])=>solutions.groups[key])
+        .map(([key,count])=>({key,count,title:solutions.groups[key].title}))
+        .sort((a,b)=>a.title.localeCompare(b.title,'ko'))};
+    }).filter(group=>group.options.length)
+  );
+}
+function renderLogicFilter(){
+  const scope=state.subject||selected?.subject||'';
+  const select=$('#logic-select');
+  const groups=buildLogicCatalog(scope);
+  select.replaceChildren(el('option',{value:'',text:`${scope?scope+' ':''}풀이 논리 전체`}));
+  // Related-question links may intentionally span several units in this subject.
+  if(state.logic&&!state.unit){
+    select.append(el('option',{value:JSON.stringify([scope,'',state.logic]),text:`${solutions.groups[state.logic].title} · ${scope} 전체 단원`}));
+  }
+  for(const group of groups){
+    select.append(el('optgroup',{label:`${group.subject} · ${group.unit}`},
+      ...group.options.map(option=>el('option',{
+        value:JSON.stringify([group.subject,group.unit,option.key]),
+        text:`${option.title} (${option.count})`
+      }))));
+  }
+  select.value=state.logic?JSON.stringify([scope,state.unit,state.logic]):'';
+  select.setAttribute('aria-label',`${scope?scope+' ':''}4점 문항 풀이 논리`);
+  $('#logic-filter').hidden=groups.length===0;
+}
+function openQuestion(q,focus=false){state.id=q.id;selected=q;renderLogicFilter();renderResults();renderDetail();writeURL();if(focus){detail.focus({preventScroll:true});if(innerWidth<591)detail.scrollIntoView({block:'start',behavior:'smooth'})}}
 function renderResults(){
   const scroll=results.scrollTop;
   let rank=0;
@@ -102,8 +136,8 @@ function rateDetails(q){
   if(exam)box.append(externalLink('EBSi 풀서비스 출처 ↗',exam));
   return box;
 }
-function chooseLogic(logic,id=''){
-  Object.assign(state,{logic,id,subject:'',unit:'',exam:'',points:'4',chapter:'',search:'',order:'',mode:'solution'});
+function chooseLogic(logic,id='',subject=selected?.subject||state.subject){
+  Object.assign(state,{logic,id,subject,unit:'',exam:'',points:'4',chapter:'',search:'',order:'',mode:'solution'});
   syncFilters();
   render();
 }
@@ -112,9 +146,18 @@ function renderSolution(q,panel){
   const box=el('div',{class:'solution-panel'});
   if(solution?.answer)box.append(el('p',{class:'solution-answer',text:`정답 ${solution.answer}`}));
   if(solution?.idea&&solution.steps?.length){
+    const teaching=solution.teaching;
+    const steps=solution.steps.map((text,index)=>{
+      const key=teaching?.key_step===index;
+      const row=el('li',{class:key?'solution-key-step':'solution-step'});
+      if(key)row.append(el('p',{class:'solution-clue'},el('span',{class:'solution-clue-label',text:'조건에서 읽을 단서'}),el('span',{text:teaching.why})),el('span',{class:'solution-key-label',text:'핵심 단계'}));
+      row.append(el('p',{class:key?'solution-key-text':'',text}));
+      for(const detail of teaching?.details?.[index]||[])row.append(el('p',{class:'solution-step-detail',text:detail}));
+      return row;
+    });
     box.append(
       el('section',{class:'solution-idea'},el('h3',{text:'핵심 아이디어'}),el('p',{text:solution.idea})),
-      el('section',{class:'solution-steps'},el('h3',{text:'해설'}),el('ol',{class:'solution-sequence'},...solution.steps.map(text=>el('li',{},el('p',{text})))))
+      el('section',{class:'solution-steps'},el('h3',{text:'해설'}),el('ol',{class:'solution-sequence'},...steps))
     );
   }else{
     box.append(el('p',{class:'notice',text:'이 문항의 서술형 해설은 아직 작성되지 않았습니다.'}));
@@ -122,10 +165,10 @@ function renderSolution(q,panel){
   if(solution?.logic?.length)box.append(el('h3',{class:'related-heading',text:'풀이 논리로 함께 보기'}));
   for(const key of solution?.logic||[]){
     const group=solutions.groups[key];
-    const related=items.filter(item=>item.id!==q.id&&solutions.items[item.id]?.logic?.includes(key));
+    const related=items.filter(item=>item.id!==q.id&&item.subject===q.subject&&solutions.items[item.id]?.logic?.includes(key));
     box.append(el('section',{class:'logic-card'},el('h3',{text:group.title}),
       el('p',{text:group.description}),
-      related.length?el('button',{class:'secondary',type:'button',text:`같은 풀이 논리 ${related.length}문항 보기`,onclick:()=>chooseLogic(key,q.id)}):null));
+      related.length?el('button',{class:'secondary',type:'button',text:`${q.subject}에서 같은 풀이 논리 ${related.length+1}문항 보기`,onclick:()=>chooseLogic(key,q.id,q.subject)}):null));
   }
   panel.append(box);
   typeset(box);
@@ -177,11 +220,11 @@ function render(){
   selected=filtered.find(q=>q.id===state.id)||filtered[0];
   state.id=selected?.id||'';
   $('#ranking-note').hidden=state.order!=='wrong';
-  renderNav();renderResults();renderDetail();writeURL();
+  renderNav();renderLogicFilter();renderResults();renderDetail();writeURL();
 }
 function syncFilters(){
   $('#search').value=state.search;
-  for(const field of ['exam','points','chapter','order','cohort','logic'])$(`#${field}-select`).value=state[field];
+  for(const field of ['exam','points','chapter','order','cohort'])$(`#${field}-select`).value=state[field];
 }
 function coverage(){
   const out=$('#coverage-content');
@@ -204,9 +247,15 @@ $('#search').addEventListener('input',e=>{state.search=e.target.value;state.id='
 $('#exam-select').addEventListener('change',e=>{state.exam=e.target.value;state.id='';render()});
 $('#points-select').addEventListener('change',e=>{state.points=e.target.value;state.id='';render()});
 $('#chapter-select').addEventListener('change',e=>{state.chapter=e.target.value;state.id='';render()});
-for(const field of ['order','cohort','logic']){
+for(const field of ['order','cohort']){
   $(`#${field}-select`).addEventListener('change',e=>{state[field]=e.target.value;state.id='';render()});
 }
+$('#logic-select').addEventListener('change',event=>{
+  if(!event.target.value){state.logic='';state.id='';render();return;}
+  const [subject,unit,logic]=JSON.parse(event.target.value);
+  Object.assign(state,{subject,unit,logic,points:'4',chapter:'',id:'',mode:'solution'});
+  syncFilters();render();
+});
 $('#reset').addEventListener('click',()=>{
   Object.assign(state,{subject:'',unit:'',exam:'',points:'',chapter:'',search:'',id:'',mode:'original',order:'',cohort:cohorts[0],logic:''});
   syncFilters();render();
@@ -221,23 +270,21 @@ try{
   const [catalog,rates,notes]=await Promise.all([
     loadData('data/questions.json?v=ebsi'),
     loadData('data/ebsi-rates.json').catch(()=>null),
-    loadData('data/solutions.json?v=stacked-fractions-1').catch(()=>null),
+    loadData('data/solutions.json?v=teaching-steps-1').catch(()=>null),
   ]);
   archive=catalog;
   if(rates)ebsi=rates;
   if(notes)solutions=notes;
+  for(const q of archive.items){
+    const correction=solutions.question_overrides?.[q.id];
+    if(correction)Object.assign(q,correction);
+  }
   items=archive.items.sort((a,b)=>b.exam_id.localeCompare(a.exam_id)||a.number-b.number);
   const es=$('#exam-select');
   for(const ex of [...archive.exams].sort((a,b)=>b.id.localeCompare(a.id)))es.append(el('option',{value:ex.id,text:examLabel(ex,true)}));
   if(state.exam&&!archive.exams.some(ex=>ex.id===state.exam))state.exam='';
   for(const [number,[title]] of Object.entries(archive.probability_reference.chapters))$('#chapter-select').append(el('option',{value:number,text:`${String(number).padStart(2,'0')}. ${title}`}));
   if(!solutions.groups[state.logic])state.logic='';
-  const logicSelect=$('#logic-select');
-  for(const [key,group] of Object.entries(solutions.groups)){
-    const count=items.filter(q=>solutions.items[q.id]?.logic?.includes(key)).length;
-    if(count)logicSelect.append(el('option',{value:key,text:`${group.title} (${count})`}));
-  }
-  $('#logic-filter').hidden=logicSelect.options.length<=1;
   syncFilters();
   $('#total-count').textContent=items.length.toLocaleString('ko-KR');render();
 }catch(e){detail.replaceChildren(el('div',{class:'empty'},el('h2',{text:'문항 자료를 불러오지 못했습니다'}),el('p',{text:'페이지를 새로 고쳐 다시 확인해 주세요.'})));$('#result-count').textContent='자료 불러오기 실패';}

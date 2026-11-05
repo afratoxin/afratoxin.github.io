@@ -82,3 +82,12 @@
 .solution-steps p {word-break:keep-all;overflow-wrap:break-word;line-height:1.95;}
 .solution-panel mjx-container {max-width:100%;}
 .related-heading {padding-top:14px;border-top:1px solid var(--line);}
+.solution-sequence .solution-key-step {margin-left:-.15em;padding:14px 15px;border-left:4px solid #9a5b0b;border-radius:6px;background:#fff8e9;}
+.solution-key-step::marker {color:#874c08;}
+.solution-key-label {display:inline-block;margin:12px 0 6px;color:#874c08;font-size:12px;font-weight:850;}
+.solution-key-text {color:#663c0a;font-weight:750;}
+.solution-clue {padding-bottom:12px;border-bottom:1px solid #e7d3ad;color:#35445a;}
+.solution-clue-label {display:block;margin-bottom:5px;color:#66502e;font-size:12px;font-weight:800;}
+.solution-step-detail {color:#35445a;font-weight:400;}
+.solution-key-step .solution-key-text + p {margin-top:10px;}
+@media(max-width:590px){.solution-panel{padding:12px}.solution-sequence .solution-key-step{padding:11px 10px;}}
