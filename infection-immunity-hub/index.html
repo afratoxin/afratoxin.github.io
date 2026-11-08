@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#153d3b">
-  <meta name="description" content="감염과 면역 학습 허브. 강의 기반 항생제 72문항으로 경구 투여, BBB, 임신 중 선택과 증례를 복습하세요.">
+  <meta name="description" content="감염과 면역 학습 허브. 항생제 72문항과 감염 병리 80문항, 강의 사진 퀴즈와 정리표로 복습하세요.">
   <title>감염과 면역 · 학습 허브</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23153d3b'/%3E%3Cpath d='M20 10v20M10 20h20' stroke='%23c1ebd7' stroke-width='5'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=20261108a">
+  <link rel="stylesheet" href="style.css?v=20261108b">
 </head>
 <body>
   <a class="skip-link" href="#mainContent">본문으로 건너뛰기</a>
@@ -19,44 +19,26 @@
     <nav class="main-nav" aria-label="학습 메뉴">
       <div role="tablist" aria-label="학습 허브 탭">
         <button id="tab-home" role="tab" aria-selected="true" aria-controls="panel-home" data-tab="home">학습 허브</button>
-        <button id="tab-quiz" role="tab" aria-selected="false" aria-controls="panel-quiz" tabindex="-1" data-tab="quiz">항생제 통합 퀴즈 <span class="nav-count">72</span></button>
+        <button id="tab-quiz" role="tab" aria-selected="false" aria-controls="panel-quiz panel-notes" tabindex="-1" data-tab="quiz">항생제</button>
+        <button id="tab-pathology" role="tab" aria-selected="false" aria-controls="panel-pathology" tabindex="-1" data-tab="pathology">감염 병리</button>
         <button id="tab-review" role="tab" aria-selected="false" aria-controls="panel-review" tabindex="-1" data-tab="review">오답 노트 <span id="wrongBadge" class="nav-count">0</span></button>
-        <button id="tab-notes" role="tab" aria-selected="false" aria-controls="panel-notes" tabindex="-1" data-tab="notes">핵심 정리</button>
       </div>
     </nav>
     <main id="mainContent" tabindex="-1">
       <section id="panel-home" role="tabpanel" aria-labelledby="tab-home">
-        <div class="hero-grid">
-          <article class="hero">
-            <p class="eyebrow">LEARN · RECALL · CONNECT</p>
-            <h1>감염과 면역,<br>핵심부터 확실하게.</h1>
-            <p class="hero-copy">감염 부위, 원인균, 숙주를 연결하고<br class="desktop-break"> 상황에 맞는 항생제를 선택하는 연습.</p>
-            <button type="button" class="button light" data-start="mixed">종합 20문항 시작 <span aria-hidden="true">↗</span></button>
-            <div class="hero-foot"><span>강의 기반 문항</span><span>5지선다 + OX</span><span>오답 반복 학습</span></div>
-            <div class="hero-art" aria-hidden="true"><span class="orbit a"></span><span class="orbit b"></span><span class="orbit c"></span><span class="art-cross">+</span><span class="art-label">SITE<br>PATHOGEN<br>HOST</span></div>
-          </article>
-          <aside class="progress-card">
-            <div class="card-top"><p class="eyebrow green">MY STUDY</p><span class="tiny-chip">문항별 최신 결과</span></div>
-            <div class="progress-number"><strong id="homeAttempted">0</strong><span>/ 72문항</span></div>
-            <p class="muted">조금씩 풀고, 헷갈린 것부터 다시.</p>
-            <div id="homeTrack" class="progress-track" role="img" aria-label="학습 진도"></div>
-            <div class="progress-legend"><span><i class="dot correct"></i>정답 <b id="homeCorrect">0</b></span><span><i class="dot wrong"></i>오답 <b id="homeWrong">0</b></span><span><i class="dot blank"></i>미풀이 <b id="homeUnanswered">72</b></span></div>
-            <button id="resumeButton" type="button" class="button full outline" hidden>이어서 풀기 <span aria-hidden="true">→</span></button>
-            <button id="homeWrongButton" type="button" class="text-button full" data-tab="review">오답 노트 확인 <span aria-hidden="true">→</span></button>
-          </aside>
+        <div class="home-intro"><div><p class="eyebrow green">INFECTION & IMMUNITY · STUDY HUB</p><h1>단원별로 연결하고, 반복하기.</h1><p>강의에서 배운 개념을 문제와 정리표로 확인하세요.</p></div><span class="library-count">2개 단원 <b>152문항</b></span></div>
+        <div class="course-grid">
+          <article class="course-card"><div class="course-heading"><span class="course-icon" aria-hidden="true">Rx</span><div><span class="course-kicker">감염병의 치료원칙</span><h2>항생제 선택</h2></div><span class="course-count">72문항</span></div><p>경구 투여 · BBB · 임신 중 선택 · 증례 적용</p><div id="abxCourseTrack" class="progress-track" aria-hidden="true"></div><p id="abxCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button primary small" data-start="mixed">퀴즈 풀기 →</button><button type="button" class="button outline small" data-tab="notes">정리표</button><button id="resumeButton" type="button" class="text-button" hidden>이어서 풀기 →</button></div></article>
+          <article class="course-card pathology-course"><div class="course-heading"><span class="course-icon" aria-hidden="true">▧</span><div><span class="course-kicker">병리 1·2 + 통합실습</span><h2>감염성 질환의 병리</h2></div><span class="course-count">80문항</span></div><p>사진 → 원인균 · 원인균 특성 · 총론 판별</p><div id="pathCourseTrack" class="progress-track" aria-hidden="true"></div><p id="pathCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button path-primary small" data-path-start="mixed">퀴즈 풀기 →</button><button type="button" class="button outline small" id="homePathTables">정리표</button><button type="button" class="text-button" id="pathResumeButton" hidden>이어서 풀기 →</button></div></article>
         </div>
-        <div class="section-heading"><div><p class="eyebrow green">STUDY LIBRARY</p><h2>지금 공부할 단원</h2></div><span class="section-meta">1개 단원 · 4개 학습 영역</span></div>
-        <article class="lecture-card">
-          <div class="lecture-icon" aria-hidden="true">Rx</div>
-          <div class="lecture-copy"><span class="pill">감염병의 치료원칙 · 김홍빈</span><h3>항생제, 상황에 맞게 선택하기</h3><p>먹을 수 있는 약부터 중추신경계 감염과 임신부 증례까지.<br>네 가지 판단 기준을 하나의 퀴즈에서 연결합니다.</p><div class="tags"><span>경구 투여</span><span>BBB 통과</span><span>임신 중 선택</span><span>증례 적용</span></div></div>
-          <div class="lecture-action"><strong>72<small>문항</small></strong><span>5지선다 36 · OX 36</span><button type="button" class="button primary" data-start="mixed">퀴즈 풀기 <span aria-hidden="true">→</span></button></div>
-        </article>
-        <div class="section-heading compact"><h2>주제별로 집중하기</h2><span class="section-meta">모두 같은 통합 퀴즈에서</span></div>
-        <div id="topicCards" class="topic-grid"></div>
+        <div class="home-progress"><div><span class="eyebrow green">MY STUDY</span><strong><span id="homeAttempted">0</span><small> / <span id="homeTotal">152</span>문항</small></strong></div><div class="home-progress-details"><div id="homeTrack" class="progress-track" role="img" aria-label="학습 진도"></div><div class="progress-legend"><span><i class="dot correct"></i>정답 <b id="homeCorrect">0</b></span><span><i class="dot wrong"></i>오답 <b id="homeWrong">0</b></span><span><i class="dot blank"></i>미풀이 <b id="homeUnanswered">152</b></span></div></div><button id="homeWrongButton" type="button" class="text-button" data-tab="review">전체 오답 노트 →</button></div>
+        <div class="section-heading compact"><h2>병리 · 유형별로 집중하기</h2><span class="section-meta">한 탭에서 세 가지 방식</span></div>
+        <div class="path-type-shortcuts"><button type="button" data-path-start="path-image"><b>01</b><span><strong>사진 → 원인균</strong><small>명칭을 제외한 강의 사진 · 24문항</small></span><span aria-hidden="true">↗</span></button><button type="button" data-path-start="path-traits"><b>02</b><span><strong>원인균 특성 판별</strong><small>옳은 것 / 옳지 않은 것 · 32문항</small></span><span aria-hidden="true">↗</span></button><button type="button" data-path-start="path-general"><b>03</b><span><strong>총론 판별</strong><small>조직반응·방어·진단법 · 24문항</small></span><span aria-hidden="true">↗</span></button></div>
         <div class="related"><span>함께 복습하기</span><a href="../pharmacology-quiz-hub/">약물의 이해 허브 ↗</a><a href="../microbiology-quiz-hub/">미생물학 허브 ↗</a></div>
       </section>
 
       <section id="panel-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+        <div class="subnav" aria-label="항생제 학습 방식"><button type="button" class="active" data-tab="quiz" aria-pressed="true">문제 풀기</button><button type="button" data-tab="notes" aria-pressed="false">정리표</button></div>
         <div class="section-heading page-heading"><div><p class="eyebrow green">ANTIBIOTICS · INTEGRATED PRACTICE</p><h1>항생제 통합 퀴즈</h1><p class="muted">경구 · BBB · 임신 · 증례, 원하는 범위로 연습하세요.</p></div><button class="text-button" data-tab="notes" type="button">핵심 정리 보기 ↗</button></div>
         <form id="quizSetup" class="setup-card">
           <div class="filter-grid">
@@ -71,28 +53,31 @@
         <div id="quizStage"></div>
       </section>
 
+      <section id="panel-pathology" role="tabpanel" aria-labelledby="tab-pathology" hidden><div id="pathologyContent"></div></section>
+
       <section id="panel-review" role="tabpanel" aria-labelledby="tab-review" hidden>
-        <div class="section-heading page-heading"><div><p class="eyebrow green">REVISIT & REMEMBER</p><h1>오답 노트</h1><p class="muted">다시 맞히면 오답에서 빠집니다. 진도는 문항별 최신 결과로 기록합니다.</p></div><button type="button" class="button primary" id="retryAll">오답만 다시 풀기 →</button></div>
+        <div class="section-heading page-heading"><div><p class="eyebrow green">REVISIT & REMEMBER</p><h1>오답 노트</h1><p class="muted">다시 맞히면 오답에서 빠집니다. 진도는 문항별 최신 결과로 기록합니다.</p></div><div class="review-retry-actions"><button type="button" class="button primary small" id="retryAll">항생제 오답 →</button><button type="button" class="button path-primary small" id="pathRetryAll">병리 오답 →</button></div></div>
         <div id="reviewSummary" class="review-summary"></div>
-        <div class="review-toolbar"><label class="sr-only" for="reviewTopic">오답 주제</label><select id="reviewTopic"><option value="all">모든 주제</option><option value="oral">경구 투여</option><option value="bbb">BBB 통과</option><option value="pregnancy">임신 중 선택</option><option value="cases">증례별 선택</option></select><label class="sr-only" for="reviewSearch">오답 내용 검색</label><input id="reviewSearch" type="search" placeholder="약물명이나 문제 내용 검색" autocomplete="off"><span id="reviewCount" class="muted" aria-live="polite"></span></div>
+        <div class="review-toolbar"><label class="sr-only" for="reviewTopic">오답 주제</label><select id="reviewTopic"><option value="all">모든 주제</option><option value="oral">경구 투여</option><option value="bbb">BBB 통과</option><option value="pregnancy">임신 중 선택</option><option value="cases">증례별 선택</option><option value="path-image">병리 · 사진형</option><option value="path-traits">병리 · 특성형</option><option value="path-general">병리 · 총론형</option></select><label class="sr-only" for="reviewSearch">오답 내용 검색</label><input id="reviewSearch" type="search" placeholder="약물명이나 문제 내용 검색" autocomplete="off"><span id="reviewCount" class="muted" aria-live="polite"></span></div>
         <div id="reviewList"></div>
       </section>
 
-      <section id="panel-notes" role="tabpanel" aria-labelledby="tab-notes" hidden>
-        <div class="section-heading page-heading"><div><p class="eyebrow green">THE FOUR DECISIONS</p><h1>핵심 정리</h1><p class="muted">문제를 풀기 전후, 네 가지 판단 기준을 확인하세요.</p></div></div>
+      <section id="panel-notes" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+        <div class="subnav" aria-label="항생제 학습 방식"><button type="button" data-tab="quiz" aria-pressed="false">문제 풀기</button><button type="button" class="active" data-tab="notes" aria-pressed="true">정리표</button></div>
+        <div class="section-heading page-heading"><div><p class="eyebrow green">THE FOUR DECISIONS</p><h1>항생제 정리표</h1><p class="muted">문제를 풀기 전후, 네 가지 판단 기준을 확인하세요.</p></div></div>
         <div class="scope-note"><strong>출제 범위</strong><p>「감염병의 치료원칙」 김홍빈 · 박세민 v2. 아래 쪽수는 첨부 PDF의 실제 페이지입니다. 강의의 분류를 묻는 문항에는 그 조건을 명시했습니다.</p></div>
-        <div class="notes-grid">
+        <p class="table-tip">휴대폰에서는 표를 좌우로 밀어 볼 수 있습니다.</p><div id="antibioticTables"></div><details class="reference-details"><summary>표 해설과 예외 자세히 보기</summary><div class="notes-grid">
           <article class="note-card"><div class="note-number">01 <span>PDF 36–40쪽</span></div><h2>경구 투여</h2><h3>전신 치료에 경구 사용 가능</h3><p>Amoxicillin · Ciprofloxacin · Metronidazole · Clindamycin · TMP/SMX · Doxycycline</p><h3>전신 치료를 위한 경구 대체가 부적절</h3><p>Aminoglycoside · Vancomycin · 주사용 Ceftriaxone/Cefotaxime · Imipenem</p><div class="note-key"><b>장 안에서 작용시키는 예외</b><p>C. difficile 장염의 경구 vancomycin은 전신 흡수 대신 장내 전달이 목적입니다.</p></div><p class="annotation">2·3세대 세팔로스포린 전체를 경구 불가로 묶지 않습니다. 경구 cefixime 등의 제형이 있습니다. Ciprofloxacin의 절대 경구 생체이용률은 허가사항상 약 70%로, 강의의 “&gt;80%”를 일괄 적용하지 않습니다.</p><button type="button" data-topic="oral" class="text-button">경구 투여 문제 풀기 →</button></article>
           <article class="note-card"><div class="note-number">02 <span>PDF 23–29쪽</span></div><h2>BBB 통과</h2><h3>강의에서 통과가 좋은 쪽</h3><p>Nafcillin · Penicillin · Ampicillin · 3·4세대 cephalosporin · Carbapenem · Chloramphenicol</p><h3>강의에서 통과가 좋지 않은 쪽</h3><p>1세대 cephalosporin · Aminoglycoside</p><div class="note-key"><b>도달과 감수성을 함께</b><p>혈중 농도 ≠ CSF 농도. 수막염은 살균력, CSF 유효 농도와 해당 감염의 감수성 기준을 함께 봅니다.</p></div><p class="annotation">수막 염증과 용량에 따라 도달이 달라집니다. 계열 분류가 모든 약물의 수막염 적응증을 보장하지 않습니다. 증례의 penicillin MIC 0.12 μg/mL는 수막염 기준으로 따로 해석합니다.</p><button type="button" data-topic="bbb" class="text-button">BBB 문제 풀기 →</button></article>
           <article class="note-card"><div class="note-number">03 <span>PDF 42–43쪽</span></div><h2>임신 중 선택</h2><div class="classification safe"><b>비교적 안전 · 강의 분류</b><p>Penicillin · Cephalosporin</p></div><div class="classification caution"><b>주의 · 강의 분류</b><p>Aminoglycoside · Metronidazole · Quinolone · Sulfonamide</p></div><div class="classification avoid"><b>금기/회피 · 강의 분류</b><p>Clarithromycin · Erythromycin estolate · Tetracycline · Tigecycline</p></div><p class="annotation">주의와 절대금기를 혼동하지 않습니다. CDC는 metronidazole의 임신 중 태아 위험이 낮다고 설명합니다. 강의의 “금기” 목록도 모든 임상 상황의 허가상 절대금기로 확대하지 않습니다.</p><button type="button" data-topic="pregnancy" class="text-button">임신 중 선택 문제 풀기 →</button></article>
           <article class="note-card"><div class="note-number">04 <span>PDF 6–49쪽</span></div><h2>증례를 연결하기</h2><dl class="case-list"><div><dt>01 · 상기도 감염</dt><dd>바이러스성이라면 대증 치료·관찰</dd></div><div><dt>02 · 피부 농양</dt><dd>필요한 배농을 함께 고려</dd></div><div><dt>03 · 폐렴구균 수막염</dt><dd>강의 선택은 ceftriaxone</dd></div><div><dt>04 · 장티푸스</dt><dd>감수성 확인된 성인에서 ciprofloxacin</dd></div><div><dt>05 · 비임신 신우신염</dt><dd>강의의 ciprofloxacin IV → 호전 후 PO 검토</dd></div><div><dt>06 · 임신부 신우신염</dt><dd>숙주 안전성을 고려한 β-lactam 검토</dd></div><div><dt>07 · 치료 후 발열 지속</dt><dd>농양·폐쇄·약제·다른 원인 재평가</dd></div><div><dt>08 · 항생제 후 심한 설사</dt><dd>C. difficile 감염 고려</dd></div></dl><button type="button" data-topic="cases" class="text-button">증례 문제 풀기 →</button></article>
         </div>
-        <article class="source-card"><h2>강의와 보충 근거</h2><p class="muted">원본 강의는 첨부 자료로 확인하세요. 제형·수치·임신 분류 등 오해하기 쉬운 부분은 아래 근거로 보충했습니다. 보충 확인: 2026.11.08.</p><div id="sourceLinks" class="source-links"></div></article>
+        </details><article class="source-card"><h2>강의와 보충 근거</h2><p class="muted">원본 강의는 첨부 자료로 확인하세요. 제형·수치·임신 분류 등 오해하기 쉬운 부분은 아래 근거로 보충했습니다. 보충 확인: 2026.11.08.</p><div id="sourceLinks" class="source-links"></div></article>
       </section>
     </main>
     <footer><span>감염과 면역 · 학습 허브</span><span>강의 기반 학습 · 기록은 현재 브라우저에 저장됩니다</span><a href="https://github.com/afratoxin/afratoxin.github.io/tree/master/infection-immunity-hub" target="_blank" rel="noopener noreferrer">GitHub ↗</a></footer>
   </div>
   <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
-  <script type="module" src="app.mjs?v=20261108a"></script>
+  <script type="module" src="app.mjs?v=20261108b"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@ export const VERSION=1;
 export function tabFromHash(hash) {
   if(hash==='#mainContent')return null;
   const tab=hash.replace(/^#/,'');
-  return ['home','quiz','review','notes'].includes(tab)?tab:'home';
+  return ['home','quiz','pathology','review','notes'].includes(tab)?tab:'home';
 }
 export function shuffle(values,rng=Math.random) {
   const result=[...values];
@@ -14,6 +14,9 @@ export function readProgress(raw,bank) {
     const value=JSON.parse(raw); if(!value || typeof value!=='object' || Array.isArray(value))return {};
     return Object.fromEntries(bank.filter(q=>value[q.id] && typeof value[q.id].correct==='boolean').map(q=>[q.id,{correct:value[q.id].correct,selected:value[q.id].selected,updated:value[q.id].updated}]));
   } catch{return {};}
+}
+export function readBookmarks(raw,bank) {
+  try{const value=JSON.parse(raw);return Array.isArray(value)?[...new Set(value.filter(id=>bank.some(q=>q.id===id)))]:[];}catch{return [];}
 }
 export function stats(bank,progress) {
   const correct=bank.filter(q=>progress[q.id]?.correct===true).length;

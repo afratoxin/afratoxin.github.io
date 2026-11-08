@@ -1,0 +1,529 @@
+[
+  {
+    "file": "figure-01.webp",
+    "document": "lab",
+    "page": 15,
+    "nativeImage": "lab-p15-i00",
+    "originalSize": [
+      1029,
+      772
+    ],
+    "outputSize": [
+      1029,
+      772
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "1d1ddca2e1bf34c431b9c67ed1273a9f98ba98be6af0ef8237e1cd09fc89efe8"
+  },
+  {
+    "file": "figure-02.webp",
+    "document": "lab",
+    "page": 8,
+    "nativeImage": "lab-p08-i00",
+    "originalSize": [
+      753,
+      683
+    ],
+    "outputSize": [
+      753,
+      683
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "d9734d9bc7fb1f78489eceb77a5549b3ead3201a44c80f349ca1f33039243c28"
+  },
+  {
+    "file": "figure-03.webp",
+    "document": "lab",
+    "page": 11,
+    "nativeImage": "lab-p11-i00",
+    "originalSize": [
+      772,
+      690
+    ],
+    "outputSize": [
+      772,
+      690
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "af98d3bb04171685ec339e17b179e3f3b84c6e012294ccab48f7fd71006d6549"
+  },
+  {
+    "file": "figure-04.webp",
+    "document": "lab",
+    "page": 11,
+    "nativeImage": "lab-p11-i01",
+    "originalSize": [
+      1028,
+      772
+    ],
+    "outputSize": [
+      1028,
+      772
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "847ad76e04c4d2377dd19f2cc68eab7056cbf3c624d631470e7ab525bdcd4843"
+  },
+  {
+    "file": "figure-05.webp",
+    "document": "lab",
+    "page": 5,
+    "nativeImage": "lab-p05-i01",
+    "originalSize": [
+      862,
+      844
+    ],
+    "outputSize": [
+      862,
+      844
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "78f863066451aa7396115c544c8035aaedacc5080d314e29b65bd61761e94a06"
+  },
+  {
+    "file": "figure-06.webp",
+    "document": "path1",
+    "page": 31,
+    "nativeImage": "path1-p31-i02",
+    "originalSize": [
+      433,
+      284
+    ],
+    "outputSize": [
+      433,
+      284
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "fcbf197025bb64cc63531fa1be2d9895e91812c4c756ee96fc766992d9833cc3"
+  },
+  {
+    "file": "figure-07.webp",
+    "document": "lab",
+    "page": 16,
+    "nativeImage": "lab-p16-i01",
+    "originalSize": [
+      600,
+      556
+    ],
+    "outputSize": [
+      600,
+      556
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "24d7ee54d8abdbced727cdf20ee6398e2b565ae43ee24cb4683b362dd359fb86"
+  },
+  {
+    "file": "figure-08.webp",
+    "document": "path2",
+    "page": 4,
+    "nativeImage": "path2-p04-i00",
+    "originalSize": [
+      210,
+      156
+    ],
+    "outputSize": [
+      210,
+      156
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "8eb898c0e3eebe2ac053180613be8d5c2a375b87b5f1fc306dbabe7cdbcfc925"
+  },
+  {
+    "file": "figure-09.webp",
+    "document": "path2",
+    "page": 4,
+    "nativeImage": "path2-p04-i01",
+    "originalSize": [
+      226,
+      203
+    ],
+    "outputSize": [
+      226,
+      203
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "965385f2b8979fbe093ab5cd2d9fca97fc5efce17991e8043b1d043735f06608"
+  },
+  {
+    "file": "figure-10.webp",
+    "document": "path2",
+    "page": 17,
+    "nativeImage": "path2-p17-i01",
+    "originalSize": [
+      759,
+      602
+    ],
+    "outputSize": [
+      759,
+      602
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "d660e6abf192ed8f9fe4ab53a4336904f14691cbe8c4eb42b4391f3ad35b83f9"
+  },
+  {
+    "file": "figure-11.webp",
+    "document": "path2",
+    "page": 17,
+    "nativeImage": "path2-p17-i02",
+    "originalSize": [
+      700,
+      509
+    ],
+    "outputSize": [
+      700,
+      509
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "bc3c9c565c0182bc9db02fd8fb2ca3ffa0e9c6dc9e9e9b0f6466ffc6690caab2"
+  },
+  {
+    "file": "figure-12.webp",
+    "document": "lab",
+    "page": 18,
+    "nativeImage": "lab-p18-i00",
+    "originalSize": [
+      600,
+      451
+    ],
+    "outputSize": [
+      600,
+      451
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "b6628710b5e442d020bfd88d1b3fafcec9410998b95ca016ecc18c8b98aec69e"
+  },
+  {
+    "file": "figure-13.webp",
+    "document": "lab",
+    "page": 18,
+    "nativeImage": "lab-p18-i01",
+    "originalSize": [
+      359,
+      317
+    ],
+    "outputSize": [
+      359,
+      317
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "5cdefa0b64808abe7d134c6f48b94cb612dc6e9077a8b93ebc3ebe1e3ccc9db9"
+  },
+  {
+    "file": "figure-14.webp",
+    "document": "lab",
+    "page": 20,
+    "nativeImage": "lab-p20-i01",
+    "originalSize": [
+      605,
+      527
+    ],
+    "outputSize": [
+      605,
+      527
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "1ab38fc2f890780b9211f5b6f4ffa669d5dddfa6673923ebaf8c6c9fbf418cdc"
+  },
+  {
+    "file": "figure-15.webp",
+    "document": "lab",
+    "page": 23,
+    "nativeImage": "lab-p23-i00",
+    "originalSize": [
+      1052,
+      862
+    ],
+    "outputSize": [
+      1052,
+      862
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "6d123d6d5061b1d7af87aa152db1ff239cd9c65e2ebc2d9065351cda3ad62f68"
+  },
+  {
+    "file": "figure-16.webp",
+    "document": "lab",
+    "page": 25,
+    "nativeImage": "lab-p25-i00",
+    "originalSize": [
+      672,
+      429
+    ],
+    "outputSize": [
+      672,
+      429
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "371b859c3e944642ed81632cf65ac33f2b51974e464894e6b774d96af485723e"
+  },
+  {
+    "file": "figure-17.webp",
+    "document": "lab",
+    "page": 27,
+    "nativeImage": "lab-p27-i01",
+    "originalSize": [
+      1029,
+      772
+    ],
+    "outputSize": [
+      1029,
+      772
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "9db90417b31b427cef664d1d97882f5e09cecc02e0bd49cc10f3d2e1607086da"
+  },
+  {
+    "file": "figure-18.webp",
+    "document": "path2",
+    "page": 31,
+    "nativeImage": "path2-p31-i02",
+    "originalSize": [
+      323,
+      285
+    ],
+    "outputSize": [
+      323,
+      285
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "ecaf48cac3a67f8c0c7ed597a8e17464e0090e7e2c371d5c9d6d8cb296a18472"
+  },
+  {
+    "file": "figure-19.webp",
+    "document": "path2",
+    "page": 41,
+    "nativeImage": "path2-p41-i03",
+    "originalSize": [
+      698,
+      600
+    ],
+    "outputSize": [
+      698,
+      600
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "c5829eaa433774c767322fd1baee3d408e8ec0dd2c813915cf06c32747c65e97"
+  },
+  {
+    "file": "figure-20.webp",
+    "document": "lab",
+    "page": 38,
+    "nativeImage": "lab-p38-i00",
+    "originalSize": [
+      500,
+      772
+    ],
+    "outputSize": [
+      500,
+      772
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "b65cea20290ef0ab6b2aa6a588546da9e43ff6295b45e7136a945ccb98d7f27f"
+  },
+  {
+    "file": "figure-21.webp",
+    "document": "lab",
+    "page": 40,
+    "nativeImage": "lab-p40-i00",
+    "originalSize": [
+      523,
+      392
+    ],
+    "outputSize": [
+      523,
+      392
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "99363dedd30c773b00931706019a0c7f9a9dce8cdc358c6a026fb2805122635e"
+  },
+  {
+    "file": "figure-22.webp",
+    "document": "path2",
+    "page": 44,
+    "nativeImage": "path2-p44-i03",
+    "originalSize": [
+      440,
+      436
+    ],
+    "outputSize": [
+      440,
+      436
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "2f398f6ac9046d3d7e73ed1abd8890bcc47ab4ee8bc80ef840edb24e4aafd26a"
+  },
+  {
+    "file": "figure-23.webp",
+    "document": "lab",
+    "page": 47,
+    "nativeImage": "lab-p47-i00",
+    "originalSize": [
+      1536,
+      1152
+    ],
+    "outputSize": [
+      1400,
+      1050
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "4829ab2ef87a1b4d250e77d47b943fc3b73293c235bc36824ad09b6ea155c4ae"
+  },
+  {
+    "file": "figure-24.webp",
+    "document": "lab",
+    "page": 49,
+    "nativeImage": "lab-p49-i01",
+    "originalSize": [
+      765,
+      697
+    ],
+    "outputSize": [
+      765,
+      697
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "0384c84d5ab6779e6d89518ddbdb838dabf5590413b4f13d3d478b26c4c73431"
+  },
+  {
+    "file": "figure-25.webp",
+    "document": "lab",
+    "page": 53,
+    "nativeImage": "lab-p53-i00",
+    "originalSize": [
+      1536,
+      1152
+    ],
+    "outputSize": [
+      1400,
+      1050
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "5c8cae069e26a19332722be0dfd6fdbaa62524967c648545093802329568e8cb"
+  },
+  {
+    "file": "figure-26.webp",
+    "document": "path2",
+    "page": 50,
+    "nativeImage": "path2-p50-i02",
+    "originalSize": [
+      407,
+      271
+    ],
+    "outputSize": [
+      407,
+      271
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "326758dc73e824a084017f2a168cb549f83a8182bf85c162f680fadd61d94d7d"
+  },
+  {
+    "file": "figure-27.webp",
+    "document": "lab",
+    "page": 55,
+    "nativeImage": "lab-p55-i00",
+    "originalSize": [
+      428,
+      321
+    ],
+    "outputSize": [
+      428,
+      321
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "b94529852596d48ec5ea7dde6a50081f83d6773ec75ad74017b411da332ed220"
+  },
+  {
+    "file": "figure-28.webp",
+    "document": "lab",
+    "page": 56,
+    "nativeImage": "lab-p56-i00",
+    "originalSize": [
+      189,
+      195
+    ],
+    "outputSize": [
+      189,
+      195
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "bf08c59d3672417ae8edc5a9378c8d8d78161f6b2e94fe6430ee7a1c3db6a9a2"
+  },
+  {
+    "file": "figure-29.webp",
+    "document": "lab",
+    "page": 62,
+    "nativeImage": "lab-p62-i00",
+    "originalSize": [
+      1029,
+      772
+    ],
+    "outputSize": [
+      1029,
+      772
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "1d2399cd167d3290808065ec903dc467a6039b944118da2e59b16c430067ff0c"
+  },
+  {
+    "file": "figure-30.webp",
+    "document": "lab",
+    "page": 64,
+    "nativeImage": "lab-p64-i00",
+    "originalSize": [
+      1029,
+      772
+    ],
+    "outputSize": [
+      1029,
+      772
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "49875a8fc08df43180e829a1661635654afa2f735e2261fcf96e2577508e16f9"
+  },
+  {
+    "file": "figure-31.webp",
+    "document": "lab",
+    "page": 66,
+    "nativeImage": "lab-p66-i00",
+    "originalSize": [
+      1029,
+      772
+    ],
+    "outputSize": [
+      1029,
+      772
+    ],
+    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "labelFreeVisualReview": true,
+    "sha256": "9449f6e2242e080bcd0091199bf56859c1a770709f075205653c1d595b8a4aef"
+  }
+]

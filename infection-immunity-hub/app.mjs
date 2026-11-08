@@ -1,5 +1,8 @@
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261108a';
-import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261108a';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261108b';
+import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261108b';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261108b';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261108b';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261108b';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -14,40 +17,48 @@ let bookmarks=[];
 try{const b=JSON.parse(read(KEYS.bookmarks));if(Array.isArray(b))bookmarks=[...new Set(b.filter(id=>QUESTIONS.some(q=>q.id===id)))];}catch{}
 let activeTab='home';
 let pendingFilters=null;
+let pathologyUI=null;
+const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS];
+const ALL_TOPICS={...TOPICS,...PATH_TOPICS};
+const isPath=q=>q.id.startsWith('path-');
+const allProgress=()=>({...progress,...pathologyUI?.getProgress()});
 
 function track(s){return `<span class="segment-correct" style="width:${s.total?s.correct/s.total*100:0}%"></span><span class="segment-wrong" style="width:${s.total?s.wrong/s.total*100:0}%"></span>`;}
-function source(q){return `근거: 강의 PDF ${q.pages.join('·')}쪽${q.refs.length?' · 보충 근거 포함':''}`;}
+function source(q){return isPath(q)?pathSource(q):`근거: 강의 PDF ${q.pages.join('·')}쪽${q.refs.length?' · 보충 근거 포함':''}`;}
 function links(q){return q.refs.map(ref=>`<a href="${escape(SOURCES[ref].url)}" target="_blank" rel="noopener noreferrer">${escape(SOURCES[ref].title)} ↗</a>`).join('');}
-function explanation(q,correct){return `<div class="feedback${correct?'':' missed'}" tabindex="-1"><h3>${correct?'정답입니다.':'이 부분을 다시 기억해 두세요.'}</h3><p class="answer-line">정답 · ${escape(q.choices[q.answer])}</p><p>${escape(q.explanation)}</p>${q.note?`<p class="supplement"><b>구분해서 기억하기</b><br>${escape(q.note)}</p>`:''}<p class="source-line">${escape(source(q))}</p>${links(q)}</div>`;}
+function explanation(q,correct){if(isPath(q))return pathFeedback(q,correct);return `<div class="feedback${correct?'':' missed'}" tabindex="-1"><h3>${correct?'정답입니다.':'이 부분을 다시 기억해 두세요.'}</h3><p class="answer-line">정답 · ${escape(q.choices[q.answer])}</p><p>${escape(q.explanation)}</p>${q.note?`<p class="supplement"><b>구분해서 기억하기</b><br>${escape(q.note)}</p>`:''}<p class="source-line">${escape(source(q))}</p>${links(q)}</div>`;}
 function announce(message){$('announcement').textContent=message;}
 function updateDashboard(){
-  const s=stats(QUESTIONS,progress);
+  const s=stats(ALL_QUESTIONS,allProgress());
   $('homeAttempted').textContent=s.attempted;$('homeCorrect').textContent=s.correct;$('homeWrong').textContent=s.wrong;$('homeUnanswered').textContent=s.unanswered;
+  $('homeTotal').textContent=s.total;
   $('homeTrack').innerHTML=track(s);$('homeTrack').setAttribute('aria-label',`전체 ${s.total}문항 중 정답 ${s.correct}, 오답 ${s.wrong}, 미풀이 ${s.unanswered}`);
   $('wrongBadge').textContent=s.wrong;
   $('resumeButton').hidden=!session || session.position>=session.items.length;
   if(session)$('resumeButton').textContent=`이어서 풀기 · ${Math.min(session.position+1,session.items.length)}/${session.items.length} →`;
-  $('topicCards').innerHTML=Object.entries(TOPICS).map(([key,t])=>{
-    const p=stats(QUESTIONS.filter(q=>q.topic===key),progress);
-    return `<button type="button" class="topic-card" data-topic="${key}"><span class="topic-card-top"><span class="topic-icon">${t.icon}</span><span>${p.total}문항 ↗</span></span><strong>${t.title}</strong><p>${t.sub}</p><span class="progress-track" aria-hidden="true">${track(p)}</span><span class="topic-stats">정답 ${p.correct} · 오답 ${p.wrong} · 미풀이 ${p.unanswered}</span></button>`;
-  }).join('');
+  const a=stats(QUESTIONS,progress),p=stats(PATH_QUESTIONS,pathologyUI?.getProgress()||{});
+  $('abxCourseTrack').innerHTML=track(a);$('pathCourseTrack').innerHTML=track(p);
+  $('abxCourseStats').textContent=`정답 ${a.correct} · 오답 ${a.wrong} · 미풀이 ${a.unanswered}`;
+  $('pathCourseStats').textContent=`정답 ${p.correct} · 오답 ${p.wrong} · 미풀이 ${p.unanswered}`;
+  $('pathResumeButton').hidden=!pathologyUI?.hasSession();
   if(!memoryOnly)$('saveStatus').innerHTML='<i aria-hidden="true"></i> 이 브라우저에 학습 기록 저장';
 }
 function navigate(tab,focus=false){
-  if(!['home','quiz','review','notes'].includes(tab))tab='home';
+  if(!['home','quiz','pathology','review','notes'].includes(tab))tab='home';
   const changed=activeTab!==tab;
   activeTab=tab;
-  for(const name of ['home','quiz','review','notes']){
+  for(const name of ['home','quiz','pathology','review','notes']){
     $(`panel-${name}`).hidden=name!==tab;
-    $(`tab-${name}`).setAttribute('aria-selected',String(name===tab));
-    $(`tab-${name}`).tabIndex=name===tab?0:-1;
   }
+  const mainTab=tab==='notes'?'quiz':tab;
+  for(const name of ['home','quiz','pathology','review']){$(`tab-${name}`).setAttribute('aria-selected',String(name===mainTab));$(`tab-${name}`).tabIndex=name===mainTab?0:-1;}
   if(location.hash!==`#${tab}`)history.pushState(null,'',`#${tab}`);
   updateDashboard();
   if(tab==='quiz'){updateEligible();renderSession();}
   if(tab==='review')renderReview();
+  if(tab==='pathology')pathologyUI?.open();
   if(changed)window.scrollTo({top:0,behavior:'auto'});
-  if(focus)$(`tab-${tab}`).focus();
+  if(focus)$(`tab-${mainTab}`).focus();
 }
 function filters(){return {topic:$('topicFilter').value,format:$('formatFilter').value,mode:$('modeFilter').value,count:Number($('countFilter').value)};}
 function setFilters(f){$('topicFilter').value=f.topic||'all';$('formatFilter').value=f.format||'all';$('modeFilter').value=f.mode||'all';$('countFilter').value=String(f.count??20);updateEligible();}
@@ -101,15 +112,18 @@ function toggleBookmark(id){
   updateEligible();announce(bookmarks.includes(id)?'북마크에 저장했습니다.':'북마크를 해제했습니다.');
 }
 function renderReview(){
-  const s=stats(QUESTIONS,progress);$('retryAll').disabled=!s.wrong;
-  $('reviewSummary').innerHTML=`<span>전체 오답 <strong>${s.wrong}</strong></span><span>정답 <strong>${s.correct}</strong></span><span>미풀이 <strong>${s.unanswered}</strong></span><span class="muted">총 ${s.total}문항 · 최신 결과 기준</span>`;
+  const records=allProgress(),s=stats(ALL_QUESTIONS,records),a=stats(QUESTIONS,progress),p=stats(PATH_QUESTIONS,pathologyUI?.getProgress()||{});
+  $('retryAll').disabled=!a.wrong;$('retryAll').textContent=`항생제 오답 ${a.wrong} →`;
+  $('pathRetryAll').disabled=!p.wrong;$('pathRetryAll').textContent=`병리 오답 ${p.wrong} →`;
+  $('reviewSummary').innerHTML=`<span>전체 오답 <strong>${s.wrong}</strong></span><span>정답 <strong>${s.correct}</strong></span><span>미풀이 <strong>${s.unanswered}</strong></span><span class="muted">총 ${s.total}문항 · 단원별 최신 결과</span>`;
   const topic=$('reviewTopic').value,search=$('reviewSearch').value.toLocaleLowerCase().trim();
-  const wrong=QUESTIONS.filter(q=>progress[q.id]?.correct===false && (topic==='all'||q.topic===topic) && `${q.stem} ${q.choices.join(' ')} ${q.explanation}`.toLocaleLowerCase().includes(search));
+  const wrong=ALL_QUESTIONS.filter(q=>records[q.id]?.correct===false && (topic==='all'||q.topic===topic) && `${q.stem} ${q.choices.join(' ')} ${q.explanation}`.toLocaleLowerCase().includes(search));
   $('reviewCount').textContent=`${wrong.length}문항`;
-  if(!wrong.length){$('reviewList').innerHTML=`<div class="empty-state"><span class="empty-icon" aria-hidden="true">${s.wrong?'⌕':'✓'}</span><h2>${s.wrong?'검색 조건에 맞는 오답이 없습니다.':'현재 남아 있는 오답이 없습니다.'}</h2><p>${s.wrong?'다른 주제를 고르거나 검색어를 바꾸어 보세요.':s.attempted?'잘 정리했습니다. 아직 안 푼 문제나 북마크한 문제를 이어서 풀어 보세요.':'퀴즈를 풀면 틀린 문제가 이곳에 모입니다. 다시 맞히면 목록에서 빠집니다.'}</p><button type="button" class="button primary" data-start="mixed">종합 문제 풀기 →</button></div>`;return;}
-  $('reviewList').innerHTML=wrong.map(q=>`<details class="review-item"><summary><span class="review-tags"><span class="pill">${TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX'} · ${q.id}</span></span>${escape(q.stem)}</summary><div class="review-body">${q.choices.map((c,i)=>`<div class="review-choice${i===q.answer?' is-answer':''}${i===progress[q.id].selected?' is-selected':''}">${escape(c)}${i===q.answer?'<small>정답</small>':''}${i===progress[q.id].selected?'<small>내 선택</small>':''}</div>`).join('')}${explanation(q,false)}<div class="review-bottom"><button type="button" class="text-button" data-retry="${q.id}">이 문제 다시 풀기 →</button><button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button></div></div></details>`).join('');
+  if(!wrong.length){$('reviewList').innerHTML=`<div class="empty-state"><span class="empty-icon" aria-hidden="true">${s.wrong?'⌕':'✓'}</span><h2>${s.wrong?'검색 조건에 맞는 오답이 없습니다.':'현재 남아 있는 오답이 없습니다.'}</h2><p>${s.wrong?'다른 주제를 고르거나 검색어를 바꾸어 보세요.':s.attempted?'아직 안 푼 문제나 북마크한 문제를 이어서 풀어 보세요.':'퀴즈를 풀면 틀린 문제가 이곳에 모입니다. 다시 맞히면 목록에서 빠집니다.'}</p><button type="button" class="button outline" data-tab="home">학습 단원 선택 →</button></div>`;return;}
+  $('reviewList').innerHTML=wrong.map(q=>`<details class="review-item"><summary><span class="review-tags"><span class="pill${isPath(q)?' blue':''}">${isPath(q)?'병리':'항생제'} · ${ALL_TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX'} · ${q.id}</span></span>${escape(q.stem)}</summary><div class="review-body">${isPath(q)?imageMarkup(q):''}${q.choices.map((c,i)=>`<div class="review-choice${i===q.answer?' is-answer':''}${i===records[q.id].selected?' is-selected':''}">${escape(c)}${i===q.answer?'<small>정답</small>':''}${i===records[q.id].selected?'<small>내 선택</small>':''}</div>`).join('')}${explanation(q,false)}<div class="review-bottom"><button type="button" class="text-button" data-retry="${q.id}">이 문제 다시 풀기 →</button>${isPath(q)?'':`<button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button>`}</div></div></details>`).join('');
 }
 function oneQuestion(id){
+  if(id.startsWith('path-')){pathologyUI.retry(id);return;}
   const q=QUESTIONS.find(q=>q.id===id);if(!q)return;
   // A one-question retry keeps the bank ID, so a correct answer resolves its old mistake.
   if(session && session.position<session.items.length){pendingFilters={single:id,topic:q.topic,format:q.format,mode:'wrong',count:10};navigate('quiz');$('replacePrompt').hidden=false;$('confirmReplace').focus();return;}
@@ -128,6 +142,9 @@ $('confirmReplace').addEventListener('click',()=>{const f=pendingFilters;$('repl
 $('cancelReplace').addEventListener('click',()=>{$('replacePrompt').hidden=true;pendingFilters=null;focusQuestion();});
 $('resumeButton').addEventListener('click',()=>{if(session)setFilters(session.filters||{});navigate('quiz');focusQuestion();});
 $('retryAll').addEventListener('click',()=>beginAction('wrong'));
+$('pathRetryAll').addEventListener('click',()=>pathologyUI.start({topic:'all',mode:'wrong',count:0}));
+$('homePathTables').addEventListener('click',()=>{navigate('pathology');pathologyUI.show('tables');});
+$('pathResumeButton').addEventListener('click',()=>pathologyUI.resume());
 $('reviewTopic').addEventListener('change',renderReview);$('reviewSearch').addEventListener('input',renderReview);
 document.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||b.disabled)return;
@@ -142,8 +159,8 @@ document.addEventListener('click',e=>{
   if(b.dataset.action==='next'||b.dataset.action==='skip'){moveNext();return;}
   if(b.dataset.action==='previous' && session){session.position=Math.max(0,session.position-1);save(KEYS.session,session);renderSession();focusQuestion();}
 });
-document.querySelector('[role=tablist]').addEventListener('keydown',e=>{
-  const tabs=[...document.querySelectorAll('[role=tab]')],i=tabs.indexOf(e.target);if(i<0)return;
+document.querySelector('.main-nav [role=tablist]').addEventListener('keydown',e=>{
+  const tabs=[...document.querySelectorAll('.main-nav [role=tab]')],i=tabs.indexOf(e.target);if(i<0)return;
   let n;if(e.key==='ArrowRight')n=(i+1)%tabs.length;else if(e.key==='ArrowLeft')n=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')n=0;else if(e.key==='End')n=tabs.length-1;else return;
   e.preventDefault();navigate(tabs[n].dataset.tab,true);
 });
@@ -161,4 +178,6 @@ window.addEventListener('hashchange',followHash);
 window.addEventListener('popstate',followHash);
 window.addEventListener('storage',e=>{if(e.key===KEYS.progress){progress=readProgress(e.newValue,QUESTIONS);updateDashboard();updateEligible();if(activeTab==='review')renderReview();}if(e.key===KEYS.bookmarks){try{const b=JSON.parse(e.newValue);if(Array.isArray(b))bookmarks=b.filter(id=>QUESTIONS.some(q=>q.id===id));}catch{}updateEligible();}});
 if(session)setFilters(session.filters||{});
+$('antibioticTables').innerHTML=renderTables(ANTIBIOTIC_TABLES);
+pathologyUI=createPathologyUI({read,save,openTab:navigate,announce,onChange(){updateDashboard();if(activeTab==='review')renderReview();}});
 navigate(tabFromHash(location.hash)||'home');
