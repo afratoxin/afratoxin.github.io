@@ -1,8 +1,8 @@
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261108b';
-import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261108b';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261108b';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261108b';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261108b';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261108c';
+import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261108c';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261108c';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261108c';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261108c';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -84,7 +84,7 @@ function renderSession(){
   stage.innerHTML=`<div class="quiz-layout"><article id="questionCard" class="question-card" tabindex="-1" aria-labelledby="questionStem">
     <div class="q-top"><div class="q-tags"><span class="pill">${TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX 퀴즈'}</span><span class="format-tag">${q.id}</span></div><button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button></div>
     <div class="session-line"><span>문제 <b>${session.position+1}</b> / ${session.items.length}</span><span>${answered.length}문항 채점 완료</span></div><div class="session-track" aria-hidden="true"><span style="width:${session.position/session.items.length*100}%"></span></div>
-    <h2 id="questionStem" class="question-stem">${escape(q.stem)}</h2><p class="question-instruction">${q.format==='mcq'?'가장 적절한 답을 하나 고르세요. · 키보드 1–5':'설명이 맞으면 O, 틀리면 X를 고르세요. · 키보드 O / X'}</p>
+    <h2 id="questionStem" class="question-stem">${escape(q.stem)}</h2><p class="question-instruction">${q.format==='mcq'?'가장 적절한 답을 하나 고르세요. · 키보드 1–5':'물음에 대한 답이 예이면 O, 아니요이면 X를 고르세요. · 키보드 O / X'}</p>
     <div class="choices${q.format==='ox'?' ox':''}" role="group" aria-labelledby="questionStem">${item.choices.map((c,i)=>{
       let cls='',label='';
       if(graded){if(i===item.answer){cls=' right';label='정답';}else if(i===item.selected){cls=' wrong';label='내 선택';}else cls=' dim';}

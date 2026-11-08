@@ -16,7 +16,7 @@ for(const m of html.matchAll(/(?:src|href)="([^"#][^"]+)"/g)) {
 }
 const modules=['app.mjs','bank.mjs','logic.mjs','pathology-bank.mjs','pathology-ui.mjs','photo-data.mjs','reference-tables.mjs'];
 for(const name of modules)for(const m of read(name).matchAll(/from '([^']+)'/g))assert.ok(fs.existsSync(new URL(m[1].split('?')[0],import.meta.url)),`missing module ${m[1]}`);
-const version='20261108b';
+const version='20261108c';
 assert.ok([...html.matchAll(/\?v=([^"']+)/g)].every(m=>m[1]===version),'HTML cache versions differ');
 for(const name of modules)assert.ok([...read(name).matchAll(/\?v=([^"']+)/g)].every(m=>m[1]===version),`module cache versions differ: ${name}`);
 for(const q of QUESTIONS)for(const ref of q.refs)assert.ok(SOURCES[ref],`unknown source ${ref}`);

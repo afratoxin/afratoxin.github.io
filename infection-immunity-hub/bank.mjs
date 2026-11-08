@@ -15,7 +15,7 @@ export const SOURCES = {
 };
 const items=[];
 function mc(topic,id,stem,choices,answer,explanation,pages,note='',refs=[]) {items.push({id:`${topic}-${id}`,topic,format:'mcq',stem,choices,answer:choices.indexOf(answer),explanation,pages,note,refs});}
-function ox(topic,id,stem,truth,explanation,pages,note='',refs=[]) {items.push({id:`${topic}-${id}`,topic,format:'ox',stem,choices:['O · 맞다','X · 틀리다'],answer:truth?0:1,explanation,pages,note,refs});}
+function ox(topic,id,stem,truth,explanation,pages,note='',refs=[]) {items.push({id:`${topic}-drug-${id}`,topic,format:'ox',stem,choices:['O · 그렇다','X · 아니다'],answer:truth?0:1,explanation,pages,note,refs});}
 
 mc('oral','01','다음 중 경구 투여로 전신 감염 치료에 사용할 수 있는 항생제는?',
  ['Amoxicillin','Gentamicin','Vancomycin','Ceftriaxone','Imipenem'],'Amoxicillin',
@@ -41,22 +41,22 @@ mc('oral','07','경구 흡수가 매우 낮아 균혈증 치료를 위한 먹는
 mc('oral','08','다음 중 강의 증례에서 주사로 사용하며, 같은 약을 먹는 제형으로 단순 교체할 수 없는 것은?',
  ['Imipenem','Amoxicillin','Ciprofloxacin','Metronidazole','Doxycycline'],'Imipenem',
  '증례의 imipenem은 정주 carbapenem입니다. 경구 전환은 해당 약물의 실제 제형·흡수와 원인균의 감수성을 함께 확인해야 합니다.',[34,40]);
-ox('oral','09','Gentamicin 같은 aminoglycoside는 경구 흡수가 좋아 전신 감염의 정주 치료를 먹는 약으로 그대로 대체하기 좋다.',false,
- 'Aminoglycoside는 장에서 잘 흡수되지 않습니다. 전신 감염 치료에서 경구 제제로 정주 제제를 그대로 대체할 수 없습니다.',[40]);
-ox('oral','10','Vancomycin은 경구 흡수가 낮으므로 어떤 감염에서도 경구로 사용하지 않는다.',false,
- '전신 감염의 치료와 장내 치료를 혼동한 설명입니다. 경구 vancomycin은 C. difficile 관련 장염 등에서 장내 작용을 위해 사용합니다.',[40],'혈중 농도를 올리려는 목적과 장 안에 약물을 전달하려는 목적이 다릅니다.',['vanco']);
-ox('oral','11','주사용 ceftriaxone은 3세대 세팔로스포린이므로 경구 ceftriaxone으로 그대로 전환할 수 있다.',false,
- '주사용 ceftriaxone을 먹는 ceftriaxone으로 단순 전환할 수 없습니다. 다른 경구 항생제로 전환하려면 감수성과 감염 부위에 맞는 약제를 다시 선택해야 합니다.',[37,40]);
-ox('oral','12','강의 40쪽의 표를 근거로 모든 2·3세대 세팔로스포린에는 경구 제형이 없다고 일반화할 수 있다.',false,
- '세대 전체로 일반화하면 안 됩니다. 예를 들어 cefixime은 경구 제형이 있는 3세대 약물입니다. 개별 약물과 제형을 구별합니다.',[40],'강의의 단순화된 표에 대한 보충 문항입니다.',['cefixime']);
-ox('oral','13','Doxycycline이 경구 투여 가능하더라도, 임신부에게 적합한 약인지 별도로 검토해야 한다.',true,
- '투여 경로와 숙주 안전성은 서로 다른 판단 축입니다. 강의는 tetracycline계 약물을 임신 중 회피하는 범주로 분류합니다.',[40,43]);
-ox('oral','14','강의에서는 의식과 활력징후가 안정되고 검사 결과가 호전되며 경구 섭취가 가능하면 정주에서 경구로의 전환을 검토한다.',true,
- '39쪽은 의식, 활력징후, 검사 추세, 정주 치료 경과, 경구 섭취를 함께 확인하도록 제시합니다. 약물 자체의 경구 흡수와 감수성도 필요합니다.',[39,40]);
-ox('oral','15','강의 표의 “>80%”를 그대로 적용하여 ciprofloxacin의 절대 경구 생체이용률은 반드시 80%를 넘는다고 외워도 된다.',false,
- '경구 투여 가능하다는 핵심을 기억하되 수치는 구별합니다. 허가사항의 ciprofloxacin 절대 경구 생체이용률은 약 70%입니다.',[40],'강의 표의 수치를 모든 열거 약물에 일괄 적용하지 않도록 보충했습니다.',['cipro']);
-ox('oral','16','환자가 음식을 삼킬 수 있다는 사실 하나만 확인하면 감염 부위·혈역학적 상태와 관계없이 즉시 경구 항생제로 바꿀 수 있다.',false,
- '먹을 수 있는지는 한 조건일 뿐입니다. 쇼크·흡수 장애·높은 조직 농도가 필요한 감염 등을 확인하고, 임상적 안정과 적절한 경구 약제 확보를 함께 판단합니다.',[37,39]);
+ox('oral','09','Gentamicin — 전신 감염 치료를 위한 경구 투여가 가능한가?',false,
+ 'Gentamicin은 aminoglycoside로 경구 흡수가 매우 낮습니다. 전신 감염 치료용 경구 약으로 사용할 수 없습니다.',[40]);
+ox('oral','10','Vancomycin — 경구 투여로 전신 감염을 치료할 수 있는가?',false,
+ 'Vancomycin은 경구 투여 시 전신 치료에 필요한 혈중 농도를 기대하기 어렵습니다. C. difficile 대장염에 장내 작용을 목적으로 경구 투여하는 것은 가능합니다.',[40],'전신 감염 치료를 묻는 문항입니다.',['vanco']);
+ox('oral','11','Ceftriaxone — 같은 성분의 먹는 약으로 투여할 수 있는가?',false,
+ 'Ceftriaxone은 주사제로 사용하며 경구 ceftriaxone으로 전환할 수 없습니다. 경구 전환 시에는 감수성과 감염 부위에 맞는 다른 성분을 선택합니다.',[37,40]);
+ox('oral','12','Amoxicillin — 전신 감염 치료에 경구 투여할 수 있는가?',true,
+ 'Amoxicillin은 강의의 경구 흡수가 좋은 약물 목록에 있습니다. 해당 균의 감수성과 감염 부위에 적합하다는 조건에서 경구 치료에 사용할 수 있습니다.',[40]);
+ox('oral','13','Doxycycline — 경구 투여가 가능한 항생제인가?',true,
+ 'Doxycycline은 경구 흡수가 좋아 먹는 약으로 투여할 수 있습니다. 경구 투여 가능 여부와 임신 중 안전성은 구분합니다.',[40,43]);
+ox('oral','14','Ciprofloxacin — 경구 투여가 가능한 항생제인가?',true,
+ 'Ciprofloxacin은 경구 제형을 사용할 수 있습니다. 강의 증례에서도 정주 치료 후 임상적으로 안정되고 식사가 가능해지면 경구 전환을 검토합니다.',[38,39,40],'강의 표의 >80%를 정확한 절대 생체이용률로 암기하지 않습니다. 허가사항의 수치는 약 70%입니다.',['cipro']);
+ox('oral','15','Metronidazole — 경구 투여가 가능한 항생제인가?',true,
+ 'Metronidazole은 강의의 경구 흡수가 좋은 약물 목록에 포함됩니다. 감염 부위와 원인균에 적합한 경우 먹는 약으로 사용할 수 있습니다.',[40]);
+ox('oral','16','Imipenem — 같은 성분의 먹는 약으로 투여할 수 있는가?',false,
+ '강의 증례의 imipenem은 정주 carbapenem입니다. 경구 imipenem으로 단순 전환할 수 없습니다.',[34,40]);
 
 mc('bbb','01','강의에서 MSSA 치료 약물 중 BBB 통과가 가능한 쪽으로 분류한 약은?',
  ['Nafcillin','Cefazolin','Gentamicin','Amikacin','Cephalexin'],'Nafcillin',
@@ -82,22 +82,22 @@ mc('bbb','07','다음 중 강의에서 BBB 통과가 좋지 않은 항생제로 
 mc('bbb','08','CSF 도달이 충분하지 않아 강의의 BBB 통과가 좋지 않은 쪽에 속하는 약물은?',
  ['Gentamicin','Penicillin','Ampicillin','Cefotaxime','Chloramphenicol'],'Gentamicin',
  'Gentamicin은 aminoglycoside입니다. 강의는 aminoglycoside의 BBB 통과가 좋지 않다는 점을 강조합니다.',[27]);
-ox('bbb','09','강의의 분류에서 1세대 cephalosporin은 BBB 통과가 좋지 않은 쪽이다.',true,
- '1세대 cephalosporin과 aminoglycoside가 좋지 않은 쪽에 제시됩니다. 대표적으로 cefazolin과 gentamicin을 연결합니다.',[27]);
-ox('bbb','10','Aminoglycoside는 혈중 농도만 높이면 보통의 전신 투여로 CSF에도 충분히 도달한다고 간주할 수 있다.',false,
- '혈청 농도와 감염 부위 농도는 같지 않습니다. Aminoglycoside의 CSF 침투는 좋지 않아, 혈중 감수성만으로 수막염 약제로 선택할 수 없습니다.',[27,31]);
-ox('bbb','11','Penicillin은 BBB를 전혀 통과하지 못하므로 감수성이 충분히 확인된 경우에도 수막염에 사용할 수 없는 약이다.',false,
- 'Penicillin 자체를 BBB 통과 불가로 외우면 틀립니다. 강의는 통과 가능한 쪽으로 분류하며 실제 사용은 수막염 기준의 감수성과 용량을 확인합니다.',[23,24,27],'강의 증례의 MIC 0.12 μg/mL와 penicillin 일반의 성질을 구별하세요.',['meningitis']);
-ox('bbb','12','“BBB 통과가 좋다”는 분류는 정상 수막과 염증이 있는 수막에서의 투과가 언제나 동일하다는 뜻이다.',false,
- '수막 염증의 유무는 특히 β-lactam의 CSF 도달에 영향을 줍니다. 강의의 분류는 CNS 감염에서 조직 도달을 고려하라는 학습 틀로 이해합니다.',[26,27,29]);
-ox('bbb','13','수막염에서는 항균 작용뿐 아니라 CSF 내 농도가 원인균의 MIC를 충분히 넘는지도 고려한다.',true,
- '26쪽은 살균력과 CSF 투과를 함께, 29쪽은 혈액·CSF 농도와 MIC의 관계를 보여 줍니다.',[26,29]);
-ox('bbb','14','경구 흡수가 좋은 항생제라면 BBB 통과도 반드시 좋다고 판단할 수 있다.',false,
- '경구 흡수와 BBB 투과는 별도의 약동학적 특성입니다. 장에서 혈액으로 도달하는 것과 혈액에서 CSF로 도달하는 것을 나누어 판단합니다.',[27,40]);
-ox('bbb','15','배양 결과에 S라고 적혀 있으면 감염 부위와 무관하게 그 항생제를 선택하면 된다.',false,
- '감염 부위 농도와 해당 감염에 맞는 감수성 기준을 함께 봅니다. 수막염과 비수막염에서 같은 약·균의 감수성 해석이 달라질 수 있습니다.',[23,24,29,31],'폐렴구균 수막염에 비수막염 기준을 그대로 적용하지 않습니다.',['meningitis']);
-ox('bbb','16','강의의 BBB 분류는 CNS 감염 약제 선택에서 중요하지만, BBB 투과가 낮다는 이유만으로 모든 다른 부위 감염에도 부적합한 약이라고 할 수는 없다.',true,
- '항생제는 필요한 감염 부위에 도달하면 됩니다. 예를 들어 CNS 밖의 감염에서는 해당 조직의 농도·감수성·숙주 조건을 판단합니다.',[12,27,31]);
+ox('bbb','09','Cefazolin — BBB 통과가 좋은 항생제인가? (강의 분류)',false,
+ 'Cefazolin은 1세대 cephalosporin으로, 강의에서는 BBB 통과가 좋지 않은 쪽으로 분류합니다. Nafcillin과 구분해 기억합니다.',[27]);
+ox('bbb','10','Gentamicin — BBB 통과가 좋은 항생제인가? (강의 분류)',false,
+ 'Gentamicin은 aminoglycoside로, 일반적인 전신 투여 시 CSF 도달이 좋지 않은 범주입니다.',[27]);
+ox('bbb','11','Nafcillin — BBB 통과가 좋은 항생제인가? (강의 분류)',true,
+ 'Nafcillin은 강의의 BBB 통과가 좋은 목록에 직접 제시됩니다. 같은 MSSA 치료 약물이어도 cefazolin의 강의 분류와 다릅니다.',[27],'특히 β-lactam의 CSF 도달은 수막 염증과 용량 등에 영향을 받습니다.');
+ox('bbb','12','Ampicillin — BBB 통과가 좋은 항생제인가? (강의 분류)',true,
+ 'Ampicillin은 nafcillin·penicillin과 함께 BBB 통과가 좋은 목록에 포함됩니다. 실제 CNS 감염 치료에는 수막염 용량과 감수성도 확인합니다.',[26,27]);
+ox('bbb','13','Ceftriaxone — BBB 통과가 좋은 항생제인가? (강의 분류)',true,
+ 'Ceftriaxone은 3세대 cephalosporin으로 BBB 통과가 좋은 범주이며, 강의의 폐렴구균 수막염 증례에서 선택한 약물입니다.',[24,26,27]);
+ox('bbb','14','Chloramphenicol — BBB 통과가 좋은 항생제인가? (강의 분류)',true,
+ 'Chloramphenicol은 강의의 BBB 통과가 좋은 목록에 직접 제시됩니다. 이 성질이 모든 CNS 감염에서의 우선 선택을 뜻하지는 않습니다.',[27]);
+ox('bbb','15','Amikacin — BBB 통과가 좋은 항생제인가? (강의 분류)',false,
+ 'Amikacin은 aminoglycoside입니다. Gentamicin과 마찬가지로 강의의 BBB 통과가 좋지 않은 범주에 해당합니다.',[27]);
+ox('bbb','16','Cephalexin — BBB 통과가 좋은 항생제인가? (강의 분류)',false,
+ 'Cephalexin은 1세대 cephalosporin으로 강의의 BBB 통과가 좋지 않은 범주입니다. 경구 투여 가능 여부와 BBB 통과 여부는 다릅니다.',[27]);
 
 mc('pregnancy','01','강의 43쪽에서 임신 중 “비교적 안전”으로 분류한 계열은?',
  ['Penicillin','Aminoglycoside','Quinolone','Tetracycline','Tigecycline'],'Penicillin',
@@ -123,22 +123,22 @@ mc('pregnancy','07','다음 중 강의의 “금기” 목록에 이름이 직�
 mc('pregnancy','08','강의에서 임신 중 회피하는 약물로 제시한 erythromycin의 특정 제형은?',
  ['Erythromycin estolate','Amoxicillin','Cefotaxime','Ampicillin','Ceftriaxone'],'Erythromycin estolate',
  '강의는 erythromycin 전체가 아니라 erythromycin estolate를 명시합니다. 약물 계열 전체와 특정 제형을 구별합니다.',[43]);
-ox('pregnancy','09','Penicillin계는 강의에서 비교적 안전한 약물로 분류하므로 모든 임신부에게 감수성·알레르기 확인 없이 사용해도 된다.',false,
- '비교적 안전하다는 분류가 모든 조건에서의 적합성을 보장하지는 않습니다. 감수성, 감염 부위, 알레르기 등을 함께 판단합니다.',[36,43,51]);
-ox('pregnancy','10','Cephalosporin계는 강의에서 임신 중 비교적 안전한 항생제 범주에 포함된다.',true,
- '강의의 비교적 안전 범주는 penicillin과 cephalosporin입니다. 숙주가 임신부로 바뀐 증례 6의 핵심입니다.',[42,43]);
-ox('pregnancy','11','Tetracycline계는 강의에서 임신 중 회피하는 목록에 포함된다.',true,
- '43쪽은 tetracycline을 금기 목록에 제시합니다. 경구 흡수가 좋은 doxycycline도 임신이라는 숙주 조건을 별도로 확인해야 합니다.',[40,43]);
-ox('pregnancy','12','Tigecycline은 강의 43쪽에서 tetracycline과 함께 임신 중 회피하는 목록에 제시된다.',true,
- '강의 원문은 “Tetracycline or Tigecycline”을 금기 목록에 둡니다. 비교적 안전 범주와 구분해 기억합니다.',[43]);
-ox('pregnancy','13','강의의 clarithromycin·erythromycin estolate 표기를 근거로 모든 macrolide가 임신 중 절대금기라고 일반화할 수 있다.',false,
- '강의는 특정 약물·제형을 열거합니다. 계열 전체의 절대금기로 확대하면 안 됩니다.',[43]);
-ox('pregnancy','14','강의의 “주의”와 “금기”를 모두 같은 뜻의 “임신 중 어떤 상황에서도 투여 불가”로 외우면 된다.',false,
- '강의 자체가 비교적 안전·주의·금기를 나누고 있습니다. 특히 주의는 이득·위험과 대체약을 평가해야 한다는 의미로 구분합니다.',[43]);
-ox('pregnancy','15','Metronidazole은 강의의 “주의” 범주이므로 임신 중 모든 적응증에서 절대 사용해서는 안 되는 약이다.',false,
- '주의를 절대금기로 바꾼 설명입니다. 강의 표기와 실제 적응증별 안전성 근거를 구별해야 합니다.',[43],'CDC 임신 관련 설명을 보충 출처에서 확인할 수 있습니다.',['metro']);
-ox('pregnancy','16','원인균과 감염 부위가 같아도 임신 여부가 달라지면 항생제 선택을 다시 검토해야 한다.',true,
- '감염병 진단의 세 축은 감염 부위, 미생물, 숙주입니다. 증례 6은 신우신염이라는 상황에 임신이라는 숙주 변화를 추가합니다.',[5,42,43,51]);
+ox('pregnancy','09','Amoxicillin — 임신부에게 비교적 안전하게 투여 가능한 항생제인가? (강의 분류)',true,
+ 'Amoxicillin은 penicillin계로 강의의 임신 중 비교적 안전 범주에 해당합니다. 감수성·감염 부위·알레르기는 별도로 확인합니다.',[43]);
+ox('pregnancy','10','Cefotaxime — 임신부에게 비교적 안전하게 투여 가능한 항생제인가? (강의 분류)',true,
+ 'Cefotaxime은 cephalosporin계로 강의의 비교적 안전 범주입니다. 강의의 임신부 신우신염 증례와 연결해 기억합니다.',[34,42,43]);
+ox('pregnancy','11','Doxycycline — 임신부에게 비교적 안전하게 투여 가능한 항생제인가? (강의 분류)',false,
+ 'Doxycycline은 tetracycline계입니다. 강의에서는 tetracycline을 임신 중 회피하는 금기 목록에 둡니다.',[40,43],'이 문항의 X는 강의의 비교적 안전 범주가 아니라는 뜻입니다.');
+ox('pregnancy','12','Tigecycline — 임신부에게 비교적 안전하게 투여 가능한 항생제인가? (강의 분류)',false,
+ 'Tigecycline은 강의에서 tetracycline과 함께 임신 중 회피하는 금기 목록에 제시됩니다.',[43]);
+ox('pregnancy','13','Clarithromycin — 임신부에게 비교적 안전하게 투여 가능한 항생제인가? (강의 분류)',false,
+ 'Clarithromycin은 강의의 임신 중 회피 목록에 직접 제시됩니다. Macrolide 전체를 같은 분류로 일반화하지 않습니다.',[43],'강의 분류를 묻습니다. 모든 임상 상황에서의 허가상 절대금기를 뜻하지 않습니다.');
+ox('pregnancy','14','Erythromycin estolate — 임신부에게 비교적 안전하게 투여 가능한 항생제인가? (강의 분류)',false,
+ '강의에서 회피 목록에 명시한 제형은 erythromycin estolate입니다. Erythromycin 전체와 특정 제형을 구분합니다.',[43]);
+ox('pregnancy','15','Ampicillin — 임신부에게 비교적 안전하게 투여 가능한 항생제인가? (강의 분류)',true,
+ 'Ampicillin은 penicillin계로 강의의 임신 중 비교적 안전 범주에 해당합니다.',[43]);
+ox('pregnancy','16','Ceftriaxone — 임신부에게 비교적 안전하게 투여 가능한 항생제인가? (강의 분류)',true,
+ 'Ceftriaxone은 cephalosporin계로 강의의 임신 중 비교적 안전 범주에 해당합니다. 투여 경로와 감염 부위 적합성은 별도로 판단합니다.',[43]);
 
 mc('cases','01','증례 1: 50세 여성이 인후통·콧물·코막힘을 보인다. 체온 37.8℃, 인두 삼출물과 경부 림프절 압통은 없다. 강의에서 의도한 치료 원칙은?',
  ['바이러스성 상기도 감염을 고려하여 대증 치료·경과 관찰','Ceftriaxone을 모든 경우에 즉시 투여','Vancomycin 경구로 전신 치료','Imipenem을 반드시 2주 정주','Doxycycline을 반드시 사용'],'바이러스성 상기도 감염을 고려하여 대증 치료·경과 관찰',
@@ -177,29 +177,29 @@ mc('cases','12','증례 3의 폐렴구균 수막염에서 검사표의 “penici
  ['수막염 기준의 감수성과 CSF 유효 농도를 따로 확인해야 해서','Penicillin은 항균 작용이 전혀 없어서','모든 penicillin은 BBB를 절대 통과하지 못해서','수막염은 항생제로 치료하지 않아서','경구 흡수만 좋으면 충분해서'],'수막염 기준의 감수성과 CSF 유효 농도를 따로 확인해야 해서',
  '동일 병원체라도 감염 부위에 맞는 breakpoint가 중요합니다. 이 증례의 penicillin MIC 0.12 μg/mL는 수막염 기준으로 충분한 감수성이라고 볼 수 없습니다.',[23,24,27,29],'Penicillin 자체를 수막염에 절대 사용할 수 없는 약으로 외우지 않습니다.',['meningitis']);
 
-ox('cases','13','증례 1처럼 바이러스성 상기도 감염이 의심되는 상황에서도 감염 증상만 있으면 항생제가 항상 필요하다.',false,
- '강의 첫 증례는 불필요한 항생제 사용을 피하는 원칙입니다. 감염병 치료에는 경과 관찰과 대증 치료도 있습니다.',[6,8]);
-ox('cases','14','배농 가능한 농양에서는 항생제의 시험관 내 감수성만 확인하면 배농의 필요성을 무시해도 된다.',false,
- '농양은 항생제 도달과 source control 문제가 있습니다. 필요 시 배농이나 수술로 감염 부위를 처리해야 합니다.',[7,8,12,31,47]);
-ox('cases','15','폐렴구균 수막염에서 erythromycin S가 제시되었다는 이유만으로 CSF 도달을 고려하지 않고 erythromycin을 선택해도 된다.',false,
- '검사상 감수성이 있어도 감염 부위에서 유효 농도가 확보되어야 합니다. 강의 증례는 ceftriaxone을 정답으로 제시합니다.',[23,24,26,29]);
-ox('cases','16','장티푸스 증례에서 네 약 모두 S이더라도 세포 내 분포가 다르므로 약제 선택은 달라질 수 있다.',true,
- 'Salmonella의 세포 내 위치와 약물의 세포 내 도달을 함께 봅니다. 강의는 1·2세대 cephalosporin 및 aminoglycoside와 fluoroquinolone을 비교합니다.',[30,31,32]);
-ox('cases','17','장티푸스는 감수성 결과·지역 내성과 관계없이 언제나 ciprofloxacin을 경험적으로 선택하면 된다.',false,
- '강의 문제는 감수성이 주어진 상황입니다. 실제 경험적 선택은 지역·시대별 내성, 역학 정보, 숙주 조건에 따라 달라집니다.',[21,30],'CDC 역시 감수성에 따른 선택을 강조합니다.',['typhi']);
-ox('cases','18','증례 5의 cefazolin은 R로 제시되었으므로 다른 조건이 같을 때 감수성 있는 약을 두고 cefazolin을 선택할 근거가 없다.',true,
- '34쪽은 cefazolin R, cefotaxime·ciprofloxacin·imipenem·amikacin S를 제시합니다. 치료는 감수성과 감염 부위·숙주 조건을 함께 봅니다.',[34,36]);
-ox('cases','19','신우신염 환자의 퇴원·경구 전환 시점은 증례에 나온 “14일”을 기준으로 반드시 고정한다.',false,
- '38–39쪽의 학습 포인트는 임상 호전 후 경구 전환입니다. 입원 기간과 총 항생제 기간은 구별하며, 총 치료기간도 약물·감염·숙주에 따라 달라집니다.',[38,39,50]);
-ox('cases','20','동일한 E. coli 신우신염이라도 환자가 임신부라면 비임신 성인과 약물 선택을 다시 검토해야 한다.',true,
- '증례 5와 6은 숙주 조건의 중요성을 대비합니다. 임신 시 안전성을 고려해 비교적 안전한 β-lactam계 약물을 검토합니다.',[33,34,42,43]);
-ox('cases','21','항생제 투여 후 5일째 발열이 지속되면 내성 하나만 원인으로 생각하면 된다.',false,
- '농양·괴사, 용량, 상호작용, 면역 이상, 비감염성 질환, 약열, C. difficile 등 여러 원인을 감별해야 합니다.',[45,46,47]);
-ox('cases','22','신우신염에서 72시간 이후에도 호전이 없으면 신농양이나 요로폐쇄 등 해부학적 문제를 고려한다.',true,
- '강의 47쪽의 핵심입니다. 잘 듣는 항생제를 골랐어도 농양이나 폐쇄가 해결되지 않으면 치료 반응이 좋지 않을 수 있습니다.',[47]);
-ox('cases','23','최근 항생제 노출 후 심한 설사·대장염이 생기면 원래 감염의 악화뿐 아니라 C. difficile 감염도 고려해야 한다.',true,
- '증례 8은 항생제 사용의 손해와 이차 합병증을 보여 줍니다. 항생제 사용 후 새로 생긴 문제를 별도로 평가합니다.',[46,48,49]);
-ox('cases','24','균이 확인된 뒤에는 감염 부위·숙주에 적합한 범위에서 좁은 항균 범위, 적은 부작용, 투여 편의와 경구 전환 가능성도 고려한다.',true,
- '36쪽은 항균 범위, 부작용, 비용, 투여 편의, 경구 가능성을 제시합니다. 이 원칙은 원인균에 효과적이고 필요한 부위에 도달하는 약을 전제로 합니다.',[36,51]);
+ox('cases','13','Ceftriaxone — 강의의 폐렴구균 수막염 증례에서 선택할 약물인가? (Penicillin MIC 0.12 μg/mL)',true,
+ '강의가 선택한 약물은 ceftriaxone입니다. 수막염에서는 감수성뿐 아니라 CSF 내 유효 농도와 살균 작용을 고려합니다.',[23,24,26,27,29],'강의 선택을 묻습니다. 실제로는 수막염 기준의 cephalosporin 감수성을 확인하며, 감수성 미확인 시 경험적 병용 여부를 판단합니다.',['meningitis']);
+ox('cases','14','Penicillin — 폐렴구균 수막염에서 MIC가 0.12 μg/mL일 때 단독 표적 치료제로 선택할 수 있는가?',false,
+ '이 MIC는 폐렴구균 수막염 기준에서 penicillin 감수성 범위를 넘습니다. Penicillin 자체의 BBB 통과 가능 여부와 감수성 기준을 구분합니다.',[23,24,27,29],'BBB를 통과하는 약이라고 이 균주에도 사용할 수 있는 것은 아닙니다.',['meningitis']);
+ox('cases','15','Erythromycin — 강의의 폐렴구균 수막염 증례에서 적합한 약물인가? (검사 결과 S)',false,
+ '강의 증례에서는 S로 제시되어도 CSF 내 유효 농도 등의 조건을 충족하는 치료제로 선택하지 않습니다. 강의의 선택은 ceftriaxone입니다.',[23,24,26,29]);
+ox('cases','16','Ciprofloxacin — 감수성이 확인된 비임신 성인의 장티푸스에서 선택 가능한가?',true,
+ '강의에서는 S. Typhi의 세포 내 위치와 ciprofloxacin의 세포 내 도달을 고려해 선택합니다.',[30,31,32],'감수성이 확인된 조건입니다. 감수성을 모르는 실제 장티푸스에 대한 일괄적인 경험적 선택은 아닙니다.',['typhi']);
+ox('cases','17','Gentamicin — 강의의 장티푸스 증례에서 적합한 치료 약물인가? (검사 결과 S)',false,
+ 'Gentamicin은 aminoglycoside로 세포 내 도달이 좋지 않습니다. 세포 내에 존재하는 Salmonella를 치료할 때 검사상 S만으로 선택하지 않으며, 강의는 ciprofloxacin을 선택합니다.',[30,31,32]);
+ox('cases','18','Cefuroxime — 강의의 장티푸스 증례에서 적합한 치료 약물인가? (검사 결과 S)',false,
+ 'Cefuroxime은 2세대 cephalosporin입니다. 강의는 1·2세대 cephalosporin의 세포 내 도달 한계를 비교하며 ciprofloxacin을 선택합니다.',[30,31,32]);
+ox('cases','19','Ciprofloxacin IV — 구토가 있는 비임신 성인의 E. coli 신우신염에서 초기 치료로 선택 가능한가? (Ciprofloxacin S)',true,
+ '강의 증례 5는 ciprofloxacin 정주로 치료를 시작합니다. 구토로 경구 섭취가 어려운 초기에는 정주 경로를 고려합니다.',[33,34,37,38]);
+ox('cases','20','Ciprofloxacin PO — 정주 치료 후 안정되고 식사가 가능한 비임신 신우신염 환자의 경구 전환 약으로 선택 가능한가? (Ciprofloxacin S)',true,
+ 'Ciprofloxacin은 경구 제형이 있고 흡수가 좋습니다. 강의에서는 임상적으로 안정되고 경구 섭취가 가능해지면 경구 전환을 검토합니다.',[38,39,40]);
+ox('cases','21','Amikacin — 강의의 E. coli 신우신염 증례에서 경구 전환 약물로 사용할 수 있는가? (Amikacin S)',false,
+ 'Amikacin은 aminoglycoside로 경구 흡수가 매우 낮습니다. 검사상 S여도 먹는 amikacin으로 전환할 수 없으며, 경구 전환에는 실제로 흡수되는 약물이 필요합니다.',[34,39,40]);
+ox('cases','22','Cefotaxime IV — 임신부의 E. coli 신우신염에서 선택 가능한가? (Cefotaxime S, 중증 β-lactam 알레르기 없음)',true,
+ 'Cefotaxime은 cephalosporin계로 강의의 임신 중 비교적 안전 범주입니다. 발열·구토가 있는 임신부 신우신염의 초기 정주 치료에 검토할 수 있습니다.',[34,37,42,43],'임신 중 신우신염의 초기 입원·정주 치료는 ACOG 자료도 참고했습니다.',['pregnancy']);
+ox('cases','23','Doxycycline — 강의의 임신부 신우신염에서 숙주 안전성상 우선 선택할 약물인가?',false,
+ 'Doxycycline은 tetracycline계로 강의의 임신 중 회피 목록에 해당합니다. 임신부 증례에서는 감수성과 알레르기를 확인한 cephalosporin계 등을 검토합니다.',[42,43]);
+ox('cases','24','Vancomycin PO — C. difficile 대장염에서 장내 치료 목적으로 투여 가능한가?',true,
+ '경구 vancomycin은 장내에 약물을 전달해 작용시킬 수 있습니다. 전신 감염 치료를 위한 경구 투여 가능 여부를 묻는 문항과 답이 다릅니다.',[40,48,49],'이 문항은 경구 경로의 사용 가능성을 묻습니다. 쇼크를 동반한 증례 8의 전체 치료를 경구 약 하나로 한정하지 않습니다.',['vanco']);
 
 export const QUESTIONS=Object.freeze(items.map(q=>Object.freeze(q)));
