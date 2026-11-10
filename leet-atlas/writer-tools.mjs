@@ -1,7 +1,7 @@
 import {questionLabel} from './question-label.mjs?v=20261031-author-db1';
 import {answerInfo} from './answer-notes.mjs?v=20261031-author-db1';
 import {buildDesignProfile} from './design-profile.mjs?v=20261031-author-db1';
-import {parseResearchBackup,researchBackup,mergeResearch,relatedQuestions} from './research-store.mjs?v=20261031-author-db1';
+import {parseResearchBackup,researchBackup,mergeResearch,relatedQuestions} from './research-store.mjs?v=20261110-bookmarks1';
 import {researchWorkspaceMarkup,selectionMarkdown,printableSelection,escapeHtml as esc} from './research-workspace.mjs?v=20261031-author-db1';
 const LEVELS=[['rules','조건 상호작용'],['inference','추론 연결'],['distractors','선지 구별'],['visual','시각자료 해석']];
 const uid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -10,11 +10,11 @@ export function downloadWriterFile(name,text,type='application/json'){
  const url=URL.createObjectURL(new Blob([text],{type:`${type};charset=utf-8`})),link=document.createElement('a');
  link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-export function createWriterTools({state,store,main,toast,navigate,filteredQuestions,saveReview,restoreReviews,runSearch,getImage,ensureImages,copySearch,download=downloadWriterFile,document:documentRef=globalThis.document}){
+export function createWriterTools({state,store,main,toast,navigate,filteredQuestions,saveReview,restoreReviews,getBookmarkCategories=()=>undefined,restoreBookmarkCategories=()=>{},runSearch,getImage,ensureImages,copySearch,download=downloadWriterFile,document:documentRef=globalThis.document}){
  const document=documentRef;
  const dialog=document.querySelector('#writer-dialog');let pending;
  const questionIds=new Set(state.questions.keys());
- const backup=()=>researchBackup(store.state,state.reviews);
+ const backup=()=>researchBackup(store.state,state.reviews,getBookmarkCategories());
  function update(change){store.update(change);if(store.error)toast(store.error);if(state.route.view==='workspace')renderPage();renderSelection();}
  function designMarkup(q){
   const {profile}=buildDesignProfile(q),saved=state.reviews[q.id]?.designReview||{};
@@ -68,7 +68,7 @@ export function createWriterTools({state,store,main,toast,navigate,filteredQuest
   }catch(error){toast(error.message);}
  }
  async function restoreFile(file){
-  try{if(file.size>6000000)throw new Error('백업은 6MB 이하로 선택해 주세요.');const imported=parseResearchBackup(await file.text(),questionIds);download('leet-복원전-백업.json',backup());const merged=mergeResearch(store.state,imported.research);update(data=>Object.assign(data,merged));const reviewsSaved=restoreReviews(imported.reviews);toast(store.error||(reviewsSaved===false?'검수 기록은 현재 화면에 복원됐지만 브라우저 저장에 실패했습니다. 백업 파일을 보관해 주세요.':'기존 자료에 백업을 합쳤습니다. 복원 전 파일도 내려받았습니다.'));if(state.route.view==='workspace')renderPage();}catch(error){toast(`복원하지 않았습니다: ${error.message}`);}
+   try{if(file.size>6000000)throw new Error('백업은 6MB 이하로 선택해 주세요.');const imported=parseResearchBackup(await file.text(),questionIds);download('leet-복원전-백업.json',backup());const merged=mergeResearch(store.state,imported.research);update(data=>Object.assign(data,merged));const reviewsSaved=restoreReviews(imported.reviews);if(imported.bookmarkCategories)restoreBookmarkCategories(imported.bookmarkCategories);toast(store.error||(reviewsSaved===false?'검수 기록은 현재 화면에 복원됐지만 브라우저 저장에 실패했습니다. 백업 파일을 보관해 주세요.':'기존 자료에 백업을 합쳤습니다. 복원 전 파일도 내려받았습니다.'));if(state.route.view==='workspace')renderPage();}catch(error){toast(`복원하지 않았습니다: ${error.message}`);}
  }
  function handleClick(button){
   const d=button.dataset;

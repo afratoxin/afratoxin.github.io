@@ -9,10 +9,17 @@ export const BOOKMARK_COLORS = Object.freeze([
   {id:'violet',label:'보라',hex:'#8554ad'},
 ]);
 const colorIds = new Set(BOOKMARK_COLORS.map(color=>color.id));
+export function isBookmarkCategoryId(id) {
+  return typeof id==='string'&&(colorIds.has(id)||/^bm_[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id));
+}
+const orderedBookmarkIds=selected=>{
+  const valid=[...new Set(selected.filter(isBookmarkCategoryId))];
+  return [...BOOKMARK_COLORS.map(color=>color.id).filter(id=>valid.includes(id)),...valid.filter(id=>!colorIds.has(id))];
+};
 export function bookmarkColors(review={}) {
   if (!review || typeof review !== 'object') return [];
-  const selected=Array.isArray(review.bookmarkColors) ? review.bookmarkColors : review.bookmark===true ? ['red'] : colorIds.has(review.bookmark) ? [review.bookmark] : [];
-  return BOOKMARK_COLORS.map(color=>color.id).filter(id=>selected.includes(id));
+  const selected=Array.isArray(review.bookmarkColors) ? review.bookmarkColors : review.bookmark===true ? ['red'] : isBookmarkCategoryId(review.bookmark) ? [review.bookmark] : [];
+  return orderedBookmarkIds(selected);
 }
 export function normalizeReviews(reviews={}) {
   if (!reviews || typeof reviews!=='object' || Array.isArray(reviews)) return {};
@@ -24,8 +31,8 @@ export function normalizeReviews(reviews={}) {
 export function toggleBookmarkColor(review={},color) {
   const current={...(review && typeof review==='object' ? review : {})};
   const selected=new Set(bookmarkColors(current));
-  if(colorIds.has(color)) { if(selected.has(color)) selected.delete(color); else selected.add(color); }
-  const colors=BOOKMARK_COLORS.map(c=>c.id).filter(id=>selected.has(id));
+  if(isBookmarkCategoryId(color)) { if(selected.has(color)) selected.delete(color); else selected.add(color); }
+  const colors=orderedBookmarkIds([...selected]);
   return {...current,bookmarkColors:colors,bookmark:colors.length>0};
 }
 // Only exam years are exclusive. Every other axis permits multiple tags per question.
@@ -108,7 +115,7 @@ export function parseRoute(hash='') {
   else if(path==='/tags'||path==='/tags/')view='tags';
   else if(t){try{id=decodeURIComponent(t[1]);view='tag';}catch{view='tags';}}
   const b=params.get('bookmark')||params.get('color')||(view==='bookmarks'?'any':'all');
-  const requestedBookmark=colorIds.has(b)||b==='any'||b==='all'?b:view==='bookmarks'?'any':'all';
+  const requestedBookmark=isBookmarkCategoryId(b)||b==='any'||b==='all'?b:view==='bookmarks'?'any':'all';
   const bookmark=view==='bookmarks'&&requestedBookmark==='all'?'any':requestedBookmark;
   const n=Number(params.get('page')||1);const page=Number.isFinite(n)?Math.max(1,Math.floor(n)):1;
   return {view,id,tags,bookmark,page,mode:params.get('mode')==='scroll'?'scroll':'paged',sort:['oldest','newest','accuracy'].includes(params.get('sort'))?params.get('sort'):'newest',tagMode:params.get('tagMode')==='or'?'or':'auto',query:(params.get('q')||'').slice(0,10000),searchMode:params.get('searchMode')==='keyword'?'keyword':'recommend',excludedTags:[...new Set(params.getAll('exclude'))]};

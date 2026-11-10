@@ -27,7 +27,7 @@ async function boot(hash='',reviews={},mode='paged',savedMemory=null) {
  const localStorage={getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,String(v))};
  const env={...writerEnv,createWriterTools:options=>writerEnv.createWriterTools({...options,download:(...args)=>downloads.push(args)}),...referenceSearch,...semanticSearch,document,location,window,history,localStorage,navigator:{},fetch:async path=>writerEnv.writerFixtureResponse(path)||({ok:true,json:async()=>structuredClone(data)}),...core, ...tagGroups, ...localText, ...sidebar, ...localSources};
  const AsyncFunction=Object.getPrototypeOf(async function(){}).constructor;
- const run=new AsyncFunction(...Object.keys(env),source+'\nreturn {state,writerTools,render,toggleTag,saveReview,filteredQuestions,updateListResults,showBookmarkPalette,selectBookmarkColor,changeListMode,resetListPage};');
+ const run=new AsyncFunction(...Object.keys(env),source+'\nreturn {state,writerTools,bookmarkStore:typeof bookmarkStore==="undefined"?null:bookmarkStore,bookmarkManager:typeof bookmarkManager==="undefined"?null:bookmarkManager,render,toggleTag,saveReview,filteredQuestions,updateListResults,showBookmarkPalette,selectBookmarkColor,changeListMode,resetListPage};');
  const app=await run(...Object.values(env));
  return {app,elements,location,memory,events,downloads};
 }
@@ -75,9 +75,9 @@ test('color-specific bookmark page excludes unmarked and differently colored que
  const {elements}=await boot('#/bookmarks?bookmark=blue',{'2701':{bookmark:true},'2702':{bookmarkColors:['blue']},'2703':{bookmarkColors:['red','blue']}});
  const html=elements.get('#question-list').innerHTML;assert.equal(rowCount(html),2);assert.match(html,/2702/);assert.match(html,/2703/);assert.doesNotMatch(html,/assets\/thumbs\/2701.webp/);
 });
-test('palette has seven choices and color changes save without losing notes',async()=>{
+test('palette starts with three choices and changes save without losing notes',async()=>{
  const {app,elements,memory}=await boot('#/question/2701',{'2701':{bookmark:true,note:'유지',status:'done'}});
- app.showBookmarkPalette('2701');assert.equal((elements.get('#bookmark-palette').innerHTML.match(/data-bookmark-color=/g)||[]).length,7);assert.equal(elements.get('#bookmark-dialog').open,true);
+ app.showBookmarkPalette('2701');assert.equal((elements.get('#bookmark-palette').innerHTML.match(/data-bookmark-color=/g)||[]).length,3);assert.equal(elements.get('#bookmark-dialog').open,true);
  app.selectBookmarkColor('blue');assert.deepEqual(core.bookmarkColors(app.state.reviews['2701']),['red','blue']);assert.equal(app.state.reviews['2701'].note,'유지');
  app.selectBookmarkColor(null,true);assert.equal(app.state.reviews['2701'].bookmark,false);assert.equal(app.state.reviews['2701'].status,'done');assert.equal(JSON.parse(memory.get('leet-atlas:2027:reviews:v1')).reviews['2701'].note,'유지');
 });
@@ -118,4 +118,25 @@ test('changing view mode restores keyboard focus after replacing the controls',a
 });
 test('year tag bundle explains its assignment rather than showing missing reasons',async()=>{
  const year=data.taxonomy.find(t=>t.axis==='year');const {elements}=await boot('#/tags/'+year.id);assert.doesNotMatch(elements.get('#question-list').innerHTML,/부여 이유가 아직 기록되지/);
+});
+
+test('renamed and added categories persist, filter custom marks, and survive backup restore',async()=>{
+ const first=await boot('#/question/2701',{'2701':{bookmark:true,note:'메모 보존'}});
+ first.app.bookmarkStore.rename('red','검토 대상');
+ const added=first.app.bookmarkStore.add('변형 후보');
+ first.app.showBookmarkPalette('2701');first.app.selectBookmarkColor(added.id);
+ assert.match(first.elements.get('#bookmark-palette').innerHTML,/검토 대상/);assert.match(first.elements.get('#bookmark-palette').innerHTML,/변형 후보/);
+ const reopened=await boot('#/bookmarks?bookmark='+added.id,{},'paged',first.memory);
+ assert.equal(rowCount(reopened.elements.get('#question-list').innerHTML),1);assert.equal(reopened.app.state.reviews['2701'].note,'메모 보존');
+ assert.ok(reopened.app.bookmarkStore.state.some(c=>c.id===added.id&&c.label==='변형 후보'));
+ reopened.app.writerTools.handleClick({dataset:{writerBackup:''},hasAttribute:key=>key==='data-writer-backup'});
+ const payload=reopened.downloads.at(-1)[1];const backup=JSON.parse(payload);assert.ok(backup.bookmarkCategories.some(c=>c.label==='검토 대상'));
+ const restored=await boot('#/bookmarks');await restored.app.writerTools.restoreFile({size:Buffer.byteLength(payload),text:async()=>payload});
+ const again=await boot('#/bookmarks?bookmark='+added.id,{},'paged',restored.memory);
+ assert.equal(rowCount(again.elements.get('#question-list').innerHTML),1);assert.equal(again.app.bookmarkStore.state.find(c=>c.id===added.id).label,'변형 후보');
+});
+
+test('used legacy categories remain recoverable while unused colors leave the palette',async()=>{
+ const {app,elements}=await boot('#/question/2701',{'2701':{bookmarkColors:['violet'],note:'이전 보라'}});app.showBookmarkPalette('2701');
+ const html=elements.get('#bookmark-palette').innerHTML;assert.equal((html.match(/data-bookmark-color=/g)||[]).length,4);assert.match(html,/data-bookmark-color="violet"/);assert.doesNotMatch(html,/data-bookmark-color="orange"/);assert.equal(app.state.reviews['2701'].note,'이전 보라');
 });

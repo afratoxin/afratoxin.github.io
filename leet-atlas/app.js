@@ -1,5 +1,7 @@
-import {createWriterTools} from './writer-tools.mjs?v=20261031-author-db2';
-import { BOOKMARK_COLORS, bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261031-author-db1';
+import {createWriterTools} from './writer-tools.mjs?v=20261110-bookmarks1';
+import { bookmarkColors, normalizeReviews, toggleBookmarkColor, tagFilterGroups, filterQuestions, keywordSearchScore, paginateQuestions, parseRoute, buildRoute, createImageBundleStore } from './core.mjs?v=20261110-bookmarks1';
+import {BOOKMARK_CATEGORIES_KEY,createBookmarkCategoryStore} from './bookmark-categories.mjs?v=20261110-bookmarks1';
+import {createBookmarkManager} from './bookmark-manager.mjs?v=20261110-bookmarks1';
 import { groupTags } from './tag-groups.mjs?v=20261026-general-search4';
 import { renderSidebar } from './sidebar.mjs?v=20261026-general-search4';
 import { parseLocalSourcePack, loadLocalSources, saveLocalSources } from './local-sources.mjs?v=20261026-general-search4';
@@ -11,13 +13,13 @@ import { buildDesignProfile } from './design-profile.mjs?v=20261031-author-db1';
 import { questionLabel } from './question-label.mjs?v=20261031-author-db1';
 import { answerInfo, answerHistoryMarkup } from './answer-notes.mjs?v=20261031-author-db1';
 import { contentImageMarkup, applyContentBounds, preparePrintImages } from './source-image.mjs?v=20261031-author-db1';
-import {RESEARCH_KEY,createResearchStore,parseResearchBackup,researchBackup,mergeResearch,relatedQuestions} from './research-store.mjs?v=20261031-author-db1';
+import {RESEARCH_KEY,createResearchStore,parseResearchBackup,researchBackup,mergeResearch,relatedQuestions} from './research-store.mjs?v=20261110-bookmarks1';
 import {researchWorkspaceMarkup,selectionMarkdown,printableSelection} from './research-workspace.mjs?v=20261031-author-db1';
 
 const STORAGE_KEY = 'leet-atlas:2027:reviews:v1';
 const SIZE_KEY = 'leet-atlas:reading-size';
 const VIEW_KEY = 'leet-atlas:list-mode';
-const CACHE_VERSION = '20261031-author-db1';
+const CACHE_VERSION = '20261110-bookmarks1';
 const imageBundles = createImageBundleStore(path => fetch(path), { version: CACHE_VERSION });
 let imageHydrationVersion = 0;
 let visibleImageQuestions = [];
@@ -53,6 +55,8 @@ let semanticStatusSequence = 0;
 let semanticTimer;
 let researchStore;
 let writerTools;
+let bookmarkStore;
+let bookmarkManager;
 let writerDialogAction;
 let yearAxisX='readingChars',yearAxisY='processingRate';
 Object.assign(state,{imageBounds:{},answerRegistry:{records:[]},selectedIds:new Set(),searchIntent:null,searchMessage:'',sourceFit:'whole'});
@@ -345,13 +349,15 @@ function reviewBadge(id) {
   const status = state.reviews[id]?.status;
   return status === 'done' ? '<span class="review-status done"><i class="review-dot"></i>검수 완료</span>' : status === 'check' ? '<span class="review-status check"><i class="review-dot"></i>재검토</span>' : '';
 }
+function bookmarkCategories(){return bookmarkStore?.state||[];}
+function bookmarkCategory(id){return bookmarkCategories().find(category=>category.id===id);}
 function colorDots(colors) {
-  return colors.map(id => { const color = BOOKMARK_COLORS.find(item => item.id === id); return color ? `<i class="bookmark-dot" style="--bookmark-color:${esc(color.hex)}" title="${esc(color.label)}"></i>` : ''; }).join('');
+  return colors.map(id => { const color = bookmarkCategory(id); return color ? `<i class="bookmark-dot" style="--bookmark-color:${esc(color.hex)}" title="${esc(color.label)}"></i>` : ''; }).join('');
 }
 function bookmarkButton(id, compact = false) {
   const colors = bookmarkColors(state.reviews[id]);
-  const labels = colors.map(id => BOOKMARK_COLORS.find(color => color.id === id)?.label).filter(Boolean).join(', ');
-  return `<button type="button" class="${compact ? 'bookmark-trigger compact' : 'button button-quiet bookmark-trigger'}${colors.length ? ' is-active' : ''}" data-bookmark="${esc(id)}" aria-haspopup="dialog" aria-label="${esc(questionLabel(state.questions.get(id)||{id}))} 북마크 색 선택${labels ? ` · ${esc(labels)}` : ''}">${icon('bookmark', colors.length > 0)}${colors.length ? `<span class="bookmark-dots" aria-hidden="true">${colorDots(colors)}</span>` : ''}${compact ? '' : `<span>${colors.length ? '북마크 색' : '북마크'}</span>`}</button>`;
+  const labels = colors.map(id => bookmarkCategory(id)?.label).filter(Boolean).join(', ');
+  return `<button type="button" class="${compact ? 'bookmark-trigger compact' : 'button button-quiet bookmark-trigger'}${colors.length ? ' is-active' : ''}" data-bookmark="${esc(id)}" aria-haspopup="dialog" aria-label="${esc(questionLabel(state.questions.get(id)||{id}))} 북마크 선택${labels ? ` · ${esc(labels)}` : ''}">${icon('bookmark', colors.length > 0)}${colors.length ? `<span class="bookmark-dots" aria-hidden="true">${colorDots(colors)}</span>` : ''}${compact ? '' : '<span>북마크</span>'}</button>`;
 }
 function navigate(route, focus) {
   hideTooltip();
@@ -430,7 +436,7 @@ function bookmarkCount(color) {
 }
 function colorFilters() {
   const selected = state.route.bookmark || (state.route.view === 'bookmarks' ? 'any' : 'all');
-  return `<div class="color-filters" role="group" aria-label="북마크 색 필터">${state.route.view !== 'bookmarks' ? `<button type="button" class="color-filter${selected === 'all' ? ' is-active' : ''}" data-bookmark-filter="all" aria-pressed="${selected === 'all'}">전체 문항</button>` : ''}<button type="button" class="color-filter${selected === 'any' ? ' is-active' : ''}" data-bookmark-filter="any" aria-pressed="${selected === 'any'}">${icon('bookmark')} 모든 북마크 <span>${bookmarkCount('any')}</span></button>${BOOKMARK_COLORS.map(color => `<button type="button" class="color-filter${selected === color.id ? ' is-active' : ''}" data-bookmark-filter="${color.id}" aria-pressed="${selected === color.id}"><i class="bookmark-dot" style="--bookmark-color:${esc(color.hex)}" aria-hidden="true"></i>${esc(color.label)} <span>${bookmarkCount(color.id)}</span></button>`).join('')}</div>`;
+  return `<div class="color-filters" role="group" aria-label="북마크 분류 필터">${state.route.view !== 'bookmarks' ? `<button type="button" class="color-filter${selected === 'all' ? ' is-active' : ''}" data-bookmark-filter="all" aria-pressed="${selected === 'all'}">전체 문항</button>` : ''}<button type="button" class="color-filter${selected === 'any' ? ' is-active' : ''}" data-bookmark-filter="any" aria-pressed="${selected === 'any'}">${icon('bookmark')} 모든 북마크 <span>${bookmarkCount('any')}</span></button>${bookmarkCategories().map(category => `<button type="button" class="color-filter${selected === category.id ? ' is-active' : ''}" data-bookmark-filter="${category.id}" aria-pressed="${selected === category.id}"><i class="bookmark-dot" style="--bookmark-color:${esc(category.hex)}" aria-hidden="true"></i>${esc(category.label)} <span>${bookmarkCount(category.id)}</span></button>`).join('')}<button type="button" class="button-text bookmark-manage-inline" data-manage-bookmarks>종류 관리</button></div>`;
 }
 function selectedFilterChips() {
   const tags = effectiveTags();
@@ -818,15 +824,15 @@ function renderBookmarkPalette() {
   const question = state.questions.get(state.paletteQuestionId);
   if (!question) return;
   const colors = bookmarkColors(state.reviews[question.id]);
-  document.querySelector('#bookmark-dialog-title').textContent = `${question.id} · 북마크 색 선택`;
-  document.querySelector('#bookmark-palette').innerHTML = BOOKMARK_COLORS.map(color => `<button type="button" class="palette-color${colors.includes(color.id) ? ' is-active' : ''}" data-bookmark-color="${color.id}" aria-pressed="${colors.includes(color.id)}"><span class="palette-swatch" style="--bookmark-color:${esc(color.hex)}" aria-hidden="true"></span><strong>${esc(color.label)}</strong><span class="palette-check" aria-hidden="true">${colors.includes(color.id) ? '✓' : '+'}</span></button>`).join('');
+  document.querySelector('#bookmark-dialog-title').textContent = `${questionLabel(question)} · 북마크 선택`;
+  document.querySelector('#bookmark-palette').innerHTML = bookmarkCategories().map(category => `<button type="button" class="palette-color${colors.includes(category.id) ? ' is-active' : ''}" data-bookmark-color="${category.id}" aria-pressed="${colors.includes(category.id)}"><span class="palette-swatch" style="--bookmark-color:${esc(category.hex)}" aria-hidden="true"></span><strong>${esc(category.label)}</strong><span class="palette-check" aria-hidden="true">${colors.includes(category.id) ? '✓' : '+'}</span></button>`).join('');
   document.querySelector('#palette-all-link').href = buildRoute({ view: 'bookmarks', mode: state.route.mode || state.modePreference, sort: state.route.sort });
 }
 function showBookmarkPalette(id) {
   if (!state.questions.has(id)) return;
   state.paletteQuestionId = id;
   renderBookmarkPalette();
-  document.querySelector('#bookmark-palette-status').textContent = '색을 선택하면 바로 저장됩니다.';
+  document.querySelector('#bookmark-palette-status').textContent = '종류를 선택하면 바로 저장됩니다.';
   bookmarkDialog.showModal();
 }
 function closeBookmarkPalette() {
@@ -842,8 +848,8 @@ function selectBookmarkColor(color, clear = false) {
   saveReview(id, next);
   refreshBookmarkUI();
   renderBookmarkPalette();
-  const labels = bookmarkColors(state.reviews[id]).map(id => BOOKMARK_COLORS.find(item => item.id === id)?.label).join(', ');
-  document.querySelector('#bookmark-palette-status').textContent = state.storageFailed ? '브라우저 저장 실패 · 검수 기록을 내보내 주세요.' : labels ? `${labels} 북마크를 저장했습니다.` : '이 문항의 북마크 색을 모두 해제했습니다.';
+  const labels = bookmarkColors(state.reviews[id]).map(id => bookmarkCategory(id)?.label).filter(Boolean).join(', ');
+  document.querySelector('#bookmark-palette-status').textContent = state.storageFailed ? '브라우저 저장 실패 · 검수 기록을 내보내 주세요.' : labels ? `${labels} 북마크를 저장했습니다.` : '이 문항의 북마크를 모두 해제했습니다.';
   if (!clear) [...document.querySelectorAll('[data-bookmark-color]')].find(button => button.dataset.bookmarkColor === color)?.focus({ preventScroll: true });
 }
 function resetListPage() {
@@ -912,7 +918,7 @@ function handleWriterClick(button){
  return writerTools?.handleClick(button)||false;
 }
 function exportReviews() {
-  const payload = { schemaVersion: 2, app: 'LEET Atlas', examKeys: state.data.exams?.map(exam => exam.key) || [...new Set(state.data.questions.map(question => question.examKey || String(question.year)))], exportedAt: new Date().toISOString(), reviews: state.reviews };
+  const payload = { schemaVersion: 2, app: 'LEET Atlas', examKeys: state.data.exams?.map(exam => exam.key) || [...new Set(state.data.questions.map(question => question.examKey || String(question.year)))], exportedAt: new Date().toISOString(), reviews: state.reviews, bookmarkCategories: bookmarkCategories() };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -955,7 +961,8 @@ window.addEventListener('hashchange', render);
 window.addEventListener('resize', hideTooltip);
 document.addEventListener('scroll', hideTooltip, { passive: true, capture: true });
 window.addEventListener('storage', event => {
-  if (event.key === STORAGE_KEY) { loadReviews(); render(); }
+  if (event.key === STORAGE_KEY) { loadReviews();bookmarkStore?.sync(state.reviews);render(); }
+  if (event.key === BOOKMARK_CATEGORIES_KEY && bookmarkStore) {bookmarkStore.sync(state.reviews);render();bookmarkManager?.render();if(bookmarkStore.error)showToast(bookmarkStore.error);}
   if (event.key === RESEARCH_KEY && researchStore) {researchStore.sync();if(state.route.view==='workspace')writerTools.renderPage();writerTools.renderSelection();if(researchStore.error)showToast(researchStore.error);}
 });
 document.addEventListener('click', event => {
@@ -966,6 +973,7 @@ document.addEventListener('click', event => {
   }
   const button = event.target.closest('button');
   if (!button) return;
+  if(bookmarkManager?.handleClick(button))return;
   if(handleWriterClick(button))return;
   if (button.hasAttribute('data-retry-year-analysis')) { void loadYearContent(true); renderAnnualPage(); }
   else if (button.hasAttribute('data-filter-tag')) toggleTag(button.dataset.filterTag);
@@ -979,6 +987,7 @@ document.addEventListener('click', event => {
   else if (button.hasAttribute('data-bookmark')) showBookmarkPalette(button.dataset.bookmark);
   else if (button.hasAttribute('data-bookmark-color')) selectBookmarkColor(button.dataset.bookmarkColor);
   else if (button.hasAttribute('data-clear-bookmarks')) selectBookmarkColor(null, true);
+  else if (button.hasAttribute('data-manage-bookmarks')) {if(bookmarkDialog.open)bookmarkDialog.close();bookmarkManager?.open(button);}
   else if (button.hasAttribute('data-bookmark-filter')) navigate(listRoute({ bookmark: button.dataset.bookmarkFilter, page: 1 }), { color: button.dataset.bookmarkFilter });
   else if (button.hasAttribute('data-list-page')) navigate(listRoute({ page: Number(button.dataset.listPage) }), { main: true });
   else if (button.hasAttribute('data-list-mode')) changeListMode(button.dataset.listMode);
@@ -1039,7 +1048,7 @@ document.addEventListener('input', event => {
     if (hint) hint.textContent = saved ? '저장됨 · 이 브라우저에 보관' : '저장 실패 · 기록을 내보내 주세요';
   }
 });
-document.addEventListener('submit',event=>writerTools?.handleSubmit(event));
+document.addEventListener('submit',event=>{if(bookmarkManager?.handleSubmit(event))return;writerTools?.handleSubmit(event);});
 document.addEventListener('change', event => {
   writerTools?.handleChange(event);
   if(event.target.id==='writer-tag-mode')navigate(listRoute({tagMode:event.target.value}));
@@ -1110,14 +1119,17 @@ try {
   if(metadata[0].status==='fulfilled')state.imageBounds=metadata[0].value.items||{};
   if(metadata[1].status==='fulfilled')state.answerRegistry=metadata[1].value;
   let writerStorage;try{writerStorage=localStorage;}catch{}
+  bookmarkStore=createBookmarkCategoryStore(writerStorage,state.reviews);
+  bookmarkManager=createBookmarkManager({store:bookmarkStore,document,getReviews:()=>state.reviews,toast:showToast,onChange:()=>{render();if(bookmarkDialog.open)renderBookmarkPalette();}});
   researchStore=createResearchStore(writerStorage,new Set(state.questions.keys()));
   writerTools=createWriterTools({document,state,store:researchStore,main,toast:showToast,navigate,filteredQuestions,saveReview,
+    getBookmarkCategories:()=>bookmarkStore.state,restoreBookmarkCategories:categories=>bookmarkStore.merge(categories,state.reviews),
     getImage:imageFor,ensureImages:questions=>preparePrintImages(questions,{imageFor,load:async items=>{await Promise.all(items.filter(usesImageBundle).map(q=>imageBundles.load(q)));}}),
-    restoreReviews:reviews=>{state.reviews=normalizeReviews({...state.reviews,...reviews});try{localStorage.setItem(STORAGE_KEY,JSON.stringify({schemaVersion:2,reviews:state.reviews}));state.storageFailed=false;return true;}catch{state.storageFailed=true;return false;}},
+    restoreReviews:reviews=>{state.reviews=normalizeReviews({...state.reviews,...reviews});bookmarkStore.sync(state.reviews);try{localStorage.setItem(STORAGE_KEY,JSON.stringify({schemaVersion:2,reviews:state.reviews}));state.storageFailed=false;return true;}catch{state.storageFailed=true;return false;}},
     runSearch:search=>{cancelSemanticSearch();state.query=search.query;state.searchMode=search.mode;state.searchDrafts[search.mode]=search.query;state.searchQueries[search.mode]=search.query;state.searchDirty=false;state.searchSort='relevance';navigate({view:'list',query:search.query,searchMode:search.mode,tags:search.tags.filter(id=>state.taxonomy.has(id)),excludedTags:search.excludedTags.filter(id=>state.taxonomy.has(id)),tagMode:search.tagMode});if(search.mode==='recommend'&&search.query)scheduleSemanticSearch();},
     copySearch:()=>{const hash=buildRoute({...listRoute(),query:state.query,searchMode:state.searchMode});const url=new URL(location.href);url.hash=hash.slice(1);navigator.clipboard?.writeText(url.href).then(()=>showToast('검색 조건 주소를 복사했습니다.')).catch(()=>showToast('주소창의 검색 주소를 복사해 주세요.'));}
   });
-  if(researchStore.error)showToast(researchStore.error);
+  if(bookmarkStore.error||researchStore.error)showToast(bookmarkStore.error||researchStore.error);
   try { state.localTexts = loadLocalTexts(localStorage, state.data.questions); }
   catch { state.localTexts = new Map(); }
   try { state.localSources = await loadLocalSources(sourceStorage(), state.data.questions, {strict:true}); }

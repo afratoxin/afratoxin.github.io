@@ -8,6 +8,8 @@ export * from '../design-profile.mjs';
 export * from '../reference-search.mjs';
 export * from '../semantic-search.mjs';
 export * from '../year-analysis.mjs';
+export * from '../bookmark-categories.mjs';
+export * from '../bookmark-manager.mjs';
 
 // These unrelated assets must never receive a question archive as mock data.
 export function writerFixtureResponse(path) {

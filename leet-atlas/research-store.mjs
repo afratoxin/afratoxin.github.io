@@ -1,3 +1,5 @@
+import {validateBookmarkCategories} from './bookmark-categories.mjs';
+
 export const RESEARCH_KEY='leet-atlas:research:v1';
 export function emptyResearch(){return {schemaVersion:1,sets:[],compareIds:[],savedSearches:[],issues:[]};}
 const text=(value,max=20000)=>typeof value==='string'?value.slice(0,max):'';
@@ -45,6 +47,7 @@ export function parseResearchBackup(input,questionIds){
  if(!data||typeof data!=='object'||Array.isArray(data))throw new Error('DB 백업 JSON을 확인해 주세요.');
  const legacy=data.app==='LEET Atlas'&&[1,2].includes(data.schemaVersion);
  if(!legacy&&(data.kind!=='leet-writer-backup'||data.schemaVersion!==1))throw new Error('LEET Atlas 출제 자료 백업이 아닙니다.');
+ const categories=Object.hasOwn(data,'bookmarkCategories')?{bookmarkCategories:validateBookmarkCategories(data.bookmarkCategories)}:{};
  const research=cleanState(legacy?{}:data.research,questionIds),reviews={};
  if(data.reviews!==undefined&&(!data.reviews||typeof data.reviews!=='object'||Array.isArray(data.reviews)))throw new Error('검수 기록 형식을 확인해 주세요.');
  for(const [id,value] of Object.entries(data.reviews||{})){
@@ -52,9 +55,12 @@ export function parseResearchBackup(input,questionIds){
   reviews[id]={...value,note:text(value.note),status:['done','check','unreviewed'].includes(value.status)?value.status:'unreviewed'};
   if(value.designReview!==undefined)reviews[id].designReview=cleanDesignReview(value.designReview);
  }
- return {research,reviews};
+ return {research,reviews,...categories};
 }
-export function researchBackup(research,reviews){return JSON.stringify({kind:'leet-writer-backup',schemaVersion:1,exportedAt:new Date().toISOString(),research,reviews},null,2);}
+export function researchBackup(research,reviews,bookmarkCategories){
+ const categories=bookmarkCategories===undefined?{}:{bookmarkCategories:validateBookmarkCategories(bookmarkCategories)};
+ return JSON.stringify({kind:'leet-writer-backup',schemaVersion:1,exportedAt:new Date().toISOString(),research,reviews,...categories},null,2);
+}
 export function mergeResearch(existing,incoming){
  const merge=key=>[...new Map([...existing[key],...incoming[key]].map(value=>[value.id,value])).values()];
  return {...existing,sets:merge('sets'),savedSearches:merge('savedSearches'),issues:merge('issues'),compareIds:incoming.compareIds.length?incoming.compareIds:existing.compareIds};

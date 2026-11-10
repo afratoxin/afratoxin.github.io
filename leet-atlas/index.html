@@ -8,8 +8,8 @@
   <title>LEET Atlas · 추리논증 전체 아카이브</title>
   <link rel="stylesheet" href="styles.css?v=20261031-author-db1">
   <link rel="stylesheet" href="year-plane.css?v=20261031-author-db1">
-  <link rel="stylesheet" href="writer-ui.css?v=20261031-author-db1">
-  <script type="module" src="app.js?v=20261031-author-db2"></script>
+  <link rel="stylesheet" href="writer-ui.css?v=20261110-bookmarks1">
+  <script type="module" src="app.js?v=20261110-bookmarks1"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
@@ -38,11 +38,12 @@
     <div class="dialog-image-wrap"><div id="image-dialog-status" hidden></div><span id="enlarged-image-frame"><img id="enlarged-image" alt="" hidden></span></div>
   </dialog>
   <dialog id="writer-dialog" class="writer-dialog" aria-labelledby="writer-dialog-title"></dialog>
+  <dialog id="bookmark-manager" class="bookmark-manager" aria-labelledby="bookmark-manager-title"></dialog>
   <div id="writer-selection-bar" class="writer-selection-bar" hidden></div>
   <dialog id="bookmark-dialog" class="bookmark-dialog" aria-labelledby="bookmark-dialog-title">
-    <div class="bookmark-dialog-heading"><div><strong id="bookmark-dialog-title">북마크 색 선택</strong><p>한 문항에 여러 색을 함께 붙일 수 있습니다.</p></div><button class="icon-button" id="close-bookmarks" type="button" aria-label="북마크 색 선택 닫기">✕</button></div>
+    <div class="bookmark-dialog-heading"><div><strong id="bookmark-dialog-title">북마크 선택</strong><p>한 문항을 여러 종류에 함께 담을 수 있습니다.</p></div><button class="icon-button" id="close-bookmarks" type="button" aria-label="북마크 선택 닫기">✕</button></div>
     <div id="bookmark-palette" class="bookmark-palette"></div>
-    <div class="bookmark-dialog-footer"><button class="button-text" type="button" data-clear-bookmarks>이 문항의 모든 색 해제</button><a href="#/bookmarks" id="palette-all-link" class="button button-sage">모든 북마크 보기</a></div>
+    <div class="bookmark-dialog-footer"><button class="button-text" type="button" data-clear-bookmarks>이 문항의 북마크 해제</button><button class="button button-quiet" type="button" data-manage-bookmarks>북마크 관리</button><a href="#/bookmarks" id="palette-all-link" class="button button-sage">모든 북마크 보기</a></div>
     <p id="bookmark-palette-status" class="palette-status" role="status" aria-live="polite"></p>
   </dialog>
   <noscript><p class="error-state">문항 목록과 해설을 보려면 자바스크립트를 켜 주세요.</p></noscript>

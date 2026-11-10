@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {parseResearchBackup,relatedQuestions,createResearchStore,RESEARCH_KEY} from '../research-store.mjs';
+import {parseResearchBackup,researchBackup,emptyResearch,relatedQuestions,createResearchStore,RESEARCH_KEY} from '../research-store.mjs';
 const ids=new Set(['a','b','c']);
+const customBookmark='bm_12345678-1234-4234-8234-123456789abc';
 test('research backup restores named sets, saved search exclusions and existing review records',()=>{
  const input={kind:'leet-writer-backup',schemaVersion:1,research:{schemaVersion:1,sets:[{id:'s',name:'법률 계산 제외',ids:['a','b'],notes:'대조'}],compareIds:['b'],savedSearches:[{id:'f',name:'재사용',query:'법률 계산 제외',mode:'recommend',tags:[],excludedTags:['t']}],issues:[]},reviews:{a:{status:'check',note:'경계 확인',colors:['red']}}};
  const result=parseResearchBackup(JSON.stringify(input),ids);
@@ -15,6 +16,58 @@ test('invalid or unknown references reject the entire import before any saved da
 });
 test('legacy review export is accepted as a review-only backup',()=>{
  assert.equal(parseResearchBackup(JSON.stringify({app:'LEET Atlas',schemaVersion:2,reviews:{a:{note:'기존'}}}),ids).reviews.a.note,'기존');
+});
+
+test('writer backup roundtrips renamed and custom bookmark categories with their existing review references',()=>{
+ const research=emptyResearch(),reviews={a:{bookmarkColors:['red',customBookmark],note:'두 분류 모두 유지',status:'check'}};
+ const categories=[{id:'red',label:' 다시 출제할 문항 ',hex:'#AABBCC'},{id:customBookmark,label:'논증 경계',hex:'#123456'}];
+ const snapshot=structuredClone({research,reviews,categories});
+ const serialized=researchBackup(research,reviews,categories);
+ const restored=parseResearchBackup(serialized,ids);
+ assert.deepEqual(restored.bookmarkCategories,[{id:'red',label:'다시 출제할 문항',hex:'#aabbcc'},{id:customBookmark,label:'논증 경계',hex:'#123456'}]);
+ assert.deepEqual(restored.reviews.a.bookmarkColors,['red',customBookmark]);
+ assert.equal(restored.reviews.a.note,'두 분류 모두 유지');
+ assert.deepEqual({research,reviews,categories},snapshot,'backup validation does not mutate the caller');
+});
+
+test('the original two-argument backup payload and legacy backups omit optional category settings',()=>{
+ const research=emptyResearch(),reviews={a:{note:'기존 메모'}};
+ const oldPayload=JSON.parse(researchBackup(research,reviews));
+ assert.deepEqual(Object.keys(oldPayload),['kind','schemaVersion','exportedAt','research','reviews']);
+ assert.deepEqual(oldPayload.research,research);assert.deepEqual(oldPayload.reviews,reviews);
+ assert.equal(Object.hasOwn(parseResearchBackup(JSON.stringify(oldPayload),ids),'bookmarkCategories'),false);
+ for(const schemaVersion of [1,2]){
+  const restored=parseResearchBackup(JSON.stringify({app:'LEET Atlas',schemaVersion,reviews}),ids);
+  assert.equal(restored.reviews.a.note,'기존 메모');
+  assert.equal(Object.hasOwn(restored,'bookmarkCategories'),false);
+ }
+});
+
+test('legacy review-only exports accept valid optional category settings',()=>{
+ const categories=[{id:customBookmark,label:'직접 만든 분류',hex:'#123456'}];
+ for(const schemaVersion of [1,2]){
+  const restored=parseResearchBackup(JSON.stringify({app:'LEET Atlas',schemaVersion,reviews:{a:{bookmarkColors:[customBookmark]}},bookmarkCategories:categories}),ids);
+  assert.deepEqual(restored.bookmarkCategories,categories);
+  assert.deepEqual(restored.reviews.a.bookmarkColors,[customBookmark]);
+ }
+});
+
+test('invalid bookmark configurations reject the whole backup before a restore candidate is available',()=>{
+ const valid={id:'red',label:'정상 분류',hex:'#123456'};
+ const overCapacity=Array.from({length:101},(_,i)=>({id:`bm_00000000-0000-4000-8000-${i.toString(16).padStart(12,'0')}`,label:`분류 ${i}`,hex:'#123456'}));
+ const invalid=[null,{},[null],[{...valid,id:'invented'}],[{...valid,label:' '}],[{...valid,label:42}],[{...valid,label:'가'.repeat(41)}],[{...valid,hex:'#abc'}],[{...valid,hex:'red'}],[valid,{...valid,label:'다른 이름'}],[valid,{id:customBookmark,label:valid.label,hex:'#abcdef'}],overCapacity];
+ const research=emptyResearch(),reviews={a:{note:'기존 저장 자료'}};
+ const snapshot=structuredClone({research,reviews});
+ for(const bookmarkCategories of invalid){
+  for(const identity of [{kind:'leet-writer-backup',schemaVersion:1,research},{app:'LEET Atlas',schemaVersion:1},{app:'LEET Atlas',schemaVersion:2}]){
+   let restored;
+   assert.throws(()=>{restored=parseResearchBackup(JSON.stringify({...identity,reviews,bookmarkCategories}),ids);});
+   assert.equal(restored,undefined,'invalid settings cannot reach the restore step');
+  }
+ }
+ assert.deepEqual({research,reviews},snapshot);
+ assert.throws(()=>researchBackup(research,reviews,[{...valid,hex:'url(javascript:alert(1))'}]));
+ assert.equal(parseResearchBackup(researchBackup(research,reviews,overCapacity.slice(0,100)),ids).bookmarkCategories.length,100,'the supported 100-category boundary remains usable');
 });
 test('imported manual design reviews reject nonnumeric or out-of-range attributes',()=>{
  const file=value=>JSON.stringify({kind:'leet-writer-backup',schemaVersion:1,research:{},reviews:{a:{designReview:value}}});
