@@ -60,7 +60,7 @@ window.BrainArenaCatalog = {
       "title": "네모 세기",
       "description": "방송에서 나온 판과 새로운 구성을 무작위로 만나세요. 타깃 합을 만드는 네모를 세고, 오답 후 10초 뒤 다시 도전합니다.",
       "tag": "1인 연습 · 방송 문제 포함 / 무작위 출제",
-      "href": "../rectangle-count/?v=20261113-devils"
+      "href": "../rectangle-count/?v=20261113-time"
     },
     {
       "id": "formula-death-note",
