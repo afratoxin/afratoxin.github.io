@@ -1,4 +1,4 @@
-// Add every new game here with one of the five category IDs.
+// Register new games here under their original show.
 window.BrainArenaCatalog = {
   "categories": [
     {
@@ -117,6 +117,30 @@ window.BrainArenaCatalog = {
       "description": "3D 미로 속 물음표는 지도 위의 어디일까요? 벽과 갈림길을 비교해 현재 위치의 좌표를 찾아내세요.",
       "tag": "혼자 플레이 · 피의 게임 2 / 2개 지도 · 6문제",
       "href": "../maze-code/"
+    },
+    {
+      "id": "same-picture",
+      "title": "같은그림찾기",
+      "description": "숨겨진 16개 그림의 위치를 기억하세요. 같은 그림을 찾아 전진하고, 컨베이어의 끝까지 도달합니다.",
+      "tag": "1인 연습 · 그림 기억 / 컨베이어",
+      "category": "genius",
+      "href": "../same-picture/"
+    },
+    {
+      "id": "same-number",
+      "title": "같은숫자찾기",
+      "description": "1~12와 사칙연산의 위치를 5초 동안 기억하세요. 버저 후 알파벳 세 개로 타깃 수식을 만듭니다.",
+      "tag": "1인 연습 · 5초 암기 / 10문제",
+      "category": "genius",
+      "href": "../same-number/"
+    },
+    {
+      "id": "gyul-hap",
+      "title": "결! 합!",
+      "description": "모양·배경색·도형색이 각각 모두 같거나 모두 다른 세 장을 찾으세요. 남은 합이 없다면 결!",
+      "tag": "1인 연습 · 속성 추론 / 10라운드",
+      "category": "genius",
+      "href": "../gyul-hap/"
     }
   ]
 };

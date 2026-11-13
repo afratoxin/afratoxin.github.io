@@ -11,3 +11,5 @@ All new games must be registered in `brain-arena/catalog.js` under the correct s
 Use the original show's category even when adapting a game for solo play or adding variants. Use original only for newly invented games. Verify uncertain origins before assigning a category.
 
 Each game needs a unique `id`, valid `category`, `title`, `description`, `tag`, and relative `href`. Add games to the catalog instead of inserting flat tiles into index.html. Folder counts and game lists derive from this catalog. Preserve empty folders for future games. Preserve existing game URLs. Check all catalog entries have a valid category and no duplicates; verify folder navigation and direct game links after changes.
+
+All game header BRAIN ARENA logos must link to `/brain-arena/` (the version query may be updated to refresh an older cached hub). Do not use a non-link text logo. Keep static folder markup in index.html synchronized with the catalog as an immediate loading fallback.

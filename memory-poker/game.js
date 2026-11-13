@@ -24,13 +24,13 @@ function deal(rng=Math.random,target=1+Math.floor(rng()*8)){
    forced=target===7?[{r:rs[0],s:suits[2]},{r:rs[0],s:suits[3]}]:[{r:rs[0],s:suits[2]},{r:rs[1],s:suits[0]}];
   }
   const sharedRanks=new Set(shared.map(c=>c.r)),used=new Set(shared.map(key)),counts=new Map(),cards=[];
-  const limit=r=>target===1&&sharedRanks.has(r)?0:target===2&&sharedRanks.has(r)?1:target===6&&r===rs[0]?1:2;
+  const limit=r=>target===1&&sharedRanks.has(r)?0:target===2&&sharedRanks.has(r)?1:target===6&&r===rs[0]?1:4;
   function add(c){if(used.has(key(c))||(counts.get(c.r)||0)>=limit(c.r))return false;used.add(key(c));counts.set(c.r,(counts.get(c.r)||0)+1);cards.push(c);return true;}
   forced.forEach(add);
   const pool=shuffleCards(ranks.flatMap(r=>[0,1,2,3].map(s=>({r,s}))),rng);
   for(const c of pool){if(cards.length===16)break;add(c);}
-  if(cards.length!==16||counts.size<10)continue;
-  const bins=[cards.filter(c=>c.r<=5).length,cards.filter(c=>c.r>=6&&c.r<=10).length,cards.filter(c=>c.r>=11).length];if(bins.some(n=>n<3))continue;
+  if(cards.length!==16||counts.size<8)continue;
+  if(Math.max(...counts.keys())-Math.min(...counts.keys())<9)continue;
   let best=0;for(let a=0;a<16;a++)for(let b=a+1;b<16;b++)best=Math.max(best,score([...shared,cards[a],cards[b]]));
   if(Math.floor(best/15**5)!==target)continue;
   return {cards:shuffleCards(cards,rng),shared:shuffleCards(shared,rng),target};
@@ -38,8 +38,7 @@ function deal(rng=Math.random,target=1+Math.floor(rng()*8)){
  throw new Error('Could not generate a balanced poker deal');
 }
 function nextNut(queue,last,rng=Math.random){
- if(!queue.length){queue.push(...shuffleCards([1,2,3,4,5,6,7,8],rng));if(queue[queue.length-1]===last)[queue[0],queue[queue.length-1]]=[queue[queue.length-1],queue[0]];}
- return queue.pop();
+ const weights=[.06,.20,.20,.17,.13,.14,.08,.02];let draw=rng();for(let i=0;i<weights.length;i++){draw-=weights[i];if(draw<0)return i+1;}return 8;
 }
 function pipPositions(rank){
  const sides=ys=>ys.flatMap(y=>[[29,y],[71,y]]);
