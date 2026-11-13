@@ -46,7 +46,7 @@ function shape(rows,cols,type,rng){
 }
 function generate(level='normal',rng=Math.random,type='dense'){
  if(!TYPES[type])type='dense';
- const [cols,rows]=({easy:[7,5],normal:[10,6],hard:[12,7]})[level]||[10,6];
+ const sizes={dense:[[4,4],[5,4],[6,5]],fractions:[[3,3],[4,3],[4,4]],holes:[[5,4],[5,5],[6,5]],symmetry:[[5,3],[6,4],[7,5]],signed:[[3,3],[4,4],[5,4]],pattern:[[4,3],[5,4],[6,4]],classic:[[5,4],[7,4],[8,5]]}; const [cols,rows]=sizes[type][({easy:0,normal:1,hard:2})[level]??1];
  const rand=n=>Math.floor(rng()*n),unit=type==='fractions'?12:1;
  const desired=type==='classic'?{easy:[5,30],normal:[18,100],hard:[45,190]}[level]||[18,100]:{easy:[4,20],normal:[8,45],hard:[14,80]}[level]||[8,45];
  let fallback;
