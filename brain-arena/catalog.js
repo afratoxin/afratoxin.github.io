@@ -157,6 +157,78 @@ window.BrainArenaCatalog = {
       "description": "10칸에서 세 칸을 골라 수식을 완성하세요. 첫 기호는 무시하고, 곱셈과 나눗셈부터 계산합니다.",
       "tag": "1인 연습 · 데블스플랜 2 / 10라운드",
       "href": "../equation-pyramid/?v=20261113-readable"
+    },
+    {
+      "id": "match-and-mix",
+      "category": "university-war",
+      "title": "매치 앤 믹스",
+      "description": "움직이는 8개 숫자판에서 같은 숫자 두 개를 찾으세요. 빈칸으로 판을 옮긴 뒤의 위치까지 기억합니다.",
+      "tag": "1인 연습 · 시즌 1 · 40칩 / 판 이동",
+      "href": "../match-and-mix/?v=20261114-university"
+    },
+    {
+      "id": "pixel-number",
+      "category": "university-war",
+      "title": "픽셀 넘버 1",
+      "description": "3×5 픽셀 카드 15장을 머릿속에서 겹치세요. 타깃 세 개와 마지막 라운드의 숨은 숫자를 찾습니다.",
+      "tag": "1인 연습 · 시즌 1 · 겹치기 / 숨은 타깃",
+      "href": "../pixel-number/?v=20261114-university"
+    },
+    {
+      "id": "pixel-number-2",
+      "category": "university-war",
+      "title": "픽셀 넘버 2",
+      "description": "배경색별로 빨강을 합치고 파랑을 빼세요. 회색은 십의 자리, 흰색은 일의 자리가 됩니다.",
+      "tag": "1인 연습 · 시즌 2 · 픽셀 합성과 제거",
+      "href": "../pixel-number-2/?v=20261114-university"
+    },
+    {
+      "id": "area-ranking",
+      "category": "university-war",
+      "title": "면적 순위",
+      "description": "9×9 정사각형을 나눈 네 색 영역. 가장 넓은 영역부터 순서를 맞히세요.",
+      "tag": "1인 연습 · 시즌 2 · 공간 지각 / 순위",
+      "href": "../area-ranking/?v=20261114-university"
+    },
+    {
+      "id": "either-or",
+      "category": "university-war",
+      "title": "양자택일",
+      "description": "세 자리 수 다섯 개의 덧셈 두 개를 비교하세요. 더 큰 합의 정확한 값을 입력합니다.",
+      "tag": "1인 연습 · 시즌 2 · 암산 / 비교",
+      "href": "../either-or/?v=20261114-university"
+    },
+    {
+      "id": "merge-ladder",
+      "category": "university-war",
+      "title": "합체 사다리",
+      "description": "뒤섞인 세로줄 다섯 개를 머릿속에서 재조립하세요. 상단 1~5의 도착 번호를 찾습니다.",
+      "tag": "1인 연습 · 시즌 2 · 재조립 / 경로 추적",
+      "href": "../merge-ladder/?v=20261114-university"
+    },
+    {
+      "id": "trisection",
+      "category": "university-war",
+      "title": "3분할",
+      "description": "초성 카드를 남김없이 써서 세 수를 만드세요. 한자어 숫자의 초성과 타깃 합을 동시에 맞힙니다.",
+      "tag": "1인 연습 · 시즌 3 · 초성 / 숫자 조합",
+      "href": "../trisection/?v=20261114-university"
+    },
+    {
+      "id": "hidden-algorithm",
+      "category": "university-war",
+      "title": "히든 알고리즘",
+      "description": "숫자 1~4의 이동 우선순위를 찾아, 빨간 출발지에서 초록 도착지에 정확히 멈추세요.",
+      "tag": "1인 연습 · 시즌 2 · 우선순위 / 경로 추론",
+      "href": "../hidden-algorithm/?v=20261114-university"
+    },
+    {
+      "id": "weekday-equation",
+      "category": "university-war",
+      "title": "요일 수식",
+      "description": "기준 날짜로 달력을 떠올리세요. 각 요일에 맞는 날짜를 골라 수식을 성립시킵니다.",
+      "tag": "1인 연습 · 시즌 2 · 달력 추론 / 연산",
+      "href": "../weekday-equation/?v=20261114-university"
     }
   ]
 };
