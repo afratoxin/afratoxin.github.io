@@ -148,7 +148,7 @@ window.BrainArenaCatalog = {
       "title": "헥사곤",
       "description": "19칸의 숫자를 30초 동안 기억하세요. 일렬로 이어진 세 칸의 합을 타깃과 맞추고 이전 답까지 기억합니다.",
       "tag": "1인 연습 · 데블스플랜 1 / 10라운드",
-      "href": "../hexagon/?v=20261113-devils"
+      "href": "../hexagon/?v=20261113-readable"
     },
     {
       "id": "equation-pyramid",
@@ -156,7 +156,7 @@ window.BrainArenaCatalog = {
       "title": "수식 피라미드",
       "description": "10칸에서 세 칸을 골라 수식을 완성하세요. 첫 기호는 무시하고, 곱셈과 나눗셈부터 계산합니다.",
       "tag": "1인 연습 · 데블스플랜 2 / 10라운드",
-      "href": "../equation-pyramid/?v=20261113-devils"
+      "href": "../equation-pyramid/?v=20261113-readable"
     }
   ]
 };

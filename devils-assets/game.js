@@ -5,13 +5,14 @@ function key(a){return hex?[...a].sort((a,b)=>a-b).join(','):a.join(',');}
 function showBoard(){
  $('board').replaceChildren();const visible=!hex||practice||['memorize','review','ended'].includes(state);
  const cells=hex?E.hexCells():Array.from({length:10},(_,i)=>({row:i<1?0:i<3?1:i<6?2:3}));
- puzzle.board.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.className='cell'+(selected.includes(i)?' selected':'')+(visible?' open':'');b.disabled=state!=='answer';b.setAttribute('aria-pressed',selected.includes(i));
- if(hex){const c=cells[i];b.style.left=((c.q+c.r/2)*18+50)+'%';b.style.top=(c.r*16+50)+'%';b.innerHTML=`<span>${visible?v:letters[i]}</span>${visible?'<small>'+letters[i]+'</small>':''}`;b.setAttribute('aria-label',letters[i]+(visible?' '+v:' 숨겨진 숫자'));}
- else{const row=cells[i].row,col=i-[0,1,3,6][row];b.style.left=(50+(col-row/2)*23)+'%';b.style.top=(13+row*24)+'%';b.innerHTML=`<small>${letters[i]}</small><span>${v.op}${v.n}</span>`;b.setAttribute('aria-label',letters[i]+' '+v.op+v.n);}
+ puzzle.board.forEach((v,i)=>{const b=document.createElement('button');b.type='button';b.className='cell'+(!hex&&v.n>=10?' wide-number':'')+(selected.includes(i)?' selected':'')+(visible?' open':'');b.disabled=state!=='answer';b.setAttribute('aria-pressed',selected.includes(i));
+ if(hex){const c=cells[i];b.style.left=((c.q+c.r/2)*18+50)+'%';b.style.top=(c.r*15.5884572681+50)+'%';b.innerHTML=`<span>${visible?v:letters[i]}</span>${visible?'<small>'+letters[i]+'</small>':''}`;b.setAttribute('aria-label',letters[i]+(visible?' '+v:' 숨겨진 숫자'));}
+ else{const row=cells[i].row,col=i-[0,1,3,6][row];b.style.left=(50+(col-row/2)*24)+'%';b.style.top=(13+row*24)+'%';b.innerHTML=`<small>${letters[i]}</small><span>${v.op}${v.n}</span>`;b.setAttribute('aria-label',letters[i]+' '+v.op+v.n);}
  b.onclick=()=>{if(state!=='answer')return;if(Date.now()>=answerDeadline&&!practice){attempt(false,'답변 시간이 끝났습니다.');return;}if(selected.includes(i))selected=selected.filter(j=>j!==i);else if(selected.length<3)selected.push(i);showBoard();update();};$('board').append(b);
  });
 }
 function update(){
+ $('buzz').hidden=state!=='choose';$('answerControls').hidden=state!=='answer';$('selection').hidden=state!=='answer';$('giveup').hidden=!['choose','answer'].includes(state);
  $('score').textContent=score;$('round').textContent=round+' / 10';$('target').textContent=state==='memorize'||state==='idle'?'—':puzzle.target;$('selection').textContent=selected.map(i=>letters[i]).join(' → ');$('submit').disabled=state!=='answer'||selected.length!==3;$('clear').disabled=state!=='answer';$('buzz').disabled=state!=='choose';$('giveup').disabled=!['choose','answer'].includes(state);$('skipMemory').hidden=!(hex&&practice&&state==='memorize');
 }
 function status(s){$('status').textContent=s;}
