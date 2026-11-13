@@ -121,10 +121,10 @@ window.BrainArenaCatalog = {
     {
       "id": "same-picture",
       "title": "같은그림찾기",
-      "description": "비슷한 추상 무늬와 색상 변형을 구별해 위치를 기억하세요. 컨베이어에서 같은 그림을 찾고 끝까지 전진합니다.",
+      "description": "방송식 기하 문양과 색상 변형을 구별해 위치를 기억하세요. 컨베이어에서 같은 그림을 찾고 끝까지 전진합니다.",
       "tag": "1인 연습 · 그림 기억 / 컨베이어",
       "category": "genius",
-      "href": "../same-picture/?v=20261113-devils"
+      "href": "../same-picture/?v=20261114-symbols"
     },
     {
       "id": "same-number",
