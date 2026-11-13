@@ -14,7 +14,7 @@ function deal(rng=Math.random){
  const deck=[];for(let s=0;s<4;s++)for(let r=2;r<=14;r++)deck.push({r,s});shuffle(deck).forEach(add);
  return {cards:shuffle(cards),shared};
 }
-if(typeof module!=='undefined')module.exports={score,category,deal};
+if(typeof document==='undefined')module.exports={score,category,deal};
 else {
 const $=id=>document.getElementById(id),suits=['♠','♥','♦','♣'];let cards=[],shared=[],chosen=[],state='idle',deadline=0,timer;
 function label(c){return ({11:'J',12:'Q',13:'K',14:'A'}[c.r]||c.r)+suits[c.s];}
