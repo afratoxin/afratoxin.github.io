@@ -229,6 +229,46 @@ window.BrainArenaCatalog = {
       "description": "기준 날짜로 달력을 떠올리세요. 각 요일에 맞는 날짜를 골라 수식을 성립시킵니다.",
       "tag": "1인 연습 · 시즌 2 · 달력 추론 / 연산",
       "href": "../weekday-equation/?v=20261114-university"
+    },
+    {
+      "id": "triple-maze",
+      "category": "university-war",
+      "title": "삼중미로",
+      "description": "세 색의 벽 지도를 겹쳐 기억하세요. 벽이 가려진 9×9 미로에서 목적지 두 곳을 찾습니다.",
+      "tag": "1인 연습 · 시즌 2 · 공간 기억 / 경로 추론",
+      "href": "../triple-maze/?v=20261114-strategy"
+    },
+    {
+      "id": "exit-strategy-2",
+      "category": "university-war",
+      "title": "출구 전략 2",
+      "description": "끝까지 미끄러지는 말을 중앙 출구에 정확히 멈추세요. 컴퓨터보다 먼저 두 말을 탈출시킵니다.",
+      "tag": "컴퓨터 대결 · 시즌 2 · 이동 / 봉쇄",
+      "href": "../exit-strategy-2/?v=20261114-strategy"
+    },
+    {
+      "id": "sum-difference-gomoku",
+      "category": "university-war",
+      "title": "합차 오목",
+      "description": "이어진 줄 전체에서 내 돌은 더하고 상대 돌은 빼세요. 정확히 16을 만드는 수로 컴퓨터와 겨룹니다.",
+      "tag": "컴퓨터 대결 · 시즌 2 · 수 계산 / 전략",
+      "href": "../sum-difference-gomoku/?v=20261114-strategy"
+    },
+    {
+      "id": "rainbow-sequence",
+      "category": "university-war",
+      "title": "레인보우 수열",
+      "description": "일곱 색의 숫자 수열을 기억하세요. 색만 남은 판에서 숫자를 복원하고 히든 항까지 추론합니다.",
+      "tag": "1인 연습 · 시즌 2 · 기억 / 수열 추론",
+      "href": "../rainbow-sequence/?v=20261114-strategy"
+    },
+    {
+      "id": "rotating-rps",
+      "category": "university-war",
+      "title": "회전! 가위바위보",
+      "description": "주사위 전개도를 기억하고 정해진 횟수만큼 굴리세요. 아랫면과 바닥의 승부를 읽어 컴퓨터와 겨룹니다.",
+      "tag": "컴퓨터 대결 · 시즌 1 · 회전 / 공간 추론",
+      "href": "../rotating-rps/?v=20261114-strategy"
     }
   ]
 };

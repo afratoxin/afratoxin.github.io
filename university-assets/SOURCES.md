@@ -17,3 +17,9 @@ Area Ranking hides internal cell grid lines at the user's request. All four regi
 Match & Mix omits opponent turns and ends each of three rounds after eleven pairs. Free practice leaves numbers visible. Pixel 1 uses a three-minute round; its final hidden slot accepts any non-public decimal digit that can be formed. The other standalone tasks use ten questions (Trisection five), a local score and retry cooldown, rather than team elimination or a first-to-three duel. Challenge limits: 120 seconds for the season 2 opening tasks, decreasing ten seconds after every four questions; three minutes for the other puzzles. Incorrect answers cost a point and allow retry after ten seconds (Trisection twenty). Free practice removes answer deadlines. Forfeit or expiry reveals a worked solution.
 
 Multiple valid weekday, consonant and priority answers are accepted by the constraints rather than compared with one generated example. Geometry, canonical spelling, pixel compositing and date answers are verified independently in `tests/university-games.cjs`.
+
+## Interaction updates requested by the user
+
+Trisection cards can be dragged between a pool and three groups, reordered within groups, moved by tapping or keyboard, and reset without clearing typed answers. Repeated consonants retain separate card identities. Placement and typed answers persist through the retry cooldown.
+
+Merged Ladder displays `?` at all five visible lower ends. In the reconstructed ladder, labels 1–5 begin at the upper ends; trace these through the reconstructed rungs, then report their arrival values in the current shuffled display’s left-to-right order. The answer is not the lower values listed by strip identifier 1–5. Review reveals the displayed lower values plus the reconstructed diagram and individual routes.
