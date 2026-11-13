@@ -1,6 +1,8 @@
 (function(root){
 'use strict';
 const TYPES={
+ bridges:{name:'연결된 방',hint:'좁은 통로가 연결한 방들을 따로 세고, 연결되는 네모를 빠뜨리지 마세요.'},
+ islands:{name:'흩어진 섬',hint:'떨어진 영역마다 조건을 만족하는 네모를 모아 보세요.'},
  dense:{name:'숫자 밀집',hint:'모든 칸에 숫자가 있습니다. 행과 열의 누적합을 나눠 살펴보세요.'},
  fractions:{name:'분수 조합',hint:'서로 다른 분모를 통분해 보세요. 분수의 합도 정확히 타깃과 같아야 합니다.'},
  holes:{name:'구멍 난 판',hint:'짙은 구멍은 0이 아닙니다. 내부에 구멍을 포함하는 네모도 제외합니다.'},
@@ -28,7 +30,11 @@ function key(r){return [r.top,r.bottom,r.left,r.right].join(',');}
 function shape(rows,cols,type,rng){
  const rand=n=>Math.floor(rng()*n),spine=Math.floor(rows/2);
  let b=Array.from({length:rows},()=>Array(cols).fill(0));
- if(type==='classic'){
+ if(type==='bridges'){
+  b=b.map(r=>r.map(()=>null));for(let y=0;y<3;y++)for(let x=0;x<3;x++){b[y][x]=0;b[y][x+4]=0;b[y+4][x+4]=0;}b[2][3]=0;b[3][6]=0;
+ }else if(type==='islands'){
+  b=b.map((r,y)=>r.map((v,x)=>x===3||y===2?null:0));
+ }else if(type==='classic'){
   b=b.map(r=>r.map(()=>null));for(let x=0;x<cols;x++){const top=rand(spine+1),bottom=spine+rand(rows-spine);for(let y=top;y<=bottom;y++)b[y][x]=0;}
  }else if(type==='holes'){
   // Keep the outer ring: every removed cell is a true enclosed hole.
@@ -46,7 +52,7 @@ function shape(rows,cols,type,rng){
 }
 function generate(level='normal',rng=Math.random,type='dense'){
  if(!TYPES[type])type='dense';
- const sizes={dense:[[4,4],[5,4],[6,5]],fractions:[[3,3],[4,3],[4,4]],holes:[[5,4],[5,5],[6,5]],symmetry:[[5,3],[6,4],[7,5]],signed:[[3,3],[4,4],[5,4]],pattern:[[4,3],[5,4],[6,4]],classic:[[5,4],[7,4],[8,5]]}; const [cols,rows]=sizes[type][({easy:0,normal:1,hard:2})[level]??1];
+ const sizes={bridges:[[7,7],[7,7],[7,7]],islands:[[7,5],[7,5],[7,5]],dense:[[4,4],[5,4],[6,5]],fractions:[[3,3],[4,3],[4,4]],holes:[[5,4],[5,5],[6,5]],symmetry:[[5,3],[6,4],[7,5]],signed:[[3,3],[4,4],[5,4]],pattern:[[4,3],[5,4],[6,4]],classic:[[5,4],[7,4],[8,5]]}; const [cols,rows]=sizes[type][({easy:0,normal:1,hard:2})[level]??1];
  const rand=n=>Math.floor(rng()*n),unit=type==='fractions'?12:1;
  const desired=type==='classic'?{easy:[5,30],normal:[18,100],hard:[45,190]}[level]||[18,100]:{easy:[4,20],normal:[8,45],hard:[14,80]}[level]||[8,45];
  let fallback;
@@ -55,7 +61,9 @@ function generate(level='normal',rng=Math.random,type='dense'){
   const patternKind=rand(3),a=1+rand(3),b=1+rand(3);
   for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
    if(board[y][x]===null)continue;
-   if(type==='classic')board[y][x]=rng()<.2?1+rand(5):0;
+   if(type==='bridges')board[y][x]=(y===2&&x===3||y===3&&x===6)?25:1+rand(9);
+   else if(type==='islands')board[y][x]=rng()<.35?0:1+rand(4);
+   else if(type==='classic')board[y][x]=rng()<.2?1+rand(5):0;
    else if(type==='fractions')board[y][x]=[3,4,6,8,9,12,16,18][rand(8)];
    else if(type==='signed'){const v=1+rand(level==='easy'?3:5);board[y][x]=(rng()<.43?-1:1)*v;}
    else if(type==='pattern')board[y][x]=patternKind===0?((x+y)%2?a:b+3):patternKind===1?1+(x%3)+((y%2)*2):1+((x+2*y)%4);
@@ -65,6 +73,11 @@ function generate(level='normal',rng=Math.random,type='dense'){
    const yy=symmetry==='point'?rows-1-y:y,xx=cols-1-x;
    if(y*cols+x<=yy*cols+xx)board[yy][xx]=board[y][x];
   }
+  // Non-symmetry questions should not accidentally become mirror drills.
+  if(type!=='symmetry'){
+   const mirrored=board.every((row,y)=>row.every((v,x)=>v===board[y][cols-1-x]))||board.every((row,y)=>row.every((v,x)=>v===board[rows-1-y][cols-1-x]));
+   if(mirrored){const first=board.flat().findIndex(v=>v!==null);board[Math.floor(first/cols)][first%cols]+=unit===12?3:1;}
+  }
   const hist=new Map();for(const r of rectangles(board)){if(!hist.has(r.sum))hist.set(r.sum,[]);hist.get(r.sum).push(r);}
   const maxCell=Math.max(...board.flat().filter(v=>v!==null)),hasFraction=board.flat().some(v=>v!==null&&v%unit!==0),hasNegative=board.flat().some(v=>v!==null&&v<0),hasPositive=board.flat().some(v=>v!==null&&v>0);
   if(type==='fractions'&&!hasFraction||type==='signed'&&(!hasNegative||!hasPositive))continue;
@@ -72,6 +85,7 @@ function generate(level='normal',rng=Math.random,type='dense'){
    if(sol.length<desired[0]||sol.length>desired[1])return false;
    if(type!=='classic'&&type!=='signed'&&target<=maxCell)return false;
    if(type==='signed'&&Math.abs(target)>8)return false;
+   if(type==='bridges'&&target>24)return false;
    return new Set(sol.map(r=>(r.right-r.left+1)*(r.bottom-r.top+1))).size>=2;
   });
   // Retain a type-preserving candidate instead of falling back to a blank board.
@@ -86,5 +100,5 @@ function generate(level='normal',rng=Math.random,type='dense'){
  const target=type==='signed'?0:type==='fractions'?12:2;
  return {board,target,solutions:rectangles(board,target),unit,type,symmetry:type==='symmetry'?'vertical':null};
 }
-const api={TYPES,rectangles,generate,parts,format,mirror,key};if(typeof module!=='undefined')module.exports=api;else root.RectangleEngine=api;
+const api={TYPES,rectangles,generate,parts,format,mirror,key};if(typeof document==='undefined')module.exports=api;else root.RectangleEngine=api;
 })(typeof window==='undefined'?globalThis:window);

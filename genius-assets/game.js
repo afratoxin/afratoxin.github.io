@@ -2,12 +2,16 @@
 (function(){
 const E=GeniusEngine,$=id=>document.getElementById(id),mode=document.body.dataset.game;
 const letters='ABCDEFGHIJKLMNOP',colors=['#e95855','#f3cd48','#377bdc'],backgrounds=['#161923','#898c93','#f4f1e9'],shapes=['원','삼각형','사각형'],bgNames=['검정','회색','하양'],colorNames=['빨강','노랑','파랑'];
-const pictures=[['태양','<circle cx="32" cy="32" r="12"/><path d="M32 4v9m0 38v9M4 32h9m38 0h9M12 12l7 7m26 26 7 7M12 52l7-7m26-26 7-7"/>'],['달','<path d="M44 8A25 25 0 1 0 55 46 24 24 0 0 1 44 8Z"/>'],['별','<path d="m32 6 8 17 19 3-14 14 4 19-17-9-17 9 4-19L5 26l19-3Z"/>'],['구름','<path d="M16 49a13 13 0 1 1 1-26 17 17 0 0 1 32 0 13 13 0 0 1-1 26Z"/>'],['번개','<path d="M37 5 14 36h16l-4 23 25-34H35Z"/>'],['우산','<path d="M6 30a26 26 0 0 1 52 0H6Zm26-25v46a7 7 0 0 0 14 0"/>'],['하트','<path d="M32 55 9 32C-6 12 21 2 32 19 44 2 70 13 55 32Z"/>'],['열쇠','<circle cx="21" cy="22" r="13"/><path d="m30 32 22 22m-7-7 8-8m-16 0 7-7"/>'],['왕관','<path d="m7 18 11 10L32 8l14 20 11-10-6 33H13ZM13 56h38"/>'],['물고기','<path d="M8 32q23-30 40-6l11-12v36L48 38Q29 63 8 32Z"/><circle cx="22" cy="30" r="2"/>'],['나비','<path d="M31 24C-2-10-1 44 26 36 1 67 33 64 32 41c-1 25 31 27 6-5 27 8 28-46-5-12Zm1-10v36m0-29-7-13m7 13 7-13"/>'],['나무','<path d="M32 5 12 27h10L7 44h18v15h14V44h18L42 27h10Z"/>'],['꽃','<path d="M32 20C14-5 4 19 20 31-5 42 19 64 31 44 43 66 67 43 44 32 65 19 43-5 32 20Z"/><circle cx="32" cy="32" r="7"/>'],['종','<path d="M13 45h38l-5-10V25a14 14 0 0 0-28 0v10Zm12 7a7 7 0 0 0 14 0M32 6v5"/>'],['집','<path d="M5 29 32 6l27 23M13 25v32h38V25M26 57V38h13v19"/>'],['닻','<path d="M32 20v38M13 30h38M6 40c0 24 52 24 52 0M6 40l-3 10m3-10 10 3m42-3 3 10m-3-10-10 3"/><circle cx="32" cy="12" r="8"/>']];
-function icon(i){return `<svg viewBox="0 0 64 64" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${pictures[i][1]}</svg>`;}
+const pictures=Array.from({length:16},(_,i)=>['추상 무늬 '+(i+1)]);
+function icon(i){
+ const palette=[['#197a85','#c6586a'],['#a67b20','#65539b'],['#197a85','#65539b'],['#a67b20','#c6586a']][Math.floor(i/4)];
+ const variant=i%4,dot=[[23,24],[41,24],[23,40],[41,40]][variant],bar=variant%2?'M18 32h28':'M32 18v28';
+ return `<svg viewBox="0 0 64 64" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 31a20 20 0 0 1 35-13M52 33a20 20 0 0 1-35 13" stroke="${palette[0]}" stroke-width="4"/><path d="${bar}" stroke="${palette[1]}" stroke-width="4"/><path d="M15 15h9M49 49h-9" stroke="${palette[1]}" stroke-width="3"/><circle cx="${dot[0]}" cy="${dot[1]}" r="4" fill="${palette[1]}"/><path d="M${64-dot[0]-4} ${64-dot[1]-4}l8 8m0-8-8 8" stroke="${palette[0]}" stroke-width="3"/></svg>`;
+}
 function shape(c){return `<svg viewBox="0 0 100 100" aria-hidden="true" fill="${colors[c[2]]}" stroke="#c2c4cd" stroke-width="1">${c[0]===0?'<circle cx="50" cy="50" r="35"/>':c[0]===1?'<path d="M50 10 92 85H8Z"/>':'<rect x="16" y="16" width="68" height="68"/>'}</svg>`;}
 let board=[],state='idle',selected=[],exposed=new Set(),score=0,round=0,deadline=0,practice=false,targets=[],solutions=new Map(),target=null,position=12,belt=[],allHaps=[],found=new Set(),pictureTarget=0;
 const config={
- 'same-picture':{title:'같은그림찾기',english:'SAME PICTURE',lead:'보이지 않는 그림을 기억해, 컨베이어의 끝까지.',rules:'그림판의 A~P 뒤에는 서로 다른 그림 16개가 있습니다. 처음에는 모두 가려져 있습니다. 다음 칸의 그림과 같은 타일을 찾으면 한 칸 전진하고, 보너스로 타일 하나를 더 확인할 수 있습니다. 틀리면 공개된 그림을 기억하세요. 컨베이어가 한 칸 밀리며 새 그림이 들어옵니다. 12번째 칸에서 시작해 20번째 칸에 도달하면 성공, 0칸으로 밀리면 실패합니다. 이 버전은 상대의 턴을 생략한 1인 컨베이어 연습입니다.',source:'https://www.namu.moe/w/같은%20그림%20찾기'},
+ 'same-picture':{title:'같은그림찾기',english:'SAME PICTURE',lead:'보이지 않는 그림을 기억해, 컨베이어의 끝까지.',rules:'그림판의 A~P 뒤에는 비슷한 추상 무늬 16개가 있습니다. 같은 선 배치의 색상 변형과 점의 위치·선 방향이 조금씩 다른 무늬가 함께 나오므로, 모양과 색을 함께 기억해야 합니다. 처음에는 모두 가려져 있습니다. 다음 칸의 그림과 같은 타일을 찾으면 한 칸 전진하고, 보너스로 타일 하나를 더 확인할 수 있습니다. 틀리면 공개된 그림을 기억하세요. 컨베이어가 한 칸 밀리며 새 그림이 들어옵니다. 12번째 칸에서 시작해 20번째 칸에 도달하면 성공, 0칸으로 밀리면 실패합니다. 이 버전은 상대의 턴을 생략한 1인 컨베이어 연습입니다.',source:'https://www.namu.moe/w/같은%20그림%20찾기'},
  'same-number':{title:'같은숫자찾기',english:'SAME NUMBER',lead:'5초의 기억. 세 개의 알파벳으로 완성하는 수식.',rules:'1~12와 +, −, ×, ÷가 섞인 16칸을 처음 5초 동안 한 번만 공개합니다. 가려진 뒤 타깃을 보고 버저를 누르면 5초 안에 숫자 → 기호 → 숫자 순서로 서로 다른 세 타일을 골라 제출해야 합니다. 선택한 타일은 제출 후에만 공개됩니다. 1인 연습은 총 10문제이며 정답은 +1점입니다. 같은 판을 계속 사용하고 타깃은 중복되지 않습니다. 연습 모드는 암기·답변 시간을 각각 15초로 늘립니다.',source:'https://www.namu.moe/w/같은%20숫자%20찾기'},
  'gyul-hap':{title:'결! 합!',english:'GYUL! HAP!',lead:'같거나, 다르거나. 끝났다는 확신까지.',rules:'도형의 모양(원·삼각형·사각형), 배경색(검정·회색·하양), 도형색(빨강·노랑·파랑)을 조합한 27장 중 9장을 공개합니다. 세 장을 골랐을 때 각 속성이 각각 모두 같거나 모두 다르면 합입니다. 합 정답 +1점, 오답·중복 합 −1점. 이미 찾은 합도 그림은 그대로 남습니다. 남은 합이 없을 때 결을 선언하면 +3점, 남아 있으면 −1점입니다. 10라운드의 1인 연습으로, 턴 교대와 제한 시간은 생략했습니다. 포기하면 남은 모든 합을 확인할 수 있습니다.',source:'https://www.namu.moe/w/결!%20합!'}
 }[mode];
@@ -15,6 +19,7 @@ $('title').textContent=config.title;$('english').textContent=config.english;$('l
 $('modeLabel').hidden=mode!=='same-number';$('numberControls').hidden=mode!=='same-number';$('setControls').hidden=mode!=='gyul-hap';$('beltArea').hidden=mode!=='same-picture';$('targetLabel').textContent=mode==='same-picture'?'다음 칸의 그림':mode==='same-number'?'TARGET NUMBER':'찾아낸 합';
 function status(text){$('status').textContent=text;}
 function draw(){
+ $('numberControls').hidden=mode!=='same-number'||['idle','memorize'].includes(state);
  $('board').replaceChildren();board.forEach((v,i)=>{
   const b=document.createElement('button');b.className='tile';b.type='button';
   const open=mode==='gyul-hap'||state==='memorize'||state==='ended'||exposed.has(i);
