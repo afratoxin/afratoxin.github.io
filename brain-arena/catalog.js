@@ -202,9 +202,9 @@ window.BrainArenaCatalog = {
       "id": "merge-ladder",
       "category": "university-war",
       "title": "합체 사다리",
-      "description": "뒤섞인 세로줄 다섯 개를 머릿속에서 재조립하세요. 상단 1~5의 도착 번호를 찾습니다.",
+      "description": "뒤섞인 세로줄 다섯 개를 머릿속에서 재조립하세요. 현재 화면의 하단 ?에 들어갈 숫자를 왼쪽부터 찾습니다.",
       "tag": "1인 연습 · 시즌 2 · 재조립 / 경로 추적",
-      "href": "../merge-ladder/?v=20261114-university"
+      "href": "../merge-ladder/?v=20261114-ladder"
     },
     {
       "id": "trisection",
