@@ -13,7 +13,24 @@ function pixelTwo(r=Math.random){const digits=[int(1,9,r),int(0,9,r)],groups=dig
 const AREA_EXAMPLE=['111114444','111111144','132121444','132222444','133222444','133222224','333222224','333332333','333333333'].map(s=>[...s].map(Number));
 const neighbors=(i,n)=>[[i%n-1,Math.floor(i/n)],[i%n+1,Math.floor(i/n)],[i%n,Math.floor(i/n)-1],[i%n,Math.floor(i/n)+1]].filter(([x,y])=>x>=0&&y>=0&&x<n&&y<n).map(([x,y])=>y*n+x);
 function areaStats(grid){const counts=[1,2,3,4].map(v=>grid.flat().filter(x=>x===v).length);return {counts,answer:[1,2,3,4].sort((a,b)=>counts[b-1]-counts[a-1])};}
-function area(r=Math.random){for(let trial=0;trial<300;trial++){const cells=Array(81).fill(0),seeds=[int(0,1,r)*9+int(0,1,r),int(0,1,r)*9+int(7,8,r),int(7,8,r)*9+int(0,1,r),int(7,8,r)*9+int(7,8,r)],weights=Array.from({length:4},()=>.8+r()*.5);seeds.forEach((p,i)=>cells[p]=i+1);for(let step=0;step<77;step++){const frontier=[];for(let p=0;p<81;p++)if(!cells[p])for(const v of new Set(neighbors(p,9).map(i=>cells[i]).filter(Boolean)))frontier.push({p,v,w:weights[v-1]});let t=r()*frontier.reduce((a,b)=>a+b.w,0),choice=frontier.at(-1);for(const f of frontier){t-=f.w;if(t<=0){choice=f;break;}}cells[choice.p]=choice.v;}const grid=Array.from({length:9},(_,i)=>cells.slice(i*9,i*9+9)),stats=areaStats(grid);if(new Set(stats.counts).size===4&&Math.min(...stats.counts)>=12&&Math.max(...stats.counts)<=30)return {grid,...stats};}const grid=AREA_EXAMPLE.map(a=>[...a]);return {grid,...areaStats(grid)};}
+function area(r=Math.random){
+ for(let trial=0;trial<180;trial++){
+  const cells=Array(81).fill(0),counts=[1,1,1,1],seeds=[int(0,1,r)*9+int(0,1,r),int(0,1,r)*9+int(7,8,r),int(7,8,r)*9+int(0,1,r),int(7,8,r)*9+int(7,8,r)],weights=Array.from({length:4},()=>.95+r()*.1);
+  seeds.forEach((p,i)=>cells[p]=i+1);
+  for(let step=0;step<77;step++){
+   const frontier=[];
+   for(let p=0;p<81;p++)if(!cells[p])for(const v of new Set(neighbors(p,9).map(i=>cells[i]).filter(Boolean)))frontier.push({p,v,w:weights[v-1]/counts[v-1]**3});
+   let t=r()*frontier.reduce((a,b)=>a+b.w,0),choice=frontier.at(-1);
+   for(const f of frontier){t-=f.w;if(t<=0){choice=f;break;}}
+   cells[choice.p]=choice.v;counts[choice.v-1]++;
+  }
+  if(new Set(counts).size===4&&Math.min(...counts)>=18&&Math.max(...counts)<=23){const grid=Array.from({length:9},(_,i)=>cells.slice(i*9,i*9+9));return {grid,...areaStats(grid)};}
+ }
+ // A connected, tightly balanced fallback also covers degenerate random sources.
+ const quotas=shuffle(pick([[18,20,21,22],[18,19,21,23]],r),r),cells=Array(81);let cursor=0;
+ quotas.forEach((n,v)=>{for(let k=0;k<n;k++){const y=Math.floor(cursor/9),x=y%2?8-cursor%9:cursor%9;cells[y*9+x]=v+1;cursor++;}});
+ const grid=Array.from({length:9},(_,i)=>cells.slice(i*9,i*9+9));return {grid,...areaStats(grid)};
+}
 function either(r=Math.random){const left=Array.from({length:5},()=>int(180,899,r)),right=[...left];const p=shuffle([0,1,2,3,4],r);right[p[0]]+=int(-70,70,r);right[p[1]]+=int(-70,70,r);if(sum(left)===sum(right))right[p[1]]++;return {left:shuffle(left,r),right:shuffle(right,r),answer:Math.max(sum(left),sum(right))};}
 function ladderAnswer(edges,bottom){return [0,1,2,3,4].map(start=>{let p=start;for(const e of edges){if(p===e)p++;else if(p===e+1)p--;}return bottom[p];});}
 function ladder(r=Math.random){const edges=Array.from({length:int(7,11,r)},()=>int(0,3,r)),bottom=shuffle([1,2,3,4,5],r),strips=shuffle([1,2,3,4,5],r),owners=edges.map(e=>e+int(0,1,r));return {edges,bottom,strips,owners,answer:ladderAnswer(edges,bottom)};}

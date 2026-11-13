@@ -186,9 +186,9 @@ window.BrainArenaCatalog = {
       "id": "area-ranking",
       "category": "university-war",
       "title": "면적 순위",
-      "description": "9×9 정사각형을 나눈 네 색 영역. 가장 넓은 영역부터 순서를 맞히세요.",
+      "description": "격자 없는 정사각형의 네 색 영역. 서로 비슷한 넓이를 비교해 큰 순서대로 맞히세요.",
       "tag": "1인 연습 · 시즌 2 · 공간 지각 / 순위",
-      "href": "../area-ranking/?v=20261114-university"
+      "href": "../area-ranking/?v=20261114-area"
     },
     {
       "id": "either-or",
