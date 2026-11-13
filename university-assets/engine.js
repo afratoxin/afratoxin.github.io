@@ -52,6 +52,12 @@ function weekdaySolutions(p){const sets=p.variables.map(w=>datesFor(p.year,p.mon
 function mix(r=Math.random){const values=shuffle(Array.from({length:40},(_,i)=>i%20+1),r);return {panels:Array.from({length:8},(_,i)=>values.slice(i*5,i*5+5)),slots:[0,1,2,3,4,5,6,7,null],blank:8,previousBlank:null};}
 function mixMoves(p){return neighbors(p.blank,3).filter(i=>p.slots[i]!==null&&i!==p.previousBlank);}
 function slide(p,slot){if(!mixMoves(p).includes(slot))return false;const old=p.blank;p.slots[old]=p.slots[slot];p.slots[slot]=null;p.blank=slot;p.previousBlank=old;return true;}
-const api={shuffle,int,pick,sum,DIGITS,has,pop,pixelOne,pixelSolutions,pixelDigit,pixelTwo,AREA_EXAMPLE,areaStats,neighbors,area,either,ladder,ladderAnswer,PRIORITIES,walk,algorithm,korean,initials,bag,trisection,validTrisection,days,weekdayValue,datesFor,weekday,validWeekday,weekdaySolutions,mix,mixMoves,slide};
+// Preserve the identity of repeated consonants while moving/reordering cards.
+function moveCard(groups,id,to,before=null){
+ if(before===id||!Number.isInteger(to)||to<0||to>=groups.length||!groups.some(g=>g.includes(id)))return groups;
+ const next=groups.map(g=>g.filter(v=>v!==id)),position=before===null?next[to].length:next[to].indexOf(before);
+ next[to].splice(position<0?next[to].length:position,0,id);return next;
+}
+const api={moveCard,shuffle,int,pick,sum,DIGITS,has,pop,pixelOne,pixelSolutions,pixelDigit,pixelTwo,AREA_EXAMPLE,areaStats,neighbors,area,either,ladder,ladderAnswer,PRIORITIES,walk,algorithm,korean,initials,bag,trisection,validTrisection,days,weekdayValue,datesFor,weekday,validWeekday,weekdaySolutions,mix,mixMoves,slide};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;root.UniversityEngine=api;
 })(typeof window!=='undefined'?window:globalThis);

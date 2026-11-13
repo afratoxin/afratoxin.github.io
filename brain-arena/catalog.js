@@ -210,9 +210,9 @@ window.BrainArenaCatalog = {
       "id": "trisection",
       "category": "university-war",
       "title": "3분할",
-      "description": "초성 카드를 남김없이 써서 세 수를 만드세요. 한자어 숫자의 초성과 타깃 합을 동시에 맞힙니다.",
+      "description": "초성 카드를 드래그해 나누고, 남김없이 써서 세 수를 만드세요. 한자어 숫자의 초성과 타깃 합을 동시에 맞힙니다.",
       "tag": "1인 연습 · 시즌 3 · 초성 / 숫자 조합",
-      "href": "../trisection/?v=20261114-university"
+      "href": "../trisection/?v=20261114-drag"
     },
     {
       "id": "hidden-algorithm",

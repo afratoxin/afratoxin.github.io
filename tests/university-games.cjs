@@ -39,3 +39,13 @@ console.log('PASS: correct submission/review/next for all nine controllers, reta
  const r=runtime('pixel-number');for(let round=1;round<5;round++){r.get('giveup').onclick();r.get('next').onclick();}const p=r.puzzle(),hidden=p.targets[2];r.get('buzz').onclick();for(const i of E.pixelSolutions(p.cards,hidden)[0])r.get('board').children[1].children[i].onclick();r.get('submit').onclick();A.equal(+r.get('score').textContent,3);A.equal(r.get('review').hidden,true);for(const digit of p.targets.slice(0,2)){r.get('buzz').onclick();for(const i of E.pixelSolutions(p.cards,digit)[0])r.get('board').children[1].children[i].onclick();r.get('submit').onclick();}A.equal(+r.get('score').textContent,5);A.equal(r.get('review').hidden,false);
 }
 console.log('PASS: final Pixel 1 round accepts the hidden target before public targets and awards 3+1+1 points.');
+{
+ let groups=[Array.from({length:14},(_,i)=>i),[],[],[]];for(let i=0;i<500;i++){const id=E.int(0,13,rng),to=E.int(0,3,rng),before=E.pick([...groups[to],null],rng);const original=groups.map(g=>[...g]),next=E.moveCard(groups,id,to,before);A.deepEqual(groups,original);A.deepEqual([...next.flat()].sort((a,b)=>a-b),Array.from({length:14},(_,i)=>i));A.equal(next[to].filter(n=>n===id).length,1);groups=next;}
+ A.deepEqual(E.moveCard([[0,1,2],[],[],[]],2,0,0),[[2,0,1],[],[],[]]);A.deepEqual(E.moveCard([[0],[1],[],[]],0,0,0),[[0],[1],[],[]]);
+ const r=runtime('trisection'),workspace=()=>r.get('board').children[0],zone=g=>g===0?workspace().children[1]:workspace().children[2].children[g-1],cards=g=>zone(g).children[1].children,n=r.puzzle().cards.length;
+ cards(0)[0].onclick();let target=zone(1);target.onclick({target});A.equal(cards(0).length,n-1);A.equal(cards(1).length,1);cards(1)[0].onkeydown({key:'2',preventDefault(){}});A.equal(cards(1).length,0);A.equal(cards(2).length,1);
+ r.get('buzz').onclick();A.equal(cards(2).length,1);r.get('n0').value='123';r.get('n0').oninput();cards(2)[0].onkeydown({key:'0',preventDefault(){}});A.equal(r.get('n0').value,'123');A.equal(cards(0).length,n);
+ cards(0)[0].onkeydown({key:'3',preventDefault(){}});r.get('n1').value='1';r.get('n2').value='1';r.get('submit').onclick();A.equal(cards(3).length,1);A.equal(r.get('n0').value,'123');r.advance(20000);A.equal(cards(3).length,1);workspace().children[0].children[1].onclick();A.equal(cards(0).length,n);A.equal(cards(3).length,0);
+ r.get('giveup').onclick();r.get('next').onclick();A.equal(cards(0).length,r.puzzle().cards.length);A.equal(cards(1).length+cards(2).length+cards(3).length,0);
+}
+console.log('PASS: 500 card moves preserve every unique card; workspace supports tap, keyboard, return, reset, answer preservation, cooldown persistence and fresh-round reset.');
