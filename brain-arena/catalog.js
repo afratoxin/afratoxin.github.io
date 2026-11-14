@@ -269,9 +269,9 @@ window.BrainArenaCatalog = {
       "id": "rotating-rps",
       "category": "university-war",
       "title": "회전! 가위바위보",
-      "description": "색과 손 그림의 방향이 실제로 함께 회전하는 주사위. 아랫면과 바닥의 승부를 읽어 컴퓨터와 겨룹니다.",
+      "description": "현재 위치에 표시되는 주사위 윗면의 색과 그림 방향을 읽으세요. 아랫면과 바닥의 승부를 예측해 컴퓨터와 겨룹니다.",
       "tag": "컴퓨터 대결 · 회전 / 공간 추론",
-      "href": "../rotating-rps/?v=20261114-arithmetic"
+      "href": "../rotating-rps/?v=20261114-rps-top"
     },
     {
       "id": "formula-territory",
