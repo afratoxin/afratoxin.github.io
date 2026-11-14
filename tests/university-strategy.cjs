@@ -21,9 +21,9 @@ for(let kind=0;kind<12;kind++){const s=E.sequence(kind,rng);A.equal(s.values.len
 console.log('PASS: 50 connected unique-target mazes; exact maximal-line 16 and legal Gomoku AI; 60 independently checked sliding positions and exact-stop exits; 100 colored sequence boards and complex recurrences; 100 physical cube rotations and legal AI paths.');
 const fs=require('node:fs'),vm=require('node:vm');
 function node(){return {hidden:false,disabled:false,value:'challenge',textContent:'',innerHTML:'',children:[],attrs:{},className:'',style:{setProperty(k,v){this[k]=v;}},setAttribute(k,v){this.attrs[k]=v;},append(...a){this.children.push(...a);},replaceChildren(...a){this.children=[...a];this.innerHTML='';}};}
-function runtime(game,practice=true){let now=1000,tick,p,timers=[];const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);},engine={...E};for(const key of ['tripleMaze','newGomoku','newExit','rainbow','newRPS'])engine[key]=(...args)=>p=E[key](...args.slice(0,key==='newRPS'?1:0),rng);class D extends Date{static now(){return now;}}const ctx=vm.createContext({UniversityStrategy:engine,document:{body:{dataset:{game}},title:'',getElementById:get,createElement:node,addEventListener(){}},Date:D,setInterval(fn){tick=fn;},setTimeout(fn,ms){timers.push({fn,at:now+ms});}});vm.runInContext(fs.readFileSync('university-strategy-assets/game.js','utf8'),ctx);get('mode').value=practice?'practice':'challenge';get('start').onclick();return {get,puzzle:()=>p,grid(){return get('board').children.find(c=>c.className?.includes('strategy-grid'));},at(p,n){return this.grid().children[(Math.floor(p/n)+1)*(n+1)+p%n+1];},arrow(d){get('actions').children[0].children.find(b=>b.attrs['aria-label']===['위','오른쪽','아래','왼쪽'][d]+'로 이동').onclick();},advance(ms){const end=now+ms;while(timers.some(t=>t.at<=end)){timers.sort((a,b)=>a.at-b.at);const t=timers.shift();now=t.at;t.fn();tick();}now=end;tick();}};}
+function runtime(game,practice=true){let now=1000,tick,p,progression=null,timers=[];const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);},engine={...E};for(const key of ['tripleMaze','newGomoku','newExit','rainbow','newRPS'])engine[key]=(...args)=>p=E[key](...args.slice(0,key==='newRPS'?1:0),rng);class D extends Date{static now(){return now;}}const ctx=vm.createContext({UniversityStrategy:engine,document:{body:{dataset:{game}},title:'',getElementById:get,createElement:node,addEventListener(){}},Date:D,setInterval(fn){tick=fn;},setTimeout(fn,ms){timers.push({fn,at:now+ms});}});if(['triple-maze','rainbow-sequence'].includes(game)){const kind=game==='triple-maze'?'maze':'rainbow';vm.runInContext(fs.readFileSync('university-levels/'+kind+'-pool.js','utf8'),ctx);vm.runInContext(fs.readFileSync('university-levels/session.js','utf8'),ctx);const create=ctx.UniversityLevels.create;ctx.UniversityLevels.create=k=>progression=create(k,rng);}vm.runInContext(fs.readFileSync('university-strategy-assets/game.js','utf8'),ctx);get('mode').value=practice?'practice':'challenge';get('start').onclick();return {get,puzzle:()=>progression?.puzzle||p,progression:()=>progression,grid(){return get('board').children.find(c=>c.className?.includes('strategy-grid'));},at(p,n){return this.grid().children[(Math.floor(p/n)+1)*(n+1)+p%n+1];},arrow(d){get('actions').children[0].children.find(b=>b.attrs['aria-label']===['위','오른쪽','아래','왼쪽'][d]+'로 이동').onclick();},advance(ms){const end=now+ms;while(timers.some(t=>t.at<=end)){timers.sort((a,b)=>a.at-b.at);const t=timers.shift();now=t.at;t.fn();tick();}now=end;tick();}};}
 {
- const r=runtime('triple-maze');const p=r.puzzle();for(let goal=0;goal<2;goal++){r.get('actions').children[0].onclick();const path=E.route(p.walls,p.start,p.goals[goal].p);for(let i=1;i<path.length;i++){const d=E.adjacent(path[i-1],9).find(q=>q.p===path[i]).d;r.arrow(d);}r.get('actions').children[1].children[goal].onclick();if(goal===0){A.equal(r.get('round').textContent,'1 / 2');r.get('actions').children[0].onclick();}}A.match(r.get('resultTitle').textContent,/두 목적지/);A.equal(r.get('review').hidden,false);
+ const r=runtime('triple-maze');const p=r.puzzle();for(let goal=0;goal<2;goal++){r.get('actions').children[0].onclick();const path=E.route(p.walls,p.start,p.goals[goal].p);for(let i=1;i<path.length;i++){const d=E.adjacent(path[i-1],9).find(q=>q.p===path[i]).d;r.arrow(d);}r.get('actions').children[1].children[goal].onclick();if(goal===0){A.equal(r.get('round').textContent,'1 / 2');r.get('actions').children[0].onclick();}}A.match(r.get('resultTitle').textContent,/1단계 클리어/);A.equal(r.get('review').hidden,false);
 }
 {
  const r=runtime('sum-difference-gomoku');r.at(40,9).onclick();r.advance(1000);A(r.get('log').textContent.includes('컴퓨터'));A.equal(r.grid().children.filter(b=>b.innerHTML.includes('class="stone')).length,2);r.get('giveup').onclick();A.match(r.get('resultTitle').textContent,/컴퓨터/);r.get('restart').onclick();r.advance(1000);A.equal(r.get('review').hidden,true);
@@ -32,9 +32,34 @@ function runtime(game,practice=true){let now=1000,tick,p,timers=[];const nodes=n
  const r=runtime('exit-strategy-2'),p=r.puzzle(),move=E.exitMoves(p)[0];r.at(move.p,7).onclick();r.arrow(move.d);r.advance(1000);A(r.get('log').textContent.includes('컴퓨터'));A.equal(r.get('review').hidden,true);
 }
 {
- const r=runtime('rainbow-sequence'),p=r.puzzle();r.get('actions').children[0].onclick();r.at(0,7).onclick();r.get('rainbowAnswer').value=String(p.cells[0].value);r.get('inputArea').children[0].onsubmit({preventDefault(){}});A.equal(+r.get('score').textContent,1);r.at(6,7).onclick();r.get('rainbowAnswer').value=String(p.cells[6].value);r.get('inputArea').children[0].onsubmit({preventDefault(){}});A.equal(+r.get('score').textContent,5);r.get('giveup').onclick();A.equal(r.get('solution').children.length,7);r.get('next').onclick();A.equal(r.get('round').textContent,'2 / 3');A.equal(+r.get('score').textContent,5);
+ const r=runtime('rainbow-sequence'),p=r.puzzle();r.get('actions').children[0].onclick();r.at(0,7).onclick();r.get('rainbowAnswer').value=String(p.cells[0].value);r.get('inputArea').children[0].onsubmit({preventDefault(){}});A.equal(+r.get('score').textContent,1);r.at(6,7).onclick();r.get('rainbowAnswer').value=String(p.cells[6].value);r.get('inputArea').children[0].onsubmit({preventDefault(){}});A.equal(+r.get('score').textContent,5);r.get('giveup').onclick();A.equal(r.get('solution').children.length,7);r.get('next').onclick();A.equal(r.progression().level,1);A.equal(r.get('round').textContent,'0 / 49');A.equal(+r.get('score').textContent,5);
 }
 {
  const r=runtime('rotating-rps'),p=r.puzzle();r.get('actions').children[0].onclick();const path=E.rpsPaths(p)[0];path.dirs.forEach(d=>r.arrow(d));A(r.get('actions').children[0].textContent.includes('컴퓨터'));r.get('actions').children[0].onclick();r.advance(4000);A(r.get('log').textContent.includes('컴퓨터'));A(r.get('actions').children[0].textContent.includes('내 차례'));r.get('giveup').onclick();r.get('restart').onclick();r.advance(2000);A.equal(r.get('review').hidden,true);
 }
 console.log('PASS: playable controller flows for five games, two maze goals, actual AI replies, rainbow regular/hidden scoring and round persistence, shared RPS turn animation and cancellation after restart.');
+{
+ const r=runtime('triple-maze'),first=r.puzzle().id;r.get('giveup').onclick();A.equal(r.progression().level,1);r.get('next').onclick();A.equal(r.progression().level,1);A.notEqual(r.puzzle().id,first);
+ for(let level=1;level<=8;level++){
+  const p=r.puzzle();A.equal(p.level,level);
+  for(let goal=0;goal<2;goal++){
+   r.get('actions').children[0].onclick();const path=E.route(p.walls,p.start,p.goals[goal].p);
+   for(let i=1;i<path.length;i++)r.arrow(E.adjacent(path[i-1],9).find(q=>q.p===path[i]).d);
+   r.get('actions').children[1].children[goal].onclick();
+   if(goal===0){A.equal(r.get('review').hidden,true);r.get('actions').children[0].onclick();}
+  }
+  A.equal(r.get('review').hidden,false);A(r.progression().cleared);A.equal(r.get('next').hidden,level===8);
+  if(level<8){A.match(r.get('next').textContent,new RegExp((level+1)+'단계'));r.get('next').onclick();}
+ }
+ A.match(r.get('resultTitle').textContent,/전체 단계 클리어/);r.get('restart').onclick();A.equal(r.progression().level,1);
+}
+{
+ const r=runtime('rainbow-sequence');let first=r.puzzle().id;r.get('actions').children[0].onclick();r.at(0,7).onclick();r.get('rainbowAnswer').value=String(r.puzzle().cells[0].value+1);r.get('inputArea').children[0].onsubmit({preventDefault(){}});A.equal(r.progression().level,1);r.advance(10000);A.equal(r.puzzle().id,first);r.get('giveup').onclick();r.get('next').onclick();A.equal(r.progression().level,1);A.notEqual(r.puzzle().id,first);
+ for(let level=1;level<=8;level++){
+  const p=r.puzzle();A.equal(p.level,level);r.get('actions').children[0].onclick();
+  for(let i=0;i<49;i++){r.at(i,7).onclick();r.get('rainbowAnswer').value=String(p.cells[i].value);r.get('inputArea').children[0].onsubmit({preventDefault(){}});}
+  A.equal(r.get('review').hidden,false);A(r.progression().cleared);A.equal(+r.get('score').textContent,level*70);A.equal(r.get('next').hidden,level===8);if(level<8)r.get('next').onclick();
+ }
+ A.match(r.get('resultTitle').textContent,/전체 단계 클리어/);
+}
+console.log('PASS: complete eight-stage journeys for Maze and Rainbow; forfeit and wrong-answer retries never advance; 392 rainbow cells scored; final completion stops advancement.');

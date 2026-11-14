@@ -202,9 +202,9 @@ window.BrainArenaCatalog = {
       "id": "merge-ladder",
       "category": "university-war",
       "title": "합체 사다리",
-      "description": "뒤섞인 세로줄 다섯 개를 머릿속에서 재조립하세요. 현재 화면의 하단 ?에 들어갈 숫자를 왼쪽부터 찾습니다.",
-      "tag": "1인 연습 · 시즌 2 · 재조립 / 경로 추적",
-      "href": "../merge-ladder/?v=20261114-ladder"
+      "description": "현재 보이는 하단 ? 값을 왼쪽부터 맞히세요. 기울어진 배치와 후반 6줄 사다리까지 8단계로 도전합니다.",
+      "tag": "단계 도전 · 재조립 / 경로 추적",
+      "href": "../merge-ladder/?v=20261114-levels"
     },
     {
       "id": "trisection",
@@ -234,9 +234,9 @@ window.BrainArenaCatalog = {
       "id": "triple-maze",
       "category": "university-war",
       "title": "삼중미로",
-      "description": "세 색의 벽 지도를 겹쳐 기억하세요. 벽이 가려진 9×9 미로에서 목적지 두 곳을 찾습니다.",
-      "tag": "1인 연습 · 시즌 2 · 공간 기억 / 경로 추론",
-      "href": "../triple-maze/?v=20261114-balanced"
+      "description": "세 색 벽 지도를 기억하고 목적지 두 곳을 찾으세요. 평균 경로가 길어지는 8단계, 단계별 12개 문제에 도전합니다.",
+      "tag": "단계 도전 · 평균 경로 / 공간 기억",
+      "href": "../triple-maze/?v=20261114-levels"
     },
     {
       "id": "exit-strategy-2",
@@ -258,9 +258,9 @@ window.BrainArenaCatalog = {
       "id": "rainbow-sequence",
       "category": "university-war",
       "title": "레인보우 수열",
-      "description": "일곱 색의 숫자 수열을 기억하세요. 색만 남은 판에서 숫자를 복원하고 히든 항까지 추론합니다.",
-      "tag": "1인 연습 · 시즌 2 · 기억 / 수열 추론",
-      "href": "../rainbow-sequence/?v=20261114-strategy"
+      "description": "색별 숫자를 기억하고 숨은 항을 추론하세요. 기본 수열부터 복합 규칙까지, 8단계의 문제 풀이 점점 어려워집니다.",
+      "tag": "단계 도전 · 기억 / 수열 추론",
+      "href": "../rainbow-sequence/?v=20261114-levels"
     },
     {
       "id": "rotating-rps",

@@ -32,8 +32,9 @@ function area(r=Math.random){
  const grid=Array.from({length:9},(_,i)=>cells.slice(i*9,i*9+9));return {grid,...areaStats(grid)};
 }
 function either(r=Math.random){const left=Array.from({length:5},()=>int(180,899,r)),right=[...left];const p=shuffle([0,1,2,3,4],r);right[p[0]]+=int(-70,70,r);right[p[1]]+=int(-70,70,r);if(sum(left)===sum(right))right[p[1]]++;return {left:shuffle(left,r),right:shuffle(right,r),answer:Math.max(sum(left),sum(right))};}
-function ladderAnswer(edges,bottom){return [0,1,2,3,4].map(start=>{let p=start;for(const e of edges){if(p===e)p++;else if(p===e+1)p--;}return bottom[p];});}
-function ladder(r=Math.random){const edges=Array.from({length:int(7,11,r)},()=>int(0,3,r)),strips=shuffle([1,2,3,4,5],r),owners=edges.map(e=>e+int(0,1,r)),bottom=Array(5);ladderAnswer(edges,[1,2,3,4,5]).forEach((end,start)=>bottom[end-1]=start+1);return {edges,bottom,strips,owners,answer:strips.map(v=>bottom[v-1])};}
+const LADDER_LEVELS=[{size:5,rungs:5,tilt:0},{size:5,rungs:7,tilt:0},{size:5,rungs:9,tilt:0},{size:5,rungs:10,tilt:24},{size:5,rungs:12,tilt:36},{size:6,rungs:12,tilt:36},{size:6,rungs:14,tilt:42},{size:6,rungs:16,tilt:45}];
+function ladderAnswer(edges,bottom){return bottom.map((_,start)=>{let p=start;for(const e of edges){if(p===e)p++;else if(p===e+1)p--;}return bottom[p];});}
+function ladder(r=Math.random,level=0,pools=null){if(pools)return JSON.parse(JSON.stringify(pick(pools[level-1],r)));const c=level?LADDER_LEVELS[level-1]:{size:5,rungs:int(7,11,r),tilt:0},n=c.size,edges=shuffle(Array.from({length:n-1},(_,j)=>j),r),labels=Array.from({length:n},(_,i)=>i+1),strips=shuffle(labels,r),owners=edges.map(e=>e+int(0,1,r)),bottom=Array(n),tilt=c.tilt*(r()<.5?-1:1);while(edges.length<c.rungs)edges.push(pick(Array.from({length:n-1},(_,j)=>j).filter(e=>e!==edges.at(-1)),r));ladderAnswer(edges,labels).forEach((end,start)=>bottom[end-1]=start+1);return {edges,bottom,strips,owners,answer:strips.map(v=>bottom[v-1]),size:n,tilt,level};}
 function permutations(a){if(!a.length)return [[]];return a.flatMap((v,i)=>permutations(a.filter((_,j)=>j!==i)).map(p=>[v,...p]));}
 const PRIORITIES=permutations([1,2,3,4]);
 function walk(grid,start,priority){const n=grid.length,flat=grid.flat(),path=[start],seen=new Set();let previous=-1,current=start;for(let step=0;step<256;step++){const key=previous+':'+current;if(seen.has(key))return {path,stop:null,reason:'cycle'};seen.add(key);const adjacent=neighbors(current,n).filter(i=>i!==previous);if(!adjacent.length)return {path,stop:current,reason:'edge'};const best=Math.min(...adjacent.map(i=>priority.indexOf(flat[i]))),options=adjacent.filter(i=>priority.indexOf(flat[i])===best);if(options.length!==1)return {path,stop:current,reason:'tie'};previous=current;current=options[0];path.push(current);}return {path,stop:null,reason:'cycle'};}
@@ -58,6 +59,6 @@ function moveCard(groups,id,to,before=null){
  const next=groups.map(g=>g.filter(v=>v!==id)),position=before===null?next[to].length:next[to].indexOf(before);
  next[to].splice(position<0?next[to].length:position,0,id);return next;
 }
-const api={moveCard,shuffle,int,pick,sum,DIGITS,has,pop,pixelOne,pixelSolutions,pixelDigit,pixelTwo,AREA_EXAMPLE,areaStats,neighbors,area,either,ladder,ladderAnswer,PRIORITIES,walk,algorithm,korean,initials,bag,trisection,validTrisection,days,weekdayValue,datesFor,weekday,validWeekday,weekdaySolutions,mix,mixMoves,slide};
+const api={LADDER_LEVELS,moveCard,shuffle,int,pick,sum,DIGITS,has,pop,pixelOne,pixelSolutions,pixelDigit,pixelTwo,AREA_EXAMPLE,areaStats,neighbors,area,either,ladder,ladderAnswer,PRIORITIES,walk,algorithm,korean,initials,bag,trisection,validTrisection,days,weekdayValue,datesFor,weekday,validWeekday,weekdaySolutions,mix,mixMoves,slide};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;root.UniversityEngine=api;
 })(typeof window!=='undefined'?window:globalThis);

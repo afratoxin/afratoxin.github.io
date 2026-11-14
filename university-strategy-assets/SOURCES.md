@@ -12,9 +12,7 @@ Five independently playable, unofficial browser adaptations. All are registered 
 
 ## Browser adaptations
 
-Triple Maze is a solo exercise: after a failed turn, reobserve the same maps and restart at the entry; locating two distinct destinations completes the game. The generator grows three entrance branches in balanced turns instead of a long depth-first corridor. Each destination takes 6–16 moves and at most six turns; any two destination routes share at most three moves after the entrance. Destinations use all three entrance branches and include the left, right and upper regions. Every cell remains reachable, and all five colored patterns are unique. These are generated practice boards, not copies of one broadcast puzzle.
-
-Rainbow Sequence is a three-round solo exercise. It uses twelve generated sequence families, seven distinct families per board. Correctly answered values fill their cells. A wrong answer or timeout allows retry after ten seconds; forfeiting reveals all values and the seven rules.
+Triple Maze and Rainbow Sequence now use eight ascending stages, with twelve prepared problems at each stage. See `university-levels/README.md` for measured difficulty bands and selection behavior. Maze clears after two distinct destinations; Rainbow clears after all 49 cells. Correct clears advance, while forfeits draw a different problem at the same stage. Maze mean route length is measured over all five goals and strictly increases between stage pools. Rainbow adds increasingly complex rule families without changing observation or answer time.
 
 Gomoku, Exit Strategy 2 and Rotating RPS have computer opponents using only the public board and rules. Exit combines the broadcast leader and mover roles into one player's controls; legal starting positions vary within the two side groups. The computer considers legal moves, immediate results and opponent responses. It is a practice opponent, not a guaranteed optimal solver.
 
@@ -24,4 +22,4 @@ Free practice removes deadlines. Triple Maze keeps reference maps visible; Rainb
 
 `tests/university-strategy.cjs` independently checks maze connectivity, wall symmetry and destination uniqueness; maximal-line arithmetic and legal stone inventory; sliding stops and exact-stop escape; sequence recurrences and board color constraints; physical cube rotations and legal paths. Controller checks complete two maze goals, verify actual computer replies, preserve cumulative sequence scores across rounds, and exercise animated shared-cube turns and restart cancellation.
 
-`tests/triple-maze-balance.cjs` independently traverses 500 seeded boards to verify route length, turns, overlap, connectivity, early branching, destination spread and pattern uniqueness. A separate 1,000-board sample reduced mean destination distance from the old 40.46 moves (100-board baseline) to 8.29; maximum route length fell from 68 in that baseline to a guaranteed 16.
+`tests/triple-maze-balance.cjs` retains checks for the original short-route generator. `tests/university-level-pools.cjs` validates all 288 prepared stage problems, including every maze's mean route length and every sequence recurrence. Controller tests complete all eight stages, including six-digit ladder answers and final-stage completion.
