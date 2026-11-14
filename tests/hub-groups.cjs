@@ -12,3 +12,6 @@ for(const group of context.window.BrainArenaCatalog.groups.filter(g=>g.category=
 }
 context.location.hash='#university-war/pyramid-game';change();A.match(get('heading').textContent,/피라미드 게임/);for(const id of ['merge-ladder','hidden-algorithm','weekday-equation'])A(get('games').innerHTML.includes('../'+id+'/'));A.equal((get('games').innerHTML.match(/class="tile game-tile"/g)||[]).length,3);A.match(get('counts').textContent,/3종/);
 console.log('PASS: Pyramid folder contains exactly three games; every nested university game is absent from the outer folder.');
+
+context.location.hash='#university-war/relay-match';change();A.equal((get('games').innerHTML.match(/8단계/g)||[]).length,6);A(!get('games').innerHTML.includes('5단계'));
+console.log('PASS: all three relay descriptions and tags match their eight-stage progression.');

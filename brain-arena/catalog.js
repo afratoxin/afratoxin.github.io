@@ -323,7 +323,7 @@ window.BrainArenaCatalog = {
       "category": "university-war",
       "title": "시간이동",
       "description": "1~6 또는 1~7을 한 번씩 배치해 시간 문장을 완성하세요. 자정 통과와 연속 이동까지 총 8단계.",
-      "tag": "시즌 3 릴레이 · 숫자 배치 / 5단계",
+      "tag": "시즌 3 릴레이 · 숫자 배치 / 8단계",
       "href": "../time-shift/?v=20261114-relay8",
       "group": "relay-match"
     },
@@ -332,7 +332,7 @@ window.BrainArenaCatalog = {
       "category": "university-war",
       "title": "픽셀아트",
       "description": "9장의 픽셀 카드 중 타깃을 완성할 세 장을 고르세요. 머릿속 회전과 색의 혼합, 총 8단계.",
-      "tag": "시즌 3 릴레이 · 색 혼합 / 5단계",
+      "tag": "시즌 3 릴레이 · 색 혼합 / 8단계",
       "href": "../pixel-art/?v=20261114-relay8",
       "group": "relay-match"
     },
@@ -341,7 +341,7 @@ window.BrainArenaCatalog = {
       "category": "university-war",
       "title": "블록 개수 세기",
       "description": "쌓인 정육면체의 전체 개수를 세세요. 작은 계단부터 더 큰 입체까지 총 8단계.",
-      "tag": "시즌 1 릴레이 · 입체 관찰 / 5단계",
+      "tag": "시즌 1 릴레이 · 입체 관찰 / 8단계",
       "href": "../block-count/?v=20261114-relay8",
       "group": "relay-match"
     }
