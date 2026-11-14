@@ -1,3 +1,4 @@
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261114b';
 export const ANTIBIOTIC_TABLES=[
  {title:'경구 투여와 전신 치료',intro:'경구 제형의 존재, 전신 흡수, 감염 부위의 적합성을 나누어 판단합니다.',headers:['구분','대표 약물','기억할 조건','강의 근거'],rows:[
  ['전신 치료에 경구 사용 가능','Amoxicillin · Ciprofloxacin · Metronidazole · Clindamycin · TMP/SMX · Doxycycline','원인균 감수성·흡수·임상적 안정 확인','40쪽'],
@@ -81,5 +82,5 @@ export const PATHOLOGY_TABLES=[
 ];
 export function renderTables(tables){
  const e=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- return tables.map(t=>`<article class="reference-table-card"><h2>${e(t.title)}</h2>${t.intro?`<p class="muted">${e(t.intro)}</p>`:''}<div class="table-scroll" tabindex="0" role="region" aria-label="${e(t.title)} 표 · 가로 스크롤 가능"><table><caption class="sr-only">${e(t.title)}</caption><thead><tr>${t.headers.map(h=>`<th scope="col">${e(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(row=>`<tr>${row.map((cell,i)=>i===0?`<th scope="row">${e(cell)}</th>`:`<td>${e(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></article>`).join('');
+ return tables.map(t=>`<article class="reference-table-card"><h2>${e(t.title)}</h2>${t.intro?`<p class="muted">${e(t.intro)}</p>`:''}<div class="table-scroll" tabindex="0" role="region" aria-label="${e(t.title)} 표 · 가로 스크롤 가능"><table><caption class="sr-only">${e(t.title)}</caption><thead><tr>${t.headers.map(h=>`<th scope="col">${e(h)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(row=>`<tr class="${/(주의|금기|회피|부적절|불가|좋지 않은)/.test(row[0])?'row-caution':/(가능|좋은|비교적 안전)/.test(row[0])?'row-positive':''}">${row.map((cell,i)=>i===0?`<th scope="row">${emphasizeFeedback(cell)}</th>`:`<td>${emphasizeFeedback(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></article>`).join('');
 }
