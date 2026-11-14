@@ -236,7 +236,7 @@ window.BrainArenaCatalog = {
       "title": "삼중미로",
       "description": "세 색의 벽 지도를 겹쳐 기억하세요. 벽이 가려진 9×9 미로에서 목적지 두 곳을 찾습니다.",
       "tag": "1인 연습 · 시즌 2 · 공간 기억 / 경로 추론",
-      "href": "../triple-maze/?v=20261114-strategy"
+      "href": "../triple-maze/?v=20261114-balanced"
     },
     {
       "id": "exit-strategy-2",

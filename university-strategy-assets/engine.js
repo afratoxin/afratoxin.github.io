@@ -4,14 +4,23 @@ const shuffle=(a,r=Math.random)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j
 const DIRS=[[-1,0],[0,1],[1,0],[0,-1]],opposite=d=>(d+2)%4;
 function adjacent(p,n){const y=Math.floor(p/n),x=p%n;return DIRS.map(([dy,dx],d)=>({p:(y+dy)*n+x+dx,d})).filter(({p,d})=>{const [dy,dx]=DIRS[d];return y+dy>=0&&y+dy<n&&x+dx>=0&&x+dx<n;});}
 function route(walls,start,end){const queue=[start],previous=new Map([[start,null]]);for(let i=0;i<queue.length;i++){const p=queue[i];if(p===end){const path=[];for(let at=p;at!==null;at=previous.get(at))path.unshift(at);return path;}for(const {p:q,d} of adjacent(p,9))if(walls[p][d]===0&&!previous.has(q)){previous.set(q,p);queue.push(q);}}return null;}
-function tripleMaze(r=Math.random){for(let attempt=0;attempt<300;attempt++){
- const n=9,start=76,walls=Array.from({length:81},()=>Array(4).fill(1)),seen=new Set([start]),stack=[start];
- while(stack.length){const p=stack.at(-1),options=adjacent(p,n).filter(x=>!seen.has(x.p));if(!options.length){stack.pop();continue;}const q=pick(options,r);walls[p][q.d]=walls[q.p][opposite(q.d)]=0;seen.add(q.p);stack.push(q.p);}
+function tripleMaze(r=Math.random){for(let attempt=0;attempt<600;attempt++){
+ const n=9,start=76,walls=Array.from({length:81},()=>Array(4).fill(1)),seen=new Set([start]),frontiers=[[],[],[]];
+ const open=(p,q,branch)=>{walls[p][q.d]=walls[q.p][opposite(q.d)]=0;seen.add(q.p);for(const next of adjacent(q.p,n))if(!seen.has(next.p))frontiers[branch].push({from:q.p,...next});};
+ // Grow several branches together instead of one long depth-first corridor.
+ adjacent(start,n).forEach((q,i)=>open(start,q,i));
+ while(frontiers.some(f=>f.length))for(const branch of shuffle([0,1,2],r)){const frontier=frontiers[branch];while(frontier.length){const i=int(0,frontier.length-1,r),edge=frontier[i];frontier[i]=frontier.at(-1);frontier.pop();if(!seen.has(edge.p)){open(edge.from,edge,branch);break;}}}
+ const candidates=shuffle(Array.from({length:81},(_,i)=>i).filter(p=>p%9>0&&p%9<8&&p>=9&&p<72&&walls[p].filter(x=>x===0).length===1),r).map(p=>{
+  const path=route(walls,start,p),dirs=path.slice(1).map((q,i)=>adjacent(path[i],n).find(a=>a.p===q).d);
+  return {p,path,turns:dirs.slice(1).filter((d,i)=>d!==dirs[i]).length};
+ }).filter(c=>c.path.length>=7&&c.path.length<=17&&c.turns<=6);
+ let chosen=null;
+ const select=(group,at)=>{if(group.length===5){if(new Set(group.map(c=>c.path[1])).size===3&&group.some(c=>c.p%9<=2)&&group.some(c=>c.p%9>=6)&&group.some(c=>c.p<36)){chosen=group;return true;}return false;}
+  for(let i=at;i<=candidates.length-(5-group.length);i++){const c=candidates[i];if(group.some(a=>adjacent(a.p,n).some(q=>q.p===c.p)||c.path.filter(p=>p!==start&&a.path.includes(p)).length>3))continue;if(select([...group,c],i+1))return true;}return false;};
+ if(!select([],0))continue;
  for(let p=0;p<81;p++){const ns=adjacent(p,n);for(let d=0;d<4;d++){if(!ns.some(q=>q.d===d)){walls[p][d]=-1;continue;}if(walls[p][d]&&d<2){const q=ns.find(q=>q.d===d);walls[p][d]=walls[q.p][opposite(d)]=int(1,3,r);}}}
- const dead=shuffle(Array.from({length:81},(_,i)=>i).filter(p=>p%9>0&&p%9<8&&p>=9&&p<72&&walls[p].filter(x=>x===0).length===1),r),chosen=[];
- for(const p of dead)if(!chosen.some(q=>adjacent(q,n).some(x=>x.p===p)))chosen.push(p);
- if(chosen.length<5)continue;const goals=[];
- for(const p of chosen.slice(0,5)){const colors=shuffle([1,2,3],r);let k=0;for(const q of adjacent(p,n))if(walls[p][q.d]!==0)walls[p][q.d]=walls[q.p][opposite(q.d)]=colors[k++];goals.push({p,pattern:[...walls[p]]});}
+ const goals=[];
+ for(const {p} of chosen){const colors=shuffle([1,2,3],r);let k=0;for(const q of adjacent(p,n))if(walls[p][q.d]!==0)walls[p][q.d]=walls[q.p][opposite(q.d)]=colors[k++];goals.push({p,pattern:[...walls[p]]});}
  if(goals.some(g=>walls.filter(w=>w.join()===g.pattern.join()).length!==1))continue;
  return {n,start,walls,goals};
  }throw Error('삼중미로 생성 실패');}

@@ -12,7 +12,7 @@ Five independently playable, unofficial browser adaptations. All are registered 
 
 ## Browser adaptations
 
-Triple Maze is a solo exercise: after a failed turn, reobserve the same maps and restart at the entry; locating two distinct destinations completes the game. The generator uses a connected perfect maze and validates all five colored patterns, not a copy of one broadcast puzzle.
+Triple Maze is a solo exercise: after a failed turn, reobserve the same maps and restart at the entry; locating two distinct destinations completes the game. The generator grows three entrance branches in balanced turns instead of a long depth-first corridor. Each destination takes 6–16 moves and at most six turns; any two destination routes share at most three moves after the entrance. Destinations use all three entrance branches and include the left, right and upper regions. Every cell remains reachable, and all five colored patterns are unique. These are generated practice boards, not copies of one broadcast puzzle.
 
 Rainbow Sequence is a three-round solo exercise. It uses twelve generated sequence families, seven distinct families per board. Correctly answered values fill their cells. A wrong answer or timeout allows retry after ten seconds; forfeiting reveals all values and the seven rules.
 
@@ -23,3 +23,5 @@ Free practice removes deadlines. Triple Maze keeps reference maps visible; Rainb
 ## Verification
 
 `tests/university-strategy.cjs` independently checks maze connectivity, wall symmetry and destination uniqueness; maximal-line arithmetic and legal stone inventory; sliding stops and exact-stop escape; sequence recurrences and board color constraints; physical cube rotations and legal paths. Controller checks complete two maze goals, verify actual computer replies, preserve cumulative sequence scores across rounds, and exercise animated shared-cube turns and restart cancellation.
+
+`tests/triple-maze-balance.cjs` independently traverses 500 seeded boards to verify route length, turns, overlap, connectivity, early branching, destination spread and pattern uniqueness. A separate 1,000-board sample reduced mean destination distance from the old 40.46 moves (100-board baseline) to 8.29; maximum route length fell from 68 in that baseline to a guaranteed 16.
