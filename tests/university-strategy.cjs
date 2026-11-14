@@ -40,7 +40,7 @@ function runtime(game,practice=true){let now=1000,tick,p,progression=null,timers
 console.log('PASS: playable controller flows for five games, two maze goals, actual AI replies, rainbow regular/hidden scoring and round persistence, shared RPS turn animation and cancellation after restart.');
 {
  const r=runtime('triple-maze'),first=r.puzzle().id;r.get('giveup').onclick();A.equal(r.progression().level,1);r.get('next').onclick();A.equal(r.progression().level,1);A.notEqual(r.puzzle().id,first);
- for(let level=1;level<=8;level++){
+ for(let level=1;level<=5;level++){
   const p=r.puzzle();A.equal(p.level,level);
   for(let goal=0;goal<2;goal++){
    r.get('actions').children[0].onclick();const path=E.route(p.walls,p.start,p.goals[goal].p);
@@ -48,18 +48,23 @@ console.log('PASS: playable controller flows for five games, two maze goals, act
    r.get('actions').children[1].children[goal].onclick();
    if(goal===0){A.equal(r.get('review').hidden,true);r.get('actions').children[0].onclick();}
   }
-  A.equal(r.get('review').hidden,false);A(r.progression().cleared);A.equal(r.get('next').hidden,level===8);
-  if(level<8){A.match(r.get('next').textContent,new RegExp((level+1)+'단계'));r.get('next').onclick();}
+  A.equal(r.get('review').hidden,false);A(r.progression().cleared);A.equal(r.get('next').hidden,level===5);
+  if(level<5){A.match(r.get('next').textContent,new RegExp((level+1)+'단계'));r.get('next').onclick();}
  }
  A.match(r.get('resultTitle').textContent,/전체 단계 클리어/);r.get('restart').onclick();A.equal(r.progression().level,1);
 }
 {
  const r=runtime('rainbow-sequence');let first=r.puzzle().id;r.get('actions').children[0].onclick();r.at(0,7).onclick();r.get('rainbowAnswer').value=String(r.puzzle().cells[0].value+1);r.get('inputArea').children[0].onsubmit({preventDefault(){}});A.equal(r.progression().level,1);r.advance(10000);A.equal(r.puzzle().id,first);r.get('giveup').onclick();r.get('next').onclick();A.equal(r.progression().level,1);A.notEqual(r.puzzle().id,first);
- for(let level=1;level<=8;level++){
+ for(let level=1;level<=5;level++){
   const p=r.puzzle();A.equal(p.level,level);r.get('actions').children[0].onclick();
   for(let i=0;i<49;i++){r.at(i,7).onclick();r.get('rainbowAnswer').value=String(p.cells[i].value);r.get('inputArea').children[0].onsubmit({preventDefault(){}});}
-  A.equal(r.get('review').hidden,false);A(r.progression().cleared);A.equal(+r.get('score').textContent,level*70);A.equal(r.get('next').hidden,level===8);if(level<8)r.get('next').onclick();
+  A.equal(r.get('review').hidden,false);A(r.progression().cleared);A.equal(+r.get('score').textContent,level*70);A.equal(r.get('next').hidden,level===5);if(level<5)r.get('next').onclick();
  }
  A.match(r.get('resultTitle').textContent,/전체 단계 클리어/);
 }
-console.log('PASS: complete eight-stage journeys for Maze and Rainbow; forfeit and wrong-answer retries never advance; 392 rainbow cells scored; final completion stops advancement.');
+console.log('PASS: complete five-stage journeys for Maze and Rainbow; forfeit and wrong-answer retries never advance; 245 rainbow cells scored; final completion stops advancement.');
+{
+ const start=E.newRPS(1,rng),normals=[[0,0,-1],[0,1,0],[-1,0,0],[1,0,0],[0,0,1],[0,-1,0]];let ups=start.faceUp.map(a=>[...a]),normal=normals.map(a=>[...a]);for(let k=0;k<80;k++){const d=E.int(0,3,rng);ups=ups.map(v=>E.rotateVector(v,d));normal=normal.map(v=>E.rotateVector(v,d));ups.forEach((v,i)=>{A.equal(v.reduce((sum,n,j)=>sum+n*normal[i][j],0),0);A.equal(v.reduce((sum,n)=>sum+n*n,0),1);});}for(let d=0;d<4;d++){let v=E.RPS_FACE_UP.map(a=>[...a]);for(let k=0;k<4;k++)v=v.map(a=>E.rotateVector(a,d));A.deepEqual(v,E.RPS_FACE_UP);}
+ const r=runtime('rotating-rps'),svg=r.get('board').children[0].innerHTML;A.equal((svg.match(/data-face=/g)||[]).length,3);A.equal((svg.match(/transform="matrix/g)||[]).length,3);A(!svg.includes('NaN'));A(svg.includes(E.RPS_COLORS[1]));A(svg.includes(E.RPS_COLORS[4]));A(svg.includes(E.RPS_COLORS[3]));r.get('actions').children[0].onclick();r.arrow(2);const turned=r.get('board').children[0].innerHTML;A.notEqual(turned,svg);A(turned.includes(E.RPS_COLORS[0]));A(turned.includes(E.RPS_COLORS[1]));
+}
+console.log('PASS: colored hand glyphs and print-direction arrows use real 3D face frames; 80 vector rotations preserve orthogonality, four rolls restore each frame, and a real move changes the projected faces.');

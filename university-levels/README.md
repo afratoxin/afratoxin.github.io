@@ -1,24 +1,21 @@
-# Stage-based practice
+# Five-stage practice
 
-Triple Maze, Rainbow Sequence and Merged Ladder each have eight stages, with twelve prepared problems at every stage: 288 problems in total. Pool files are loaded only by the relevant game. They contain complete checked problems, so starting a browser game never runs a slow rejection-based maze generator.
+Maze, Rainbow, Ladder, Hidden Algorithm and Weekday Equation each have five stages and twelve prepared problems at each stage: 300 problems. Clear to advance; forfeit reveals the answer and draws another problem at the same stage. Problems do not repeat until that stage's pool is exhausted. Stage five ends the run. Starting again resets to stage one.
 
-Clear a problem to unlock the next stage in the current run. Forfeit reveals the answer and offers a different problem at the same stage. Wrong-answer cooldown and failed maze attempts retain the current problem and stage. Problems do not repeat within a stage until its twelve-member pool has been exhausted; the immediate previous problem is also excluded when recycling a pool. Clearing stage eight ends the run. Starting a new run resets to stage one.
-
-| Stage | Maze mean route length, moves | Rainbow medium / complex rules | Ladder rails / rungs | Ladder tilt |
+| Stage | Maze mean moves | Rainbow medium / complex | Ladder rails / rungs | Algorithm grid / route cells |
 |---|---:|---:|---:|---:|
-| 1 | 7.8–8.4 | 0 / 0 | 5 / 5 | 0 |
-| 2 | 8.6–9.2 | 2 / 0 | 5 / 7 | 0 |
-| 3 | 9.4–10.0 | 3 / 0 | 5 / 9 | 0 |
-| 4 | 10.2–10.8 | 3 / 1 | 5 / 10 | 24 |
-| 5 | 11.0–11.6 | 3 / 2 | 5 / 12 | 36 |
-| 6 | 11.8–12.4 | 2 / 3 | 6 / 12 | 36 |
-| 7 | 12.6–13.2 | 2 / 4 | 6 / 14 | 42 |
-| 8 | 13.4–14.0 | 1 / 6 | 6 / 16 | 45 |
+| 1 | 9.4–10.0 | 3 / 0 | 5 / 9 | 5×5 / 5–7 |
+| 2 | 10.2–10.8 | 3 / 1 | 5 / 10, tilted | 6×6 / 7–9 |
+| 3 | 11.0–11.6 | 3 / 2 | 5 / 12, tilted | 6×6 / 9–12 |
+| 4 | 12.6–13.2 | 2 / 4 | 6 / 14, tilted | 7×7 / 12–16 |
+| 5 | 13.4–14.0 | 1 / 6 | 6 / 16, tilted | 8×8 / 16–22 |
 
-Maze difficulty is the arithmetic mean of the five entrance-to-destination routes, in moves, excluding the starting cell. The intervals are disjoint: every problem at the next stage has a greater mean than every problem at the previous stage. All 81 cells remain connected, the five colored destination patterns are unique, and destination routes use all three entrance branches. Later stages allow some longer shared subpaths while preserving three separate entrance routes. Stages 3–8 grow three side regions separately to keep the destinations spread rather than creating one long common corridor.
+Maze difficulty uses the mean of the five entrance-to-goal route lengths, excluding the starting cell. Adjacent stage bands do not overlap. Every board is connected and has five unique colored goal patterns and goals on all three entrance branches.
 
-Rainbow fills all 49 cells to clear one stage. Normal cells remain one point and hidden G-column cells four points, for 70 points per completed board. The timer, number of cells and memory rules remain constant. Difficulty increases by replacing basic arithmetic, geometric, square and triangular patterns with alternating, changing-difference and digit rules, then interleaved, reversed and composite rules. Each board contains seven distinct sequence families. Rules are shown only in the answer review.
+Rainbow clears after all 49 cells (70 points). Later boards replace basic rules with more digit-based, interleaved, reversed and composite patterns. The earlier trivial all-basic level has been removed.
 
-Ladder difficulty increases through rung count, then tilted rails and sloped rungs, then six rails. The tilt column above is the horizontal offset in SVG units, not degrees. Sloped rung endpoints remain strictly separated in height, so the logical order of swaps is unchanged. Answers always follow the currently displayed lower ends from left to right. All lower labels remain `?` until review. The answer input and review route controls expand to six digits/routes automatically.
+Ladder now begins with nine rungs instead of five. Every rung has an explicit owner and every prepared source fragment is consistent with the reconstructed scoring diagram. Tilted rung endpoints stay vertically ordered; six rails begin at stage four. Answers are always in currently visible bottom order.
 
-Regenerate the deterministic pools from the repository root with `node scripts/build-university-levels.cjs`. `tests/university-level-pools.cjs` checks every prepared problem, all sequence recurrences, stage separation and no-repeat selection. The controller suites also clear all eight stages of each game and verify retry/forfeit behavior and final completion.
+Hidden Algorithm begins with a readable 5×5 board and short traversal, then increases both board size and route length. Calendar uses actual dates and five variable weekdays with square, exponent, factorial, division and product templates. Its targets are restricted to 15–205; factorial arguments must be 0–6 and variable exponents 0–3. Each pool cycles through its permitted expression families, rather than repeatedly accepting only the easiest templates.
+
+Regenerate with `node scripts/build-university-levels.cjs`. Pool and controller suites independently check connectivity, route length, unique patterns, pixel arithmetic, real calendar dates, alternative valid answers, every visible Ladder fragment, five-stage completion, and same-stage retries.

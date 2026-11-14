@@ -12,7 +12,7 @@ Five independently playable, unofficial browser adaptations. All are registered 
 
 ## Browser adaptations
 
-Triple Maze and Rainbow Sequence now use eight ascending stages, with twelve prepared problems at each stage. See `university-levels/README.md` for measured difficulty bands and selection behavior. Maze clears after two distinct destinations; Rainbow clears after all 49 cells. Correct clears advance, while forfeits draw a different problem at the same stage. Maze mean route length is measured over all five goals and strictly increases between stage pools. Rainbow adds increasingly complex rule families without changing observation or answer time.
+Triple Maze and Rainbow Sequence now use five ascending stages, with twelve prepared problems at each stage. See `university-levels/README.md` for measured difficulty bands and selection behavior. Maze clears after two distinct destinations; Rainbow clears after all 49 cells. Correct clears advance, while forfeits draw a different problem at the same stage. Maze mean route length is measured over all five goals and strictly increases between stage pools. Rainbow adds increasingly complex rule families without changing observation or answer time.
 
 Gomoku, Exit Strategy 2 and Rotating RPS have computer opponents using only the public board and rules. Exit combines the broadcast leader and mover roles into one player's controls; legal starting positions vary within the two side groups. The computer considers legal moves, immediate results and opponent responses. It is a practice opponent, not a guaranteed optimal solver.
 
@@ -22,4 +22,8 @@ Free practice removes deadlines. Triple Maze keeps reference maps visible; Rainb
 
 `tests/university-strategy.cjs` independently checks maze connectivity, wall symmetry and destination uniqueness; maximal-line arithmetic and legal stone inventory; sliding stops and exact-stop escape; sequence recurrences and board color constraints; physical cube rotations and legal paths. Controller checks complete two maze goals, verify actual computer replies, preserve cumulative sequence scores across rounds, and exercise animated shared-cube turns and restart cancellation.
 
-`tests/triple-maze-balance.cjs` retains checks for the original short-route generator. `tests/university-level-pools.cjs` validates all 288 prepared stage problems, including every maze's mean route length and every sequence recurrence. Controller tests complete all eight stages, including six-digit ladder answers and final-stage completion.
+`tests/triple-maze-balance.cjs` retains checks for the original short-route generator. `tests/university-level-pools.cjs` validates all 300 prepared stage problems, including every maze's mean route length and every sequence recurrence. Controller tests complete all five stages, including six-digit ladder answers and final-stage completion.
+
+## Rotating RPS visual orientation
+
+The visible cube now uses six stable face colors matching the study net and vector hand glyphs projected onto the actual face planes. Per-face print-up vectors rotate with the cube. The printed arrow follows those same vectors; it indicates picture orientation. The front and right face directions are explained relative to the board arrows. The hand type and floor scoring remain unchanged. Tests verify face-frame orthogonality and four-roll return, as well as the projected visible colors and transforms.

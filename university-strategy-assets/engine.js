@@ -4,7 +4,7 @@ const shuffle=(a,r=Math.random)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j
 const DIRS=[[-1,0],[0,1],[1,0],[0,-1]],opposite=d=>(d+2)%4;
 function adjacent(p,n){const y=Math.floor(p/n),x=p%n;return DIRS.map(([dy,dx],d)=>({p:(y+dy)*n+x+dx,d})).filter(({p,d})=>{const [dy,dx]=DIRS[d];return y+dy>=0&&y+dy<n&&x+dx>=0&&x+dx<n;});}
 function route(walls,start,end){const queue=[start],previous=new Map([[start,null]]);for(let i=0;i<queue.length;i++){const p=queue[i];if(p===end){const path=[];for(let at=p;at!==null;at=previous.get(at))path.unshift(at);return path;}for(const {p:q,d} of adjacent(p,9))if(walls[p][d]===0&&!previous.has(q)){previous.set(q,p);queue.push(q);}}return null;}
-const MAZE_LEVELS=[[7.8,8.4],[8.6,9.2],[9.4,10],[10.2,10.8],[11,11.6],[11.8,12.4],[12.6,13.2],[13.4,14]].map(([min,max],i)=>({level:i+1,min,max,shared:[3,3,4,5,6,7,8,10][i],turns:i<2?6:24}));
+const MAZE_LEVELS=[[9.4,10],[10.2,10.8],[11,11.6],[12.6,13.2],[13.4,14]].map(([min,max],i)=>({level:i+1,min,max,shared:[4,5,6,8,10][i],turns:24}));
 function tripleMaze(r=Math.random,level=0,pools=null){if(pools)return JSON.parse(JSON.stringify(pick(pools[level-1],r)));const config=level?MAZE_LEVELS[level-1]:{min:0,max:16,shared:3,turns:6};for(let attempt=0;attempt<6000;attempt++){
  const n=9,start=76,walls=Array.from({length:81},()=>Array(4).fill(1)),seen=new Set([start]),frontiers=[[],[],[]];
  const region=p=>p===75?2:p===77?1:p%9<=2?2:p%9>=6?1:0;
@@ -55,17 +55,19 @@ function sequence(kind,r=Math.random){let a=[],rule='';const x=int(1,8,r),d=int(
  if(kind===16){a=Array.from({length:7},(_,k)=>(k+1)**2+x);rule=`제곱수에 ${x}를 더함`;}
  if(kind===17){a=Array.from({length:7},(_,k)=>x+7*d-k*d);rule=`${d}씩 감소`;}
  return {values:a,rule,kind};}
-const RAINBOW_LEVELS=[{medium:0,hard:0},{medium:2,hard:0},{medium:3,hard:0},{medium:3,hard:1},{medium:3,hard:2},{medium:2,hard:3},{medium:2,hard:4},{medium:1,hard:6}];
+const RAINBOW_LEVELS=[{medium:3,hard:0},{medium:3,hard:1},{medium:3,hard:2},{medium:2,hard:4},{medium:1,hard:6}];
 function rainbow(r=Math.random,level=0,pools=null){if(pools)return JSON.parse(JSON.stringify(pick(pools[level-1],r)));let kinds;if(level){const c=RAINBOW_LEVELS[level-1];kinds=[...shuffle([12,13,14,16,17,0,4],r).slice(0,7-c.medium-c.hard),...shuffle([1,2,5,9],r).slice(0,c.medium),...shuffle([3,6,7,8,10,11],r).slice(0,c.hard)];}else kinds=shuffle(Array.from({length:12},(_,i)=>i),r).slice(0,7);const sequences=shuffle(kinds,r).map(k=>sequence(k,r)),cells=Array(49);for(let col=0;col<7;col++)shuffle([0,1,2,3,4,5,6],r).forEach((color,row)=>cells[row*7+col]={color,value:sequences[color].values[col]});return {cells,sequences,level};}
 // A six-face orientation is tracked independently of the hand printed on each face.
 const RPS_FLOOR=['가바보가보바가','보가바바가보보','바보가보바바가','가보바보가보바','보바바가보보보','바가가보바보가','바가바가바가바'].join('').split('').map(c=>({바:0,보:1,가:2})[c]);
 const RPS_NETS=[[0,0,1,2,2,1],[0,2,2,1,1,0],[2,1,1,2,0,0]];
+const RPS_COLORS=['#f2a5a0','#f1d07b','#a4d5c7','#bcb2e0','#91c1e8','#edbc8e'],RPS_FACE_UP=[[0,-1,0],[0,0,-1],[0,0,-1],[0,0,-1],[0,1,0],[0,0,1]];
+const rotateVector=([x,y,z],d)=>d===0?[x,z,-y]:d===2?[x,-z,y]:d===1?[y,-x,z]:[-y,x,z];
 function roll(o,d){const n={...o};if(d===0){n.top=o.south;n.bottom=o.north;n.north=o.top;n.south=o.bottom;}if(d===2){n.top=o.north;n.bottom=o.south;n.north=o.bottom;n.south=o.top;}if(d===1){n.top=o.west;n.bottom=o.east;n.east=o.top;n.west=o.bottom;}if(d===3){n.top=o.east;n.bottom=o.west;n.east=o.bottom;n.west=o.top;}return n;}
 const rpsResult=(a,b)=>a===b?0:(a-b+3)%3===1?1:-1;
-function newRPS(round=1,r=Math.random){return {floor:[...RPS_FLOOR],net:round<=3?[...RPS_NETS[round-1]]:shuffle([0,0,1,1,2,2],r),orientation:{north:0,top:1,west:2,east:3,south:4,bottom:5},position:-4,previous:null,turn:0,scores:[0,0],budget:pick([3,4,5],r),remaining:0,path:[],winner:null};}
+function newRPS(round=1,r=Math.random){return {floor:[...RPS_FLOOR],net:round<=3?[...RPS_NETS[round-1]]:shuffle([0,0,1,1,2,2],r),orientation:{north:0,top:1,west:2,east:3,south:4,bottom:5},faceUp:RPS_FACE_UP.map(a=>[...a]),position:-4,previous:null,turn:0,scores:[0,0],budget:pick([3,4,5],r),remaining:0,path:[],winner:null};}
 function rpsNext(s,d){if(s.position===-4){if(d!==2)return null;return 3;}const q=adjacent(s.position,7).find(x=>x.d===d);return q&&q.p!==s.previous?q.p:null;}
-function rpsStep(s,d){const p=rpsNext(s,d);if(p===null||s.remaining<=0||s.winner!==null)return null;return {...s,position:p,previous:s.position,orientation:roll(s.orientation,d),remaining:s.remaining-1,path:[...s.path,p]};}
+function rpsStep(s,d){const p=rpsNext(s,d);if(p===null||s.remaining<=0||s.winner!==null)return null;return {...s,position:p,previous:s.position,orientation:roll(s.orientation,d),faceUp:s.faceUp.map(v=>rotateVector(v,d)),remaining:s.remaining-1,path:[...s.path,p]};}
 function rpsPaths(s){const out=[];function visit(a,dirs){if(!a.remaining){out.push({dirs,state:a,result:rpsResult(a.net[a.orientation.bottom],a.floor[a.position])});return;}for(let d=0;d<4;d++){const q=rpsStep(a,d);if(q)visit(q,[...dirs,d]);}}visit({...s,remaining:s.budget,path:[]},[]);return out;}
 function rpsAI(s){const options=rpsPaths(s);let best=null;for(const o of options){let worst=0;for(const budget of [3,4,5]){const next=rpsPaths({...o.state,budget});worst+=Math.max(...next.map(p=>p.result));}const value=o.result*100-worst*12;if(!best||value>best.value)best={...o,value};}return best;}
-const api={MAZE_LEVELS,RAINBOW_LEVELS,shuffle,int,pick,DIRS,adjacent,route,tripleMaze,mazeStep,GDIRS,sumLine,sumWins,newGomoku,gomokuMoves,gomokuPlace,winningMoves,gomokuAI,EXIT,BLOCKS,newExit,exitSlide,exitMoves,exitDistance,exitEval,exitAI,sequence,rainbow,RPS_FLOOR,RPS_NETS,roll,rpsResult,newRPS,rpsNext,rpsStep,rpsPaths,rpsAI};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.UniversityStrategy=api;
+const api={RPS_COLORS,RPS_FACE_UP,rotateVector,MAZE_LEVELS,RAINBOW_LEVELS,shuffle,int,pick,DIRS,adjacent,route,tripleMaze,mazeStep,GDIRS,sumLine,sumWins,newGomoku,gomokuMoves,gomokuPlace,winningMoves,gomokuAI,EXIT,BLOCKS,newExit,exitSlide,exitMoves,exitDistance,exitEval,exitAI,sequence,rainbow,RPS_FLOOR,RPS_NETS,roll,rpsResult,newRPS,rpsNext,rpsStep,rpsPaths,rpsAI};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.UniversityStrategy=api;
 })(typeof window!=='undefined'?window:globalThis);

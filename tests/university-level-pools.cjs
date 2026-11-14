@@ -1,9 +1,9 @@
 const A=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),S=require('../university-strategy-assets/engine.js'),U=require('../university-assets/engine.js');
 function load(kind){const c=vm.createContext({});vm.runInContext(fs.readFileSync('university-levels/'+kind+'-pool.js','utf8'),c);vm.runInContext(fs.readFileSync('university-levels/session.js','utf8'),c);return c;}
 function paths(m){const out=new Map([[m.start,[m.start]]]),q=[m.start];for(let k=0;k<q.length;k++){const p=q[k],y=Math.floor(p/9),x=p%9;[[-1,0],[0,1],[1,0],[0,-1]].forEach(([dy,dx],d)=>{const row=y+dy,col=x+dx;if(row<0||row>8||col<0||col>8){A.equal(m.walls[p][d],-1);return;}const n=row*9+col;A.equal(m.walls[p][d],m.walls[n][(d+2)%4]);if(m.walls[p][d]===0&&!out.has(n)){out.set(n,[...out.get(p),n]);q.push(n);}});}A.equal(out.size,81);return out;}
-for(const kind of ['maze','rainbow','ladder']){
- const c=load(kind),pools=JSON.parse(JSON.stringify(c.UniversityLevelPools[kind]));A.equal(pools.length,8);const ids=new Set();let previousMax=0,previousComplexity=-1;
- for(let level=1;level<=8;level++){
+for(const kind of ['maze','rainbow','ladder','algorithm','weekday']){
+ const c=load(kind),pools=JSON.parse(JSON.stringify(c.UniversityLevelPools[kind]));A.equal(pools.length,5);const ids=new Set();let previousMax=0,previousComplexity=-1;
+ for(let level=1;level<=5;level++){
   const pool=pools[level-1];A.equal(pool.length,12);A.equal(new Set(pool.map(p=>JSON.stringify({...p,id:null}))).size,12);
   const means=[];
   for(const p of pool){A(!ids.has(p.id));ids.add(p.id);A.equal(p.level,level);
@@ -35,16 +35,20 @@ for(const kind of ['maze','rainbow','ladder']){
      if(s.kind===11){const m=Number(s.rule.match(/^([0-9]+)/)[1]),text=Array.from({length:20},(_,i)=>m*(i+1)).join('');A.equal(a.map(n=>String(n).padStart(2,'0')).join(''),text.slice(0,14));}
     }
     A.equal(medium,p.mediumCount);A.equal(hard,p.hardCount);A.equal(medium,S.RAINBOW_LEVELS[level-1].medium);A.equal(hard,S.RAINBOW_LEVELS[level-1].hard);
-   }else{
-    const config=U.LADDER_LEVELS[level-1],n=config.size;A.equal(p.size,n);A.equal(p.edges.length,config.rungs);A.equal(Math.abs(p.tilt),config.tilt);A.equal(new Set(p.edges).size,n-1);A(p.edges.slice(1).every((e,i)=>e!==p.edges[i]));
+   }else if(kind==='ladder'){
+    const config=U.LADDER_LEVELS[level-1],n=config.size;A.equal(p.size,n);A.equal(p.edges.length,config.rungs);A.equal(p.owners.length,p.edges.length);p.owners.forEach((owner,i)=>A(owner===p.edges[i]||owner===p.edges[i]+1));A.equal(Math.abs(p.tilt),config.tilt);A.equal(new Set(p.edges).size,n-1);A(p.edges.slice(1).every((e,i)=>e!==p.edges[i]));
     const ends=Array.from({length:n},(_,i)=>i+1);p.edges.forEach(e=>{A(e>=0&&e<n-1);[ends[e],ends[e+1]]=[ends[e+1],ends[e]];});A.deepEqual(p.bottom,ends);A.deepEqual(p.answer,p.strips.map(v=>ends[v-1]));
     A.deepEqual(p.strips.slice().sort(),Array.from({length:n},(_,i)=>i+1));
     const gap=250/(p.edges.length+1);p.rises.forEach(rise=>A(Math.abs(rise)<gap));A(config.tilt?p.rises.every(r=>r!==0):p.rises.every(r=>r===0));
+   }else if(kind==='algorithm'){
+    const config=U.ALGORITHM_LEVELS[level-1];A.equal(p.grid.length,config.n);A(p.solutions.length);for(const sol of p.solutions){const run=U.walk(p.grid,p.start,sol.priority);A.equal(run.stop,p.end);A.deepEqual(run.path,sol.path);}A(p.solutions.some(sol=>sol.path.length>=config.min&&sol.path.length<=config.max));
+   }else if(kind==='weekday'){
+    A(p.modern);A(p.target>=15&&p.target<=205);A(U.WEEKDAY_LEVELS[level-1].includes(p.kind));A(U.validWeekday(p,p.sample));const expression=U.weekdayExpression(p,p.sample).replaceAll('×','*').replaceAll('÷','/').replaceAll('−','-').replaceAll('²','**2').replaceAll('^','**').replace(/(\([^()]*\)|\d+)!/g,'factorial($1)');const factorial=n=>Number.isInteger(n)&&n>=0&&n<=6?Array.from({length:n},(_,i)=>i+1).reduce((a,b)=>a*b,1):NaN;const value=vm.runInNewContext(expression,{factorial});A(Math.abs(value-p.target)<1e-8);A(U.weekdaySolutions(p).length>0);
    }
   }
   if(kind==='maze'){A(Math.min(...means)>previousMax);previousMax=Math.max(...means);}
   if(kind==='rainbow'){const c=S.RAINBOW_LEVELS[level-1],complexity=c.medium+c.hard*3;A(complexity>previousComplexity);previousComplexity=complexity;}
  }
- const run=c.UniversityLevels.create(kind,()=>.4);for(let level=1;level<=8;level++){const seen=new Set();for(let i=0;i<12;i++){const p=i?run.next():run.puzzle||run.draw();A.equal(run.level,level);A(!seen.has(p.id));seen.add(p.id);}const last=run.puzzle.id;run.next();A.notEqual(run.puzzle.id,last);A.equal(run.level,level);run.clear();if(level<8){run.next();A.equal(run.level,level+1);}else{A(run.complete);A.equal(run.next(),null);}}run.reset();A.equal(run.level,1);A.equal(run.puzzle,null);
- console.log('PASS: '+kind+' 8 × 12 checked problems; no repeats before pool exhaustion, forfeit stays at the same stage, clear advances, final completion and reset.');
+ const run=c.UniversityLevels.create(kind,()=>.4);for(let level=1;level<=5;level++){const seen=new Set();for(let i=0;i<12;i++){const p=i?run.next():run.puzzle||run.draw();A.equal(run.level,level);A(!seen.has(p.id));seen.add(p.id);}const last=run.puzzle.id;run.next();A.notEqual(run.puzzle.id,last);A.equal(run.level,level);run.clear();if(level<5){run.next();A.equal(run.level,level+1);}else{A(run.complete);A.equal(run.next(),null);}}run.reset();A.equal(run.level,1);A.equal(run.puzzle,null);
+ console.log('PASS: '+kind+' 5 × 12 checked problems; no repeats before pool exhaustion, forfeit stays at the same stage, clear advances, final completion and reset.');
 }

@@ -13,7 +13,7 @@
     if (typeof expression !== 'string' || !expression.trim() || expression.length > 120) {
       throw new Error('수식을 입력해 주세요 (최대 120자).');
     }
-    const source = expression.replace(/\s/g, '').replace(/[×·]/g, '*').replace(/÷/g, '/').replace(/[−–]/g, '-');
+    const source = expression.replace(/sqrt/gi,'√').replace(/\s/g, '').replace(/[×·]/g, '*').replace(/÷/g, '/').replace(/[−–]/g, '-');
     const tokens = source.match(/(?:[1-9]|[()+\-*/^!√])/g);
     if (!tokens || tokens.join('') !== source) throw new Error('한 자리 숫자와 + − × ÷ ^ √ ! 괄호만 사용할 수 있습니다.');
     const allowed = new Set(cards.map(Number));
@@ -89,12 +89,12 @@
 
   function matches(value, target) { return Math.abs(value - target) <= 1e-7; }
 
-  function scoreClaim(claimed, ringIndex, targetIndex) {
+  function scoreClaim(claimed, ringIndex, targetIndex, rings=RINGS) {
     const key = `${ringIndex}:${targetIndex}`;
     if (claimed.has(key)) throw new Error('이미 맞힌 목표입니다.');
     const next = new Set(claimed);
     next.add(key);
-    const ring = RINGS[ringIndex];
+    const ring = rings[ringIndex];
     let bonus = 0;
     if (ring.values.length >= 3) {
       const seenTriples = new Set();
@@ -109,7 +109,11 @@
     return { next, points: ring.points + bonus, bonus };
   }
 
-  const api = { RINGS, calculate, matches, scoreClaim };
+  const BROADCAST_SOLUTIONS=[['5/4','2-4','1','6^2+1','5*4-1','6^2+3^2','-(6+1)','6^3/2','6^3','5*3','6*(6+5)','6^2-5','5!-5*6','-1/2','6*(6+3)'],['5^6','6^2+4^2','6!/(6+4)+6','6/5','6!-(6+6+6+1)','6!*(6+4)+6!-6!/5+1','-6/4','6^2+6+5','(3/2)^2','6!+6+6'],['6!-4','4^4-(6+6)','5!*5+1','(6!/5)*6^2','2^(6+6)-6','-(6^3+5!+5+5+5)'],['5^3+5^2+5^2','6^3+5!+6^2+1','6!+6^2+5^2-4'],['2^(6+6+6+5)+2']];
+  function broadcastBoard(){return {name:'방송 첫 과녁',kind:'broadcast',rings:RINGS.map(r=>({points:r.points,values:[...r.values]})),solutions:BROADCAST_SOLUTIONS.map(a=>[...a])};}
+  function randomBoard(rng=Math.random){const int=(a,b)=>a+Math.floor(rng()*(b-a+1)),used=new Set(),solutions=[],rings=RINGS.map((ring,r)=>{const expressions=[];for(let tries=0;expressions.length<ring.values.length&&tries<4000;tries++){const a=int(1,6),b=int(1,6),c=int(1,6),d=int(1,6);let exp;if(r===0)exp=['('+a+'*'+b+')+'+c,a+'*'+b+'-'+c,a+'/'+[2,4,5][int(0,2)],'-('+a+'+'+b+')'][int(0,3)];if(r===1)exp=[a+'!+'+b+'^'+c,a+'^'+b+'+'+c+'^'+d,a+'!*'+b+'-'+c][int(0,2)];if(r===2)exp=a+'!*('+b+'+'+c+')+'+d+'^'+int(3,6);if(r===3)exp='('+a+'!+'+b+'^'+c+')*('+d+'+'+int(1,6)+')';if(r===4)exp='2^(6+6+6+'+int(3,5)+')+'+int(1,6);try{const value=calculate(exp,[1,2,3,4,5,6]),key=String(value);if(!Number.isFinite(value)||value===0||Math.abs(value)>9999999||used.has(key)||r>0&&!Number.isInteger(value)||r===2&&value<100||r===3&&value<200)continue;used.add(key);expressions.push({value,exp});}catch{}}if(expressions.length!==ring.values.length)throw Error('과녁 생성 실패');solutions.push(expressions.map(a=>a.exp));return {points:ring.points,values:expressions.map(a=>a.value)};});return {name:'새로운 변형 과녁',kind:'random',rings,solutions};}
+  function targetSVG(board,claimed=new Set(),selected=null){const radius=[[307,380],[232,307],[150,232],[63,150],[0,63]],fills=['#eee9dc','#25343b','#427fbd','#c24d59','#ead081'],inks=['#183338','#f2f0e7','#fff','#fff','#2d3025'],point=(r,a)=>[400+r*Math.cos(a*Math.PI/180),400+r*Math.sin(a*Math.PI/180)],path=(lo,hi,a,b)=>{const p=point(hi,a),q=point(hi,b),u=point(lo,b),v=point(lo,a);return 'M'+p.join(' ')+'A'+hi+' '+hi+' 0 0 1 '+q.join(' ')+'L'+u.join(' ')+'A'+lo+' '+lo+' 0 0 0 '+v.join(' ')+'Z';};let svg='<svg class="target-svg" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" aria-label="35개 표적의 수식 양궁 과녁">';board.rings.forEach((ring,r)=>ring.values.forEach((value,i)=>{const key=r+':'+i,count=ring.values.length,angle=(r===2?-60:-90)+i*360/count,lo=radius[r][0],hi=radius[r][1],p=point((lo+hi)/2,angle),active=selected?.r===r&&selected?.i===i;svg+='<g role="button" tabindex="0" data-shot="'+key+'" data-r="'+r+'" data-i="'+i+'" aria-label="'+value+', '+ring.points+'점 목표'+(claimed.has(key)?', 적중':'')+'" class="target-cell'+(claimed.has(key)?' claimed':'')+(active?' selected':'')+'">'+(r===4?'<circle class="sector" cx="400" cy="400" r="63"':'<path class="sector" d="'+path(lo,hi,angle-180/count,angle+180/count)+'"')+' fill="'+fills[r]+'" stroke="#192d33" stroke-width="2"/><text x="'+(r===4?400:p[0])+'" y="'+(r===4?400:p[1])+'" fill="'+inks[r]+'" font-size="'+(r===4?19:String(value).length>=5?23:27)+'">'+String(value).replace('-','−')+'</text></g>';}));return svg+'</svg>';}
+  const api = { RINGS, BROADCAST_SOLUTIONS, broadcastBoard,randomBoard,targetSVG,calculate,matches,scoreClaim };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.ArcheryEngine = api;
 })(typeof window !== 'undefined' ? window : globalThis);

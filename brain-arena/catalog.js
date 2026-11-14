@@ -50,9 +50,9 @@ window.BrainArenaCatalog = {
       "id": "expression-archery",
       "category": "university-war",
       "title": "수식 양궁",
-      "description": "숫자 카드 네 장으로 과녁을 적중시키세요. 한 번 맞힐 때마다 새 카드를 골라 25점에 도전합니다.",
+      "description": "실제 방송의 35개 표적으로 시작하세요. 새 과녁에서는 숫자가 달라지고, 네 카드로 25점에 도전합니다.",
       "tag": "혼자 플레이 · 3분 도전 / 자유 연습",
-      "href": "../expression-archery/?v=20261113-devils"
+      "href": "../expression-archery/?v=20261114-arithmetic"
     },
     {
       "id": "rectangle-count",
@@ -68,7 +68,7 @@ window.BrainArenaCatalog = {
       "title": "수식 데스노트",
       "description": "열두 장의 숫자 카드로 목표값을 만든 뒤, 남은 카드와 단서로 세 자리 암호를 찾아내세요.",
       "tag": "혼자 플레이 · 5라운드 / 코드 추리",
-      "href": "../formula-death-note/?v=20261113-devils"
+      "href": "../formula-death-note/?v=20261114-arithmetic"
     },
     {
       "id": "echo-maze",
@@ -179,32 +179,35 @@ window.BrainArenaCatalog = {
       "category": "university-war",
       "title": "픽셀 넘버 2",
       "description": "배경색별로 빨강을 합치고 파랑을 빼세요. 회색은 십의 자리, 흰색은 일의 자리가 됩니다.",
-      "tag": "1인 연습 · 시즌 2 · 픽셀 합성과 제거",
-      "href": "../pixel-number-2/?v=20261114-university"
+      "tag": "에이스 4종 · 정답마다 제한시간 10초 감소",
+      "href": "../pixel-number-2/?v=20261114-arithmetic",
+      "group": "ace-four"
     },
     {
       "id": "area-ranking",
       "category": "university-war",
       "title": "면적 순위",
       "description": "격자 없는 정사각형의 네 색 영역. 서로 비슷한 넓이를 비교해 큰 순서대로 맞히세요.",
-      "tag": "1인 연습 · 시즌 2 · 공간 지각 / 순위",
-      "href": "../area-ranking/?v=20261114-area"
+      "tag": "에이스 4종 · 정답마다 제한시간 10초 감소",
+      "href": "../area-ranking/?v=20261114-arithmetic",
+      "group": "ace-four"
     },
     {
       "id": "either-or",
       "category": "university-war",
       "title": "양자택일",
-      "description": "세 자리 수 다섯 개의 덧셈 두 개를 비교하세요. 더 큰 합의 정확한 값을 입력합니다.",
-      "tag": "1인 연습 · 시즌 2 · 암산 / 비교",
-      "href": "../either-or/?v=20261114-university"
+      "description": "가로셈 두 개의 합을 비교하세요. 양쪽 숫자는 모두 다르지만 규모와 합은 비슷하게 제시됩니다.",
+      "tag": "에이스 4종 · 정답마다 제한시간 10초 감소",
+      "href": "../either-or/?v=20261114-arithmetic",
+      "group": "ace-four"
     },
     {
       "id": "merge-ladder",
       "category": "university-war",
       "title": "합체 사다리",
-      "description": "현재 보이는 하단 ? 값을 왼쪽부터 맞히세요. 기울어진 배치와 후반 6줄 사다리까지 8단계로 도전합니다.",
-      "tag": "단계 도전 · 재조립 / 경로 추적",
-      "href": "../merge-ladder/?v=20261114-levels"
+      "description": "9개 가지의 5줄 사다리부터 기울어진 6줄 사다리까지. 보이는 하단 ?의 값을 왼쪽부터 맞히세요.",
+      "tag": "5단계 · 재조립 / 경로 추적",
+      "href": "../merge-ladder/?v=20261114-arithmetic"
     },
     {
       "id": "trisection",
@@ -218,25 +221,25 @@ window.BrainArenaCatalog = {
       "id": "hidden-algorithm",
       "category": "university-war",
       "title": "히든 알고리즘",
-      "description": "숫자 1~4의 이동 우선순위를 찾아, 빨간 출발지에서 초록 도착지에 정확히 멈추세요.",
-      "tag": "1인 연습 · 시즌 2 · 우선순위 / 경로 추론",
-      "href": "../hidden-algorithm/?v=20261114-university"
+      "description": "눈에 잘 들어오는 5×5 판에서 8×8 판까지. 숫자의 이동 우선순위를 찾아 목표에 정확히 멈추세요.",
+      "tag": "5단계 · 우선순위 / 경로 추론",
+      "href": "../hidden-algorithm/?v=20261114-arithmetic"
     },
     {
       "id": "weekday-equation",
       "category": "university-war",
       "title": "요일 수식",
-      "description": "기준 날짜로 달력을 떠올리세요. 각 요일에 맞는 날짜를 골라 수식을 성립시킵니다.",
-      "tag": "1인 연습 · 시즌 2 · 달력 추론 / 연산",
-      "href": "../weekday-equation/?v=20261114-university"
+      "description": "실제 달력의 날짜로 제곱·지수·팩토리얼·나눗셈 수식을 완성하세요. 작은 목표값으로 연산의 조합을 익힙니다.",
+      "tag": "5단계 · 달력 / 다양한 연산",
+      "href": "../weekday-equation/?v=20261114-arithmetic"
     },
     {
       "id": "triple-maze",
       "category": "university-war",
       "title": "삼중미로",
-      "description": "세 색 벽 지도를 기억하고 목적지 두 곳을 찾으세요. 평균 경로가 길어지는 8단계, 단계별 12개 문제에 도전합니다.",
-      "tag": "단계 도전 · 평균 경로 / 공간 기억",
-      "href": "../triple-maze/?v=20261114-levels"
+      "description": "5단계로 점점 길어지는 목적지 경로. 세 색의 벽 지도를 기억하고 서로 다른 목적지 두 곳을 찾으세요.",
+      "tag": "5단계 · 평균 경로 / 공간 기억",
+      "href": "../triple-maze/?v=20261114-arithmetic"
     },
     {
       "id": "exit-strategy-2",
@@ -258,17 +261,52 @@ window.BrainArenaCatalog = {
       "id": "rainbow-sequence",
       "category": "university-war",
       "title": "레인보우 수열",
-      "description": "색별 숫자를 기억하고 숨은 항을 추론하세요. 기본 수열부터 복합 규칙까지, 8단계의 문제 풀이 점점 어려워집니다.",
-      "tag": "단계 도전 · 기억 / 수열 추론",
-      "href": "../rainbow-sequence/?v=20261114-levels"
+      "description": "기본과 변화 규칙이 섞인 시작 단계부터 복합 규칙까지, 5단계의 색별 숫자 수열을 기억하고 복원하세요.",
+      "tag": "5단계 · 기억 / 수열 추론",
+      "href": "../rainbow-sequence/?v=20261114-arithmetic"
     },
     {
       "id": "rotating-rps",
       "category": "university-war",
       "title": "회전! 가위바위보",
-      "description": "주사위 전개도를 기억하고 정해진 횟수만큼 굴리세요. 아랫면과 바닥의 승부를 읽어 컴퓨터와 겨룹니다.",
-      "tag": "컴퓨터 대결 · 시즌 1 · 회전 / 공간 추론",
-      "href": "../rotating-rps/?v=20261114-strategy"
+      "description": "색과 손 그림의 방향이 실제로 함께 회전하는 주사위. 아랫면과 바닥의 승부를 읽어 컴퓨터와 겨룹니다.",
+      "tag": "컴퓨터 대결 · 회전 / 공간 추론",
+      "href": "../rotating-rps/?v=20261114-arithmetic"
+    },
+    {
+      "id": "formula-territory",
+      "category": "university-war",
+      "title": "수식 땅따먹기",
+      "description": "방송 결승의 13×13 판에서 수식으로 땅을 넓히세요. 새로운 변형 판과 컴퓨터 대결도 준비했습니다.",
+      "tag": "방송 판 / 변형 판 · 컴퓨터 대결",
+      "href": "../formula-territory/?v=20261114-arithmetic"
+    },
+    {
+      "id": "zero-sum",
+      "category": "university-war",
+      "title": "제로섬 게임",
+      "description": "양수·음수 18개의 위치를 기억하세요. 가린 뒤 제시되는 두 수와 합이 0이 되는 위치를 순서대로 찾습니다.",
+      "tag": "에이스 4종 · 정답마다 관찰시간 10초 감소",
+      "href": "../zero-sum/?v=20261114-arithmetic",
+      "group": "ace-four"
+    },
+    {
+      "id": "ace-circuit",
+      "category": "university-war",
+      "title": "에이스 4종 순환",
+      "description": "양자택일 → 면적 순위 → 픽셀넘버2 → 제로섬. 정답마다 120초에서 10초까지 줄어드는 12문제에 도전합니다.",
+      "tag": "순환 도전 · 12연속 정답 / 자유 연습",
+      "href": "../ace-circuit/?v=20261114-arithmetic",
+      "group": "ace-four"
+    }
+  ],
+  "groups": [
+    {
+      "id": "ace-four",
+      "category": "university-war",
+      "title": "에이스 4종",
+      "english": "ACE FOUR",
+      "description": "양자택일 · 면적 순위 · 픽셀넘버2 · 제로섬을 따로 연습하거나 순환 도전하세요."
     }
   ]
 };
