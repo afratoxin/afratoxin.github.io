@@ -1,8 +1,11 @@
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261108c';
-import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261108c';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261108c';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261108c';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261108c';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261114a';
+import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261114a';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261114a';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261114a';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261114a';
+import {LECTURES,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261114a';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261114a';
+import {sourceText} from './study-core.mjs?v=20261114a';
 
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -18,15 +21,17 @@ try{const b=JSON.parse(read(KEYS.bookmarks));if(Array.isArray(b))bookmarks=[...n
 let activeTab='home';
 let pendingFilters=null;
 let pathologyUI=null;
-const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS];
-const ALL_TOPICS={...TOPICS,...PATH_TOPICS};
+let lectureUI=null,drillUI=null;
+const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...TABLE_QUESTIONS];
+const ALL_TOPICS={...TOPICS,...PATH_TOPICS,...LECTURES,...TABLE_TOPICS};
 const isPath=q=>q.id.startsWith('path-');
-const allProgress=()=>({...progress,...pathologyUI?.getProgress()});
+const isStudy=q=>q.id.startsWith('lecture-')||q.id.startsWith('table-');
+const allProgress=()=>({...progress,...pathologyUI?.getProgress(),...lectureUI?.getProgress(),...drillUI?.getProgress()});
 
 function track(s){return `<span class="segment-correct" style="width:${s.total?s.correct/s.total*100:0}%"></span><span class="segment-wrong" style="width:${s.total?s.wrong/s.total*100:0}%"></span>`;}
-function source(q){return isPath(q)?pathSource(q):`근거: 강의 PDF ${q.pages.join('·')}쪽${q.refs.length?' · 보충 근거 포함':''}`;}
+function source(q){if(isStudy(q))return sourceText(q,DOCUMENTS);return isPath(q)?pathSource(q):`근거: 강의 PDF ${q.pages.join('·')}쪽${q.refs.length?' · 보충 근거 포함':''}`;}
 function links(q){return q.refs.map(ref=>`<a href="${escape(SOURCES[ref].url)}" target="_blank" rel="noopener noreferrer">${escape(SOURCES[ref].title)} ↗</a>`).join('');}
-function explanation(q,correct){if(isPath(q))return pathFeedback(q,correct);return `<div class="feedback${correct?'':' missed'}" tabindex="-1"><h3>${correct?'정답입니다.':'이 부분을 다시 기억해 두세요.'}</h3><p class="answer-line">정답 · ${escape(q.choices[q.answer])}</p><p>${escape(q.explanation)}</p>${q.note?`<p class="supplement"><b>구분해서 기억하기</b><br>${escape(q.note)}</p>`:''}<p class="source-line">${escape(source(q))}</p>${links(q)}</div>`;}
+function explanation(q,correct){if(isStudy(q))return studyFeedback(q,correct);if(isPath(q))return pathFeedback(q,correct);return `<div class="feedback${correct?'':' missed'}" tabindex="-1"><h3>${correct?'정답입니다.':'이 부분을 다시 기억해 두세요.'}</h3><p class="answer-line">정답 · ${escape(q.choices[q.answer])}</p><p>${escape(q.explanation)}</p>${q.note?`<p class="supplement"><b>구분해서 기억하기</b><br>${escape(q.note)}</p>`:''}<p class="source-line">${escape(source(q))}</p>${links(q)}</div>`;}
 function announce(message){$('announcement').textContent=message;}
 function updateDashboard(){
   const s=stats(ALL_QUESTIONS,allProgress());
@@ -41,22 +46,30 @@ function updateDashboard(){
   $('abxCourseStats').textContent=`정답 ${a.correct} · 오답 ${a.wrong} · 미풀이 ${a.unanswered}`;
   $('pathCourseStats').textContent=`정답 ${p.correct} · 오답 ${p.wrong} · 미풀이 ${p.unanswered}`;
   $('pathResumeButton').hidden=!pathologyUI?.hasSession();
+  for(const [prefix,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI]]){
+    const value=stats(bank,ui?.getProgress()||{});
+    $(`${prefix}CourseStats`).textContent=`정답 ${value.correct} · 오답 ${value.wrong} · 미풀이 ${value.unanswered}`;
+    $(`${prefix}CourseCount`).textContent=`${bank.length}문항`;
+  }
+  $('libraryCount').innerHTML=`4개 퀴즈 단원 <b>${ALL_QUESTIONS.length}문항</b>`;
   if(!memoryOnly)$('saveStatus').innerHTML='<i aria-hidden="true"></i> 이 브라우저에 학습 기록 저장';
 }
 function navigate(tab,focus=false){
-  if(!['home','quiz','pathology','review','notes'].includes(tab))tab='home';
+  if(!['home','quiz','pathology','lectures','drill','review','notes'].includes(tab))tab='home';
   const changed=activeTab!==tab;
   activeTab=tab;
-  for(const name of ['home','quiz','pathology','review','notes']){
+  for(const name of ['home','quiz','pathology','lectures','drill','review','notes']){
     $(`panel-${name}`).hidden=name!==tab;
   }
   const mainTab=tab==='notes'?'quiz':tab;
-  for(const name of ['home','quiz','pathology','review']){$(`tab-${name}`).setAttribute('aria-selected',String(name===mainTab));$(`tab-${name}`).tabIndex=name===mainTab?0:-1;}
+  for(const name of ['home','quiz','pathology','lectures','drill','review']){$(`tab-${name}`).setAttribute('aria-selected',String(name===mainTab));$(`tab-${name}`).tabIndex=name===mainTab?0:-1;}
   if(location.hash!==`#${tab}`)history.pushState(null,'',`#${tab}`);
   updateDashboard();
   if(tab==='quiz'){updateEligible();renderSession();}
   if(tab==='review')renderReview();
   if(tab==='pathology')pathologyUI?.open();
+  if(tab==='lectures')lectureUI?.open();
+  if(tab==='drill')drillUI?.open();
   if(changed)window.scrollTo({top:0,behavior:'auto'});
   if(focus)$(`tab-${mainTab}`).focus();
 }
@@ -116,13 +129,19 @@ function renderReview(){
   $('retryAll').disabled=!a.wrong;$('retryAll').textContent=`항생제 오답 ${a.wrong} →`;
   $('pathRetryAll').disabled=!p.wrong;$('pathRetryAll').textContent=`병리 오답 ${p.wrong} →`;
   $('reviewSummary').innerHTML=`<span>전체 오답 <strong>${s.wrong}</strong></span><span>정답 <strong>${s.correct}</strong></span><span>미풀이 <strong>${s.unanswered}</strong></span><span class="muted">총 ${s.total}문항 · 단원별 최신 결과</span>`;
+  for(const [name,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI]]){
+    const count=stats(bank,ui?.getProgress()||{}).wrong;
+    $(`${name}RetryAll`).disabled=!count;$(`${name}RetryAll`).textContent=`${name==='lecture'?'강의별':'표 암기'} 오답 ${count} →`;
+  }
   const topic=$('reviewTopic').value,search=$('reviewSearch').value.toLocaleLowerCase().trim();
   const wrong=ALL_QUESTIONS.filter(q=>records[q.id]?.correct===false && (topic==='all'||q.topic===topic) && `${q.stem} ${q.choices.join(' ')} ${q.explanation}`.toLocaleLowerCase().includes(search));
   $('reviewCount').textContent=`${wrong.length}문항`;
   if(!wrong.length){$('reviewList').innerHTML=`<div class="empty-state"><span class="empty-icon" aria-hidden="true">${s.wrong?'⌕':'✓'}</span><h2>${s.wrong?'검색 조건에 맞는 오답이 없습니다.':'현재 남아 있는 오답이 없습니다.'}</h2><p>${s.wrong?'다른 주제를 고르거나 검색어를 바꾸어 보세요.':s.attempted?'아직 안 푼 문제나 북마크한 문제를 이어서 풀어 보세요.':'퀴즈를 풀면 틀린 문제가 이곳에 모입니다. 다시 맞히면 목록에서 빠집니다.'}</p><button type="button" class="button outline" data-tab="home">학습 단원 선택 →</button></div>`;return;}
-  $('reviewList').innerHTML=wrong.map(q=>`<details class="review-item"><summary><span class="review-tags"><span class="pill${isPath(q)?' blue':''}">${isPath(q)?'병리':'항생제'} · ${ALL_TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX'} · ${q.id}</span></span>${escape(q.stem)}</summary><div class="review-body">${isPath(q)?imageMarkup(q):''}${q.choices.map((c,i)=>`<div class="review-choice${i===q.answer?' is-answer':''}${i===records[q.id].selected?' is-selected':''}">${escape(c)}${i===q.answer?'<small>정답</small>':''}${i===records[q.id].selected?'<small>내 선택</small>':''}</div>`).join('')}${explanation(q,false)}<div class="review-bottom"><button type="button" class="text-button" data-retry="${q.id}">이 문제 다시 풀기 →</button>${isPath(q)?'':`<button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button>`}</div></div></details>`).join('');
+  $('reviewList').innerHTML=wrong.map(q=>`<details class="review-item"><summary><span class="review-tags"><span class="pill${isPath(q)?' blue':''}">${q.id.startsWith('table-')?'표 암기':q.id.startsWith('lecture-')?'강의별':isPath(q)?'병리':'항생제'} · ${ALL_TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX'} · ${q.id}</span></span>${escape(q.stem)}</summary><div class="review-body">${isPath(q)?imageMarkup(q):''}${q.choices.map((c,i)=>`<div class="review-choice${i===q.answer?' is-answer':''}${i===records[q.id].selected?' is-selected':''}">${escape(c)}${i===q.answer?'<small>정답</small>':''}${i===records[q.id].selected?'<small>내 선택</small>':''}</div>`).join('')}${explanation(q,false)}<div class="review-bottom"><button type="button" class="text-button" data-retry="${q.id}">이 문제 다시 풀기 →</button>${isPath(q)||isStudy(q)?'':`<button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button>`}</div></div></details>`).join('');
 }
 function oneQuestion(id){
+  if(id.startsWith('lecture-')){lectureUI.retry(id);return;}
+  if(id.startsWith('table-')){drillUI.retry(id);return;}
   if(id.startsWith('path-')){pathologyUI.retry(id);return;}
   const q=QUESTIONS.find(q=>q.id===id);if(!q)return;
   // A one-question retry keeps the bank ID, so a correct answer resolves its old mistake.
@@ -145,6 +164,11 @@ $('retryAll').addEventListener('click',()=>beginAction('wrong'));
 $('pathRetryAll').addEventListener('click',()=>pathologyUI.start({topic:'all',mode:'wrong',count:0}));
 $('homePathTables').addEventListener('click',()=>{navigate('pathology');pathologyUI.show('tables');});
 $('pathResumeButton').addEventListener('click',()=>pathologyUI.resume());
+$('homeLectureStart').addEventListener('click',()=>lectureUI.start({topic:'all',mode:'all',count:20}));
+$('homeDrillStart').addEventListener('click',()=>drillUI.start({topic:'all',mode:'all',count:0}));
+$('lectureRetryAll').addEventListener('click',()=>lectureUI.start({topic:'all',mode:'wrong',count:0}));
+$('drillRetryAll').addEventListener('click',()=>drillUI.start({topic:'all',mode:'wrong',count:0}));
+$('reviewTopic').insertAdjacentHTML('beforeend',`<optgroup label="강의별 감별">${Object.entries(LECTURES).map(([id,t])=>`<option value="${id}">${t.order}. ${escape(t.title)}</option>`).join('')}</optgroup><optgroup label="표 암기">${Object.entries(TABLE_TOPICS).map(([id,t])=>`<option value="${id}">${escape(t.title)}</option>`).join('')}</optgroup>`);
 $('reviewTopic').addEventListener('change',renderReview);$('reviewSearch').addEventListener('input',renderReview);
 document.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||b.disabled)return;
@@ -180,4 +204,7 @@ window.addEventListener('storage',e=>{if(e.key===KEYS.progress){progress=readPro
 if(session)setFilters(session.filters||{});
 $('antibioticTables').innerHTML=renderTables(ANTIBIOTIC_TABLES);
 pathologyUI=createPathologyUI({read,save,openTab:navigate,announce,onChange(){updateDashboard();if(activeTab==='review')renderReview();}});
+const studyChange=()=>{updateDashboard();if(activeTab==='review')renderReview();};
+lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 감별 문제',subtitle:'16개 강의 · 짧은 키워드 선택지 · 증례와 특이 소견',bank:LECTURE_QUESTIONS,topics:LECTURES,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='lectures'});
+drillUI=createStudyUI({id:'drill',tab:'drill',title:'표 암기 반복 퀴즈',subtitle:'항생제 · 동정검사 · 독소 · 병리 · 매개체',bank:TABLE_QUESTIONS,topics:TABLE_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='drill',drill:true});
 navigate(tabFromHash(location.hash)||'home');

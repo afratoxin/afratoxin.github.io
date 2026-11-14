@@ -2,7 +2,7 @@ export const VERSION=1;
 export function tabFromHash(hash) {
   if(hash==='#mainContent')return null;
   const tab=hash.replace(/^#/,'');
-  return ['home','quiz','pathology','review','notes'].includes(tab)?tab:'home';
+  return ['home','quiz','pathology','lectures','drill','review','notes'].includes(tab)?tab:'home';
 }
 export function shuffle(values,rng=Math.random) {
   const result=[...values];

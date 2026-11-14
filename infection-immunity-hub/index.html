@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#153d3b">
-  <meta name="description" content="감염과 면역 학습 허브. 항생제 72문항과 감염 병리 80문항, 강의 사진 퀴즈와 정리표로 복습하세요.">
+  <meta name="description" content="감염과 면역 학습 허브. 16개 강의별 감별 160문항, 표 암기 76항목, 항생제·병리 퀴즈와 통합 오답 노트로 복습하세요.">
   <title>감염과 면역 · 학습 허브</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23153d3b'/%3E%3Cpath d='M20 10v20M10 20h20' stroke='%23c1ebd7' stroke-width='5'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=20261108c">
+  <link rel="stylesheet" href="style.css?v=20261114a">
+  <link rel="stylesheet" href="study.css?v=20261114a">
 </head>
 <body>
   <a class="skip-link" href="#mainContent">본문으로 건너뛰기</a>
@@ -21,17 +22,22 @@
         <button id="tab-home" role="tab" aria-selected="true" aria-controls="panel-home" data-tab="home">학습 허브</button>
         <button id="tab-quiz" role="tab" aria-selected="false" aria-controls="panel-quiz panel-notes" tabindex="-1" data-tab="quiz">항생제</button>
         <button id="tab-pathology" role="tab" aria-selected="false" aria-controls="panel-pathology" tabindex="-1" data-tab="pathology">감염 병리</button>
+        <button id="tab-lectures" role="tab" aria-selected="false" aria-controls="panel-lectures" tabindex="-1" data-tab="lectures">강의별 감별</button>
+        <button id="tab-drill" role="tab" aria-selected="false" aria-controls="panel-drill" tabindex="-1" data-tab="drill">표 암기</button>
         <button id="tab-review" role="tab" aria-selected="false" aria-controls="panel-review" tabindex="-1" data-tab="review">오답 노트 <span id="wrongBadge" class="nav-count">0</span></button>
       </div>
     </nav>
     <main id="mainContent" tabindex="-1">
       <section id="panel-home" role="tabpanel" aria-labelledby="tab-home">
-        <div class="home-intro"><div><p class="eyebrow green">INFECTION & IMMUNITY · STUDY HUB</p><h1>단원별로 연결하고, 반복하기.</h1><p>강의에서 배운 개념을 문제와 정리표로 확인하세요.</p></div><span class="library-count">2개 단원 <b>152문항</b></span></div>
+        <div class="home-intro"><div><p class="eyebrow green">INFECTION & IMMUNITY · STUDY HUB</p><h1>단원별로 연결하고, 반복하기.</h1><p>강의에서 배운 개념을 문제와 정리표로 확인하세요.</p></div><span id="libraryCount" class="library-count">4개 퀴즈 단원 <b>388문항</b></span></div>
         <div class="course-grid">
           <article class="course-card"><div class="course-heading"><span class="course-icon" aria-hidden="true">Rx</span><div><span class="course-kicker">감염병의 치료원칙</span><h2>항생제 선택</h2></div><span class="course-count">72문항</span></div><p>경구 투여 · BBB · 임신 중 선택 · 증례 적용</p><div id="abxCourseTrack" class="progress-track" aria-hidden="true"></div><p id="abxCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button primary small" data-start="mixed">퀴즈 풀기 →</button><button type="button" class="button outline small" data-tab="notes">정리표</button><button id="resumeButton" type="button" class="text-button" hidden>이어서 풀기 →</button></div></article>
           <article class="course-card pathology-course"><div class="course-heading"><span class="course-icon" aria-hidden="true">▧</span><div><span class="course-kicker">병리 1·2 + 통합실습</span><h2>감염성 질환의 병리</h2></div><span class="course-count">80문항</span></div><p>사진 → 원인균 · 원인균 특성 · 총론 판별</p><div id="pathCourseTrack" class="progress-track" aria-hidden="true"></div><p id="pathCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button path-primary small" data-path-start="mixed">퀴즈 풀기 →</button><button type="button" class="button outline small" id="homePathTables">정리표</button><button type="button" class="text-button" id="pathResumeButton" hidden>이어서 풀기 →</button></div></article>
         </div>
-        <div class="home-progress"><div><span class="eyebrow green">MY STUDY</span><strong><span id="homeAttempted">0</span><small> / <span id="homeTotal">152</span>문항</small></strong></div><div class="home-progress-details"><div id="homeTrack" class="progress-track" role="img" aria-label="학습 진도"></div><div class="progress-legend"><span><i class="dot correct"></i>정답 <b id="homeCorrect">0</b></span><span><i class="dot wrong"></i>오답 <b id="homeWrong">0</b></span><span><i class="dot blank"></i>미풀이 <b id="homeUnanswered">152</b></span></div></div><button id="homeWrongButton" type="button" class="text-button" data-tab="review">전체 오답 노트 →</button></div>
+        <div class="course-grid study-home-cards">
+<article class="course-card"><div class="course-heading"><span class="course-icon" aria-hidden="true">Dx</span><div><span class="course-kicker">강의 순서대로 16강</span><h2>강의별 감별 문제</h2></div><span class="course-count" id="lectureCourseCount"></span></div><p>짧은 증례 + 특이 소견 → 비슷한 균명·키워드 5개</p><p id="lectureCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button primary small" id="homeLectureStart">종합 20문항 →</button><button type="button" class="button outline small" data-tab="lectures">강의 골라 풀기</button></div></article>
+<article class="course-card"><div class="course-heading"><span class="course-icon" aria-hidden="true">↻</span><div><span class="course-kicker">표의 대응 관계만 집중 반복</span><h2>표 암기 퀴즈</h2></div><span class="course-count" id="drillCourseCount"></span></div><p>경구·BBB·임신 / 동정·독소·봉입체·매개체</p><p id="drillCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button primary small" id="homeDrillStart">계속 반복하기 →</button><button type="button" class="button outline small" data-tab="drill">암기표 고르기</button></div></article>
+</div><div class="home-progress"><div><span class="eyebrow green">MY STUDY</span><strong><span id="homeAttempted">0</span><small> / <span id="homeTotal">152</span>문항</small></strong></div><div class="home-progress-details"><div id="homeTrack" class="progress-track" role="img" aria-label="학습 진도"></div><div class="progress-legend"><span><i class="dot correct"></i>정답 <b id="homeCorrect">0</b></span><span><i class="dot wrong"></i>오답 <b id="homeWrong">0</b></span><span><i class="dot blank"></i>미풀이 <b id="homeUnanswered">152</b></span></div></div><button id="homeWrongButton" type="button" class="text-button" data-tab="review">전체 오답 노트 →</button></div>
         <div class="section-heading compact"><h2>병리 · 유형별로 집중하기</h2><span class="section-meta">한 탭에서 세 가지 방식</span></div>
         <div class="path-type-shortcuts"><button type="button" data-path-start="path-image"><b>01</b><span><strong>사진 → 원인균</strong><small>명칭을 제외한 강의 사진 · 24문항</small></span><span aria-hidden="true">↗</span></button><button type="button" data-path-start="path-traits"><b>02</b><span><strong>원인균 특성 판별</strong><small>옳은 것 / 옳지 않은 것 · 32문항</small></span><span aria-hidden="true">↗</span></button><button type="button" data-path-start="path-general"><b>03</b><span><strong>총론 판별</strong><small>조직반응·방어·진단법 · 24문항</small></span><span aria-hidden="true">↗</span></button></div>
         <div class="related"><span>함께 복습하기</span><a href="../pharmacology-quiz-hub/">약물의 이해 허브 ↗</a><a href="../microbiology-quiz-hub/">미생물학 허브 ↗</a></div>
@@ -55,8 +61,11 @@
 
       <section id="panel-pathology" role="tabpanel" aria-labelledby="tab-pathology" hidden><div id="pathologyContent"></div></section>
 
+      <section id="panel-lectures" role="tabpanel" aria-labelledby="tab-lectures" hidden><div id="lecturesContent"></div></section>
+      <section id="panel-drill" role="tabpanel" aria-labelledby="tab-drill" hidden><div id="drillContent"></div></section>
+
       <section id="panel-review" role="tabpanel" aria-labelledby="tab-review" hidden>
-        <div class="section-heading page-heading"><div><p class="eyebrow green">REVISIT & REMEMBER</p><h1>오답 노트</h1><p class="muted">다시 맞히면 오답에서 빠집니다. 진도는 문항별 최신 결과로 기록합니다.</p></div><div class="review-retry-actions"><button type="button" class="button primary small" id="retryAll">항생제 오답 →</button><button type="button" class="button path-primary small" id="pathRetryAll">병리 오답 →</button></div></div>
+        <div class="section-heading page-heading"><div><p class="eyebrow green">REVISIT & REMEMBER</p><h1>오답 노트</h1><p class="muted">다시 맞히면 오답에서 빠집니다. 진도는 문항별 최신 결과로 기록합니다.</p></div><div class="review-retry-actions"><button type="button" class="button primary small" id="retryAll">항생제 오답 →</button><button type="button" class="button path-primary small" id="pathRetryAll">병리 오답 →</button><button type="button" class="button primary small" id="lectureRetryAll">강의별 오답 →</button><button type="button" class="button outline small" id="drillRetryAll">표 암기 오답 →</button></div></div>
         <div id="reviewSummary" class="review-summary"></div>
         <div class="review-toolbar"><label class="sr-only" for="reviewTopic">오답 주제</label><select id="reviewTopic"><option value="all">모든 주제</option><option value="oral">경구 투여</option><option value="bbb">BBB 통과</option><option value="pregnancy">임신 중 선택</option><option value="cases">증례별 선택</option><option value="path-image">병리 · 사진형</option><option value="path-traits">병리 · 특성형</option><option value="path-general">병리 · 총론형</option></select><label class="sr-only" for="reviewSearch">오답 내용 검색</label><input id="reviewSearch" type="search" placeholder="약물명이나 문제 내용 검색" autocomplete="off"><span id="reviewCount" class="muted" aria-live="polite"></span></div>
         <div id="reviewList"></div>
@@ -78,6 +87,6 @@
     <footer><span>감염과 면역 · 학습 허브</span><span>강의 기반 학습 · 기록은 현재 브라우저에 저장됩니다</span><a href="https://github.com/afratoxin/afratoxin.github.io/tree/master/infection-immunity-hub" target="_blank" rel="noopener noreferrer">GitHub ↗</a></footer>
   </div>
   <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
-  <script type="module" src="app.mjs?v=20261108c"></script>
+  <script type="module" src="app.mjs?v=20261114a"></script>
 </body>
 </html>
