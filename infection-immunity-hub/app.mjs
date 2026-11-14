@@ -1,13 +1,15 @@
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261114b';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261114b';
-import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261114b';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261114b';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261114b';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261114b';
-import {LECTURES,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261114b';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261114b';
-import {sourceText} from './study-core.mjs?v=20261114b';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261114c';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261114c';
+import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261114c';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261114c';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261114c';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261114c';
+import {LECTURES,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261114c';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261114c';
+import {sourceText} from './study-core.mjs?v=20261114c';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261114c';
 
+installEvidenceViewer();
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KEYS={progress:'infection-immunity.progress.v1',session:'infection-immunity.session.v1',bookmarks:'infection-immunity.bookmarks.v1'};
@@ -94,8 +96,8 @@ function renderSession(){
   if(!session.items.length){stage.innerHTML='<div class="empty-state"><span class="empty-icon" aria-hidden="true">✓</span><h2>이 조건에 해당하는 문제가 없습니다.</h2><p>오답이 없거나 선택한 형식·주제의 문제가 없을 수 있습니다. 위 필터를 바꾸어 새 세트를 시작하세요.</p><button type="button" class="button outline" data-start="mixed">전체에서 종합 20문항 풀기 →</button></div>';return;}
   if(session.position>=session.items.length){renderSummary();return;}
   const item=session.items[session.position],q=QUESTIONS.find(q=>q.id===item.id),graded=item.selected!==null;
-  const answered=session.items.filter(i=>i.selected!==null),correct=answered.filter(i=>i.selected===i.answer).length;
-  stage.innerHTML=`<div class="quiz-layout"><article id="questionCard" class="question-card" tabindex="-1" aria-labelledby="questionStem">
+  const answered=session.items.filter(i=>i.selected!==null);
+  const question=`<article id="questionCard" class="question-card" tabindex="-1" aria-labelledby="questionStem">
     <div class="q-top"><div class="q-tags"><span class="pill">${TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX 퀴즈'}</span><span class="format-tag">${q.id}</span></div><button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button></div>
     <div class="session-line"><span>문제 <b>${session.position+1}</b> / ${session.items.length}</span><span>${answered.length}문항 채점 완료</span></div><div class="session-track" aria-hidden="true"><span style="width:${session.position/session.items.length*100}%"></span></div>
     <h2 id="questionStem" class="question-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${q.format==='mcq'?'가장 적절한 답을 하나 고르세요. · 키보드 1–5':'물음에 대한 답이 예이면 O, 아니요이면 X를 고르세요. · 키보드 O / X'}</p>
@@ -103,9 +105,9 @@ function renderSession(){
       let cls='',label='';
       if(graded){if(i===item.answer){cls=' right';label='정답';}else if(i===item.selected){cls=' wrong';label='내 선택';}else cls=' dim';}
       return `<button type="button" class="choice${cls}" data-answer="${i}" ${graded?'disabled':''}><span class="choice-num" aria-hidden="true">${i+1}</span><span class="choice-copy">${escape(c)}</span>${label?`<span class="choice-label">${label}</span>`:''}</button>`;
-    }).join('')}</div>${graded?explanation(q,item.selected===item.answer):''}
-    <div class="question-actions"><button type="button" class="text-button" data-action="${session.position?'previous':'menu'}">${session.position?'← 이전 문제':'← 학습 허브'}</button>${graded?`<button type="button" class="button primary" id="nextQuestion" data-action="next">${session.position===session.items.length-1?'세트 결과 보기':'다음 문제'} →</button>`:'<button type="button" class="text-button" data-action="skip">건너뛰기 →</button>'}</div></article>
-    <aside class="quiz-aside"><div class="aside-card"><p class="eyebrow green">THINK IN THREE STEPS</p><h3>선택의 기준을 연결하세요.</h3><div class="decision-step"><b>1</b> 어디에 감염되었나?</div><div class="decision-step"><b>2</b> 어떤 균이며, 감수성은?</div><div class="decision-step"><b>3</b> 숙주와 투여 경로는?</div><p>혈중 농도와 감염 부위 농도는<br>서로 다를 수 있습니다.</p></div><div class="aside-card white"><p class="eyebrow green">THIS SESSION</p><div class="aside-count">${correct}<small>정답 / ${answered.length}문항 채점</small></div><p>건너뛴 문제는 미풀이로 남습니다.<br>문항별 최신 결과는 전체 진도에 반영됩니다.</p><button type="button" class="text-button" data-tab="review">오답 노트 확인 →</button></div></aside></div>`;
+    }).join('')}</div>
+    <div class="question-actions"><button type="button" class="text-button" data-action="${session.position?'previous':'menu'}">${session.position?'← 이전 문제':'← 학습 허브'}</button>${graded?`<button type="button" class="button primary" id="nextQuestion" data-action="next">${session.position===session.items.length-1?'세트 결과 보기':'다음 문제'} →</button>`:'<button type="button" class="text-button" data-action="skip">건너뛰기 →</button>'}</div></article>`;
+  stage.innerHTML=practiceLayout({question,feedback:graded?explanation(q,item.selected===item.answer):'',q,session,sourceLabel:source(q)});
 }
 function renderSummary(){
   const answered=session.items.filter(i=>i.selected!==null),correct=answered.filter(i=>i.selected===i.answer).length,wrong=answered.length-correct;
@@ -190,6 +192,7 @@ document.querySelector('.main-nav [role=tablist]').addEventListener('keydown',e=
   e.preventDefault();navigate(tabs[n].dataset.tab,true);
 });
 document.addEventListener('keydown',e=>{
+  if(document.querySelector('dialog[open]'))return;
   if(e.defaultPrevented||e.ctrlKey||e.altKey||e.metaKey||e.repeat||activeTab!=='quiz'||!session||session.position>=session.items.length||!$('replacePrompt').hidden)return;
   if(e.target.closest('input,select,textarea,[role=tablist]'))return;
   const item=session.items[session.position];if(item.selected!==null)return;

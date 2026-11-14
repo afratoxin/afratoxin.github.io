@@ -1,4 +1,4 @@
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261114b';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261114c';
 export const ANTIBIOTIC_TABLES=[
  {title:'경구 투여와 전신 치료',intro:'경구 제형의 존재, 전신 흡수, 감염 부위의 적합성을 나누어 판단합니다.',headers:['구분','대표 약물','기억할 조건','강의 근거'],rows:[
  ['전신 치료에 경구 사용 가능','Amoxicillin · Ciprofloxacin · Metronidazole · Clindamycin · TMP/SMX · Doxycycline','원인균 감수성·흡수·임상적 안정 확인','40쪽'],

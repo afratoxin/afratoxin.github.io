@@ -14,7 +14,7 @@
 - 브라우저 저장소에 문항별 최신 결과·현재 세트·북마크를 저장합니다. 새로고침 후 이어 풀 수 있습니다. 정답 재풀이 시 오답에서 빠지며 반복 시도는 전체 문항 수를 늘리지 않습니다.
 - 저장소 사용이 제한되면 현재 방문의 메모리에서 학습을 계속하고 저장 제한을 표시합니다.
 - 병리 사진 31개는 강의 PDF에 포함된 실제 표본 사진을 추출해 사용합니다. 정답이 드러나는 슬라이드 제목·설명·주석을 제외하고 익명 파일명과 대체 텍스트를 사용했습니다. 사진을 누르면 확대할 수 있습니다.
-- 원본 PDF, 전체 페이지 이미지, 강의 추출 텍스트는 공개하지 않습니다. 선택한 표본 사진의 출처와 처리 기록은 `assets/pathology/manifest.json`에 있습니다.
+- 원본 PDF와 강의 추출 텍스트는 포함하지 않습니다. 문항이 인용한 실제 PDF 415개 페이지를 선택해 캡처했으며, 채점 후 근거로 표시합니다. 페이지와 이미지 처리 기록은 `assets/evidence/manifest.json`, 표본 사진 기록은 `assets/pathology/manifest.json`에 있습니다.
 
 ## 자료 해석
 
@@ -33,11 +33,11 @@
 빌드·설치 없이 정적 HTTP 서버로 이 저장소를 제공합니다. 퀴즈 논리 검증:
 
 ```text
-node --test infection-immunity-hub/quiz.test.mjs infection-immunity-hub/pathology.test.mjs infection-immunity-hub/study.test.mjs infection-immunity-hub/study-data.test.mjs infection-immunity-hub/emphasis.test.mjs
+node --test infection-immunity-hub/quiz.test.mjs infection-immunity-hub/pathology.test.mjs infection-immunity-hub/study.test.mjs infection-immunity-hub/study-data.test.mjs infection-immunity-hub/emphasis.test.mjs infection-immunity-hub/practice-layout.test.mjs
 node infection-immunity-hub/validate.mjs
 ```
 
-자바스크립트 모듈은 모든 import와 HTML에서 같은 `20261114b` 버전을 사용합니다. 변경 후 버전을 함께 갱신합니다. 새 문항은 고유 ID, 한 개의 정답, 해설, PDF 쪽수, 필요한 조건을 포함해야 합니다. 자동 검증은 388문항의 구조·정답·출처, 31개 사진, 저장·복원·재풀이·북마크 동기화와 모듈 연결을 확인합니다. 데스크톱과 모바일에서는 사진 확대, 정답 단축키, 정리표 스크롤, 새로고침 후 이어풀기, 통합 오답 노트와 재풀이를 확인했습니다.
+자바스크립트 모듈은 모든 import와 HTML에서 같은 `20261114c` 버전을 사용합니다. 변경 후 버전을 함께 갱신합니다. 새 문항은 고유 ID, 한 개의 정답, 해설, PDF 쪽수, 필요한 조건을 포함해야 합니다. 자동 검증은 388문항의 구조·정답·출처, 31개 사진, 저장·복원·재풀이·북마크 동기화와 모듈 연결을 확인합니다. 데스크톱과 모바일에서는 사진 확대, 정답 단축키, 정리표 스크롤, 새로고침 후 이어풀기, 통합 오답 노트와 재풀이를 확인했습니다.
 
 
 ## 강의별 감별 문제와 표 암기 추가 2026년 11월 14일
@@ -49,5 +49,5 @@ node infection-immunity-hub/validate.mjs
 - 새 기록은 `infection-immunity.lectures.*.v1` 및 `infection-immunity.drill.*.v1`에 저장합니다. 기존 항생제·병리 기록은 유지됩니다.
 - 족보 답안 충돌, 답 이름을 노출하는 발문, 중복·유사 의미 선택지를 검토했습니다. 발열 매개체를 배타적으로 단정하지 않으며 TT/LL은 면역 스펙트럼의 극단을 명시합니다. 신생아 치료 및 옛 백신·예방 지침을 단정적으로 재생산하지 않습니다.
 
-가독성 개편은 문제 21–25px, 보기 18–21px, 해설 17–18px로 확대하고 버튼·카드 여백을 줄였습니다. 강의별·표 암기 풀이 중에는 범위 설정을 접습니다. 채점 후 정답은 파랑, 오답은 빨강, 결정적 단서는 노랑으로 강조합니다. 풀기 전에는 질문의 긍정·부정 표현만 강조하며 정답 단서는 표시하지 않습니다.
+가독성 개편은 문제 21–25px, 보기 18–21px, 해설 17–18px로 확대하고 버튼·카드 여백을 줄였습니다. PC는 왼쪽 문제·세로 보기, 오른쪽 세트 정답률·해설·근거 캡처의 2단 구성입니다. 작은 화면에서는 문제 아래에 보조 자료가 이어집니다. 강의별 감별의 첫 화면에는 탭 대신 단원별 학습과 종합 학습 버튼을 두고, 단원별 학습에서 16개 강의를 선택합니다. 강의별·표 암기 풀이 중에는 범위 설정을 접습니다. 채점 후 정답은 파랑, 오답은 빨강, 결정적 단서는 노랑으로 강조합니다. 풀기 전에는 질문의 긍정·부정 표현만 강조하며 정답 단서와 근거 이미지는 표시하지 않습니다.
 - 추가 확인: `node --test infection-immunity-hub/study.test.mjs infection-immunity-hub/study-data.test.mjs` 및 `node infection-immunity-hub/validate.mjs`.
