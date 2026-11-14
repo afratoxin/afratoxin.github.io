@@ -207,7 +207,8 @@ window.BrainArenaCatalog = {
       "title": "합체 사다리",
       "description": "9개 가지의 5줄 사다리부터 기울어진 6줄 사다리까지. 보이는 하단 ?의 값을 왼쪽부터 맞히세요.",
       "tag": "5단계 · 재조립 / 경로 추적",
-      "href": "../merge-ladder/?v=20261114-unified"
+      "href": "../merge-ladder/?v=20261114-relay8",
+      "group": "pyramid-game"
     },
     {
       "id": "trisection",
@@ -223,7 +224,8 @@ window.BrainArenaCatalog = {
       "title": "히든 알고리즘",
       "description": "눈에 잘 들어오는 5×5 판에서 8×8 판까지. 숫자의 이동 우선순위를 찾아 목표에 정확히 멈추세요.",
       "tag": "5단계 · 우선순위 / 경로 추론",
-      "href": "../hidden-algorithm/?v=20261114-unified"
+      "href": "../hidden-algorithm/?v=20261114-relay8",
+      "group": "pyramid-game"
     },
     {
       "id": "weekday-equation",
@@ -231,7 +233,8 @@ window.BrainArenaCatalog = {
       "title": "요일 수식",
       "description": "실제 달력의 날짜로 제곱·지수·팩토리얼·나눗셈 수식을 완성하세요. 작은 목표값으로 연산의 조합을 익힙니다.",
       "tag": "5단계 · 달력 / 다양한 연산",
-      "href": "../weekday-equation/?v=20261114-unified"
+      "href": "../weekday-equation/?v=20261114-relay8",
+      "group": "pyramid-game"
     },
     {
       "id": "triple-maze",
@@ -287,7 +290,7 @@ window.BrainArenaCatalog = {
       "title": "제로섬 게임",
       "description": "양수·음수 18개의 위치를 기억하세요. 가린 뒤 제시되는 두 수와 합이 0이 되는 위치를 순서대로 찾습니다.",
       "tag": "에이스 4종 · 정답마다 관찰시간 10초 감소",
-      "href": "../zero-sum/?v=20261114-unified",
+      "href": "../zero-sum/?v=20261114-relay8",
       "group": "ace-four"
     },
     {
@@ -296,7 +299,7 @@ window.BrainArenaCatalog = {
       "title": "에이스 4종 순환",
       "description": "양자택일 → 면적 순위 → 픽셀넘버2 → 제로섬. 정답마다 120초에서 10초까지 줄어드는 12문제에 도전합니다.",
       "tag": "순환 도전 · 12연속 정답 / 자유 연습",
-      "href": "../ace-circuit/?v=20261114-unified",
+      "href": "../ace-circuit/?v=20261114-relay8",
       "group": "ace-four"
     },
     {
@@ -319,27 +322,27 @@ window.BrainArenaCatalog = {
       "id": "time-shift",
       "category": "university-war",
       "title": "시간이동",
-      "description": "숫자 카드를 한 번씩 사용해 시간 문장을 완성하세요. 분의 올림, 자정 통과, 전후 이동까지 5단계로 도전합니다.",
+      "description": "1~6 또는 1~7을 한 번씩 배치해 시간 문장을 완성하세요. 자정 통과와 연속 이동까지 총 8단계.",
       "tag": "시즌 3 릴레이 · 숫자 배치 / 5단계",
-      "href": "../time-shift/?v=20261114-unified",
+      "href": "../time-shift/?v=20261114-relay8",
       "group": "relay-match"
     },
     {
       "id": "pixel-art",
       "category": "university-war",
       "title": "픽셀아트",
-      "description": "9장의 3×3 픽셀 카드 중 세 장을 골라 회전하세요. 색의 혼합 비율까지 맞아야 목표 그림이 완성됩니다.",
+      "description": "9장의 픽셀 카드 중 타깃을 완성할 세 장을 고르세요. 머릿속 회전과 색의 혼합, 총 8단계.",
       "tag": "시즌 3 릴레이 · 색 혼합 / 5단계",
-      "href": "../pixel-art/?v=20261114-unified",
+      "href": "../pixel-art/?v=20261114-relay8",
       "group": "relay-match"
     },
     {
       "id": "block-count",
       "category": "university-war",
       "title": "블록 개수 세기",
-      "description": "입체로 쌓인 정육면체의 전체 개수를 세세요. 정답 공개 후에는 층별 그림으로 가려진 받침 블록까지 확인합니다.",
+      "description": "쌓인 정육면체의 전체 개수를 세세요. 작은 계단부터 더 큰 입체까지 총 8단계.",
       "tag": "시즌 1 릴레이 · 입체 관찰 / 5단계",
-      "href": "../block-count/?v=20261114-unified",
+      "href": "../block-count/?v=20261114-relay8",
       "group": "relay-match"
     }
   ],
@@ -359,6 +362,14 @@ window.BrainArenaCatalog = {
       "english": "RELAY MATCH",
       "description": "시즌 3의 시간이동·픽셀아트와 시즌 1의 블록 개수 세기를 한곳에서 연습하세요.",
       "summary": "3종 개별 연습 · 시즌 1·3"
+    },
+    {
+      "id": "pyramid-game",
+      "category": "university-war",
+      "title": "피라미드 게임",
+      "english": "PYRAMID GAME",
+      "description": "합체 사다리 · 히든 알고리즘 · 요일 수식을 한곳에서 연습하세요.",
+      "summary": "3종 개별 연습 · 시즌 2"
     }
   ]
 };

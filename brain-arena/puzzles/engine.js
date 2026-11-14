@@ -22,32 +22,38 @@ function scale(level=1,r=Math.random){
  throw Error('Could not prepare a balance problem');
 }
 
-// Clock statements use a 24-hour clock; a day rollover is intentional.
-function timeParts(kind){
- const b=i=>({slot:i});
- if(kind===0)return[b(0),'시에서 ',b(1),'시간 후는 ',b(2),'시이다.'];
- if(kind===1)return[b(0),'시 ',b(1),'분에서 ',b(2),'분 후는 ',b(3),'시 정각이다.'];
- if(kind===2||kind===3)return[b(0),'시 ',b(1),'분에서 ',b(2),'시간 ',b(3),'분 '+(kind===2?'후':'전')+'는 ',b(4),'시 ',b(5),'분이다.'];
- return[b(0),'시 ',b(1),'분에서 ',b(2),'시간 ',b(3),'분 후로 이동하고, 다시 ',b(4),'시간 ',b(5),'분 전으로 이동하면 ',b(6),'시 ',b(7),'분이다.'];
+// Every blank is one digit. Each puzzle consumes exactly 1..6 or 1..7 once.
+const clockValue=(a,indices)=>Number(indices.map(i=>a[i]).join(''));
+function timeParts(p){
+ const [h,m,eh,em]=p.fields.map(slots=>({slots})),parts=[h,'시 ',m,'분에서 '];
+ p.moves.forEach((d,i)=>{const n=Math.abs(d);parts.push((i?'다시 ':'')+(Math.floor(n/60)?Math.floor(n/60)+'시간 ':'')+(n%60?n%60+'분 ':'')+(d>0?'후':'전')+(i===p.moves.length-1?'는 ':'로 이동하고, '));});
+ return [...parts,eh,'시 ',em,'분이다.'];
 }
 function validTime(p,a){
- if(a.length!==p.cards.length||a.some(n=>!Number.isInteger(n))||[...a].sort((a,b)=>a-b).join()!==[...p.cards].sort((a,b)=>a-b).join())return false;
- if(p.kind===0)return a.every(n=>n>=0&&n<24)&&mod(a[0]+a[1],24)===a[2];
- if(p.kind===1)return a[0]>=0&&a[0]<24&&a[1]>=0&&a[1]<60&&a[2]>=0&&a[2]<60&&a[3]>=0&&a[3]<24&&mod(60*a[0]+a[1]+a[2],1440)===60*a[3];
- const hours=p.kind===4?[0,2,4,6]:[0,2,4],minutes=p.kind===4?[1,3,5,7]:[1,3,5];
- if(hours.some(i=>a[i]<0||a[i]>23)||minutes.some(i=>a[i]<0||a[i]>59))return false;
- if(p.kind===4)return mod(a[0]*60+a[1]+a[2]*60+a[3]-a[4]*60-a[5],1440)===a[6]*60+a[7];
- return mod(a[0]*60+a[1]+(p.kind===2?1:-1)*(a[2]*60+a[3]),1440)===a[4]*60+a[5];
+ if(a.length!==p.cards.length||a.some(n=>!Number.isInteger(n))||[...a].sort((a,b)=>a-b).join()!==p.cards.join())return false;
+ const [h,m,eh,em]=p.fields.map(indices=>clockValue(a,indices));
+ return h<24&&eh<24&&m<60&&em<60&&mod(h*60+m+sum(p.moves),1440)===eh*60+em;
 }
 function time(level=1,r=Math.random){
- const kind=level-1;
- for(let t=0;t<2000;t++){
-  let a;
-  if(kind===0){const h=int(1,22,r),d=int(1,14,r);a=[h,d,mod(h+d,24)];}
-  else if(kind===1){const h=int(1,22,r),m=int(1,59,r);a=[h,m,60-m,mod(h+1,24)];}
-  else{a=[int(0,23,r),int(0,59,r),int(1,12,r),int(1,59,r)];if(kind===4)a.push(int(1,12,r),int(1,59,r));const v=mod(a[0]*60+a[1]+(kind===3?-1:1)*(a[2]*60+a[3])-(kind===4?a[4]*60+a[5]:0),1440);a.push(Math.floor(v/60),v%60);}
-  if(new Set(a).size!==a.length)continue;
-  const p={level,kind,cards:shuffle(a,r),sample:a,parts:timeParts(kind)};if(validTime(p,a))return p;
+ const count=level<4?6:7,cards=Array.from({length:count},(_,i)=>i+1);
+ // The first three stages use one-digit hours. Later stages add a two-digit
+ // hour, midnight crossings, and then multiple forward/backward moves.
+ const longStart=![5,6].includes(level),widths=count===6?[1,2,1,2]:longStart?[2,2,1,2]:[1,2,2,2];
+ let index=0;const fields=widths.map(n=>Array.from({length:n},()=>index++));
+ for(let t=0;t<10000;t++){
+  const a=shuffle(cards,r),[h,m,eh,em]=fields.map(indices=>clockValue(a,indices));if(h>=24||eh>=24||m>=60||em>=60)continue;
+  const delta=(eh-h)*60+em-m;let total;
+  if(level===1){if(delta<=0||delta>240||em<=m)continue;total=delta;}
+  else if(level===2){if(delta<=0||em>=m)continue;total=delta;}
+  else if(level===3){if(delta>=0||em<=m)continue;total=delta;}
+  else if([4,7,8].includes(level)){if(delta>=0)continue;total=delta+1440;}
+  else if(level===5){if(delta<=0)continue;total=delta-1440;}
+  else{if(delta<=0)continue;total=delta;}
+  let moves=[total];
+  if(level===6){const back=int(40,220,r);moves=[total+back,-back];}
+  if(level===7){const back=int(80,300,r);moves=[-back,total+back];}
+  if(level===8){const forward=int(100,350,r),back=int(60,240,r);moves=[forward,-back,total-forward+back];}
+  const p={level,cards,fields,moves,sample:a};p.parts=timeParts(p);if(validTime(p,a))return p;
  }
  throw Error('Could not prepare a clock statement');
 }
@@ -57,26 +63,36 @@ function rotated(a,k,n=3){for(let i=0;i<mod(k,4);i++)a=rotatePixels(a,n);return 
 const PIXEL_COLORS=['#f3f2e9','#e34958','#f1cf53','#ee9048','#4b82df','#a96dcc','#58aa70','#252c3a'];
 function mixPixels(cards){
  const result=[];for(let i=0;i<9;i++){const counts=[0,0,0];for(const a of cards){if(a[i]===1)counts[0]++;else if(a[i]===2)counts[1]++;else if(a[i]===4)counts[2]++;else if(a[i]!==0)return null;}
-  const used=counts.filter(Boolean);if(used.length>1&&new Set(used).size!==1)return null;
+  if(counts.some(n=>n>1))return null;
   result.push(counts.reduce((s,n,j)=>s|(n?1<<j:0),0));
  }return result;
 }
-function validArt(p,selection){
- if(selection.length!==3||new Set(selection.map(s=>s.id)).size!==3||selection.some(s=>!Number.isInteger(s.id)||s.id<0||s.id>=9||!Number.isInteger(s.rotation)||s.rotation<0||s.rotation>3))return false;
- const result=mixPixels(selection.map(s=>rotated(p.cards[s.id],s.rotation)));return result!==null&&result.join()===p.target.join();
+function artSolution(p,ids){
+ if(ids.length!==3||new Set(ids).size!==3||ids.some(id=>!Number.isInteger(id)||id<0||id>=p.cards.length))return null;
+ for(let a=0;a<4;a++)for(let b=0;b<4;b++)for(let c=0;c<4;c++){
+  const turns=[a,b,c],result=mixPixels(ids.map((id,i)=>rotated(p.cards[id],turns[i])));
+  if(result&&result.join()===p.target.join())return ids.map((id,i)=>({id,rotation:turns[i]}));
+ }return null;
 }
+const validArt=(p,ids)=>artSolution(p,ids)!==null;
 function art(level=1,r=Math.random){
  for(let t=0;t<3000;t++){
   const cards=shuffle(Array.from({length:9},(_,i)=>{const color=1<<Math.floor(i/3);let mask;do{mask=Array.from({length:9},()=>r()<(.27+level*.035)?color:0);}while(mask.filter(Boolean).length<2||mask.filter(Boolean).length>6);return mask;}),r);
   const ids=shuffle(Array.from({length:9},(_,i)=>i),r).slice(0,3),sample=ids.map(id=>({id,rotation:int(0,3,r)})),target=mixPixels(sample.map(s=>rotated(cards[s.id],s.rotation)));
-  if(target&&target.filter(Boolean).length>=5&&target.filter(v=>![0,1,2,4].includes(v)).length>=(level>2?2:1))return{level,cards,target,sample};
+  if(target&&target.filter(Boolean).length>=(level<6?5:level===6?7:8)&&target.filter(v=>![0,1,2,4].includes(v)).length>=(level<6?(level>2?2:1):level-3)){
+   if(level>=6){
+    // Close distractors make the added stages harder without adding controls.
+    cards.forEach((card,id)=>{if(ids.includes(id))return;const color=card.find(Boolean),source=ids.map(i=>cards[i]).find(a=>a.includes(color));if(!source)return;const next=[...source];for(const at of shuffle(Array.from({length:9},(_,i)=>i),r).slice(0,level===6?3:level===7?2:1))next[at]=next[at]?0:color;if(next.filter(Boolean).length>=2)cards[id]=rotated(next,int(0,3,r));});
+   }
+   return{level,cards,target,sample};
+  }
  }throw Error('Could not prepare pixel art');
 }
 
 // Height maps are solid to the floor and fall toward the viewer. Every column's
 // top is visible, so its hidden support cubes can be inferred without guessing.
 function blocks(level=1,r=Math.random){
- const n=level<3?3:level<5?4:5,max=level+2,heights=[];
+ const n=level<3?3:level<5?4:level<7?5:level-1,max=level+2,heights=[];
  for(let x=0;x<n;x++){heights[x]=[];for(let y=0;y<n;y++){const cap=Math.min(x?heights[x-1][y]:max,y?heights[x][y-1]:max);heights[x][y]=x===0&&y===0?max:Math.max(1,cap-int(0,1,r));}}
  return{level,n,heights,answer:sum(heights.flat())};
 }
@@ -117,6 +133,6 @@ function patternAction(p,found,action){
  const correct=Number.isInteger(action)&&p.solutions.includes(action)&&!found.includes(action);
  return{delta:correct?1:-1,complete:false,found:correct?[...found,action]:[...found]};
 }
-const api={int,shuffle,sum,mod,scale,scaleSolutions,validScale,time,timeParts,validTime,rotatePixels,rotated,PIXEL_COLORS,mixPixels,art,validArt,blocks,blockSVG,rotatePattern,patternVariants,patternKey,windowAt,patternSolutions,patternSet,patternAction};
+const api={int,shuffle,sum,mod,scale,scaleSolutions,validScale,time,timeParts,validTime,rotatePixels,rotated,PIXEL_COLORS,mixPixels,art,artSolution,validArt,blocks,blockSVG,rotatePattern,patternVariants,patternKey,windowAt,patternSolutions,patternSet,patternAction};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;root.ArenaPuzzles=api;
 })(typeof window!=='undefined'?window:globalThis);

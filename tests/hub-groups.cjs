@@ -4,3 +4,11 @@ console.log('PASS: main/folder/subfolder navigation; four solo games plus circui
 
 context.location.hash='#university-war/relay-match';change();A.match(get('heading').textContent,/릴레이 매치/);A.match(get('counts').textContent,/3종/);A(!get('counts').textContent.includes('4종'));for(const id of ['time-shift','pixel-art','block-count'])A(get('games').innerHTML.includes('../'+id+'/'));A.equal((get('games').innerHTML.match(/class="tile game-tile"/g)||[]).length,3);
 console.log('PASS: Relay Match has exactly its three games and accurate independent group counts.');
+
+context.location.hash='#university-war';change();
+for(const group of context.window.BrainArenaCatalog.groups.filter(g=>g.category==='university-war')){
+ A(get('games').innerHTML.includes('#university-war/'+group.id));
+ for(const game of context.window.BrainArenaCatalog.games.filter(g=>g.group===group.id))A(!get('games').innerHTML.includes('href="'+game.href+'"'),game.id+' must only appear inside its group');
+}
+context.location.hash='#university-war/pyramid-game';change();A.match(get('heading').textContent,/피라미드 게임/);for(const id of ['merge-ladder','hidden-algorithm','weekday-equation'])A(get('games').innerHTML.includes('../'+id+'/'));A.equal((get('games').innerHTML.match(/class="tile game-tile"/g)||[]).length,3);A.match(get('counts').textContent,/3종/);
+console.log('PASS: Pyramid folder contains exactly three games; every nested university game is absent from the outer folder.');
