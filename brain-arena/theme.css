@@ -1,0 +1,153 @@
+/* BRAIN ARENA shared interface. Load after each game's board-specific styles. */
+:root[data-arena] {
+  color-scheme: dark;
+  font-family: "Noto Sans KR", "Malgun Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  --arena-bg: #0c1422;
+  --arena-panel: #152338;
+  --arena-raised: #1b2d45;
+  --arena-line: #334960;
+  --arena-text: #edf3fb;
+  --arena-muted: #a5b7cd;
+  --arena-accent: #83e2cc;
+  --arena-radius: 12px;
+  --arena-width: 1240px;
+  --bg: var(--arena-bg);
+  --panel: var(--arena-panel);
+  --muted: var(--arena-muted);
+  --gold: var(--arena-accent);
+  --mint: var(--arena-accent);
+  --line: var(--arena-line);
+  background: var(--arena-bg);
+  color: var(--arena-text);
+}
+html[data-arena] body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--arena-text);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  background: radial-gradient(ellipse at 25% 0, #20365166, transparent 55%), var(--arena-bg);
+}
+html[data-arena] :is(.shell, .wrap, body > main) {
+  width: 100%;
+  max-width: var(--arena-width);
+  margin: 0 auto;
+  padding: 0 28px 44px;
+}
+html[data-arena] .arena-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  gap: 20px;
+  min-height: 78px;
+  padding: 16px 0;
+  margin: 0;
+  border-bottom: 1px solid var(--arena-line);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+html[data-arena] .arena-header .brand {
+  color: var(--arena-accent);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .18em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.arena-nav { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.arena-nav a { padding: 7px 11px; border: 1px solid transparent; border-radius: 7px; color: var(--arena-muted); font-size: 12px; text-decoration: none; }
+.arena-nav a:hover { background: var(--arena-raised); border-color: var(--arena-line); color: var(--arena-text); }
+html[data-arena="game"] :is(div.intro, .heading, div.hero) { margin: 28px 0 24px; gap: 20px; padding: 0; }
+html[data-arena="game"] h1 { color: var(--arena-text); font-size: clamp(30px, 3.4vw, 44px); line-height: 1.2; letter-spacing: -.055em; margin: 8px 0 10px; }
+html[data-arena="game"] :is(h1 span, .gold) { color: var(--arena-accent); }
+html[data-arena="game"] :is(.eyebrow, .heading > div > small, .hero > div > small) { color: var(--arena-accent); font-size: 10px; font-weight: 750; letter-spacing: .16em; }
+html[data-arena="game"] :is(.lead, .subtitle, .heading > p, .hero > p, p.intro, main > p) { color: var(--arena-muted); font-size: 13px; line-height: 1.8; }
+html[data-arena="game"] :is(.layout, .arithmetic-layout, .death-layout) { grid-template-columns: minmax(0, 1fr) 304px; gap: 20px; align-items: start; }
+html[data-arena="game"] :is(.side, main > aside) { gap: 14px; min-width: 0; }
+html[data-arena="game"] :is(.board-shell, .board-panel, .map-panel, .stage, .arena, .panel, .control-panel, .side > .card, .review, #result) {
+  background: var(--arena-panel);
+  border: 1px solid var(--arena-line);
+  border-radius: var(--arena-radius);
+  box-shadow: none;
+}
+html[data-arena="game"] :is(.board-shell, .board-panel, .map-panel, .stage, .arena) { padding: 20px; min-width: 0; }
+html[data-arena="game"] :is(.panel, .control-panel, .side > .card) { padding: 20px; }
+html[data-arena="game"] :is(.panel h2, .control-panel h2) { color: var(--arena-text); font-size: 15px; letter-spacing: -.025em; }
+html[data-arena="game"] :is(.board-meta, .board-top, .board-head .micro, .stage-top, .stage-head, .panel-head, .board-caption, .caption, .note, .label, .help, .tip, .muted) { color: var(--arena-muted); }
+html[data-arena="game"] :is(.stage-top, .stage-head, .panel-head) { border-color: var(--arena-line); }
+html[data-arena="game"] :is(.value, .time-value, .stats b, .stats strong, .stat strong, .stats-bar strong) { color: var(--arena-accent); font-variant-numeric: tabular-nums; }
+html[data-arena="game"] :is(.stats small, .stat > span, .label, .elapsed-line) { color: var(--arena-muted); font-size: 11px; }
+html[data-arena="game"] :is(.stats-bar, .stat) { background: var(--arena-panel); border-color: var(--arena-line); }
+html[data-arena="game"] .stats-bar .stat { padding: 12px 10px; }
+html[data-arena="game"] .stats-bar .stat strong { font-size: 25px; white-space: nowrap; }
+html[data-arena="game"] #clock { color: var(--arena-accent); }
+html[data-arena="game"] :is(.sequence, .steps) > span { background: var(--arena-raised); border-color: var(--arena-line); color: var(--arena-muted); }
+html[data-arena="game"] :is(.sequence, .steps) > span.active { border-color: var(--arena-accent); color: var(--arena-accent); }
+html[data-arena="game"] :is(.direction-pad button, .pad button, .keypad button, #minus, #plus) { background: var(--arena-raised); color: var(--arena-text); border: 1px solid var(--arena-line); border-radius: 8px; }
+html[data-arena="game"] :is(.level-progress, .circuit-progress, .ready) { background: var(--arena-panel); border: 1px solid var(--arena-line); border-radius: var(--arena-radius); }
+html[data-arena="game"] .level-progress { display: grid; grid-template-columns: minmax(0,1fr) 240px; align-items: center; gap: 10px 20px; padding: 14px 18px; }
+html[data-arena="game"] .level-progress .level-steps { margin: 0; width: 100%; }
+html[data-arena="game"] .level-progress > p { grid-column: 1 / -1; margin: 0; }
+html[data-arena="game"] :is(.level-heading > b, .step-label) { color: var(--arena-accent); }
+html[data-arena="game"] :is(.level-steps > .active, .step-label > b) { background: var(--arena-accent); border-color: var(--arena-accent); color: #102b2b; }
+html[data-arena="game"] .reference-table thead th { background: var(--arena-raised); color: var(--arena-text); }
+html[data-arena="game"] :is(.primary, .secondary, .button, .soft, .text-button, #start, #submit, #next, #giveup, #restart, #pause, #resume, #retry, #reset, #broadcast, #declare, #buzz, #scan, #skip, #continue, #close, #clear, #undo, #memoryNext, #retry-formula) {
+  min-height: 44px;
+  border: 1px solid var(--arena-line);
+  border-radius: 8px;
+  padding: 11px 15px;
+  background: var(--arena-raised);
+  color: var(--arena-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.4;
+  text-decoration: none;
+  box-shadow: none;
+}
+html[data-arena="game"] :is(.primary, .button:not(.secondary), #start, #submit, #next, #resume, #declare, #buzz, #scan) { background: var(--arena-accent); border-color: var(--arena-accent); color: #102b2b; }
+html[data-arena="game"] :is(.primary, .secondary, .button, .soft, #start, #submit, #next, #giveup, #restart, #pause, #resume, #retry, #reset, #broadcast, #declare, #buzz, #scan, #skip):hover:enabled { filter: brightness(1.1); border-color: var(--arena-accent); }
+html[data-arena] :is(a, button, input, select, summary):focus-visible { outline: 3px solid var(--arena-accent); outline-offset: 3px; }
+html[data-arena="game"] :is(input:not([type="checkbox"]):not([type="range"]):not([type="radio"]), select) { background: #0d1a2b; color: var(--arena-text); border: 1px solid #59718c; border-radius: 8px; font-family: inherit; }
+html[data-arena="game"] :is(input, select):disabled { opacity: .55; }
+html[data-arena="game"] input::placeholder { color: #97aac0; }
+html[data-arena="game"] :is(.feedback, .message, [role="status"]) { background: #102033; color: #c4d4e6; border: 1px solid var(--arena-line); border-radius: 8px; padding: 12px 14px; }
+html[data-arena="game"] :is(.feedback.good, .message.good) { background: #163c34; border-color: #3b8a70; color: #c7f3e0; }
+html[data-arena="game"] :is(.feedback.bad, .message.bad) { background: #442b35; border-color: #a66777; color: #ffdae0; }
+html[data-arena="game"] details { border: 1px solid var(--arena-line); border-radius: var(--arena-radius); background: var(--arena-panel); padding: 16px 20px; margin-top: 22px; color: var(--arena-muted); }
+html[data-arena="game"] summary { color: var(--arena-text); font-size: 13px; font-weight: 750; cursor: pointer; }
+html[data-arena] :is(footer, .foot) { margin: 30px 0 0; padding: 18px 0 0; border-top: 1px solid var(--arena-line); color: #8298b1; font-size: 10px; letter-spacing: .08em; }
+html[data-arena="game"][data-arena-id="formula-maze"] .shell > main { grid-template-columns: minmax(0, 1fr) 304px; gap: 20px; }
+html[data-arena="game"][data-arena-id="maze-code"] .shell > main { gap: 20px; }
+html[data-arena="game"][data-arena-id="memory-poker"] main > h1,
+html[data-arena="game"][data-arena-id="mix-and-match-2"] main > h1 { margin-top: 28px; }
+html[data-arena="game"][data-arena-id="echo-maze"] .wrap > .eyebrow { margin-top: 28px; }
+html[data-arena="game"][data-arena-id="same-picture"] .board { width: min(100%, 500px); margin: 0 auto; }
+html[data-arena="game"] :is(body[data-game="same-picture"], body[data-game="same-number"]) .tile:not(.open) { background: var(--arena-raised); border-color: #59718c; color: var(--arena-accent); }
+html[data-arena="hub"] .hero { padding: 28px 0 36px; }
+html[data-arena="hub"] :is(.folder, .game-tile, .empty) { background: var(--arena-panel); border-color: var(--arena-line); border-radius: var(--arena-radius); box-shadow: none; }
+html[data-arena="hub"] .folder::before { background: var(--arena-panel); border-color: var(--arena-line); }
+html[data-arena="hub"] .folder:hover, html[data-arena="hub"] .game-tile:hover { border-color: var(--accent, var(--arena-accent)); background: var(--arena-raised); }
+html[data-arena="hub"] .game-tile .cta { background: var(--arena-accent); color: #102b2b; border-radius: 8px; }
+html[data-arena="hub"] .breadcrumb { margin-top: 24px; }
+@media(max-width: 900px) {
+  html[data-arena="game"] :is(.layout, .arithmetic-layout, .death-layout),
+  html[data-arena="game"][data-arena-id="formula-maze"] .shell > main { grid-template-columns: 1fr; }
+  html[data-arena="game"] :is(.side, main > aside) { display: flex; flex-direction: column; }
+}
+@media(max-width: 650px) {
+  html[data-arena] :is(.shell, .wrap, body > main) { padding: 0 16px 30px; }
+  html[data-arena] .arena-header { min-height: 70px; gap: 10px; }
+  html[data-arena] .arena-header .brand { font-size: 10px; letter-spacing: .12em; }
+  .arena-nav { gap: 0; }
+  .arena-nav a { padding: 6px; font-size: 10px; }
+  html[data-arena="game"] :is(div.intro, .heading, div.hero) { display: block; margin: 23px 0 20px; }
+  html[data-arena="game"] :is(.heading > p, .hero > p) { margin-top: 10px; }
+  html[data-arena="game"] :is(.board-shell, .board-panel, .map-panel, .stage, .arena, .panel, .control-panel, .side > .card) { padding: 15px; }
+  html[data-arena="game"] :is(.layout, .arithmetic-layout, .death-layout) { gap: 14px; }
+  html[data-arena="game"] .level-progress { grid-template-columns: 1fr; padding: 13px 15px; }
+  html[data-arena="game"] .level-heading { flex-wrap: wrap; gap: 5px 12px; }
+}
