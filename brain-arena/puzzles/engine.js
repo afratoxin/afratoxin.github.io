@@ -89,25 +89,69 @@ function art(level=1,r=Math.random){
  }throw Error('Could not prepare pixel art');
 }
 
-// Height maps are solid to the floor and fall toward the viewer. Every column's
-// top is visible, so its hidden support cubes can be inferred without guessing.
-function blocks(level=1,r=Math.random){
- const n=level<3?3:level<5?4:level<7?5:level-1,max=level+2,heights=[];
- for(let x=0;x<n;x++){heights[x]=[];for(let y=0;y<n;y++){const cap=Math.min(x?heights[x-1][y]:max,y?heights[x][y-1]:max);heights[x][y]=x===0&&y===0?max:Math.max(1,cap-int(0,1,r));}}
- return{level,n,heights,answer:sum(heights.flat())};
-}
-function blockSVG(p,layer=null){
- const n=p.n,w=34,h=18,z=36,project=(x,y,k)=>[60+(n+x-y)*w,70+(x+y)*h+(p.level+2-k)*z],points=a=>a.map(v=>project(...v).join(',')).join(' ');
- let body='';
- for(let d=0;d<=2*(n-1);d++)for(let x=0;x<n;x++){const y=d-x;if(y<0||y>=n)continue;const height=layer===null?p.heights[x][y]:(p.heights[x][y]>=layer?1:0);
-  for(let k=0;k<height;k++){
-   body+='<g class="counted-cube" data-column="'+x+','+y+'" data-layer="'+(layer===null?k+1:layer)+'">';
-   body+='<polygon points="'+points([[x+1,y,k],[x+1,y+1,k],[x+1,y+1,k+1],[x+1,y,k+1]])+'" fill="#8da3bd"/>';
-   body+='<polygon points="'+points([[x,y+1,k],[x+1,y+1,k],[x+1,y+1,k+1],[x,y+1,k+1]])+'" fill="#627d9f"/>';
-   body+='<polygon points="'+points([[x,y,k+1],[x+1,y,k+1],[x+1,y+1,k+1],[x,y+1,k+1]])+'" fill="#e3edf8"/></g>';
-  }
+// Explicit occupied unit cubes allow arches, wells and separated pillars.
+const BLOCK_NAMES={pillars:'여러 기둥',long:'긴 직육면체 변형',tower:'탑',pyramid:'피라미드',stairs:'꺾인 계단',well:'가운데가 빈 구조',arch:'구멍이 뚫린 문',bridge:'다리와 기둥',courtyard:'회랑과 중정'};
+function blockFamilies(level){return Object.keys(BLOCK_NAMES).filter(name=>level>=({well:2,arch:3,bridge:4,courtyard:6}[name]||1));}
+function blocks(level=1,r=Math.random,family=null){
+ const choices=blockFamilies(level);family=family&&choices.includes(family)?family:choices[int(0,choices.length-1,r)];
+ const cubes=new Map(),add=(x,y,z)=>cubes.set([x,y,z].join(','),[x,y,z]);
+ const box=(x,y,z,w,d,h)=>{for(let i=x;i<x+w;i++)for(let j=y;j<y+d;j++)for(let k=z;k<z+h;k++)add(i,j,k);};
+ const tier=Math.floor((level-1)/2),height=level<3?3:3+tier+int(0,1,r);
+ if(family==='pillars'){
+  const count=2+tier,thick=level<5?1:2;
+  for(let i=0;i<count;i++)box(i*(thick+1),i%2*(thick+1),0,thick,thick,int(2,height,r));
+  if(level>3)box(0,0,0,count*(thick+1)-1,1,1);
+ }else if(family==='long'){
+  const w=4+tier*2+int(0,1,r),d=level<4?2:3,h=level<3?2:height-1;
+  box(0,0,0,w,d,1);box(0,0,1,Math.max(2,w-2),1,h-1);box(w-2,0,1,2,d,1);
+  if(level>=5)box(Math.floor(w/2),1,1,2,2,height-1);
+ }else if(family==='tower'){
+  const n=level<3?3:level<6?5:7;box(0,0,0,n,n,1);
+  const core=level<3?1:3,offset=(n-core)/2;box(offset,offset,1,core,core,height-1);
+  if(level>=3)box(offset-1,offset-1,height,n-2,n-2,1);
+  if(level>=6)box((n-1)/2,(n-1)/2,height+1,1,1,2);
+ }else if(family==='pyramid'){
+  const n=3+tier*2;for(let z=0;z<=tier+1;z++){const side=n-2*z;if(side>0)box(z,z,z,side,side,1);}
+ }else if(family==='stairs'){
+  const n=3+tier,d=level<3?2:3;for(let x=0;x<n;x++)box(x,0,0,1,d,1+x);
+  if(level>=4)for(let y=1;y<=tier+1;y++)box(n-1,y+d-1,0,1,1,Math.max(1,n-y));
+ }else if(family==='well'){
+  const w=4+tier,d=3+tier,h=2+tier;for(let x=0;x<w;x++)for(let y=0;y<d;y++)if(x===0||y===0||x===w-1||y===d-1)box(x,y,0,1,1,h);
+  // The empty center is open from above; it is never silently filled.
+  if(level>=5)for(let x=0;x<w;x+=2)add(x,0,h);
+ }else if(family==='arch'){
+  const opening=2+tier,w=opening+2,d=level<6?1:2,h=height;
+  box(0,0,0,1,d,h);box(w-1,0,0,1,d,h);box(0,0,h,w,d,level<7?1:2);
+  if(level>=5){box(0,0,h+1,2,d,1);box(w-2,0,h+1,2,d,1);}
+ }else if(family==='bridge'){
+  const span=3+tier,w=span+2,d=2;
+  box(0,0,0,1,d,height);box(w-1,0,0,1,d,height);box(0,0,height,w,d,1);
+  if(level>=6){box(0,0,height+1,w,1,1);box(Math.floor(w/2),1,0,1,1,height);}
+ }else{
+  const n=5+tier,h=height-1;
+  for(let x=0;x<n;x++)for(let y=0;y<n;y++)if(x===0||x===n-1||y===0||y===n-1){if((x+y)%3===0||((x===0||x===n-1)&&(y===0||y===n-1)))box(x,y,0,1,1,h);add(x,y,h);}
+  // Roof corridors are supported at their ends and the central courtyard stays open.
+  box(0,0,0,1,n,1);box(n-1,0,0,1,n,1);
  }
- return '<svg class="block-model" viewBox="0 0 '+(120+2*n*w)+' '+(120+2*n*h+(p.level+2)*z)+'" role="img" aria-label="바닥까지 빈틈없이 쌓인 정육면체 블록 그림"><g stroke="#263a52" stroke-width="1.4" stroke-linejoin="round">'+body+'</g></svg>';
+ let list=[...cubes.values()];const turns=int(0,3,r);for(let t=0;t<turns;t++)list=list.map(([x,y,z])=>[-y,x,z]);
+ const minX=Math.min(...list.map(c=>c[0])),minY=Math.min(...list.map(c=>c[1]));list=list.map(([x,y,z])=>[x-minX,y-minY,z]);
+ const width=1+Math.max(...list.map(c=>c[0])),depth=1+Math.max(...list.map(c=>c[1])),maxHeight=1+Math.max(...list.map(c=>c[2]));
+ return{level,family,name:BLOCK_NAMES[family],width,depth,height:maxHeight,cubes:list,answer:list.length};
+}
+function blockSVG(p,layer=null,turns=0){
+ let cubes=p.cubes.map(c=>[...c]);for(let t=0;t<mod(turns,4);t++)cubes=cubes.map(([x,y,z])=>[-y,x,z]);
+ if(layer!==null)cubes=cubes.filter(c=>c[2]===layer-1).map(([x,y])=>[x,y,0]);
+ const occupied=new Set(cubes.map(c=>c.join(','))),project=([x,y,z])=>[(x-y)*32,(x+y)*17-z*34],points=a=>a.map(v=>project(v).join(',')).join(' ');
+ const verts=cubes.flatMap(([x,y,z])=>[[x,y,z],[x+1,y,z],[x,y+1,z],[x+1,y+1,z+1],[x,y,z+1]]).map(project);
+ const minX=Math.min(0,...verts.map(v=>v[0]))-28,minY=Math.min(0,...verts.map(v=>v[1]))-28,maxX=Math.max(0,...verts.map(v=>v[0]))+28,maxY=Math.max(0,...verts.map(v=>v[1]))+28;
+ let body='';cubes.sort((a,b)=>sum(a)-sum(b)||a[2]-b[2]||a[0]-b[0]).forEach(([x,y,z])=>{
+  body+='<g class="counted-cube" data-column="'+x+','+y+'" data-layer="'+(layer===null?z+1:layer)+'">';
+  if(!occupied.has([x+1,y,z].join(',')))body+='<polygon points="'+points([[x+1,y,z],[x+1,y+1,z],[x+1,y+1,z+1],[x+1,y,z+1]])+'" fill="#8da3bd"/>';
+  if(!occupied.has([x,y+1,z].join(',')))body+='<polygon points="'+points([[x,y+1,z],[x+1,y+1,z],[x+1,y+1,z+1],[x,y+1,z+1]])+'" fill="#627d9f"/>';
+  if(!occupied.has([x,y,z+1].join(',')))body+='<polygon points="'+points([[x,y,z+1],[x+1,y,z+1],[x+1,y+1,z+1],[x,y+1,z+1]])+'" fill="#e3edf8"/>';
+  body+='</g>';
+ });
+ return '<svg class="block-model" viewBox="'+[minX,minY,maxX-minX,maxY-minY].join(' ')+'" role="img" aria-label="'+p.name+' 형태의 정육면체 블록 그림'+(layer===null?'':' · '+layer+'층')+'"><g stroke="#263a52" stroke-width="1.3" stroke-linejoin="round">'+body+'</g></svg>';
 }
 
 // Clockwise rotation moves both arrow positions and arrow directions.
@@ -133,6 +177,6 @@ function patternAction(p,found,action){
  const correct=Number.isInteger(action)&&p.solutions.includes(action)&&!found.includes(action);
  return{delta:correct?1:-1,complete:false,found:correct?[...found,action]:[...found]};
 }
-const api={int,shuffle,sum,mod,scale,scaleSolutions,validScale,time,timeParts,validTime,rotatePixels,rotated,PIXEL_COLORS,mixPixels,art,artSolution,validArt,blocks,blockSVG,rotatePattern,patternVariants,patternKey,windowAt,patternSolutions,patternSet,patternAction};
+const api={int,shuffle,sum,mod,scale,scaleSolutions,validScale,time,timeParts,validTime,rotatePixels,rotated,PIXEL_COLORS,mixPixels,art,artSolution,validArt,BLOCK_NAMES,blockFamilies,blocks,blockSVG,rotatePattern,patternVariants,patternKey,windowAt,patternSolutions,patternSet,patternAction};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;root.ArenaPuzzles=api;
 })(typeof window!=='undefined'?window:globalThis);

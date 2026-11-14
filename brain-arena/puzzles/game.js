@@ -1,30 +1,31 @@
 'use strict';
 (function(){
 const E=ArenaPuzzles,$=id=>document.getElementById(id),kind=document.body.dataset.puzzle;
-const generators={'scale-balance':E.scale,'time-shift':E.time,'pixel-art':E.art,'block-count':E.blocks};
-const totalLevels=kind==='scale-balance'?5:8;
-const isPattern=kind==='same-pattern',titles={'scale-balance':'저울','time-shift':'시간이동','pixel-art':'픽셀아트','block-count':'블록 개수 세기','same-pattern':'같은 패턴 찾기'};
+const generators={'scale-balance':E.scale,'time-shift':E.time,'pixel-art':E.art,'block-count':E.blocks,'mystery-sign':typeof MysterySign==='undefined'?null:MysterySign.make};
+const isMystery=kind==='mystery-sign',totalLevels=kind==='scale-balance'?5:isMystery?11:8;
+const isPattern=kind==='same-pattern',titles={'scale-balance':'저울','time-shift':'시간이동','pixel-art':'픽셀아트','block-count':'블록 개수 세기','same-pattern':'같은 패턴 찾기','mystery-sign':'미스터리 사인'};
 let phase='idle',puzzle=null,level=1,round=1,score=0,started=0,stopped=0,deadline=Infinity,retryAt=0,cleared=false,practice=true;
-let counts=[],slots=[],activeSlot=0,selected=[],blockAnswer='',patternAnswer='',found=[],patternRun=[],seen=new Set();
+let counts=[],slots=[],activeSlot=0,selected=[],blockAnswer='',patternAnswer='',found=[],patternRun=[],seen=new Set(),blockTurn=0,blockFamiliesSeen=[],mysterySeen=[];
 const arrows=['↑','→','↓','←'];
 function button(text,fn,cls='secondary'){const b=document.createElement('button');b.type='button';b.textContent=text;b.className=cls;b.onclick=fn;return b;}
 function message(text,type=''){const s=$('status');s.textContent=text;s.className='status message '+type;}
 const editable=()=>phase==='play';
 function timeString(ms){return Math.floor(ms/60000)+':'+String(Math.floor(ms/1000)%60).padStart(2,'0');}
-function progress(){const el=$('levelProgress');el.hidden=isPattern;if(!isPattern)el.innerHTML='<div class="level-heading"><b>'+level+'단계 / '+totalLevels+'</b><span>정답이면 다음 단계 · 포기하면 같은 단계</span></div><div class="level-steps">'+Array.from({length:totalLevels},(_,i)=>'<span class="'+(i+1===level?'active':i+1<level?'done':'')+'">'+(i+1)+'</span>').join('')+'</div>';}
+function progress(){const el=$('levelProgress');el.hidden=isPattern||isMystery;if(!isPattern&&!isMystery)el.innerHTML='<div class="level-heading"><b>'+level+'단계 / '+totalLevels+'</b><span>정답이면 다음 단계 · 포기하면 같은 단계</span></div><div class="level-steps">'+Array.from({length:totalLevels},(_,i)=>'<span class="'+(i+1===level?'active':i+1<level?'done':'')+'">'+(i+1)+'</span>').join('')+'</div>';}
 function clearInputs(){counts=puzzle.values?Array(puzzle.values.length).fill(0):[];slots=puzzle.cards&&kind==='time-shift'?Array(puzzle.cards.length).fill(null):[];activeSlot=0;selected=[];blockAnswer='';patternAnswer='';found=[];}
 function draw(){
  cleared=false;stopped=0;retryAt=0;phase='play';started=Date.now();deadline=practice?Infinity:started+120000;
- if(isPattern)puzzle=patternRun[round-1];else{for(let i=0;i<100;i++){puzzle=generators[kind](level);const key=JSON.stringify(puzzle);if(!seen.has(key)){seen.add(key);break;}}}
+ blockTurn=0;
+ if(isPattern)puzzle=patternRun[round-1];else{for(let i=0;i<100;i++){if(kind==='block-count'){let available=E.blockFamilies(level).filter(n=>!blockFamiliesSeen.includes(n));if(!available.length){blockFamiliesSeen=[];available=E.blockFamilies(level);}const family=E.shuffle(available)[0];blockFamiliesSeen.push(family);puzzle=E.blocks(level,Math.random,family);}else if(isMystery){puzzle=MysterySign.make(level,Math.random,{pool:$('mysteryPool').value||'all',exclude:mysterySeen});mysterySeen.push(puzzle.ruleId);}else puzzle=generators[kind](level);const key=JSON.stringify(puzzle);if(!seen.has(key)){seen.add(key);break;}}}
  clearInputs();$('review').hidden=true;message(isPattern?'같은 2×2 패턴의 왼쪽 위 칸을 고르세요. 모두 찾았다고 생각하면 끝을 선언하세요.':'문제를 풀고 정답을 제출하세요.');render();
 }
-function start(){practice=$('mode').value==='practice';score=0;level=1;round=1;seen=new Set();if(isPattern)patternRun=[...E.patternSet(),...E.patternSet()];draw();}
+function start(){practice=$('mode').value==='practice';score=0;level=1;round=1;seen=new Set();blockFamiliesSeen=[];mysterySeen=[];if(isPattern)patternRun=[...E.patternSet(),...E.patternSet()];draw();}
 function render(){
- $('setup').hidden=phase!=='idle';$('score').textContent=String(score);$('round').textContent=phase==='idle'?'준비':isPattern?round+' / 6':level+' / '+totalLevels;$('roundLabel').textContent=isPattern?'라운드':'단계';
- $('giveup').disabled=!['play','cooldown'].includes(phase);$('next').hidden=phase!=='review'||(!isPattern&&level===totalLevels&&cleared)||(isPattern&&round===6);$('next').textContent=isPattern?'다음 라운드 →':cleared?'다음 단계 →':'같은 단계 · 새 문제 →';
+ $('setup').hidden=phase!=='idle';$('score').textContent=String(score);$('round').textContent=phase==='idle'?'준비':isPattern?round+' / 6':level+' / '+totalLevels;$('roundLabel').textContent=isPattern?'라운드':isMystery?'문제':'단계';
+ $('giveup').disabled=!['play','cooldown'].includes(phase);$('next').hidden=phase!=='review'||(!isPattern&&level===totalLevels&&cleared)||(isPattern&&round===6);$('next').textContent=isPattern?'다음 라운드 →':cleared?(isMystery?'다음 문제 →':'다음 단계 →'):isMystery?'새 규칙으로 다시 도전 →':'같은 단계 · 새 문제 →';
  progress();$('board').replaceChildren();$('answerArea').replaceChildren();$('actions').replaceChildren();
  if(!puzzle){$('board').innerHTML='<div class="ready"><span>BRAIN ARENA · SOLO</span><strong>'+titles[kind]+'</strong><p>규칙을 확인하고 시작하세요.</p></div>';tickClock();return;}
- if(kind==='scale-balance')renderScale();else if(kind==='time-shift')renderTime();else if(kind==='pixel-art')renderArt();else if(kind==='block-count')renderBlocks();else renderPattern();
+ if(kind==='scale-balance')renderScale();else if(kind==='time-shift')renderTime();else if(kind==='pixel-art')renderArt();else if(kind==='block-count')renderBlocks();else if(isMystery)renderMystery();else renderPattern();
  if(['play','cooldown'].includes(phase)){
   const submit=button(isPattern?'이 좌표 정답 제출':'정답 제출',submitAnswer,'primary wide');submit.id='submit';submit.disabled=!editable();$('actions').append(submit);
   if(isPattern){const end=button('끝! · 더 이상 패턴이 없습니다',endPattern,'secondary wide');end.id='declareEnd';end.disabled=!editable();$('actions').append(end);}
@@ -58,8 +59,21 @@ function renderArt(){
  const cards=document.createElement('div');cards.className='art-deck';puzzle.cards.forEach((card,id)=>{const wrap=document.createElement('div');wrap.className='art-card'+(selected.includes(id)?' chosen':'');const choose=button('',()=>{if(!editable())return;const i=selected.indexOf(id);if(i>=0)selected.splice(i,1);else if(selected.length<3)selected.push(id);else{message('세 장을 이미 골랐습니다. 먼저 한 장의 선택을 해제하세요.');return;}render();},'art-select');choose.id='art-select-'+id;choose.innerHTML='<span class="art-number">'+(id+1)+'</span>'+pixelSVG(card,(id+1)+'번 카드');choose.setAttribute('aria-pressed',String(selected.includes(id)));choose.setAttribute('aria-label',(id+1)+'번 카드 선택');choose.disabled=!editable();wrap.append(choose);cards.append(wrap);});$('board').append(cards);
  const chosen=document.createElement('p');chosen.className='puzzle-note';chosen.textContent=selected.length?'선택: '+selected.map(id=>(id+1)+'번').join(' + '):'카드 세 장을 고른 뒤 정답을 제출하세요.';$('answerArea').append(chosen);
 }
-function numericInput(label,value,setValue,placeholder){const wrap=document.createElement('label');wrap.className='puzzle-answer';const text=document.createElement('span');text.textContent=label;const input=document.createElement('input');input.id='answer';input.value=value;input.type='text';input.inputMode=kind==='same-pattern'?'text':'numeric';input.autocomplete='off';input.placeholder=placeholder;input.disabled=!editable();input.oninput=()=>setValue(input.value);input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();submitAnswer();}};wrap.append(text,input);$('answerArea').append(wrap);}
-function renderBlocks(){const model=document.createElement('div');model.className='block-scene';model.innerHTML=E.blockSVG(puzzle);$('board').append(model);const note=document.createElement('p');note.className='puzzle-note';note.textContent='같은 크기의 정육면체입니다. 각 기둥은 바닥부터 빈틈없이 채워져 있습니다. 가려진 받침 블록도 세세요.';$('board').append(note);numericInput('전체 블록 개수',blockAnswer,v=>blockAnswer=v,'개수 입력');}
+function numericInput(label,value,setValue,placeholder){const wrap=document.createElement('label');wrap.className='puzzle-answer';const text=document.createElement('span');text.textContent=label;const input=document.createElement('input');input.id='answer';input.value=value;input.type='text';input.inputMode=kind==='same-pattern'||isMystery?'text':'numeric';input.autocomplete='off';input.placeholder=placeholder;input.disabled=!editable();input.oninput=()=>setValue(input.value);input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();submitAnswer();}};wrap.append(text,input);$('answerArea').append(wrap);}
+function renderBlocks(){
+ const model=document.createElement('div');model.className='block-scene';model.innerHTML=E.blockSVG(puzzle,null,blockTurn);$('board').append(model);
+ const tools=document.createElement('div');tools.className='block-view-tools';
+ for(const [text,delta,id] of [['↶ 왼쪽 보기',-1,'block-turn-left'],['오른쪽 보기 ↷',1,'block-turn-right']]){const b=button(text,()=>{blockTurn=E.mod(blockTurn+delta,4);render();},'secondary');b.id=id;tools.append(b);}
+ const angle=document.createElement('span');angle.textContent=(blockTurn+1)+' / 4 방향';tools.append(angle);$('board').append(tools);
+ const note=document.createElement('p');note.className='puzzle-note';note.textContent='같은 크기의 정육면체입니다. 구멍과 기둥 사이의 빈칸은 제외하고, 가려진 실제 블록은 포함하세요. 네 방향으로 돌려 볼 수 있습니다.';$('board').append(note);numericInput('전체 블록 개수',blockAnswer,v=>blockAnswer=v,'개수 입력');
+}
+function mysteryEquation(a,b,value,cls=''){return '<div class="mystery-equation '+cls+'"><span>'+a+'</span><b class="mystery-symbol">◇</b><span>'+b+'</span><b>＝</b><strong>'+value+'</strong></div>';}
+function renderMystery(){
+ const examples=document.createElement('div');examples.className='mystery-examples';examples.innerHTML='<div class="eyebrow">규칙이 같은 예시</div>'+puzzle.examples.map(e=>mysteryEquation(...e.pair,e.value)).join('');$('board').append(examples);
+ const question=document.createElement('div');question.className='mystery-question';question.innerHTML='<div class="eyebrow">이번 문제의 답은?</div>'+mysteryEquation(...puzzle.question,'?','target');$('board').append(question);
+ numericInput('미스터리 사인의 결과',blockAnswer,v=>blockAnswer=v,'정수 입력');
+ const help=document.createElement('p');help.className='puzzle-note';help.textContent='◇의 규칙은 문제마다 바뀝니다. 이번 예시를 모두 만족하는 규칙을 찾으세요.';$('answerArea').append(help);
+}
 function patternCoord(i){return String.fromCharCode(65+Math.floor(i/10))+(i%10+1);}
 function readCoord(value){const m=value.trim().toUpperCase().match(/^([A-G])([1-9])$/);return m?(m[1].charCodeAt(0)-65)*10+(+m[2]-1):null;}
 function patternHTML(a){return '<div class="pattern-target-grid" aria-label="2행 2열 목표 패턴">'+a.map(d=>'<span>'+arrows[d]+'</span>').join('')+'</div>';}
@@ -78,8 +92,8 @@ function submitAnswer(){
  if(kind==='scale-balance'){if(E.sum(counts)!==puzzle.count){message('추 '+puzzle.count+'개를 모두 사용하세요.');return;}correct=E.validScale(puzzle,counts);}
  if(kind==='time-shift'){if(slots.some(v=>v===null)){message('모든 숫자를 한 번씩 사용해 빈칸을 채우세요.');return;}correct=E.validTime(puzzle,slots);}
  if(kind==='pixel-art'){if(selected.length!==3){message('서로 다른 카드 세 장을 선택하세요.');return;}correct=E.validArt(puzzle,selected);}
- if(kind==='block-count'){if(!/^\d+$/.test(blockAnswer.trim())){message('블록 개수를 정수로 입력하세요.');return;}correct=+blockAnswer===puzzle.answer;}
- if(correct){score++;cleared=true;finish(level===totalLevels?'전체 '+totalLevels+'단계 클리어!':level+'단계 정답!','+1점 · 정답과 풀이를 확인하세요.');}else wrong('정답과 일치하지 않습니다.');
+ if(kind==='block-count'||isMystery){if(!(isMystery?/^-?\d+$/:/^\d+$/).test(blockAnswer.trim())){message(isMystery?'결과를 정수로 입력하세요.':'블록 개수를 정수로 입력하세요.');return;}correct=+blockAnswer===puzzle.answer;}
+ if(correct){score++;cleared=true;finish(level===totalLevels?(isMystery?'11문제 완료!':'전체 '+totalLevels+'단계 클리어!'):level+(isMystery?'번 문제 정답!':'단계 정답!'),'+1점 · 정답과 풀이를 확인하세요.');}else wrong('정답과 일치하지 않습니다.');
 }
 function endPattern(){if(!editable())return;const result=E.patternAction(puzzle,found,'end');score+=result.delta;if(result.complete)finish(round===6?'6라운드 종료!':'끝! · +3점','더 이상 찾을 패턴이 없습니다. 모든 정답을 공개합니다.');else wrong('아직 찾지 않은 패턴이 있습니다. −2점.');}
 function equation(counts){return[0,1].map(side=>counts.slice(side*3,side*3+3).map((n,i)=>n?puzzle.values[side*3+i]+'×'+n:null).filter(Boolean).join(' + ')).join(' = ');}
@@ -87,7 +101,12 @@ function finish(title,text){message(title,cleared||title.includes('끝!')?'good'
  if(kind==='scale-balance'){const a=cleared?[...counts]:puzzle.sample;out.textContent='추 '+puzzle.count+'개를 사용한 한 가지 정답: '+equation(a);}
  else if(kind==='time-shift'){const a=cleared?[...slots]:puzzle.sample;out.textContent=puzzle.parts.map(part=>typeof part==='string'?part:part.slots.map(i=>a[i]).join('')).join('');}
  else if(kind==='pixel-art'){const a=cleared?E.artSolution(puzzle,selected):puzzle.sample;out.textContent=a.map(s=>(s.id+1)+'번 '+s.rotation*90+'°').join(' + ');$('reviewVisual').innerHTML='<div class="art-solution">'+a.map(s=>pixelSVG(E.rotated(puzzle.cards[s.id],s.rotation))).join('<b>＋</b>')+'<b>＝</b>'+pixelSVG(puzzle.target)+'</div>';}
- else if(kind==='block-count'){const layers=Array.from({length:Math.max(...puzzle.heights.flat())},(_,i)=>puzzle.heights.flat().filter(h=>h>=i+1).length);out.textContent='아래층부터 '+layers.join(' + ')+' = '+puzzle.answer+'개';const tools=document.createElement('div');tools.className='layer-tools';layers.forEach((n,i)=>tools.append(button((i+1)+'층 · '+n+'개',()=>{$('reviewVisual').innerHTML=E.blockSVG(puzzle,i+1);})));out.append(tools);$('reviewVisual').innerHTML=E.blockSVG(puzzle);}
+ else if(kind==='block-count'){
+  const layers=Array.from({length:puzzle.height},(_,i)=>puzzle.cubes.filter(c=>c[2]===i).length);out.textContent='아래층부터 '+layers.join(' + ')+' = '+puzzle.answer+'개';
+  const tools=document.createElement('div');tools.className='layer-tools';const show=(layer=null)=>{$('reviewVisual').innerHTML=E.blockSVG(puzzle,layer,blockTurn);};
+  tools.append(button('전체 구조',()=>show()));layers.forEach((n,i)=>tools.append(button((i+1)+'층 · '+n+'개',()=>show(i+1))));out.append(tools);show();
+ }else if(isMystery){const explanation=MysterySign.explain(puzzle);out.innerHTML='<h3>'+puzzle.name+'</h3><p>'+explanation.description+'</p>';const table=document.createElement('div');table.className='mystery-solution';table.innerHTML=explanation.rows.map(row=>mysteryEquation(row.a,row.b,row.value)+(puzzle.group==='korean'?'<p class="mystery-words">'+row.a+' → '+MysterySign.korean(row.a)+' / '+row.b+' → '+MysterySign.korean(row.b)+'</p>':'')).join('');$('reviewVisual').append(table);}
+
  else{out.textContent='전체 정답 '+puzzle.solutions.length+'곳: '+puzzle.solutions.map(patternCoord).join(' · ');$('reviewVisual').innerHTML='<p>회전해서 같은 것으로 인정되는 네 방향</p><div class="pattern-variants">'+E.patternVariants(puzzle.target).map(patternHTML).join('')+'</div>';}
 }
 function tickClock(){const now=stopped||Date.now();$('elapsed').textContent=started?timeString(now-started):'0:00';$('clock').textContent=phase==='idle'?'준비':phase==='review'?'완료':Number.isFinite(deadline)?Math.max(0,Math.ceil((deadline-Date.now())/1000))+'초':'시간 제한 없음';}

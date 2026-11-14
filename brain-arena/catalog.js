@@ -340,10 +340,18 @@ window.BrainArenaCatalog = {
       "id": "block-count",
       "category": "university-war",
       "title": "블록 개수 세기",
-      "description": "쌓인 정육면체의 전체 개수를 세세요. 작은 계단부터 더 큰 입체까지 총 8단계.",
+      "description": "기둥·탑·피라미드·빈 구조·문·다리까지 다양한 입체를 네 방향에서 살펴보고, 실제 블록 수를 세세요.",
       "tag": "시즌 1 릴레이 · 입체 관찰 / 8단계",
-      "href": "../block-count/?v=20261114-relay8",
+      "href": "../block-count/?v=20261114-variety",
       "group": "relay-match"
+    },
+    {
+      "id": "mystery-sign",
+      "category": "genius",
+      "title": "미스터리 사인",
+      "description": "계산부터 숫자 모양·소수·간격·한글 변환까지. 여섯 예시에서 숨은 규칙을 찾아 마지막 식의 답을 맞히세요.",
+      "tag": "1인 연습 · 다양한 규칙 / 11문제",
+      "href": "../mystery-sign/?v=20261114-variety"
     }
   ],
   "groups": [
