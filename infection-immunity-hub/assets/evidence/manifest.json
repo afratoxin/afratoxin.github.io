@@ -6,7 +6,7 @@
     "format": "WebP",
     "quality": 70
   },
-  "count": 653,
+  "count": 661,
   "pages": [
     {
       "doc": "261102_02",
@@ -487,6 +487,16 @@
       "height": 675,
       "bytes": 38290,
       "sha256": "b68ba76ef358b769185b38b6288d3c772664d49615777be93fd469e80a3c814e"
+    },
+    {
+      "doc": "261104_01",
+      "page": 33,
+      "title": "포도알균",
+      "src": "assets/evidence/261104_01-033.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 36964,
+      "sha256": "04235b4b610c0b2a7cb70ee69ca2494c49e4d7f5d96dfa8ed0970ff30e420541"
     },
     {
       "doc": "261104_01",
@@ -1927,6 +1937,26 @@
       "height": 675,
       "bytes": 24890,
       "sha256": "83ffc0f9755254267723a21c3323f51b7d9faf7399cafcfc280d24935c16c4e7"
+    },
+    {
+      "doc": "261105_01",
+      "page": 28,
+      "title": "사슬알균",
+      "src": "assets/evidence/261105_01-028.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 70596,
+      "sha256": "8935a34b69034d6ea1f83e756d2a2af2130291debdfc4cc39fc564c08494313f"
+    },
+    {
+      "doc": "261105_01",
+      "page": 29,
+      "title": "사슬알균",
+      "src": "assets/evidence/261105_01-029.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 26792,
+      "sha256": "d3afde037bcad38672ae230dea57dcbf423d0ba77d2244a8cb1a75e8280f9ef3"
     },
     {
       "doc": "261105_01",
@@ -3800,6 +3830,16 @@
     },
     {
       "doc": "261109_01",
+      "page": 21,
+      "title": "헤모필루스·보르데텔라·나이세리아",
+      "src": "assets/evidence/261109_01-021.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 26922,
+      "sha256": "02444695db775f7890a5f7558056e0e8734747cd884287d572a2b88a5d124ad4"
+    },
+    {
+      "doc": "261109_01",
       "page": 23,
       "title": "헤모필루스·보르데텔라·나이세리아",
       "src": "assets/evidence/261109_01-023.webp",
@@ -4740,6 +4780,16 @@
     },
     {
       "doc": "261110_01",
+      "page": 17,
+      "title": "렙토스피라·매독균·보렐리아",
+      "src": "assets/evidence/261110_01-017.webp",
+      "width": 900,
+      "height": 633,
+      "bytes": 31644,
+      "sha256": "e301095040d2a7124193b93311b1037c15302e7898cd005ed6a5d04b245d43b9"
+    },
+    {
+      "doc": "261110_01",
       "page": 18,
       "title": "렙토스피라·매독균·보렐리아",
       "src": "assets/evidence/261110_01-018.webp",
@@ -5037,6 +5087,16 @@
       "height": 675,
       "bytes": 53052,
       "sha256": "c97e5535a7f95f70459a5d5b8ffa50c3ab43c24a7301c24bf3db11e813e64528"
+    },
+    {
+      "doc": "261110_03",
+      "page": 14,
+      "title": "리케치아",
+      "src": "assets/evidence/261110_03-014.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 37794,
+      "sha256": "1f83fdd0863e64568ca5a0ed09e7c1b5e2cb8520ebc4a3fd11838dce721c583e"
     },
     {
       "doc": "261110_03",
@@ -5577,6 +5637,16 @@
       "height": 675,
       "bytes": 34554,
       "sha256": "69c00f3cede6e35fef67ae598dbb2a8e48ba74264abc6309a651c52b5b2b2d13"
+    },
+    {
+      "doc": "261112_02",
+      "page": 23,
+      "title": "파라믹소·풍진바이러스",
+      "src": "assets/evidence/261112_02-023.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 44614,
+      "sha256": "b0d6c58abe8bbd87ed206e45dd816469481580b1967eb9d82d633848fa9391f9"
     },
     {
       "doc": "261112_02",
@@ -6237,6 +6307,16 @@
       "height": 637,
       "bytes": 64296,
       "sha256": "5514d5486ade2c2c9eef6984d937b598b65320b5bd9d0269dbd5d7fed49216ec"
+    },
+    {
+      "doc": "261113_03",
+      "page": 9,
+      "title": "CBL 3",
+      "src": "assets/evidence/261113_03-009.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 30454,
+      "sha256": "f0917c61b31abc1cd2344f38874d8784764f6e8f426c0e04ad056378f23668d5"
     },
     {
       "doc": "antibiotics",

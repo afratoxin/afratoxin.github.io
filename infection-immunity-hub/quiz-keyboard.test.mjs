@@ -68,3 +68,7 @@ test('physical Enter survives IME Process outside editors and modal dialogs rema
  }
  assert.equal(quizKeyboardAction(event('Enter',{isComposing:true}),{answered:true}),null);
 });
+test('Enter can advance a graded original question after returning focus from its capture viewer',()=>{
+ const target={tagName:'BUTTON',closest(selector){return selector.includes('[data-original-open]')||selector.startsWith('button,a,summary')?this:null;}};
+ assert.deepEqual(quizKeyboardAction({key:'Enter',code:'Enter',target},{answered:true}),{type:'next'});
+});

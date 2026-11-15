@@ -1,4 +1,4 @@
-import {buildSession,VERSION} from './logic.mjs?v=20261116a';
+import {buildSession,VERSION} from './logic.mjs?v=20261116b';
 
 const attempted=record=>typeof record?.correct==='boolean';
 const unanswered=(q,progress)=>!attempted(progress[q.id]);
@@ -33,6 +33,7 @@ function parseSaved(raw){
  }catch{return null;}
 }
 function reusableItem(item,q){
+ if(q.preserveChoiceOrder&&item?.choices?.some((choice,index)=>choice!==q.choices[index]))return false;
  return item&&Array.isArray(item.choices)&&item.choices.length===q.choices.length&&new Set(item.choices).size===q.choices.length&&item.choices.every(choice=>q.choices.includes(choice))&&Number.isInteger(item.answer)&&item.choices[item.answer]===q.choices[q.answer];
 }
 function orderedCandidates(candidates,saved){

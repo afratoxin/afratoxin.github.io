@@ -1,20 +1,23 @@
-import {createBookmarkUI} from './bookmark-ui.mjs?v=20261116a';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261116a';
-import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261116a';
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261116a';
-import {createRecallUI} from './recall-ui.mjs?v=20261116a';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261116a';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261116a';
-import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash} from './logic.mjs?v=20261116a';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261116a';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261116a';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261116a';
-import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261116a';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261116a';
-import {sourceText} from './study-core.mjs?v=20261116a';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261116a';
+import {CBL_PAST_QUESTIONS,CBL_PAST_TOPICS} from './cbl-past-bank.mjs?v=20261116b';
+import {originalPrompt,originalIndex,installOriginalViewer} from './cbl-original.mjs?v=20261116b';
+import {createBookmarkUI} from './bookmark-ui.mjs?v=20261116b';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261116b';
+import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261116b';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261116b';
+import {createRecallUI} from './recall-ui.mjs?v=20261116b';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261116b';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261116b';
+import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash,isCorrectChoice} from './logic.mjs?v=20261116b';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261116b';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261116b';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261116b';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261116b';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261116b';
+import {sourceText} from './study-core.mjs?v=20261116b';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261116b';
 
 installEvidenceViewer();
+installOriginalViewer();
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KEYS={progress:'infection-immunity.progress.v1',session:'infection-immunity.session.v1',bookmarks:'infection-immunity.bookmarks.v1'};
@@ -37,18 +40,19 @@ if(session)save(KEYS.session,session);
 let activeTab='home';
 const phaseTitle=phase=>phase==='wrong'?'오답 복습':phase==='review'?'직접 복습':'미풀이 학습';
 let pathologyUI=null;
-let lectureUI=null,drillUI=null,bookmarkUI=null;
-const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...TABLE_QUESTIONS];
-const ALL_TOPICS={...TOPICS,...PATH_TOPICS,...STUDY_TOPICS,...TABLE_TOPICS};
+let lectureUI=null,drillUI=null,bookmarkUI=null,originalUI=null;
+const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...TABLE_QUESTIONS,...CBL_PAST_QUESTIONS];
+const ALL_TOPICS={...TOPICS,...PATH_TOPICS,...STUDY_TOPICS,...TABLE_TOPICS,...CBL_PAST_TOPICS};
 const BOOKMARK_GROUPS=[
  {id:'antibiotics',label:'항생제',key:KEYS.bookmarks,questions:QUESTIONS},
  {id:'pathology',label:'병리',key:'infection-immunity.pathology.bookmarks.v1',questions:PATH_QUESTIONS},
  {id:'lectures',label:'강의별',key:'infection-immunity.lectures.bookmarks.v1',questions:LECTURE_QUESTIONS},
- {id:'drill',label:'표 암기',key:'infection-immunity.drill.bookmarks.v1',questions:TABLE_QUESTIONS}
+ {id:'drill',label:'표 암기',key:'infection-immunity.drill.bookmarks.v1',questions:TABLE_QUESTIONS},
+ {id:'cblpast',label:'CBL 기출',key:'infection-immunity.cblpast.bookmarks.v1',questions:CBL_PAST_QUESTIONS}
 ];
 const isPath=q=>q.id.startsWith('path-');
 const isStudy=q=>q.id.startsWith('lecture-')||q.id.startsWith('table-');
-const allProgress=()=>({...progress,...pathologyUI?.getProgress(),...lectureUI?.getProgress(),...drillUI?.getProgress()});
+const allProgress=()=>({...progress,...pathologyUI?.getProgress(),...lectureUI?.getProgress(),...drillUI?.getProgress(),...originalUI?.getProgress()});
 
 function track(s){return `<span class="segment-correct" style="width:${s.total?s.correct/s.total*100:0}%"></span><span class="segment-wrong" style="width:${s.total?s.wrong/s.total*100:0}%"></span>`;}
 function source(q){if(isStudy(q))return sourceText(q,DOCUMENTS);return isPath(q)?pathSource(q):`근거: 강의 PDF ${q.pages.join('·')}쪽${q.refs.length?' · 보충 근거 포함':''}`;}
@@ -73,22 +77,23 @@ function updateDashboard(){
   $('pathResumeButton').hidden=!pathologyUI?.hasSession();
   $('lectureResumeButton').hidden=!lectureUI?.hasSession();
   $('drillResumeButton').hidden=!drillUI?.hasSession();
-  for(const [prefix,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI]]){
+  $('originalResumeButton').hidden=!originalUI?.hasSession();
+  for(const [prefix,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI],['original',CBL_PAST_QUESTIONS,originalUI]]){
     const value=stats(bank,ui?.getProgress()||{});
     $(`${prefix}CourseStats`).textContent=`정답 ${value.correct} · 오답 ${value.wrong} · 미풀이 ${value.unanswered}`;
     $(`${prefix}CourseCount`).textContent=`${bank.length}문항`;
     const courseTrack=$(`${prefix}CourseTrack`);
     if(courseTrack){courseTrack.innerHTML=track(value);courseTrack.setAttribute('aria-label',`${value.total}문항 중 ${value.attempted}문항 풀이, 정답 ${value.correct}, 오답 ${value.wrong}`);}
   }
-  $('libraryCount').innerHTML=`4개 퀴즈 단원 <b>${ALL_QUESTIONS.length}문항</b>`;
+  $('libraryCount').innerHTML=`5개 퀴즈 단원 <b>${ALL_QUESTIONS.length}문항</b>`;
   $('lectureCourseKicker').textContent=`${Object.values(COURSE_GROUPS).map(g=>g.title).join(' · ')} ${Object.keys(LECTURES).length}강`;
   if(!memoryOnly)$('saveStatus').innerHTML='<i aria-hidden="true"></i> 이 브라우저에 학습 기록 저장';
 }
 function navigate(tab,focus=false){
-  if(!['home','quiz','pathology','lectures','drill','bookmarks','review','notes'].includes(tab))tab='home';
+  if(!['home','quiz','pathology','lectures','drill','bookmarks','review','notes','cblpast'].includes(tab))tab='home';
   const changed=activeTab!==tab;
   activeTab=tab;
-  for(const name of ['home','quiz','pathology','lectures','drill','bookmarks','review','notes']){
+  for(const name of ['home','quiz','pathology','lectures','drill','bookmarks','review','notes','cblpast']){
     $(`panel-${name}`).hidden=name!==tab;
   }
   const mainTab=['bookmarks','review'].includes(tab)?tab:'home';
@@ -102,6 +107,7 @@ function navigate(tab,focus=false){
   if(tab==='pathology')pathologyUI?.open();
   if(tab==='lectures')lectureUI?.open();
   if(tab==='drill')drillUI?.open();
+  if(tab==='cblpast')originalUI?.open();
   if(changed)window.scrollTo({top:0,behavior:'auto'});
   if(focus)$(`tab-${mainTab}`).focus();
 }
@@ -160,17 +166,18 @@ function renderReview(){
   $('retryAll').disabled=!a.wrong;$('retryAll').textContent=`항생제 오답 ${a.wrong} →`;
   $('pathRetryAll').disabled=!p.wrong;$('pathRetryAll').textContent=`병리 오답 ${p.wrong} →`;
   $('reviewSummary').innerHTML=`<span>전체 오답 <strong>${s.wrong}</strong></span><span>정답 <strong>${s.correct}</strong></span><span>미풀이 <strong>${s.unanswered}</strong></span><span class="muted">총 ${s.total}문항 · 단원별 최신 결과</span>`;
-  for(const [name,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI]]){
+  for(const [name,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI],['original',CBL_PAST_QUESTIONS,originalUI]]){
     const count=stats(bank,ui?.getProgress()||{}).wrong;
-    $(`${name}RetryAll`).disabled=!count;$(`${name}RetryAll`).textContent=`${name==='lecture'?'강의별':'표 암기'} 오답 ${count} →`;
+    $(`${name}RetryAll`).disabled=!count;$(`${name}RetryAll`).textContent=`${name==='lecture'?'강의별':name==='original'?'CBL 기출':'표 암기'} 오답 ${count} →`;
   }
   const topic=$('reviewTopic').value,search=$('reviewSearch').value.toLocaleLowerCase().trim();
   const wrong=ALL_QUESTIONS.filter(q=>records[q.id]?.correct===false && (topic==='all'||q.topic===topic) && `${q.stem} ${q.choices.join(' ')} ${q.explanation}`.toLocaleLowerCase().includes(search));
   $('reviewCount').textContent=`${wrong.length}문항`;
   if(!wrong.length){$('reviewList').innerHTML=`<div class="empty-state"><span class="empty-icon" aria-hidden="true">${s.wrong?'⌕':'✓'}</span><h2>${s.wrong?'검색 조건에 맞는 오답이 없습니다.':'현재 남아 있는 오답이 없습니다.'}</h2><p>${s.wrong?'다른 주제를 고르거나 검색어를 바꾸어 보세요.':s.attempted?'아직 안 푼 문제나 북마크한 문제를 이어서 풀어 보세요.':'퀴즈를 풀면 틀린 문제가 이곳에 모입니다. 다시 맞히면 목록에서 빠집니다.'}</p><button type="button" class="button outline" data-tab="home">학습 단원 선택 →</button></div>`;return;}
-  $('reviewList').innerHTML=wrong.map(q=>`<details class="review-item"><summary><span class="review-tags"><span class="pill${isPath(q)?' blue':''}">${q.id.startsWith('table-')?'표 암기':q.id.startsWith('lecture-')?'강의별':isPath(q)?'병리':'항생제'} · ${ALL_TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX'} · ${q.id}</span></span>${emphasizePrompt(q.stem)}</summary><div class="review-body">${isPath(q)?imageMarkup(q):''}${q.choices.map((c,i)=>`<div class="review-choice${i===q.answer?' is-answer':''}${i===records[q.id].selected?' is-selected':''}">${escape(c)}${i===q.answer?'<small>정답</small>':''}${i===records[q.id].selected?'<small>내 선택</small>':''}</div>`).join('')}${explanation(q,false)}<div class="review-bottom"><button type="button" class="text-button" data-retry="${q.id}">이 문제 다시 풀기 →</button>${isPath(q)||isStudy(q)?'':`<button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button>`}</div></div></details>`).join('');
+  $('reviewList').innerHTML=wrong.map(q=>`<details class="review-item"><summary><span class="review-tags"><span class="pill${isPath(q)?' blue':''}">${q.original?'CBL 기출':q.id.startsWith('table-')?'표 암기':q.id.startsWith('lecture-')?'강의별':isPath(q)?'병리':'항생제'} · ${ALL_TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX'} · ${q.id}</span></span>${emphasizePrompt(q.stem)}</summary><div class="review-body">${q.original?originalPrompt(q):isPath(q)?imageMarkup(q):''}${q.choices.map((c,i)=>`<div class="review-choice${isCorrectChoice(q,c)?' is-answer':''}${i===records[q.id].selected?' is-selected':''}">${escape(c)}${isCorrectChoice(q,c)?'<small>정답</small>':''}${i===records[q.id].selected?'<small>내 선택</small>':''}</div>`).join('')}${explanation(q,false)}<div class="review-bottom"><button type="button" class="text-button" data-retry="${q.id}">이 문제 다시 풀기 →</button>${isPath(q)||isStudy(q)?'':`<button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button>`}</div></div></details>`).join('');
 }
 function oneQuestion(id){
+  if(id.startsWith('lecture-cbl-past-')){originalUI.retry(id);return;}
   if(id.startsWith('lecture-')){lectureUI.retry(id);return;}
   if(id.startsWith('table-')){drillUI.retry(id);return;}
   if(id.startsWith('path-')){pathologyUI.retry(id);return;}
@@ -195,12 +202,17 @@ $('pathResumeButton').addEventListener('click',()=>pathologyUI.resume());
 $('homeLectureUnits').addEventListener('click',()=>lectureUI.choose('units'));
 $('homeLectureStart').addEventListener('click',()=>lectureUI.choose('mixed'));
 $('lectureResumeButton').addEventListener('click',()=>lectureUI.resume());
+$('homeOriginalUnits').addEventListener('click',()=>originalUI.choose('units'));
+$('homeOriginalMixed').addEventListener('click',()=>originalUI.choose('mixed'));
+$('originalResumeButton').addEventListener('click',()=>originalUI.resume());
+$('originalRetryAll').addEventListener('click',()=>originalUI.start({topic:'all',mode:'wrong',count:0}));
 $('homeDrillStart').addEventListener('click',()=>drillUI.browse());
 $('homeDrillMixed').addEventListener('click',()=>drillUI.start({topic:'all',mode:'all',count:0}));
 $('drillResumeButton').addEventListener('click',()=>drillUI.resume());
 $('lectureRetryAll').addEventListener('click',()=>lectureUI.start({topic:'all',mode:'wrong',count:0}));
 $('drillRetryAll').addEventListener('click',()=>drillUI.start({topic:'all',mode:'wrong',count:0}));
 $('reviewTopic').insertAdjacentHTML('beforeend',`<optgroup label="강의별 감별">${Object.entries(STUDY_TOPICS).map(([id,t])=>`<option value="${id}">${t.order?t.order+". ":""}${escape(t.title)}</option>`).join('')}</optgroup><optgroup label="표 암기">${Object.entries(TABLE_TOPICS).map(([id,t])=>`<option value="${id}">${escape(t.title)}</option>`).join('')}</optgroup>`);
+$('reviewTopic').insertAdjacentHTML('beforeend',`<optgroup label="CBL 기출 원문">${Object.entries(CBL_PAST_TOPICS).map(([id,t])=>`<option value="${id}">${escape(t.title)}</option>`).join('')}</optgroup>`);
 $('reviewTopic').addEventListener('change',renderReview);$('reviewSearch').addEventListener('input',renderReview);
 document.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||b.disabled)return;
@@ -231,6 +243,7 @@ pathologyUI=createPathologyUI({read,save,openTab:navigate,announce,onChange(){up
 const studyChange=()=>{updateDashboard();if(activeTab==='review')renderReview();};
 lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 감별 문제',subtitle:Object.entries(COURSE_GROUPS).map(([group,g])=>`${g.title} ${Object.values(LECTURES).filter(t=>t.group===group).length}강`).join(' · ')+' · 단원 통합',bank:LECTURE_QUESTIONS,topics:STUDY_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='lectures'});
 drillUI=createRecallUI({id:'drill',tab:'drill',title:'표 암기 반복 퀴즈',subtitle:Object.values(COURSE_GROUPS).map(g=>g.title).join(' · ')+' · 핵심 관계 반복',bank:TABLE_QUESTIONS,topics:TABLE_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='drill',drill:true});
-bookmarkUI=createBookmarkUI({root:$('bookmarkContent'),groups:BOOKMARK_GROUPS,read,save,onRetry:oneQuestion,topicTitle:q=>ALL_TOPICS[q.topic]?.title||'',formatPrompt:emphasizePrompt,renderDetails(q){return `${isPath(q)?imageMarkup(q):''}${q.choices.map((choice,index)=>`<div class="review-choice${index===q.answer?' is-answer':''}"><span>${index+1}. ${escape(choice)}</span>${index===q.answer?'<small>정답</small>':''}</div>`).join('')}${explanation(q,false)}`;},onChange(){updateDashboard();announce('별표를 해제했습니다.');}});
+originalUI=createStudyUI({id:'cblpast',tab:'cblpast',originals:true,title:'CBL 기출 원문',subtitle:`CBL 1~6 · 원문 ${CBL_PAST_QUESTIONS.length}문항 · 캡처·OCR·선지별 해설`,bank:CBL_PAST_QUESTIONS,topics:CBL_PAST_TOPICS,courseGroups:{cbl:{title:'CBL 1~6'}},libraryIntro:originalIndex(CBL_PAST_QUESTIONS,CBL_PAST_TOPICS),read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='cblpast'});
+bookmarkUI=createBookmarkUI({root:$('bookmarkContent'),groups:BOOKMARK_GROUPS,read,save,onRetry:oneQuestion,topicTitle:q=>ALL_TOPICS[q.topic]?.title||'',formatPrompt:emphasizePrompt,renderDetails(q){return `${q.original?originalPrompt(q):isPath(q)?imageMarkup(q):''}${q.choices.map((choice,index)=>`<div class="review-choice${isCorrectChoice(q,choice)?' is-answer':''}"><span>${index+1}. ${escape(choice)}</span>${isCorrectChoice(q,choice)?'<small>정답</small>':''}</div>`).join('')}${explanation(q,false)}`;},onChange(){updateDashboard();announce('별표를 해제했습니다.');}});
 navigate(tabFromHash(location.hash)||'home');
 installQuizKeyboard();

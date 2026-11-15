@@ -28,7 +28,7 @@ export function quizKeyboardAction(event,{active=true,answered=false,choiceCount
  if(answered){
   if(event.target?.closest?.('nav,a,[role="link"],[role="tablist"],dialog[open]'))return null;
   const control=event.target?.closest?.('button,a,summary,[role="button"],[role="link"]');
-  const quizControl=event.target?.closest?.('[data-answer],[data-path-answer],[data-study-answer],[data-bookmark],[data-path-bookmark],[data-study-bookmark],[data-photo-id],[data-evidence-open],[data-action="next"],[data-path-action="next"],[data-study-next],.choice-explanations summary');
+  const quizControl=event.target?.closest?.('[data-answer],[data-path-answer],[data-study-answer],[data-bookmark],[data-path-bookmark],[data-study-bookmark],[data-photo-id],[data-evidence-open],[data-original-open],[data-action="next"],[data-path-action="next"],[data-study-next],.choice-explanations summary');
   if(control&&!quizControl)return null;
   return key==='Enter'?{type:'next'}:null;
  }
@@ -45,7 +45,7 @@ export function installQuizKeyboard({window:win=globalThis.window,document:doc=w
  const trace=(event,status,card,action)=>{if(doc.documentElement?.dataset)doc.documentElement.dataset.quizKeyboardLast=JSON.stringify({at:Date.now(),key:event.key,code:event.code,keyCode:event.keyCode||event.which||0,target:event.target?.tagName||'',targetId:event.target?.id||'',status,question:card?.id||'',action:action?.type||''});};
  const listener=event=>{
   if(!quizKey(event))return;
-  const card=[...doc.querySelectorAll('#questionCard,#pathQuestion,#lectures-question,#drill-question')].find(visible);
+  const card=[...doc.querySelectorAll('#questionCard,#pathQuestion,#lectures-question,#drill-question,#cblpast-question')].find(visible);
   if(!card){trace(event,'no-question');return;}
   const choices=[...card.querySelectorAll('[data-answer],[data-path-answer],[data-study-answer]')];
   const blocked=Boolean(doc.querySelector('dialog[open]'));

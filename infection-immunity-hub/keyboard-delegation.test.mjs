@@ -20,7 +20,7 @@ function environment(id){
 }
 test('one capture handler drives visible buttons in every quiz engine',()=>{
  assert.equal(typeof keyboard.installQuizKeyboard,'function');
- for(const id of ['questionCard','pathQuestion','lectures-question','drill-question']){
+ for(const id of ['questionCard','pathQuestion','lectures-question','drill-question','cblpast-question']){
   const env=environment(id);keyboard.installQuizKeyboard({window:env.win,document:env.doc});
   assert.equal(env.listeners.length,1);assert.equal(env.listeners[0].type,'keydown');assert.equal(env.listeners[0].capture,true);
   const raw=event('End','Numpad1');env.listeners[0].fn(raw);

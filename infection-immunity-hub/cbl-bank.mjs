@@ -1,6 +1,6 @@
-import {QUESTIONS as Q1,RECALL_QUESTIONS as R1,PARTS as P1} from './cbl1-bank.mjs?v=20261116a';
-import {QUESTIONS as Q2,RECALL_QUESTIONS as R2,PARTS as P2} from './cbl2-bank.mjs?v=20261116a';
-import {QUESTIONS as Q3,RECALL_QUESTIONS as R3,PARTS as P3} from './cbl3-bank.mjs?v=20261116a';
+import {QUESTIONS as Q1,RECALL_QUESTIONS as R1,PARTS as P1} from './cbl1-bank.mjs?v=20261116b';
+import {QUESTIONS as Q2,RECALL_QUESTIONS as R2,PARTS as P2} from './cbl2-bank.mjs?v=20261116b';
+import {QUESTIONS as Q3,RECALL_QUESTIONS as R3,PARTS as P3} from './cbl3-bank.mjs?v=20261116b';
 
 const guidance={
  fascia:{title:'IDSA · 괴사성 연조직 감염',url:'https://www.idsociety.org/practice-guideline/skin-and-soft-tissue-infections/'},

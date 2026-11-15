@@ -2,7 +2,7 @@ export const VERSION=1;
 export function tabFromHash(hash) {
   if(hash==='#mainContent')return null;
   const tab=hash.replace(/^#/,'');
-  return ['home','quiz','pathology','lectures','drill','bookmarks','review','notes'].includes(tab)?tab:'home';
+  return ['home','quiz','pathology','lectures','drill','bookmarks','review','notes','cblpast'].includes(tab)?tab:'home';
 }
 export function shuffle(values,rng=Math.random) {
   const result=[...values];
@@ -33,17 +33,22 @@ export function buildSession(bank,filters={},progress={},rng=Math.random,bookmar
   const eligible=bank.filter(q=>(!Array.isArray(filters.questionIds)||filters.questionIds.includes(q.id)) && (!filters.topic || filters.topic==='all' || q.topic===filters.topic) && (!filters.format || filters.format==='all' || q.format===filters.format) && (filters.mode!=='wrong' || progress[q.id]?.correct===false) && (filters.mode!=='unanswered' || !progress[q.id]) && (filters.mode!=='bookmarks' || bookmarks.includes(q.id)));
   const limit=Number(filters.count)||eligible.length;
   return {version:VERSION,filters:{...filters},position:0,items:shuffle(eligible,rng).slice(0,limit).map(q=>{
-    const order=q.format==='mcq'?shuffle(q.choices.map((_,i)=>i),rng):q.choices.map((_,i)=>i);
+    const order=q.format==='mcq'&&!q.preserveChoiceOrder?shuffle(q.choices.map((_,i)=>i),rng):q.choices.map((_,i)=>i);
     return {id:q.id,choices:order.map(i=>q.choices[i]),answer:order.indexOf(q.answer),selected:null};
   })};
 }
+export function correctChoiceIndices(q){
+  return Array.isArray(q.acceptedAnswers)&&q.acceptedAnswers.length?q.acceptedAnswers:[q.answer];
+}
+export function isCorrectChoice(q,choice){return correctChoiceIndices(q).includes(q.choices.indexOf(choice));}
 export function grade(session,progress,index,selected,bank) {
   const item=session.items[index];
   if(!item || !Number.isInteger(selected) || selected<0 || selected>=item.choices.length)throw new Error('Invalid answer');
-  if(item.selected!==null)return {duplicate:true,correct:item.selected===item.answer,progress};
+  if(item.selected!==null)return {duplicate:true,correct:typeof item.correct==='boolean'?item.correct:item.selected===item.answer,progress};
   const q=bank.find(q=>q.id===item.id); if(!q)throw new Error('Unknown question');
   item.selected=selected;
-  const correct=selected===item.answer;
+  const correct=isCorrectChoice(q,item.choices[selected]);
+  if(q.acceptedAnswers)item.correct=correct;
   return {duplicate:false,correct,progress:{...progress,[item.id]:{correct,selected:q.choices.indexOf(item.choices[selected]),updated:Date.now()}}};
 }
 export function restoreSession(raw,bank) {

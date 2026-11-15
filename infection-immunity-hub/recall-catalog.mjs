@@ -1,8 +1,8 @@
-import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261116a';
-import {CBL_PARTS} from './cbl-bank.mjs?v=20261116a';
-import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261116a';
-import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261116a';
-import {stats} from './logic.mjs?v=20261116a';
+import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261116b';
+import {CBL_PARTS} from './cbl-bank.mjs?v=20261116b';
+import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261116b';
+import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261116b';
+import {stats} from './logic.mjs?v=20261116b';
 
 const parts={...EXTENSION_PARTS,...ENTERIC_MEDIA_PARTS,...CBL_PARTS};
 function p(doc,key,title,what,how,why){parts[`${doc}:${key}`]={id:`${doc}:${key}`,lecture:doc,title,what,how,why};}

@@ -1,11 +1,11 @@
-import {SOURCE_PAGES} from './source-pages.mjs?v=20261116a';
+import {SOURCE_PAGES} from './source-pages.mjs?v=20261116b';
 
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const aliases={path1:'261104_02',path2:'261104_03',lab:'261104_05'};
 
 export function sessionMetrics(session){
  const items=session?.items||[],graded=items.filter(item=>item.selected!==null&&item.selected!==undefined);
- const correct=graded.filter(item=>item.selected===item.answer).length,answered=graded.length;
+ const correct=graded.filter(item=>typeof item.correct==='boolean'?item.correct:item.selected===item.answer).length,answered=graded.length;
  return {answered,correct,wrong:answered-correct,total:items.length,rate:answered?Math.round(correct/answered*100):null};
 }
 
