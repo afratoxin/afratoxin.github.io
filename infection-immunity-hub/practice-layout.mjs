@@ -1,4 +1,4 @@
-import {SOURCE_PAGES} from './source-pages.mjs?v=20261115b';
+import {SOURCE_PAGES} from './source-pages.mjs?v=20261115c';
 
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const aliases={path1:'261104_02',path2:'261104_03',lab:'261104_05'};

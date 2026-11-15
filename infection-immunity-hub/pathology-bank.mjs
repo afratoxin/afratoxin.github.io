@@ -1,5 +1,5 @@
-import {revisedPathologySet} from './pathology-statements.mjs?v=20261115b';
-import {PHOTOS} from './photo-data.mjs?v=20261115b';
+import {revisedPathologySet} from './pathology-statements.mjs?v=20261115c';
+import {PHOTOS} from './photo-data.mjs?v=20261115c';
 export {PHOTOS};
 export const PATH_TOPICS={
  'path-image':{title:'사진 → 원인균',short:'사진형',sub:'짧은 증례와 강의 사진으로 판단'},

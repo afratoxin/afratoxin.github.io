@@ -1,0 +1,25 @@
+export const COURSE_GROUPS={
+ general:{title:'일반',description:'병인·진단·치료·병리·약리·소아감염'},
+ bacteria:{title:'세균·진균',description:'균 특성·독소·배양·감별'},
+ virus:{title:'바이러스',description:'구조·질환·검사·항원과 항체'}
+};
+export const EXTRA_LECTURES={
+ '261102_02':{title:'감염병의 병인론',teacher:'최은화',pages:50,group:'general'},
+ '261102_03':{title:'감염병의 진단',teacher:'김택수',pages:66,group:'general'},
+ '261102_05':{title:'감염병의 치료원칙',teacher:'김홍빈',pages:55,group:'general'},
+ '261109_03':{title:'항생제 약리학의 기본 원리·항생제 내성',teacher:'이승환',pages:29,group:'general'},
+ '261109_05':{title:'항생제 내성균의 진단과 치료',teacher:'송경호',pages:116,group:'general'},
+ '261110_02':{title:'아데노바이러스·폭스바이러스',teacher:'방예지',pages:41,group:'virus'},
+ '261111_01':{title:'파르보바이러스',teacher:'김현제',pages:14,group:'virus'},
+ '261111_02':{title:'피코르나바이러스',teacher:'조남혁',pages:33,group:'virus'},
+ '261112_01':{title:'오소믹소바이러스',teacher:'조남혁',pages:44,group:'virus'},
+ '261112_02':{title:'파라믹소·풍진바이러스',teacher:'조남혁',pages:52,group:'virus'},
+ '261112_03':{title:'간염바이러스',teacher:'김범준',pages:43,group:'virus'},
+ '261113_01':{title:'헤르페스바이러스과',teacher:'김현제',pages:31,group:'virus'},
+ '261113_02':{title:'소아감염',teacher:'윤기욱',pages:47,group:'general'}
+};
+const pathology=new Set(['261104_02','261104_03','261104_05']);
+export const groupForLecture=code=>EXTRA_LECTURES[code]?.group||(pathology.has(code)?'general':'bacteria');
+export function orderedLectures(existing){
+ return Object.fromEntries(Object.entries({...existing,...EXTRA_LECTURES}).sort(([a],[b])=>a.localeCompare(b)).map(([code,t],i)=>[code,{...t,short:t.short||t.title,order:i+1,group:groupForLecture(code)}]));
+}

@@ -24,7 +24,7 @@ export function stats(bank,progress) {
   return {total:bank.length,correct,wrong,unanswered:bank.length-correct-wrong,attempted:correct+wrong};
 }
 export function buildSession(bank,filters={},progress={},rng=Math.random,bookmarks=[]) {
-  const eligible=bank.filter(q=>(!filters.topic || filters.topic==='all' || q.topic===filters.topic) && (!filters.format || filters.format==='all' || q.format===filters.format) && (filters.mode!=='wrong' || progress[q.id]?.correct===false) && (filters.mode!=='unanswered' || !progress[q.id]) && (filters.mode!=='bookmarks' || bookmarks.includes(q.id)));
+  const eligible=bank.filter(q=>(!Array.isArray(filters.questionIds)||filters.questionIds.includes(q.id)) && (!filters.topic || filters.topic==='all' || q.topic===filters.topic) && (!filters.format || filters.format==='all' || q.format===filters.format) && (filters.mode!=='wrong' || progress[q.id]?.correct===false) && (filters.mode!=='unanswered' || !progress[q.id]) && (filters.mode!=='bookmarks' || bookmarks.includes(q.id)));
   const limit=Number(filters.count)||eligible.length;
   return {version:VERSION,filters:{...filters},position:0,items:shuffle(eligible,rng).slice(0,limit).map(q=>{
     const order=q.format==='mcq'?shuffle(q.choices.map((_,i)=>i),rng):q.choices.map((_,i)=>i);
