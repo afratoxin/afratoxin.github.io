@@ -1,170 +1,895 @@
-// Original clinical questions paired with selected teaching-library slides.
-// Image identification and visible fields are verified separately during capture.
+// Photo identification: the prompt leaves the decisive morphology to the image.
 const LIBRARY_URL='https://pathedu.snu.ac.kr/library';
-const src=(doc,...pages)=>({doc,pages});
-const R={
- viral:[src('path1',25,29,30,32,33),src('lab',5,6,7,8,10,11,13,15,16)],
- tb:[src('path1',14,15),src('path2',19,21,22),src('lab',18)],
- ntm:[src('path1',15),src('path2',23),src('lab',19,20)],
- leprosy:[src('path2',24,25),src('lab',21,23,25)],
- actino:[src('path2',29,30),src('lab',26,27)],
- asper:[src('path2',37,41),src('lab',29,33,34)],
- mucor:[src('path2',37,42),src('lab',35,36,38)],
- candida:[src('path2',37,43),src('lab',39,40)],
- crypto:[src('path1',15),src('path2',37,44),src('lab',41,43,44,45)],
- pcp:[src('path2',45),src('lab',46,47,49)],
- cocci:[src('path2',38,39,44)]
-};
-const O={
- hsv:['HSV','다핵화·핵 molding·핵 내 변화와 반복 수포 병변을 연결한다.'],
- vzv:['VZV','수두·대상포진과 관련되며 조직 형태는 HSV와 겹칠 수 있다.'],
- cmv:['CMV','큰 감염세포와 핵 내 봉입체를 임상 맥락과 함께 해석한다.'],
- hpv:['HPV','사마귀성 상피 증식과 koilocytosis가 감별점이다.'],
- mcv:['Molluscum contagiosum virus','중앙 함몰 구진과 표피의 세포질 내 큰 봉입체가 특징이다.'],
- adeno:['Adenovirus','짙고 뭉개진 핵 내 변화와 호흡기 등의 임상 맥락을 연결한다.'],
- bk:['BK polyomavirus','신장이식·면역억제와 소변의 decoy cell을 연결한다.'],
- ebv:['EBV','B세포 감염과 반응성 비정형 CD8 T세포를 구분한다.'],
- tb:['M. tuberculosis complex','건락괴사성 육아종을 의심하되 직접 검사와 임상 맥락을 함께 해석한다.'],
- ntm:['비결핵항산균 (NTM)','결핵균 복합체와 M. leprae를 제외한 항산균군이며 형태만으로 균종을 확정하지 않는다.'],
- leprae:['M. leprae','피부·말초신경 침범과 숙주의 T세포 면역을 연결한다.'],
- nocardia:['Nocardia spp.','분지성 세균이며 약한 항산성을 보일 수 있어 임상·검사 맥락이 필요하다.'],
- actino:['Actinomyces spp.','분지성 세균 집락과 sulfur granule·화농·섬유화를 연결한다.'],
- asper:['Aspergillus spp.','상대적으로 가는 격막성 균사와 예각 분지가 대표 감별점이다.'],
- mucor:['Mucorales','넓고 불규칙한 균사·드문 격막·혈관 침범을 연결한다.'],
- candida:['Candida spp.','출아 효모와 가성균사를 점막 감염과 연결한다.'],
- crypto:['Cryptococcus spp.','피막성 효모·좁은 기저부 출아와 폐·중추신경계 감염을 연결한다.'],
- pcp:['Pneumocystis jirovecii','면역저하 폐렴의 폐포 내 거품성 물질과 낭 구조를 연결한다.'],
- cocci:['Coccidioides spp.','조직 내 구형체와 내부 endospore가 출아 효모와의 중요한 감별점이다.']
-};
 const captions=['피부 조직','자궁경부 조직','조직 표본','조직 표본 · 면역조직화학','피부 조직','소변 세포진','조직 표본','림프절 조직','림프절 조직 · 항산염색','피부 조직','피부 조직 · 항산염색','항산염색 대조표본','맹장 조직','폐 조직','폐 조직 · GMS','맹장 조직','맹장 조직 · GMS','맹장 조직 · PAS','자궁경부·질 세포진','조직 표본','조직 표본 · GMS','조직 표본 · PAS','폐 조직','기관지세척액','기관지세척액 · GMS','폐 조직'];
-const questions=[];
-const captureDimensions=[[900, 500], [900, 470], [800, 650], [800, 650], [900, 420], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [590, 430], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650]];
-export const PATHEDU_PHOTOS=Object.fromEntries(captions.map((caption,index)=>{
+const captureDimensions=[[900, 500], [900, 600], [800, 650], [800, 650], [900, 420], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [590, 430], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650], [800, 650]];
+const libraryPhotoCandidates=Object.fromEntries(captions.map((caption,index)=>{
  const n=String(index+1).padStart(2,'0');
  return ['edu-'+n,{src:'assets/pathology/edu-'+n+'.webp',alt:'병리교육 조직 표본 '+(index+1),caption,doc:'pathedu',page:index+1,slideNumber:index+1,width:captureDimensions[index][0],height:captureDimensions[index][1],sourceUrl:LIBRARY_URL,sourceTitle:'서울대학교 병리교육 라이브러리'}];
 }));
-function base(number,stem,refs,explanation){
- const n=String(number).padStart(2,'0');
- return {id:'path-edu-'+n,topic:'path-image',format:'mcq',kind:'integrated',stem,photos:['edu-'+n],explanation,keyClue:explanation,sourceRefs:refs,examRefs:[],refs:[],pages:refs[0].pages,externalRefs:[{title:'서울대학교 병리교육 라이브러리',url:LIBRARY_URL}]};
-}
-function organism(number,stem,keys,answerKey,explanation,refs){
- const q=base(number,stem,refs,explanation);q.ask='organism';q.choices=keys.map(k=>O[k][0]);q.answer=keys.indexOf(answerKey);q.choiceNotes=keys.map(k=>k===answerKey?explanation:O[k][1]);questions.push(q);
-}
-function statement(number,stem,pairs,explanation,refs){
- const q=base(number,stem,refs,explanation),offset=number%5;
- const rows=pairs.map(([trueStatement,falseStatement],i)=>({trueStatement,falseStatement,shownIsTrue:i===0,sourceRefs:refs,technique:'근접 사실 치환'}));
- const ordered=[...rows.slice(offset),...rows.slice(0,offset)];
- q.ask='correct';q.choiceEvidence=ordered;q.choices=ordered.map(e=>e.shownIsTrue?e.trueStatement:e.falseStatement);q.choiceNotes=ordered.map(e=>e.trueStatement);q.answer=ordered.findIndex(e=>e.shownIsTrue);questions.push(q);
-}
 
-organism(1,'손가락에 거친 표면의 구진이 생긴 환자다. 피부 상피의 유두상 증식과 핵 주변 투명 공간을 보이는 세포가 감별 단서다. 가장 관련된 바이러스는?',
- ['hpv','mcv','hsv','cmv','vzv'],'hpv','사마귀성 상피 증식과 koilocytosis를 HPV와 연결한다. 이 형태로 특정 HPV 유전형까지 구분하지는 않는다.',[src('path1',29),src('lab',5,6)]);
-organism(2,'통증성 생식기 수포·궤양을 보인 환자의 자궁경부 표본이다. 다핵화·핵 molding과 ground-glass 핵 변화가 보고되었다. 임상과 형태를 함께 볼 때 가장 적절한 원인체는?',
- ['hsv','vzv','cmv','hpv','adeno'],'hsv','생식기 수포·궤양의 임상과 다핵화·핵 molding은 HSV를 지지한다. HSV와 VZV는 형태가 겹치므로 조직상 하나로 구분하지 않는다.',[src('path1',29,32),src('lab',13,15)]);
-organism(3,'장기이식 후 면역억제 중인 환자다. 조직에서 주변보다 큰 감염세포와 clear halo를 동반한 핵 내 봉입체가 보고되었다. 가장 적절한 원인체는?',
- ['cmv','hsv','adeno','bk','ebv'],'cmv','세포 비대와 핵 내 큰 봉입체·clear halo는 면역저하 숙주의 CMV 감염을 지지하는 조합이다.',[src('path1',30),src('lab',7,8)]);
-statement(4,'이식 환자의 조직에서 바이러스 감염이 의심되어 면역조직화학 검사를 시행했다. 이 검사와 결과 해석에 대한 설명으로 옳은 것은?',[
- ['IHC는 항원·항체 결합을 이용한다.','IHC는 핵산·탐침 결합을 이용한다.'],
- ['ISH는 핵산·탐침 결합을 이용한다.','ISH는 항원·항체 결합을 이용한다.'],
- ['CMV의 owl’s-eye 봉입체는 핵 내에 위치한다.','CMV의 owl’s-eye 봉입체는 세포질에 위치한다.'],
- ['IHC 결과는 조직 형태와 함께 해석한다.','IHC 결과는 표적 핵산의 분포로 해석한다.'],
- ['IHC 양성은 표적 항원의 위치를 나타낸다.','IHC 양성은 표적 핵산의 서열을 나타낸다.']
- ],'면역조직화학은 항원·항체 결합으로 표적 항원의 위치를 보여 준다. ISH의 핵산·탐침 결합과 구분하며, CMV의 고전적 owl’s-eye 봉입체는 핵 내에 위치한다.',[src('path1',15,30),src('lab',7,8)]);
-questions.at(-1).externalRefs.push({title:'CDC PHIL · CMV owl’s-eye 핵 내 봉입체',url:'https://wwwn.cdc.gov/phil/Details.aspx?pid=23470'});
-organism(5,'중앙이 함몰된 여러 개의 작은 구진이 있는 소아다. 표피 증식과 큰 세포질 내 봉입체를 임상 소견과 연결할 때 가장 적절한 바이러스는?',
- ['mcv','hpv','hsv','cmv','adeno'],'mcv','중앙 함몰 구진과 표피의 큰 세포질 내 molluscum body를 물사마귀의 poxvirus와 연결한다.',[src('path1',29),src('lab',10,11)]);
-organism(6,'신장이식 후 면역억제 중인 환자의 소변 세포진이다. 악성세포와 감별이 필요한 decoy cell이 보고되었다. 강의에서 이 상황과 대표적으로 연결한 바이러스는?',
- ['bk','cmv','adeno','hpv','hsv'],'bk','신장이식·면역억제·소변 decoy cell은 BK polyomavirus 평가의 대표 맥락이다. 세포 모양만으로 확진을 대신하지는 않는다.',[src('path1',33),src('lab',16)]);
-organism(7,'만성 기침과 체중 감소가 있고 흉막하 폐 병변과 폐문 림프절 병변이 함께 평가 중이다. 조직에서 건락괴사성 육아종이 보고되었다. 가장 먼저 연결할 원인균군은?',
- ['tb','ntm','leprae','actino','nocardia'],'tb','건락괴사성 육아종과 폐·폐문 림프절의 임상 맥락을 결핵과 연결한다. 육아종 자체가 균종 확정 검사는 아니다.',R.tb);
-organism(8,'진행된 면역저하 환자의 림프절에서 다수의 항산균을 포함한 조직구가 보고되었다. 추가 동정에서 Mycobacterium 속으로 확인되었으며 결핵균 복합체와 M. leprae에는 속하지 않았다. 해당 범주는?',
- ['ntm','tb','leprae','nocardia','actino'],'ntm','NTM은 결핵균 복합체와 M. leprae를 제외한 항산균군이다. 조직 형태나 AFB 양성만으로 NTM의 개별 균종을 확정하지 않는다.',R.ntm);
-questions.at(-1).externalRefs.push({title:'CDC · 비결핵항산균의 범위',url:'https://www.cdc.gov/nontuberculous-mycobacteria/about/index.html'});
-statement(9,'림프절의 항산염색 결과를 숙주 상태 및 형태와 함께 해석하고 있다. 항산염색의 의미를 설명한 것으로 옳은 것은?',[
- ['AFB 양성 뒤 균종은 추가 검사로 구분한다.','AFB 양성 뒤 균종은 항산염색으로 구분한다.'],
- ['항산균은 항산염색에서 붉은 간균으로 보인다.','항산균은 항산염색에서 푸른 간균으로 보인다.'],
- ['MAC 감염의 조직구 안에 다수 AFB가 보일 수 있다.','MAC 감염의 림프구 안에 다수 AFB가 주로 보인다.'],
- ['면역저하 MAC 감염은 육아종 형성이 약할 수 있다.','면역저하 MAC 감염은 육아종 형성이 강해진다.'],
- ['AFB 염색은 항산성 미생물 평가에 이용한다.','AFB 염색은 항산균의 협막 평가에 이용한다.']
- ],'AFB는 항산성 미생물을 확인하는 단서다. 결핵균과 비결핵항산균의 구분에는 추가 동정 및 임상 정보가 필요하다.',R.ntm);
-organism(10,'피부 감각 저하와 반복되는 무통성 상처가 있고, 다수의 피부 병변에서 포말성 조직구와 많은 항산균이 보고되었다. 약한 T세포 반응이라는 숙주 정보까지 연결할 원인균은?',
- ['leprae','tb','ntm','actino','nocardia'],'leprae','피부·말초신경 침범과 나종형의 약한 T세포 면역·많은 균·포말성 조직구를 M. leprae와 연결한다.',R.leprosy);
-statement(11,'피부의 감각 저하를 보이는 환자에서 조직과 항산염색을 함께 비교한다. 한센병의 면역 스펙트럼을 설명한 것으로 옳은 것은?',[
- ['나종형은 결핵양형보다 T세포 면역이 약하다.','나종형은 결핵양형보다 T세포 면역이 강하다.'],
- ['나종형은 결핵양형보다 균 수가 많다.','나종형은 결핵양형보다 균 수가 적다.'],
- ['결핵양형은 나종형보다 육아종이 뚜렷하다.','결핵양형은 나종형보다 육아종이 약하다.'],
- ['나종형은 포말성 조직구가 두드러진다.','결핵양형은 포말성 조직구가 두드러진다.'],
- ['한센병의 신경 병변은 말초신경과 연결된다.','한센병의 신경 병변은 중추신경과 연결된다.']
- ],'한센병에서는 숙주의 T세포 면역이 강한 결핵양형과 약한 나종형을 비교한다. 나종형은 많은 균과 포말성 조직구가 두드러진다.',R.leprosy);
-statement(12,'환자 조직과 함께 항산염색의 양성 대조표본을 확인했다. 양성 대조표본의 역할을 설명한 것으로 옳은 것은?',[
- ['양성 대조는 염색 반응의 성립을 확인한다.','양성 대조는 환자 병원체의 균종을 확인한다.'],
- ['환자 감염 여부는 환자 검체와 함께 해석한다.','환자 감염 여부는 대조 검체의 색으로 해석한다.'],
- ['AFB 양성의 균종은 추가 동정으로 구분한다.','AFB 양성의 균종은 항산염색 소견으로 구분한다.'],
- ['AFB 염색은 항산성 평가에 이용한다.','AFB 염색은 항산균의 협막 평가에 이용한다.'],
- ['대조표본은 검사 과정의 적절성을 평가한다.','대조표본은 환자 검체의 항산균 수를 평가한다.']
- ],'양성 대조는 염색 반응이 적절히 성립했는지 확인하는 자료다. 환자 검체의 양성 여부나 균종을 대신 결정하는 검체는 아니다.',[src('path1',15),src('lab',25)]);
-organism(13,'맹장 주위의 만성 염증성 종괴를 절제했다. 화농성 괴사와 섬유화 속에 분지성 세균 집락·sulfur granule이 보고되었다. 가장 적절한 원인체는?',
- ['actino','nocardia','asper','mucor','candida'],'actino','분지성 세균 집락과 sulfur granule·화농·섬유화를 복부 방선균증과 연결한다. 균사처럼 보여도 세균성 병변이다.',R.actino);
-organism(14,'항암치료 후 호중구 감소가 있는 환자에게 폐 병변이 생겼다. 비교적 가는 격막성 균사와 예각 분지가 감별 단서다. 가장 가능성이 높은 원인균군은?',
- ['asper','mucor','candida','crypto','pcp'],'asper','호중구 감소 숙주에서 격막성 균사·예각 분지는 Aspergillus를 지지한다. 조직만으로 Aspergillus의 개별 종을 정하지 않는다.',R.asper);
-statement(15,'면역저하 환자의 폐 표본에 GMS 염색을 추가했다. 이 염색과 균사 형태의 해석으로 옳은 것은?',[
- ['GMS는 진균의 세포벽 구조를 강조한다.','GMS는 진균의 세포막 구조를 강조한다.'],
- ['Aspergillus는 격막성 균사를 보인다.','Aspergillus는 비격막성 균사를 보인다.'],
- ['Aspergillus는 예각 분지가 흔하다.','Aspergillus는 직각 분지가 흔하다.'],
- ['Mucorales는 격막이 상대적으로 드물다.','Mucorales는 격막이 상대적으로 촘촘하다.'],
- ['GMS 형태는 임상 맥락과 함께 해석한다.','GMS 형태는 진균 핵의 분포로 해석한다.']
- ],'GMS는 진균 세포벽 구조를 강조한다. 검게 보이는 구조를 숙주세포의 핵과 혼동하지 않고 균사의 폭·격막·분지를 함께 해석한다.',[src('path1',15),...R.asper]);
-organism(16,'면역저하 환자의 맹장 병변에서 괴사가 확인되었다. 조직 검사에서 넓고 불규칙한 리본형 균사와 드문 격막이 보고되었다. 가장 가능성이 높은 원인체군은?',
- ['mucor','asper','candida','crypto','pcp'],'mucor','넓고 불규칙한 균사·드문 격막은 Mucorales를 지지한다. 이 감염은 위장관에도 생길 수 있으며 혈관 침범을 함께 살핀다.',R.mucor);
-statement(17,'괴사성 맹장 병변의 GMS 표본에서 Mucorales 감염이 의심된다. 조직 손상과 형태를 설명한 것으로 옳은 것은?',[
- ['혈관 침범에 따른 혈전은 조직 관류를 낮춘다.','혈관 침범에 따른 혈전은 조직 관류를 높인다.'],
- ['Mucorales는 넓고 불규칙한 균사를 보인다.','Mucorales는 가늘고 불규칙한 균사를 보인다.'],
- ['Mucorales의 격막은 상대적으로 드물다.','Mucorales의 격막은 상대적으로 촘촘하다.'],
- ['당뇨는 침습성 Mucorales 감염의 위험 요인이다.','당뇨는 침습성 Mucorales 감염의 보호 요인이다.'],
- ['Mucorales는 진균으로 분류한다.','Mucorales는 조직에서 피막성 효모로 분류한다.']
- ],'침습성 Mucorales의 혈관 침범은 혈전·허혈·괴사와 연결된다. 괴사 조직과 균사 형태를 함께 평가한다.',R.mucor);
-statement(18,'맹장 조직의 PAS 표본에서 진균 구조를 평가하고 있다. Mucorales와 다른 진균의 감별에 대한 설명으로 옳은 것은?',[
- ['Mucorales는 Aspergillus보다 균사가 넓다.','Mucorales는 Aspergillus보다 균사가 좁다.'],
- ['Mucorales는 격막이 상대적으로 드물다.','Mucorales는 격막이 상대적으로 촘촘하다.'],
- ['Aspergillus는 예각 분지가 흔하다.','Aspergillus는 직각 분지가 흔하다.'],
- ['Candida는 출아 효모와 가성균사를 보인다.','Candida는 넓은 리본형 균사를 보인다.'],
- ['PAS는 진균 세포벽 평가에 이용한다.','PAS는 진균 세포막 평가에 이용한다.']
- ],'진균 이름을 고를 때 염색 양성 여부뿐 아니라 균사 폭·격막·분지와 효모/가성균사 형태를 비교한다.',[src('path1',15),src('path2',37,41,42,43),src('lab',35,38)]);
-organism(19,'질염 환자의 자궁경부·질 세포진이다. 출아 효모와 길게 연결된 가성균사가 함께 보고되었다. 가장 적절한 원인체군은?',
- ['candida','crypto','asper','mucor','pcp'],'candida','점막 감염에서 출아 효모와 가성균사를 함께 보이는 소견은 Candida를 지지한다. 세포진 형태로 개별 Candida 종을 확정하지 않는다.',R.candida);
-organism(20,'면역저하 환자에게 폐 병변과 수막염이 동반되었다. 조직의 효모에서 피막과 좁은 기저부 출아가 감별 단서다. 가장 적절한 원인체군은?',
- ['crypto','candida','asper','mucor','pcp'],'crypto','피막성 효모·좁은 기저부 출아와 폐·중추신경계 감염을 Cryptococcus와 연결한다. C. neoformans와 C. gattii를 사진 하나로 구분하지 않는다.',R.crypto);
-statement(21,'GMS에서 확인된 효모의 형태와 추가 피막 염색을 검토하고 있다. Cryptococcus 감별에 대한 설명으로 옳은 것은?',[
- ['Mucicarmine은 Cryptococcus 피막 평가에 도움된다.','Mucicarmine은 Aspergillus 격막 평가에 도움된다.'],
- ['GMS는 진균 세포벽을 강조한다.','GMS는 진균 세포막을 강조한다.'],
- ['Cryptococcus는 출아 효모 형태를 보인다.','Cryptococcus는 예각 분지 균사 형태를 보인다.'],
- ['Candida는 가성균사를 형성할 수 있다.','Candida는 격막이 드문 리본형 균사를 형성한다.'],
- ['Cryptococcus 형태는 임상 소견과 연결해 해석한다.','Cryptococcus 형태는 피막보다 격막을 기준으로 해석한다.']
- ],'Cryptococcus의 효모 형태를 확인한 뒤 피막 평가에는 mucicarmine이 도움이 된다. GMS로 보이는 진균 구조와 피막을 구분한다.',R.crypto);
-statement(22,'PAS에서 효모 형태가 확인된 표본이다. 출아 방식과 균사 형태를 이용한 감별 설명으로 옳은 것은?',[
- ['Cryptococcus는 좁은 기저부의 출아를 보인다.','Cryptococcus는 넓은 기저부의 출아를 보인다.'],
- ['Candida는 출아 효모와 가성균사를 보인다.','Candida는 넓은 리본형 균사를 보인다.'],
- ['Aspergillus는 격막성 균사를 보인다.','Aspergillus는 비격막성 균사를 보인다.'],
- ['Mucorales는 격막이 상대적으로 드물다.','Mucorales는 격막이 상대적으로 촘촘하다.'],
- ['Pneumocystis 폐렴은 폐포 거품성 물질과 연결된다.','Pneumocystis 폐렴은 폐포 중격의 거품성 물질과 연결된다.']
- ],'PAS 양성인 진균을 구분할 때 효모의 출아·피막, 가성균사, 균사의 격막·폭을 각각 비교한다.',[...R.crypto,src('path2',41,42,43,45)]);
-organism(23,'진행된 HIV 감염 환자가 마른기침과 호흡곤란을 보인다. 병리 보고서에 폐포 공간의 거품성 물질과 특수염색의 낭 구조가 기재되어 있다. 가장 적절한 원인체는?',
- ['pcp','crypto','candida','asper','mucor'],'pcp','면역저하 숙주의 폐포 내 거품성 삼출물과 낭 구조는 Pneumocystis 폐렴의 대표 조합이다.',R.pcp);
-organism(24,'면역저하 환자의 호흡곤란을 평가하기 위해 기관지세척액을 검사했다. 폐포 내 거품성 물질과 병원체의 낭 형태가 감별 단서로 보고되었다. 가장 적절한 원인체는?',
- ['pcp','crypto','candida','asper','mucor'],'pcp','기관지세척액의 형태와 임상 맥락을 Pneumocystis 폐렴과 연결한다. 검체의 구조물을 숙주세포 핵으로 오인하지 않는다.',R.pcp);
-statement(25,'면역저하 폐렴 환자의 기관지세척액 GMS 표본을 해석하고 있다. Pneumocystis의 구조와 병변을 설명한 것으로 옳은 것은?',[
- ['GMS의 낭 구조는 병원체 구조에 해당한다.','GMS의 낭 구조는 감염 숙주의 핵에 해당한다.'],
- ['거품성 물질은 폐포 공간에 모인다.','거품성 물질은 폐포 중격에 모인다.'],
- ['P. jirovecii는 진균으로 분류한다.','P. jirovecii는 격막성 균사형 진균으로 분류한다.'],
- ['HIV 면역저하는 PCP 위험을 높인다.','HIV 면역저하는 PCP 위험을 낮춘다.'],
- ['GMS에서 낭 구조는 검게 강조된다.','GMS에서 낭 구조는 붉게 강조된다.']
- ],'GMS에서 강조되는 낭 구조는 Pneumocystis의 구조다. 숙주 핵·폐포 공간의 거품성 물질과 구분해 해석한다.',R.pcp);
-organism(26,'폐 병변을 평가 중인 환자다. 조직에서 내부에 여러 endospore를 포함한 두꺼운 벽의 구형체가 감별 단서로 보고되었다. 가장 적절한 원인체군은?',
- ['cocci','crypto','candida','asper','mucor'],'cocci','조직 내 endospore를 포함한 spherule은 Coccidioides의 중요한 단서다. 출아 효모나 분지하는 균사와 구분한다.',R.cocci);
-questions.at(-1).externalRefs.push({title:'CDC PHIL · 구형체와 endospore 형태',url:'https://wwwn.cdc.gov/phil/Details.aspx?pid=29232'});
-const pairedTeachingFields={3:4,8:9,10:11,14:15,16:17,20:21};
-for(const [a,b] of Object.entries(pairedTeachingFields)){const q=questions.find(q=>q.id==='path-edu-'+String(a).padStart(2,'0'));q.photos.push('edu-'+String(b).padStart(2,'0'));}
-questions.find(q=>q.id==='path-edu-19').photos.push('p21');
-questions.find(q=>q.id==='path-edu-23').photos.push('p24');
-questions.find(q=>q.id==='path-edu-25').photos.push('p24');
-export const PATHEDU_QUESTIONS=Object.freeze(questions.map(q=>Object.freeze(q)));
+export const PATHEDU_QUESTIONS=Object.freeze([
+ {
+  "id": "path-edu-v2-hpv",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "손등의 작은 구진을 생검한 조직이다. 가장 가능성이 높은 원인 바이러스는?",
+  "photos": [
+   "edu-01",
+   "edu-01-detail"
+  ],
+  "choices": [
+   "HPV",
+   "Molluscum contagiosum virus",
+   "HSV",
+   "VZV",
+   "CMV"
+  ],
+  "answer": 0,
+  "choiceNotes": [
+   "표피가 유두상으로 솟고, 상층 세포의 불규칙한 핵 주위에 밝은 공간이 보입니다. HPV 감염의 koilocytosis와 사마귀성 상피 증식입니다. 물사마귀는 큰 세포질 봉입체가 표피세포를 채웁니다.",
+   "분엽성으로 증식한 표피가 컵 모양 병변을 만들고, 큰 봉입체가 세포질을 채웁니다. 세포질 내 molluscum body는 물사마귀를 일으키는 poxvirus의 단서입니다.",
+   "상피세포 안의 여러 핵이 서로 맞물리고, 핵 내부가 뿌옇게 보입니다. 다핵화·핵 molding·ground-glass 핵 변화는 HSV 감염을 지지합니다.",
+   "HSV와 비슷한 다핵화·핵 변화가 가능하며, 전신 수포나 피부분절 병변의 임상 맥락을 비교합니다.",
+   "주변보다 큰 세포의 핵 안에 짙은 봉입체와 그 주위의 밝은 띠가 보입니다. 세포 비대와 owl’s-eye 핵 내 봉입체는 CMV의 핵심 소견입니다."
+  ],
+  "imageClue": "표피가 유두상으로 솟고, 상층 세포의 불규칙한 핵 주위에 밝은 공간이 보입니다.",
+  "coreFact": "HPV 감염의 koilocytosis와 사마귀성 상피 증식입니다.",
+  "contrast": "물사마귀는 큰 세포질 봉입체가 표피세포를 채웁니다.",
+  "explanation": "표피가 유두상으로 솟고, 상층 세포의 불규칙한 핵 주위에 밝은 공간이 보입니다. HPV 감염의 koilocytosis와 사마귀성 상피 증식입니다. 물사마귀는 큰 세포질 봉입체가 표피세포를 채웁니다.",
+  "keyClue": "표피가 유두상으로 솟고, 상층 세포의 불규칙한 핵 주위에 밝은 공간이 보입니다.",
+  "studyFocus": "핵주변 halo·사마귀성 증식 ↔ 큰 세포질 봉입체",
+  "sourceRefs": [
+   {
+    "doc": "path1",
+    "pages": [
+     29
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     5,
+     6
+    ]
+   }
+  ],
+  "examRefs": [],
+  "refs": [],
+  "pages": [
+   29
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-hsv",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "외음부 통증과 군집 수포가 있는 환자의 자궁경부 조직이다. 가장 가능성이 높은 원인 바이러스는?",
+  "photos": [
+   "edu-02"
+  ],
+  "choices": [
+   "CMV",
+   "HSV",
+   "VZV",
+   "Adenovirus",
+   "BK polyomavirus"
+  ],
+  "answer": 1,
+  "choiceNotes": [
+   "주변보다 큰 세포의 핵 안에 짙은 봉입체와 그 주위의 밝은 띠가 보입니다. 세포 비대와 owl’s-eye 핵 내 봉입체는 CMV의 핵심 소견입니다.",
+   "상피세포 안의 여러 핵이 서로 맞물리고, 핵 내부가 뿌옇게 보입니다. 다핵화·핵 molding·ground-glass 핵 변화는 HSV 감염을 지지합니다. VZV와 형태가 겹치므로 생식기 군집 수포라는 임상 맥락도 함께 봅니다.",
+   "HSV와 비슷한 다핵화·핵 변화가 가능하며, 전신 수포나 피부분절 병변의 임상 맥락을 비교합니다.",
+   "짙고 뭉개진 핵 내 봉입체가 단서이며 HSV의 다핵화 및 CMV의 큰 봉입체와 비교합니다.",
+   "소변 속 요로 상피세포가 커지고 핵이 짙게 뭉개져 악성세포처럼 보입니다. 신장이식 환자의 decoy cell은 BK polyomavirus를 먼저 고려하는 조합입니다."
+  ],
+  "imageClue": "상피세포 안의 여러 핵이 서로 맞물리고, 핵 내부가 뿌옇게 보입니다.",
+  "coreFact": "다핵화·핵 molding·ground-glass 핵 변화는 HSV 감염을 지지합니다.",
+  "contrast": "VZV와 형태가 겹치므로 생식기 군집 수포라는 임상 맥락도 함께 봅니다.",
+  "explanation": "상피세포 안의 여러 핵이 서로 맞물리고, 핵 내부가 뿌옇게 보입니다. 다핵화·핵 molding·ground-glass 핵 변화는 HSV 감염을 지지합니다. VZV와 형태가 겹치므로 생식기 군집 수포라는 임상 맥락도 함께 봅니다.",
+  "keyClue": "상피세포 안의 여러 핵이 서로 맞물리고, 핵 내부가 뿌옇게 보입니다.",
+  "studyFocus": "다핵화·molding ↔ CMV의 큰 감염세포·핵 내 봉입체",
+  "sourceRefs": [
+   {
+    "doc": "path1",
+    "pages": [
+     25,
+     29,
+     32
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     13,
+     15
+    ]
+   }
+  ],
+  "examRefs": [
+   "2025 30번",
+   "2023 88번",
+   "2021 14번"
+  ],
+  "refs": [],
+  "pages": [
+   25,
+   29,
+   32
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-cmv",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "면역억제 치료 중인 환자의 생검 조직이다. 가장 가능성이 높은 원인 바이러스는?",
+  "photos": [
+   "edu-03"
+  ],
+  "choices": [
+   "HSV",
+   "Adenovirus",
+   "CMV",
+   "BK polyomavirus",
+   "VZV"
+  ],
+  "answer": 2,
+  "choiceNotes": [
+   "상피세포 안의 여러 핵이 서로 맞물리고, 핵 내부가 뿌옇게 보입니다. 다핵화·핵 molding·ground-glass 핵 변화는 HSV 감염을 지지합니다.",
+   "짙고 뭉개진 핵 내 봉입체가 단서이며 HSV의 다핵화 및 CMV의 큰 봉입체와 비교합니다.",
+   "주변보다 큰 세포의 핵 안에 짙은 봉입체와 그 주위의 밝은 띠가 보입니다. 세포 비대와 owl’s-eye 핵 내 봉입체는 CMV의 핵심 소견입니다. HPV의 halo는 핵주변 세포질에 있으며, HSV는 다핵화·핵 molding을 비교합니다.",
+   "소변 속 요로 상피세포가 커지고 핵이 짙게 뭉개져 악성세포처럼 보입니다. 신장이식 환자의 decoy cell은 BK polyomavirus를 먼저 고려하는 조합입니다.",
+   "HSV와 비슷한 다핵화·핵 변화가 가능하며, 전신 수포나 피부분절 병변의 임상 맥락을 비교합니다."
+  ],
+  "imageClue": "주변보다 큰 세포의 핵 안에 짙은 봉입체와 그 주위의 밝은 띠가 보입니다.",
+  "coreFact": "세포 비대와 owl’s-eye 핵 내 봉입체는 CMV의 핵심 소견입니다.",
+  "contrast": "HPV의 halo는 핵주변 세포질에 있으며, HSV는 다핵화·핵 molding을 비교합니다.",
+  "explanation": "주변보다 큰 세포의 핵 안에 짙은 봉입체와 그 주위의 밝은 띠가 보입니다. 세포 비대와 owl’s-eye 핵 내 봉입체는 CMV의 핵심 소견입니다. HPV의 halo는 핵주변 세포질에 있으며, HSV는 다핵화·핵 molding을 비교합니다.",
+  "keyClue": "주변보다 큰 세포의 핵 안에 짙은 봉입체와 그 주위의 밝은 띠가 보입니다.",
+  "studyFocus": "CMV → cytomegaly·owl’s-eye / 세포질 봉입체도 가능",
+  "sourceRefs": [
+   {
+    "doc": "path1",
+    "pages": [
+     25,
+     29,
+     30
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     7,
+     8
+    ]
+   }
+  ],
+  "examRefs": [],
+  "refs": [],
+  "pages": [
+   25,
+   29,
+   30
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-molluscum",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "소아의 얼굴에 생긴 작은 구진의 조직이다. 가장 가능성이 높은 원인 바이러스는?",
+  "photos": [
+   "edu-05",
+   "p04"
+  ],
+  "choices": [
+   "HPV",
+   "HSV",
+   "CMV",
+   "Molluscum contagiosum virus",
+   "VZV"
+  ],
+  "answer": 3,
+  "choiceNotes": [
+   "표피가 유두상으로 솟고, 상층 세포의 불규칙한 핵 주위에 밝은 공간이 보입니다. HPV 감염의 koilocytosis와 사마귀성 상피 증식입니다.",
+   "상피세포 안의 여러 핵이 서로 맞물리고, 핵 내부가 뿌옇게 보입니다. 다핵화·핵 molding·ground-glass 핵 변화는 HSV 감염을 지지합니다.",
+   "주변보다 큰 세포의 핵 안에 짙은 봉입체와 그 주위의 밝은 띠가 보입니다. 세포 비대와 owl’s-eye 핵 내 봉입체는 CMV의 핵심 소견입니다.",
+   "표피세포가 분엽상으로 증식하고, 큰 봉입체가 세포질을 채웁니다. 세포질 내 molluscum body는 물사마귀를 일으키는 poxvirus의 단서입니다. HPV는 큰 봉입체보다 koilocyte의 핵주변 halo와 유두상 증식이 중심입니다.",
+   "HSV와 비슷한 다핵화·핵 변화가 가능하며, 전신 수포나 피부분절 병변의 임상 맥락을 비교합니다."
+  ],
+  "imageClue": "표피세포가 분엽상으로 증식하고, 큰 봉입체가 세포질을 채웁니다.",
+  "coreFact": "세포질 내 molluscum body는 물사마귀를 일으키는 poxvirus의 단서입니다.",
+  "contrast": "HPV는 큰 봉입체보다 koilocyte의 핵주변 halo와 유두상 증식이 중심입니다.",
+  "explanation": "표피세포가 분엽상으로 증식하고, 큰 봉입체가 세포질을 채웁니다. 세포질 내 molluscum body는 물사마귀를 일으키는 poxvirus의 단서입니다. HPV는 큰 봉입체보다 koilocyte의 핵주변 halo와 유두상 증식이 중심입니다.",
+  "keyClue": "표피세포가 분엽상으로 증식하고, 큰 봉입체가 세포질을 채웁니다.",
+  "studyFocus": "컵 모양 표피·세포질 봉입체 ↔ HPV의 koilocyte",
+  "sourceRefs": [
+   {
+    "doc": "path1",
+    "pages": [
+     29
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     10,
+     11
+    ]
+   }
+  ],
+  "examRefs": [
+   "2025 100번",
+   "2021 16번"
+  ],
+  "refs": [],
+  "pages": [
+   29
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-bk",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "신장이식 후 면역억제 중인 환자의 소변 세포검사다. 가장 가능성이 높은 원인 바이러스는?",
+  "photos": [
+   "edu-06"
+  ],
+  "choices": [
+   "CMV",
+   "Adenovirus",
+   "HSV",
+   "HPV",
+   "BK polyomavirus"
+  ],
+  "answer": 4,
+  "choiceNotes": [
+   "주변보다 큰 세포의 핵 안에 짙은 봉입체와 그 주위의 밝은 띠가 보입니다. 세포 비대와 owl’s-eye 핵 내 봉입체는 CMV의 핵심 소견입니다.",
+   "짙고 뭉개진 핵 내 봉입체가 단서이며 HSV의 다핵화 및 CMV의 큰 봉입체와 비교합니다.",
+   "상피세포 안의 여러 핵이 서로 맞물리고, 핵 내부가 뿌옇게 보입니다. 다핵화·핵 molding·ground-glass 핵 변화는 HSV 감염을 지지합니다.",
+   "표피가 유두상으로 솟고, 상층 세포의 불규칙한 핵 주위에 밝은 공간이 보입니다. HPV 감염의 koilocytosis와 사마귀성 상피 증식입니다.",
+   "소변 속 요로 상피세포가 커지고 핵이 짙게 뭉개져 악성세포처럼 보입니다. 신장이식 환자의 decoy cell은 BK polyomavirus를 먼저 고려하는 조합입니다. CMV·Adenovirus도 핵 변화를 만들 수 있어 형태 하나로 확진하지는 않습니다."
+  ],
+  "imageClue": "소변 속 요로 상피세포가 커지고 핵이 짙게 뭉개져 악성세포처럼 보입니다.",
+  "coreFact": "신장이식 환자의 decoy cell은 BK polyomavirus를 먼저 고려하는 조합입니다.",
+  "contrast": "CMV·Adenovirus도 핵 변화를 만들 수 있어 형태 하나로 확진하지는 않습니다.",
+  "explanation": "소변 속 요로 상피세포가 커지고 핵이 짙게 뭉개져 악성세포처럼 보입니다. 신장이식 환자의 decoy cell은 BK polyomavirus를 먼저 고려하는 조합입니다. CMV·Adenovirus도 핵 변화를 만들 수 있어 형태 하나로 확진하지는 않습니다.",
+  "keyClue": "소변 속 요로 상피세포가 커지고 핵이 짙게 뭉개져 악성세포처럼 보입니다.",
+  "studyFocus": "신장이식·소변 decoy cell / 악성세포와의 형태적 혼동",
+  "sourceRefs": [
+   {
+    "doc": "path1",
+    "pages": [
+     33
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     16
+    ]
+   }
+  ],
+  "examRefs": [],
+  "refs": [],
+  "pages": [
+   33
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-tb",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "수주간 기침과 체중감소가 지속된 환자의 폐 조직이다. 가장 가능성 높은 원인 병원체는?",
+  "photos": [
+   "edu-07",
+   "p12"
+  ],
+  "choices": [
+   "M. tuberculosis complex",
+   "M. avium complex (MAC)",
+   "M. leprae",
+   "Nocardia spp.",
+   "Actinomyces spp."
+  ],
+  "answer": 0,
+  "choiceNotes": [
+   "중앙의 무정형 괴사를 상피양 조직구의 육아종성 반응이 둘러쌉니다. 만성 폐 증상과 건락괴사성 육아종은 결핵균군을 지지합니다. MAC·나균도 항산성이므로 항산염색 양성만으로 균종을 구분하지 않습니다.",
+   "포말성 조직구가 밀집하고, 항산염색에서 세포 안에 많은 붉은 간균이 보입니다. 심한 HIV 면역저하의 림프절에서 이 조합은 MAC를 지지합니다.",
+   "피부의 포말성 조직구와 세포 내 항산균을 손발의 감각저하와 연결합니다. M. leprae는 피부·말초신경을 침범하며 나종형에서는 포말성 조직구가 두드러집니다.",
+   "가는 분지성 세균과 약한 항산성을 비교합니다. 조밀한 방사상 세균 집락과 구분합니다.",
+   "치밀한 집락의 주변부가 방사상으로 퍼지고, 주위를 화농성 염증세포가 둘러쌉니다. 이 sulfur granule은 Actinomyces 감염의 대표적 형태입니다."
+  ],
+  "imageClue": "중앙의 무정형 괴사를 상피양 조직구의 육아종성 반응이 둘러쌉니다.",
+  "coreFact": "만성 폐 증상과 건락괴사성 육아종은 결핵균군을 지지합니다.",
+  "contrast": "MAC·나균도 항산성이므로 항산염색 양성만으로 균종을 구분하지 않습니다.",
+  "explanation": "중앙의 무정형 괴사를 상피양 조직구의 육아종성 반응이 둘러쌉니다. 만성 폐 증상과 건락괴사성 육아종은 결핵균군을 지지합니다. MAC·나균도 항산성이므로 항산염색 양성만으로 균종을 구분하지 않습니다.",
+  "keyClue": "중앙의 무정형 괴사를 상피양 조직구의 육아종성 반응이 둘러쌉니다.",
+  "studyFocus": "괴사 중심·육아종 경계 / 항산성 자체는 결핵에 특이적이지 않음",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     19,
+     21,
+     22
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     18
+    ]
+   }
+  ],
+  "examRefs": [
+   "2023 79번"
+  ],
+  "refs": [],
+  "pages": [
+   19,
+   21,
+   22
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-mac",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "심한 면역저하를 동반한 HIV 환자에게 발열과 림프절종대가 생겼다. 림프절 H&E·항산염색 사진의 원인체로 가장 적절한 것은?",
+  "photos": [
+   "edu-08",
+   "edu-09"
+  ],
+  "choices": [
+   "M. tuberculosis complex",
+   "M. avium complex (MAC)",
+   "M. leprae",
+   "Cryptococcus spp.",
+   "Pneumocystis jirovecii"
+  ],
+  "answer": 1,
+  "choiceNotes": [
+   "중앙의 무정형 괴사를 상피양 조직구와 거대세포의 육아종이 둘러쌉니다. 만성 폐 증상과 건락괴사성 육아종은 결핵균군을 지지합니다.",
+   "포말성 조직구가 밀집하고, 항산염색에서 세포 안에 많은 붉은 간균이 보입니다. 심한 HIV 면역저하의 림프절에서 이 조합은 MAC를 지지합니다. 나균도 포말조직구·항산균을 보일 수 있지만 피부·말초신경 병변을 함께 비교합니다.",
+   "피부의 포말성 조직구와 세포 내 항산균을 손발의 감각저하와 연결합니다. M. leprae는 피부·말초신경을 침범하며 나종형에서는 포말성 조직구가 두드러집니다.",
+   "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다. 피막성 효모와 폐·중추신경계 감염을 연결하면 Cryptococcus가 적절합니다.",
+   "폐포 공간에 거품성 물질이 차고, GMS에서 검은 컵·반달 모양의 낭이 보입니다. 면역저하 폐렴에서 이 조합은 Pneumocystis jirovecii의 단서입니다."
+  ],
+  "imageClue": "포말성 조직구가 밀집하고, 항산염색에서 세포 안에 많은 붉은 간균이 보입니다.",
+  "coreFact": "심한 HIV 면역저하의 림프절에서 이 조합은 MAC를 지지합니다.",
+  "contrast": "나균도 포말조직구·항산균을 보일 수 있지만 피부·말초신경 병변을 함께 비교합니다.",
+  "explanation": "포말성 조직구가 밀집하고, 항산염색에서 세포 안에 많은 붉은 간균이 보입니다. 심한 HIV 면역저하의 림프절에서 이 조합은 MAC를 지지합니다. 나균도 포말조직구·항산균을 보일 수 있지만 피부·말초신경 병변을 함께 비교합니다.",
+  "keyClue": "포말성 조직구가 밀집하고, 항산염색에서 세포 안에 많은 붉은 간균이 보입니다.",
+  "studyFocus": "AIDS·림프절 / foamy macrophage 안의 다수 AFB",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     23
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     19,
+     20
+    ]
+   }
+  ],
+  "examRefs": [
+   "2023 69번"
+  ],
+  "refs": [],
+  "pages": [
+   23
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-leprae",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "손발에 감각저하와 반복되는 피부 상처가 있는 환자다. 피부 조직과 항산염색을 보고 원인 병원체를 고르시오.",
+  "photos": [
+   "edu-10",
+   "p16"
+  ],
+  "choices": [
+   "M. avium complex (MAC)",
+   "M. tuberculosis complex",
+   "M. leprae",
+   "Nocardia spp.",
+   "Actinomyces spp."
+  ],
+  "answer": 2,
+  "choiceNotes": [
+   "포말성 조직구가 밀집하고, 항산염색에서 세포 안에 많은 붉은 간균이 보입니다. 심한 HIV 면역저하의 림프절에서 이 조합은 MAC를 지지합니다.",
+   "중앙의 무정형 괴사를 상피양 조직구와 거대세포의 육아종이 둘러쌉니다. 만성 폐 증상과 건락괴사성 육아종은 결핵균군을 지지합니다.",
+   "피부의 포말성 조직구와 세포 내 항산균을 손발의 감각저하와 연결합니다. M. leprae는 피부·말초신경을 침범하며 나종형에서는 포말성 조직구가 두드러집니다. MAC와 항산성·포말조직구가 겹치므로 검체 장기와 신경 증상이 감별에 중요합니다.",
+   "가는 분지성 세균과 약한 항산성을 비교합니다. 조밀한 방사상 세균 집락과 구분합니다.",
+   "치밀한 집락의 주변부가 방사상으로 퍼지고, 주위를 화농성 염증세포가 둘러쌉니다. 이 sulfur granule은 Actinomyces 감염의 대표적 형태입니다."
+  ],
+  "imageClue": "피부의 포말성 조직구와 세포 내 항산균을 손발의 감각저하와 연결합니다.",
+  "coreFact": "M. leprae는 피부·말초신경을 침범하며 나종형에서는 포말성 조직구가 두드러집니다.",
+  "contrast": "MAC와 항산성·포말조직구가 겹치므로 검체 장기와 신경 증상이 감별에 중요합니다.",
+  "explanation": "피부의 포말성 조직구와 세포 내 항산균을 손발의 감각저하와 연결합니다. M. leprae는 피부·말초신경을 침범하며 나종형에서는 포말성 조직구가 두드러집니다. MAC와 항산성·포말조직구가 겹치므로 검체 장기와 신경 증상이 감별에 중요합니다.",
+  "keyClue": "피부의 포말성 조직구와 세포 내 항산균을 손발의 감각저하와 연결합니다.",
+  "studyFocus": "피부·말초신경 / 면역 약화 → lepromatous·foamy histiocyte",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     24,
+     25
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     21,
+     22,
+     23,
+     25
+    ]
+   }
+  ],
+  "examRefs": [
+   "2020 16번",
+   "2021 15번"
+  ],
+  "refs": [],
+  "pages": [
+   24,
+   25
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-actinomyces",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "맹장 주변 농양이 오래 지속되어 절제한 조직이다. 사진의 집락을 만드는 원인 병원체는?",
+  "photos": [
+   "edu-13"
+  ],
+  "choices": [
+   "Nocardia spp.",
+   "Aspergillus spp.",
+   "Candida spp.",
+   "Actinomyces spp.",
+   "Mucorales"
+  ],
+  "answer": 3,
+  "choiceNotes": [
+   "가는 분지성 세균과 약한 항산성을 비교합니다. 조밀한 방사상 세균 집락과 구분합니다.",
+   "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다. 격막성 균사와 예각 분지는 Aspergillus의 핵심 감별점입니다.",
+   "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다. 효모와 가성균사의 조합을 점막 감염과 연결하면 Candida가 적절합니다.",
+   "치밀한 집락의 주변부가 방사상으로 퍼지고, 주위를 화농성 염증세포가 둘러쌉니다. 이 sulfur granule은 Actinomyces 감염의 대표적 형태입니다. Nocardia의 분지성 세균 및 진균의 개별 균사와 조밀한 세균 집락을 구분합니다.",
+   "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다. 이 리본형 균사는 Mucorales를 지지하며 혈관 침범은 혈전·괴사를 일으킬 수 있습니다."
+  ],
+  "imageClue": "치밀한 집락의 주변부가 방사상으로 퍼지고, 주위를 화농성 염증세포가 둘러쌉니다.",
+  "coreFact": "이 sulfur granule은 Actinomyces 감염의 대표적 형태입니다.",
+  "contrast": "Nocardia의 분지성 세균 및 진균의 개별 균사와 조밀한 세균 집락을 구분합니다.",
+  "explanation": "치밀한 집락의 주변부가 방사상으로 퍼지고, 주위를 화농성 염증세포가 둘러쌉니다. 이 sulfur granule은 Actinomyces 감염의 대표적 형태입니다. Nocardia의 분지성 세균 및 진균의 개별 균사와 조밀한 세균 집락을 구분합니다.",
+  "keyClue": "치밀한 집락의 주변부가 방사상으로 퍼지고, 주위를 화농성 염증세포가 둘러쌉니다.",
+  "studyFocus": "솜뭉치·방사상 집락 / 만성 화농·섬유화 / 대표 A. israelii",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     29,
+     30
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     26,
+     27
+    ]
+   }
+  ],
+  "examRefs": [
+   "2022 41번"
+  ],
+  "refs": [],
+  "pages": [
+   29,
+   30
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-aspergillus",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "항암치료 후 호중구감소가 지속되는 환자의 폐 조직이다. H&E와 GMS 사진에서 보이는 병원체는?",
+  "photos": [
+   "edu-14",
+   "edu-15"
+  ],
+  "choices": [
+   "Candida spp.",
+   "Cryptococcus spp.",
+   "Mucorales",
+   "Pneumocystis jirovecii",
+   "Aspergillus spp."
+  ],
+  "answer": 4,
+  "choiceNotes": [
+   "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다. 효모와 가성균사의 조합을 점막 감염과 연결하면 Candida가 적절합니다.",
+   "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다. 피막성 효모와 폐·중추신경계 감염을 연결하면 Cryptococcus가 적절합니다.",
+   "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다. 이 리본형 균사는 Mucorales를 지지하며 혈관 침범은 혈전·괴사를 일으킬 수 있습니다.",
+   "폐포 공간에 거품성 물질이 차고, GMS에서 검은 컵·반달 모양의 낭이 보입니다. 면역저하 폐렴에서 이 조합은 Pneumocystis jirovecii의 단서입니다.",
+   "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다. 격막성 균사와 예각 분지는 Aspergillus의 핵심 감별점입니다. Mucorales는 더 넓고 불규칙하며 격막이 드뭅니다. 혈관 침범은 두 군 모두 가능합니다."
+  ],
+  "imageClue": "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다.",
+  "coreFact": "격막성 균사와 예각 분지는 Aspergillus의 핵심 감별점입니다.",
+  "contrast": "Mucorales는 더 넓고 불규칙하며 격막이 드뭅니다. 혈관 침범은 두 군 모두 가능합니다.",
+  "explanation": "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다. 격막성 균사와 예각 분지는 Aspergillus의 핵심 감별점입니다. Mucorales는 더 넓고 불규칙하며 격막이 드뭅니다. 혈관 침범은 두 군 모두 가능합니다.",
+  "keyClue": "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다.",
+  "studyFocus": "가는 격막성 균사·예각 ↔ 넓고 불규칙한 균사·드문 격막",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     37,
+     41
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     29,
+     33,
+     34
+    ]
+   }
+  ],
+  "examRefs": [],
+  "refs": [],
+  "pages": [
+   37,
+   41
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-mucorales",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "당뇨가 조절되지 않는 환자에게 장 괴사가 발생했다. 절제 조직의 GMS 사진에서 보이는 병원체군은?",
+  "photos": [
+   "edu-17",
+   "p20"
+  ],
+  "choices": [
+   "Mucorales",
+   "Aspergillus spp.",
+   "Candida spp.",
+   "Cryptococcus spp.",
+   "Pneumocystis jirovecii"
+  ],
+  "answer": 0,
+  "choiceNotes": [
+   "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다. 이 리본형 균사는 Mucorales를 지지하며 혈관 침범은 혈전·괴사를 일으킬 수 있습니다. Aspergillus의 가는 격막성 균사와 비교합니다. 혈관 침범 자체는 단독 감별점이 아닙니다.",
+   "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다. 격막성 균사와 예각 분지는 Aspergillus의 핵심 감별점입니다.",
+   "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다. 효모와 가성균사의 조합을 점막 감염과 연결하면 Candida가 적절합니다.",
+   "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다. 피막성 효모와 폐·중추신경계 감염을 연결하면 Cryptococcus가 적절합니다.",
+   "폐포 공간에 거품성 물질이 차고, GMS에서 검은 컵·반달 모양의 낭이 보입니다. 면역저하 폐렴에서 이 조합은 Pneumocystis jirovecii의 단서입니다."
+  ],
+  "imageClue": "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다.",
+  "coreFact": "이 리본형 균사는 Mucorales를 지지하며 혈관 침범은 혈전·괴사를 일으킬 수 있습니다.",
+  "contrast": "Aspergillus의 가는 격막성 균사와 비교합니다. 혈관 침범 자체는 단독 감별점이 아닙니다.",
+  "explanation": "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다. 이 리본형 균사는 Mucorales를 지지하며 혈관 침범은 혈전·괴사를 일으킬 수 있습니다. Aspergillus의 가는 격막성 균사와 비교합니다. 혈관 침범 자체는 단독 감별점이 아닙니다.",
+  "keyClue": "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다.",
+  "studyFocus": "넓은 균사·드문 격막·둔각 / 당뇨·혈관 침범·허혈성 괴사",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     37,
+     42
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     35,
+     36,
+     38
+    ]
+   }
+  ],
+  "examRefs": [
+   "2022 36번",
+   "2021 13번",
+   "2022 5번"
+  ],
+  "refs": [],
+  "pages": [
+   37,
+   42
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-candida",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "질 가려움과 분비물로 내원한 환자의 자궁경부·질 세포진이다. 사진 속 병원체는?",
+  "photos": [
+   "p21"
+  ],
+  "choices": [
+   "Cryptococcus spp.",
+   "Candida spp.",
+   "Aspergillus spp.",
+   "Mucorales",
+   "Pneumocystis jirovecii"
+  ],
+  "answer": 1,
+  "choiceNotes": [
+   "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다. 피막성 효모와 폐·중추신경계 감염을 연결하면 Cryptococcus가 적절합니다.",
+   "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다. 효모와 가성균사의 조합을 점막 감염과 연결하면 Candida가 적절합니다. Cryptococcus의 피막성 효모와 구분하며 이 형태만으로 Candida의 종을 확정하지 않습니다.",
+   "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다. 격막성 균사와 예각 분지는 Aspergillus의 핵심 감별점입니다.",
+   "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다. 이 리본형 균사는 Mucorales를 지지하며 혈관 침범은 혈전·괴사를 일으킬 수 있습니다.",
+   "폐포 공간에 거품성 물질이 차고, GMS에서 검은 컵·반달 모양의 낭이 보입니다. 면역저하 폐렴에서 이 조합은 Pneumocystis jirovecii의 단서입니다."
+  ],
+  "imageClue": "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다.",
+  "coreFact": "효모와 가성균사의 조합을 점막 감염과 연결하면 Candida가 적절합니다.",
+  "contrast": "Cryptococcus의 피막성 효모와 구분하며 이 형태만으로 Candida의 종을 확정하지 않습니다.",
+  "explanation": "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다. 효모와 가성균사의 조합을 점막 감염과 연결하면 Candida가 적절합니다. Cryptococcus의 피막성 효모와 구분하며 이 형태만으로 Candida의 종을 확정하지 않습니다.",
+  "keyClue": "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다.",
+  "studyFocus": "점막 감염 / 출아 효모 + pseudohyphae",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     37,
+     43
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     39,
+     40
+    ]
+   }
+  ],
+  "examRefs": [
+   "2021 18번",
+   "2022 77번"
+  ],
+  "refs": [],
+  "pages": [
+   37,
+   43
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-cryptococcus",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "면역억제 치료 중인 환자에게 폐 병변과 두통이 생겼다. 조직의 H&E와 GMS 사진에서 보이는 병원체는?",
+  "photos": [
+   "edu-20",
+   "edu-21"
+  ],
+  "choices": [
+   "Candida spp.",
+   "Pneumocystis jirovecii",
+   "Cryptococcus spp.",
+   "Aspergillus spp.",
+   "Mucorales"
+  ],
+  "answer": 2,
+  "choiceNotes": [
+   "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다. 효모와 가성균사의 조합을 점막 감염과 연결하면 Candida가 적절합니다.",
+   "폐포 공간에 거품성 물질이 차고, GMS에서 검은 컵·반달 모양의 낭이 보입니다. 면역저하 폐렴에서 이 조합은 Pneumocystis jirovecii의 단서입니다.",
+   "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다. 피막성 효모와 폐·중추신경계 감염을 연결하면 Cryptococcus가 적절합니다. Candida는 가성균사를, Pneumocystis는 폐포 내 거품성 물질과 오목한 낭을 비교합니다.",
+   "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다. 격막성 균사와 예각 분지는 Aspergillus의 핵심 감별점입니다.",
+   "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다. 이 리본형 균사는 Mucorales를 지지하며 혈관 침범은 혈전·괴사를 일으킬 수 있습니다."
+  ],
+  "imageClue": "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다.",
+  "coreFact": "피막성 효모와 폐·중추신경계 감염을 연결하면 Cryptococcus가 적절합니다.",
+  "contrast": "Candida는 가성균사를, Pneumocystis는 폐포 내 거품성 물질과 오목한 낭을 비교합니다.",
+  "explanation": "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다. 피막성 효모와 폐·중추신경계 감염을 연결하면 Cryptococcus가 적절합니다. Candida는 가성균사를, Pneumocystis는 폐포 내 거품성 물질과 오목한 낭을 비교합니다.",
+  "keyClue": "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다.",
+  "studyFocus": "피막성 출아 효모 / macrophage·폐·수막염",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     37,
+     44
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     41,
+     42,
+     44,
+     45
+    ]
+   }
+  ],
+  "examRefs": [
+   "2023 25번",
+   "2020 10번"
+  ],
+  "refs": [],
+  "pages": [
+   37,
+   44
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ },
+ {
+  "id": "path-edu-v2-pneumocystis",
+  "topic": "path-image",
+  "format": "mcq",
+  "kind": "integrated",
+  "ask": "organism",
+  "stem": "HIV 환자에게 마른기침과 호흡곤란이 생겼다. 폐 H&E와 기관지세척액 GMS 사진의 원인 병원체는?",
+  "photos": [
+   "edu-23",
+   "p24"
+  ],
+  "choices": [
+   "Cryptococcus spp.",
+   "Candida spp.",
+   "Aspergillus spp.",
+   "Pneumocystis jirovecii",
+   "Mucorales"
+  ],
+  "answer": 3,
+  "choiceNotes": [
+   "투명한 halo를 두른 둥근 효모가 보이고, GMS에서도 효모 형태가 강조됩니다. 피막성 효모와 폐·중추신경계 감염을 연결하면 Cryptococcus가 적절합니다.",
+   "타원형 효모가 출아하고, 길게 이어진 가성균사가 함께 보입니다. 효모와 가성균사의 조합을 점막 감염과 연결하면 Candida가 적절합니다.",
+   "비교적 가는 균사에 격막이 보이고, 예각으로 가지를 칩니다. 격막성 균사와 예각 분지는 Aspergillus의 핵심 감별점입니다.",
+   "GMS에서 검은 컵·반달 모양의 낭이 보입니다. Pneumocystis는 면역저하 폐렴과 폐포 내 거품성 삼출물, GMS 양성 낭을 연결합니다. 검은 구조는 숙주 폐세포의 핵이 아니라 병원체의 낭이며 피막성 출아 효모와 구분합니다.",
+   "넓은 균사가 접히거나 구불구불하며, 격막이 드물고 불규칙한 둔각 분지를 보입니다. 이 리본형 균사는 Mucorales를 지지하며 혈관 침범은 혈전·괴사를 일으킬 수 있습니다."
+  ],
+  "imageClue": "GMS에서 검은 컵·반달 모양의 낭이 보입니다.",
+  "coreFact": "Pneumocystis는 면역저하 폐렴과 폐포 내 거품성 삼출물, GMS 양성 낭을 연결합니다.",
+  "contrast": "검은 구조는 숙주 폐세포의 핵이 아니라 병원체의 낭이며 피막성 출아 효모와 구분합니다.",
+  "explanation": "GMS에서 검은 컵·반달 모양의 낭이 보입니다. Pneumocystis는 면역저하 폐렴과 폐포 내 거품성 삼출물, GMS 양성 낭을 연결합니다. 검은 구조는 숙주 폐세포의 핵이 아니라 병원체의 낭이며 피막성 출아 효모와 구분합니다.",
+  "keyClue": "GMS에서 검은 컵·반달 모양의 낭이 보입니다.",
+  "studyFocus": "AIDS·폐포 거품성 삼출물 / GMS의 낭 형태",
+  "sourceRefs": [
+   {
+    "doc": "path2",
+    "pages": [
+     45
+    ]
+   },
+   {
+    "doc": "lab",
+    "pages": [
+     46,
+     47,
+     48,
+     49
+    ]
+   }
+  ],
+  "examRefs": [
+   "2022 75번",
+   "2020 17번",
+   "2023 18번"
+  ],
+  "refs": [],
+  "pages": [
+   45
+  ],
+  "externalRefs": [
+   {
+    "title": "서울대학교 병리교육 라이브러리",
+    "url": "https://pathedu.snu.ac.kr/library"
+   }
+  ]
+ }
+].map(question=>Object.freeze(question)));
+
+libraryPhotoCandidates['edu-01-detail']={...libraryPhotoCandidates['edu-01'],src:'assets/pathology/edu-01-detail.webp',caption:'피부 조직 · 고배율',width:900,height:600};
+export const PATHEDU_PHOTOS=Object.fromEntries([...new Set(PATHEDU_QUESTIONS.flatMap(q=>q.photos))].filter(id=>id.startsWith('edu-')).map(id=>[id,libraryPhotoCandidates[id]]));

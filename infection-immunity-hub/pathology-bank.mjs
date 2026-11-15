@@ -1,6 +1,6 @@
-import {PATHEDU_QUESTIONS,PATHEDU_PHOTOS} from './pathedu-bank.mjs?v=20261115f';
-import {revisedPathologySet} from './pathology-statements.mjs?v=20261115f';
-import {PHOTOS as ALL_PHOTOS} from './photo-data.mjs?v=20261115f';
+import {PATHEDU_QUESTIONS,PATHEDU_PHOTOS} from './pathedu-bank.mjs?v=20261115g';
+import {revisedPathologySet} from './pathology-statements.mjs?v=20261115g';
+import {PHOTOS as ALL_PHOTOS} from './photo-data.mjs?v=20261115g';
 export const PATH_TOPICS={
  'path-image':{title:'사진 → 원인균',short:'사진형',sub:'짧은 증례와 강의 사진으로 판단'},
  'path-traits':{title:'원인균 특성 판별',short:'특성형',sub:'서로 다른 병원체의 특징을 구별'},
@@ -107,7 +107,7 @@ const traits=[
  ['핵 내 봉입체뿐 아니라 세포질 봉입체도 생길 수 있다.','봉입체는 반드시 세포질에만 생기고 핵에는 없다.','강의의 바이러스 세포변화 표는 CMV의 핵 내·세포질 봉입체를 모두 제시합니다.'],
  ['봉입체 주위 halo와 감염세포 비대를 함께 해석한다.','HPV의 koilocytosis와 같은 의미의 용어이므로 둘을 구별할 필요가 없다.','CMV의 봉입체 주변 halo와 HPV의 핵 주변 세포질 halo는 구별해야 합니다.']
  ]},
- {name:'HPV',context:'사마귀성 상피 증식과 koilocytosis를 보이는 HPV 감염',sources:[src('path1',29),src('path2',6,9,10),src('lab',5,6)],exam:['2022 38번','2021 14번'],facts:[
+ {name:'HPV',context:'사마귀성 상피 증식과 koilocytosis를 보이는 HPV 감염',sources:[src('path1',29),src('path2',6,9,10),src('lab',5,6)],exam:['2022 38번'],facts:[
  ['Koilocyte에서 핵 주변의 투명한 세포질 공간을 볼 수 있다.','대표 변화는 owl’s-eye 핵 내 봉입체를 가진 거대세포이다.','Koilocytosis는 HPV, 세포 비대와 owl’s-eye는 CMV의 대표 감별점입니다.'],
  ['고위험 HPV의 지속 감염은 자궁경부암 진행과 관련된다.','모든 일과성 HPV 감염은 반드시 침윤암으로 진행한다.','대부분의 HPV 감염은 소실될 수 있으며 고위험군의 지속 감염이 중요합니다.'],
  ['P16 면역조직화학은 고위험 HPV 연관성을 평가하는 보조 표지자이다.','P16은 진균 세포벽만 염색하는 특수염색이다.','P16은 IHC 표지자이고 GMS·PAS 같은 진균 특수염색과 다릅니다.'],

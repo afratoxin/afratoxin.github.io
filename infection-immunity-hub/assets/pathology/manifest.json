@@ -421,19 +421,6 @@
     "sha256": "b1eff47d3c71dd692aca9249631dececef4845b39aaffe7879e6a218ff5caa37"
   },
   {
-    "file": "edu-02.webp",
-    "document": "pathedu",
-    "page": 2,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      900,
-      470
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "0e269e1ec5467de4f8d73c16190f65affc49cb018de42fcd210059962aedeec0"
-  },
-  {
     "file": "edu-03.webp",
     "document": "pathedu",
     "page": 3,
@@ -445,19 +432,6 @@
     "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
     "sha256": "b3f6025aded0aae18f738a1bccfb3c84ab6ead3292186ab7651889e64aa6d315"
-  },
-  {
-    "file": "edu-04.webp",
-    "document": "pathedu",
-    "page": 4,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      800,
-      650
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "0352263ad7cc1cca12894ec4750c2434f46c8113277310d24b4578494ef02f35"
   },
   {
     "file": "edu-05.webp",
@@ -538,32 +512,6 @@
     "sha256": "5c4e82bdbd1fbf88a87024896acb9524b17f0db7b9a9375e3ab3952c21ef6531"
   },
   {
-    "file": "edu-11.webp",
-    "document": "pathedu",
-    "page": 11,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      800,
-      650
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "80f8a1213c566c0fe31279693de0a8d1270c17274a7597645364b8cda0928e70"
-  },
-  {
-    "file": "edu-12.webp",
-    "document": "pathedu",
-    "page": 12,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      800,
-      650
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "dc1aad3901cfc3aee5f62cbe69148248737e19d5b9ddea289f495686f31420e7"
-  },
-  {
     "file": "edu-13.webp",
     "document": "pathedu",
     "page": 13,
@@ -603,19 +551,6 @@
     "sha256": "e3311371bca502d09b573a70a462be7fc51b7993c06219ac8a5cbe8890ceea48"
   },
   {
-    "file": "edu-16.webp",
-    "document": "pathedu",
-    "page": 16,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      800,
-      650
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "6e92b4fe6cae1d08c3dd17657c7267ea291177d450a44b8b73d0a4b0f1c6311c"
-  },
-  {
     "file": "edu-17.webp",
     "document": "pathedu",
     "page": 17,
@@ -627,32 +562,6 @@
     "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
     "sha256": "36790ac42dfc01ac20ca1981e183c116313e5fa11ffb8ac543220e7ea162913a"
-  },
-  {
-    "file": "edu-18.webp",
-    "document": "pathedu",
-    "page": 18,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      800,
-      650
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "1cc74fba9166bdd5a5239a873a654e5f0fe85f7d8d2886e8beb4975b1aba99c4"
-  },
-  {
-    "file": "edu-19.webp",
-    "document": "pathedu",
-    "page": 19,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      800,
-      650
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "4acab40a68ae223acbb6c16ded53ee6a79165b88fa27476ff81add2cf3d815fd"
   },
   {
     "file": "edu-20.webp",
@@ -681,19 +590,6 @@
     "sha256": "2fe24e6af2efaadbfb45e7b72f28d881e13d5498260b8356511ec8000cae7053"
   },
   {
-    "file": "edu-22.webp",
-    "document": "pathedu",
-    "page": 22,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      800,
-      650
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "b09bfad573ad523ea1df0eb01ee53027f7805b2a2f3dec0f80cca78aaabe8bdb"
-  },
-  {
     "file": "edu-23.webp",
     "document": "pathedu",
     "page": 23,
@@ -707,42 +603,29 @@
     "sha256": "36bd434d2cfbfe12b94e3e656a0f02784c9caf995073e80323ad3a8b7a3cca82"
   },
   {
-    "file": "edu-24.webp",
+    "file": "edu-02.webp",
     "document": "pathedu",
-    "page": 24,
+    "page": 2,
     "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      800,
-      650
+      900,
+      600
     ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "method": "Recaptured diagnostic tissue field from original viewer; excludes labels and controls",
     "labelFreeVisualReview": true,
-    "sha256": "d42cac36a672c4b8ac1081da17a69af3feb18dbddb7f71318b6963285f6dd3da"
+    "sha256": "2f8fa4cfc2207a4a28635608838770a20998ba97e64101f36ba6a01f78653758"
   },
   {
-    "file": "edu-25.webp",
+    "file": "edu-01-detail.webp",
     "document": "pathedu",
-    "page": 25,
+    "page": 1,
     "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      800,
-      650
+      900,
+      600
     ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "method": "Recaptured diagnostic tissue field from original viewer; excludes labels and controls",
     "labelFreeVisualReview": true,
-    "sha256": "e0ffe13857b07a80b9d97fa8609203ca07b1738094e6b7ef54224d4fbeca8cd1"
-  },
-  {
-    "file": "edu-26.webp",
-    "document": "pathedu",
-    "page": 26,
-    "sourceUrl": "https://pathedu.snu.ac.kr/library",
-    "outputSize": [
-      800,
-      650
-    ],
-    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
-    "labelFreeVisualReview": true,
-    "sha256": "419a80ab8c9392d72a34cd3eab7626441f4d36a5b49da72ab78af261d7b0c310"
+    "sha256": "452a586fb11385ddb7477dad6788f962dbd155f66fdd33fda0494d863b0272e3"
   }
 ]

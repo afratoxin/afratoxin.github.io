@@ -1,10 +1,10 @@
-import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115f';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115f';
-import {practiceLayout} from './practice-layout.mjs?v=20261115f';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115f';
-import {grade,stats,readProgress,restoreSession,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261115f';
-import {nextRound,sourceText,topicProgress} from './study-core.mjs?v=20261115f';
-import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261115f';
+import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115g';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115g';
+import {practiceLayout} from './practice-layout.mjs?v=20261115g';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115g';
+import {grade,stats,readProgress,restoreSession,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261115g';
+import {nextRound,sourceText,topicProgress} from './study-core.mjs?v=20261115g';
+import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261115g';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const externalLinks=q=>(q.externalRefs||[]).filter(r=>/^https:\/\//.test(r.url||'')).map(r=>`<a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.title||'보충 근거')} ↗</a>`).join(' · ');
 

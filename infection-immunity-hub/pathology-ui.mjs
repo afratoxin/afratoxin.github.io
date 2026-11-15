@@ -1,9 +1,9 @@
-import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115f';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115f';
-import {PATH_QUESTIONS,PATH_TOPICS,PHOTOS,PATH_DOCUMENTS,EXAM_REVIEW,pathSource} from './pathology-bank.mjs?v=20261115f';
-import {buildSession,grade,stats,readProgress,restoreSession,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261115f';
-import {PATHOLOGY_TABLES,renderTables} from './reference-tables.mjs?v=20261115f';
-import {practiceLayout} from './practice-layout.mjs?v=20261115f';
+import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115g';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115g';
+import {PATH_QUESTIONS,PATH_TOPICS,PHOTOS,PATH_DOCUMENTS,EXAM_REVIEW,pathSource} from './pathology-bank.mjs?v=20261115g';
+import {buildSession,grade,stats,readProgress,restoreSession,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261115g';
+import {PATHOLOGY_TABLES,renderTables} from './reference-tables.mjs?v=20261115g';
+import {practiceLayout} from './practice-layout.mjs?v=20261115g';
 
 const e=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=id=>document.getElementById(id);
@@ -19,7 +19,9 @@ export function imageMarkup(q){
  return `<div class="path-photos${q.photos.length===1?' single':''}">${q.photos.map((id,i)=>{const p=PHOTOS[id];return `<figure><button type="button" class="photo-zoom" data-photo-id="${id}" aria-label="표본 사진 ${i+1} 확대"><img src="${p.src}" alt="${e(p.alt)}" width="${p.width}" height="${p.height}" loading="lazy"><span>확대 보기 ⤢</span></button><figcaption>${e(p.caption)} · ${e(photoSourceLabel(p))}</figcaption></figure>`;}).join('')}</div>`;
 }
 export function pathFeedback(q,correct,order=q.choices){
- return `<div class="feedback${correct?'':' missed'}" tabindex="-1"><h3>${correct?'정답입니다.':'감별점을 다시 확인하세요.'}</h3><p class="answer-line">정답 · ${e(q.choices[q.answer])}</p><p>${emphasizeFeedback(q.explanation)}</p><details class="choice-explanations" open><summary>선지별 해설</summary><ol>${order.map(c=>`<li><b>${e(c)}</b><p>${emphasizeFeedback(q.choiceNotes[q.choices.indexOf(c)])}</p></li>`).join('')}</ol></details><p class="source-line">근거: ${e(pathSource(q))}${q.examRefs.length?`<br>참고한 족보 발문: ${e(q.examRefs.join(' · '))}`:''}</p>${publicPathLinks(q)?`<p class="source-line">사진·보충 근거: ${publicPathLinks(q)}</p>`:''}</div>`;
+ const visual=q.sourceScope==='library'&&['imageClue','coreFact','contrast'].every(key=>typeof q[key]==='string'&&q[key].trim());
+ const explanation=visual?`<dl class="path-visual-feedback"><div><dt>사진 단서</dt><dd>${emphasizeFeedback(q.imageClue,{clue:true})}</dd></div><div><dt>핵심 연결</dt><dd>${emphasizeFeedback(q.coreFact)}</dd></div><div><dt>가장 헷갈리는 감별</dt><dd>${emphasizeFeedback(q.contrast)}</dd></div></dl>`:`<p>${emphasizeFeedback(q.explanation)}</p>`;
+ return `<div class="feedback${correct?'':' missed'}" tabindex="-1"><h3>${correct?'정답입니다.':'감별점을 다시 확인하세요.'}</h3><p class="answer-line">정답 · ${e(q.choices[q.answer])}</p>${explanation}<details class="choice-explanations" open><summary>선지별 해설</summary><ol>${order.map(c=>`<li><b>${e(c)}</b><p>${emphasizeFeedback(q.choiceNotes[q.choices.indexOf(c)])}</p></li>`).join('')}</ol></details><p class="source-line">근거: ${e(pathSource(q))}${q.examRefs.length?`<br>참고한 족보 발문: ${e(q.examRefs.join(' · '))}`:''}</p>${publicPathLinks(q)?`<p class="source-line">사진·보충 근거: ${publicPathLinks(q)}</p>`:''}</div>`;
 }
 export function createPathologyUI({read,save,openTab,onChange,announce}){
  const keys={progress:'infection-immunity.pathology.progress.v1',session:'infection-immunity.pathology.session.v1',bookmarks:'infection-immunity.pathology.bookmarks.v1'};

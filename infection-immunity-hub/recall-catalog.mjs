@@ -1,7 +1,7 @@
-import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261115f';
-import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261115f';
-import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261115f';
-import {stats} from './logic.mjs?v=20261115f';
+import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261115g';
+import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261115g';
+import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261115g';
+import {stats} from './logic.mjs?v=20261115g';
 
 const parts={...EXTENSION_PARTS,...ENTERIC_MEDIA_PARTS};
 function p(doc,key,title,what,how,why){parts[`${doc}:${key}`]={id:`${doc}:${key}`,lecture:doc,title,what,how,why};}
