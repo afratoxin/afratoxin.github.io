@@ -249,16 +249,16 @@ window.BrainArenaCatalog = {
       "category": "university-war",
       "title": "출구 전략 2",
       "description": "끝까지 미끄러지는 말을 중앙 출구에 정확히 멈추세요. 컴퓨터보다 먼저 두 말을 탈출시킵니다.",
-      "tag": "컴퓨터 대결 · 시즌 2 · 이동 / 봉쇄",
-      "href": "../exit-strategy-2/?v=20261114-unified"
+      "tag": "강화 AI 대결 · 시즌 2 · 이동 / 봉쇄",
+      "href": "../exit-strategy-2/?v=20261115-smart"
     },
     {
       "id": "sum-difference-gomoku",
       "category": "university-war",
       "title": "합차 오목",
       "description": "이어진 줄 전체에서 내 돌은 더하고 상대 돌은 빼세요. 정확히 16을 만드는 수로 컴퓨터와 겨룹니다.",
-      "tag": "컴퓨터 대결 · 시즌 2 · 수 계산 / 전략",
-      "href": "../sum-difference-gomoku/?v=20261114-unified"
+      "tag": "강화 AI 대결 · 시즌 2 · 수 계산 / 전략",
+      "href": "../sum-difference-gomoku/?v=20261115-smart"
     },
     {
       "id": "rainbow-sequence",

@@ -37,15 +37,104 @@ function newGomoku(){return {board:Array(81).fill(null),stock:[Array(6).fill(4),
 function gomokuMoves(s,side=s.turn){const empty=[];for(let p=0;p<81;p++)if(!s.board[p]&&(!s.moves?p===40:adjacent(p,9).some(x=>s.board[x.p])||[[-1,-1],[-1,1],[1,-1],[1,1]].some(([dy,dx])=>{const y=Math.floor(p/9)+dy,x=p%9+dx;return y>=0&&y<9&&x>=0&&x<9&&s.board[y*9+x];})))for(let v=1;v<=5;v++)if(s.stock[side][v]>0&&(s.moves>0||v<=3))empty.push({p,value:v});return empty;}
 function gomokuPlace(s,p,value){if(s.winner!==null||s.draw||!Number.isInteger(p)||p<0||p>80||s.board[p]||!Number.isInteger(value)||value<1||value>5||!s.stock[s.turn][value]||(!s.moves&&value>3))return null;const board=[...s.board],stock=s.stock.map(a=>[...a]);board[p]={side:s.turn,value};stock[s.turn][value]--;const wins=sumWins(board,p),win=wins.find(w=>w.side===s.turn)||wins[0];return {...s,board,stock,turn:1-s.turn,moves:s.moves+1,winner:win?win.side:null,line:win?win.cells:[],draw:!win&&stock.every(a=>a.slice(1).every(x=>x===0))};}
 function winningMoves(s,side){return gomokuMoves({...s,turn:side},side).filter(m=>{const b=[...s.board];b[m.p]={side,value:m.value};return sumWins(b,m.p).some(w=>w.side===side);});}
-function gomokuAI(s,r=Math.random){const side=s.turn,other=1-side,moves=gomokuMoves(s,side);if(!moves.length)return null;const instant=winningMoves(s,side);if(instant.length)return pick(instant,r);const threats=winningMoves(s,other);const ranked=moves.map(m=>{const next=gomokuPlace(s,m.p,m.value);if(next.winner===other)return {m,score:-1e8};let value=0;for(const [dy,dx] of GDIRS){const l=sumLine(next.board,m.p,dy,dx),v=l.total*(side===0?1:-1);if(v>0&&v<16)value+=v*v*.2+l.cells.length;if(v>16)value-=v-16;}value-=Math.abs(m.p%9-4)*.08+Math.abs(Math.floor(m.p/9)-4)*.08;for(const t of threats){if(t.p===m.p)value+=80;else{const b=[...next.board];b[t.p]={side:other,value:t.value};if(!sumWins(b,t.p).some(l=>l.side===other))value+=80;}}return {m,score:value,next};}).sort((a,b)=>b.score-a.score).slice(0,20);for(const q of ranked)if(q.next){q.score-=winningMoves(q.next,other).length*10000;q.score+=winningMoves(q.next,side).length*90;}ranked.sort((a,b)=>b.score-a.score);return ranked[0].m;}
+// Bounded iterative alpha-beta search. Tactical checks happen before move pruning.
+const AI_MATE=1000000;
+function duelSearch(s,config,options={}){
+ const limit=options.maxNodes??2600,until=Date.now()+(options.timeMs??550),maxDepth=options.maxDepth??config.depth,table=new Map(),memo=new Map(),path=new Set(),abort={};let nodes=0,completed=0;
+ const key=config.key,check=()=>{if(nodes>=limit||Date.now()>=until)throw abort;},evaluate=p=>{const k=key(p);if(!memo.has(k))memo.set(k,config.evaluate(p));return memo.get(k);};
+ const rootSide=s.turn,sign=p=>p.turn===rootSide?1:-1,terminal=(p,ply)=>p.winner===null?null:(p.winner===rootSide?AI_MATE-ply:-AI_MATE+ply);
+ function ordered(p,root=false){
+  let moves=config.moves(p);if(!moves.length)return moves;
+  const wins=moves.filter(m=>m.next.winner===p.turn);if(wins.length)return wins;
+  moves=config.order(p,moves,evaluate,root);
+  // A next-turn loss is never hidden by a beam cutoff.
+  const safe=moves.filter(m=>m.next.winner===null&&!config.immediate(m.next));
+  if(safe.length)moves=safe;
+  return moves.slice(0,root?config.rootBeam:config.beam);
+ }
+ function search(p,depth,alpha,beta,ply){
+  nodes++;if((nodes&15)===0)check();const end=terminal(p,ply);if(end!==null)return end;if(p.draw)return 0;
+  const k=key(p);if(path.has(k))return evaluate(p)*sign(p)*.1;
+  if(config.immediate(p))return p.turn===rootSide?AI_MATE-ply-1:-AI_MATE+ply+1;
+  if(depth<=0)return evaluate(p)*sign(p);
+  const old=table.get(k),a0=alpha,b0=beta;if(old&&old.depth>=depth){if(old.flag===0)return old.value;if(old.flag===1)alpha=Math.max(alpha,old.value);else beta=Math.min(beta,old.value);if(alpha>=beta)return old.value;}
+  const moves=ordered(p);if(!moves.length){if(!config.pass)return 0;const other={...p,turn:1-p.turn};if(!config.moves(other).length)return 0;return search(other,depth-1,alpha,beta,ply+1);}
+  path.add(k);let best=p.turn===rootSide?-Infinity:Infinity;
+  for(const m of moves){const value=search(m.next,depth-1,alpha,beta,ply+1);if(p.turn===rootSide){best=Math.max(best,value);alpha=Math.max(alpha,best);}else{best=Math.min(best,value);beta=Math.min(beta,best);}if(alpha>=beta)break;}
+  path.delete(k);table.set(k,{depth,value:best,flag:best<=a0?2:best>=b0?1:0});return best;
+ }
+ // Root ordering is completed once so an interrupted iteration always has a legal, safe fallback.
+ const rootMoves=ordered(s,true);if(!rootMoves.length)return null;let chosen=rootMoves[0],bestScore=-evaluate(rootMoves[0].next);
+ if(chosen.next.winner===rootSide)return {...chosen,analysis:{depth:1,nodes:0,score:AI_MATE}};
+ for(let depth=1;depth<=maxDepth;depth++){
+  let best=null,value=-Infinity;path.clear();path.add(key(s));
+  try{for(const m of rootMoves){check();const score=search(m.next,depth-1,value,Infinity,1);if(score>value){value=score;best=m;}}}catch(e){if(e!==abort)throw e;break;}
+  if(best){chosen=best;bestScore=value;completed=depth;rootMoves.splice(rootMoves.indexOf(best),1);rootMoves.unshift(best);}if(Math.abs(value)>AI_MATE-100)break;
+ }
+ return {...chosen,analysis:{depth:completed,nodes,score:bestScore}};
+}
+const gomokuKey=s=>s.turn+':'+s.board.map(c=>c?String.fromCharCode(65+c.side*5+c.value):'.').join('')+':'+s.stock.map(a=>a.slice(1).join('')).join('');
+function gomokuTotals(board,p){
+ const y=Math.floor(p/9),x=p%9;return GDIRS.map(([dy,dx])=>{let total=0,length=0,ends=[];for(const sign of [-1,1]){let yy=y+dy*sign,xx=x+dx*sign;while(yy>=0&&yy<9&&xx>=0&&xx<9&&board[yy*9+xx]){const c=board[yy*9+xx];total+=(c.side? -1:1)*c.value;length++;yy+=dy*sign;xx+=dx*sign;}if(yy>=0&&yy<9&&xx>=0&&xx<9)ends.push(yy*9+xx);}return{total,length,ends};});
+}
+function gomokuImmediate(s){
+ const sign=s.turn? -1:1,positions=new Set(gomokuMoves(s).map(m=>m.p));for(const p of positions)for(const line of gomokuTotals(s.board,p)){const v=16-line.total*sign;if(Number.isInteger(v)&&v>=1&&v<=5&&s.stock[s.turn][v]&&(!s.moves?v<=3:true))return true;}return false;
+}
+function gomokuEvaluation(s){
+ if(s.winner!==null)return s.winner===s.turn?AI_MATE:-AI_MATE;
+ const sign=s.turn? -1:1;let score=0;const positions=new Set(gomokuMoves(s).map(m=>m.p)),winning=[new Set(),new Set()];
+ for(const p of positions)for(const l of gomokuTotals(s.board,p)){
+  for(let side=0;side<2;side++){const v=16-l.total*(side? -1:1);if(v>=1&&v<=5&&s.stock[side][v])winning[side].add(p);}
+ }
+ score+=(winning[s.turn].size-winning[1-s.turn].size)*1800;
+ // Count each maximal occupied run exactly once; overshooting 16 has no winning bonus.
+ for(let p=0;p<81;p++)if(s.board[p])for(const [dy,dx]of GDIRS){const y=Math.floor(p/9),x=p%9,py=y-dy,px=x-dx;if(py>=0&&py<9&&px>=0&&px<9&&s.board[py*9+px])continue;const l=sumLine(s.board,p,dy,dx),v=l.total*sign,last=l.cells.at(-1),ey=Math.floor(last/9)+dy,ex=last%9+dx,open=(py>=0&&py<9&&px>=0&&px<9?1:0)+(ey>=0&&ey<9&&ex>=0&&ex<9?1:0);if(open){const strength=Math.abs(v)<=16?Math.abs(v)**2/8:Math.max(0,28-Math.abs(v));score+=(v>0?1:-1)*strength*(open===2?1.3:.8);}}
+ return score;
+}
+function gomokuAI(s,r=Math.random,options={}){
+ const ctx={depth:4,rootBeam:22,beam:9,pass:false,key:gomokuKey,immediate:gomokuImmediate,evaluate:gomokuEvaluation,
+  moves:p=>gomokuMoves(p).map(m=>({...m,next:gomokuPlace(p,m.p,m.value)})),
+  order(p,moves,evaluate,root){
+   // Keep every possible defensive move when the opponent already threatens 16.
+   const threatened=gomokuImmediate({...p,turn:1-p.turn}),sign=p.turn? -1:1,totals=new Map();
+   const cheap=m=>{if(m.next.winner!==null)return m.next.winner===p.turn?AI_MATE:-AI_MATE;if(!totals.has(m.p))totals.set(m.p,gomokuTotals(p.board,m.p));let v=0;for(const l of totals.get(m.p)){const n=l.total*sign+m.value;v+=n>0&&n<16?n*n*.4+(l.length+1)*2:n>16?-(n-16):0;}return v-(Math.abs(m.p%9-4)+Math.abs(Math.floor(m.p/9)-4))*.1;};
+   moves.sort((a,b)=>cheap(b)-cheap(a));if(!threatened)moves=moves.slice(0,root?54:24);
+   const ranked=moves.map(m=>({m,value:-evaluate(m.next)-(gomokuImmediate(m.next)?AI_MATE/2:0)}));ranked.sort((a,b)=>b.value-a.value);return ranked.map(q=>q.m);
+  }};
+ return duelSearch(s,ctx,{timeMs:750,maxNodes:6000,...options});
+}
 // Exit Strategy 2: landing on D4 exits; passing through does not stop sliding.
 const EXIT=24,BLOCKS=[21,27];
 function newExit(r=Math.random){const board=Array(49).fill(null);for(let side=0;side<2;side++){const cells=[];for(const x of side?[4,5,6]:[0,1,2])shuffle([0,1,2,4,5,6],r).slice(0,2).forEach(y=>cells.push(y*7+x));shuffle([1,2,3,4,5,6],r).forEach((value,i)=>board[cells[i]]={side,value});}return {board,turn:0,escaped:[0,0],winner:null,moves:0,lastPath:[]};}
-function exitSlide(s,p,d){const c=s.board[p];if(!c||c.side!==s.turn)return null;let current=p,path=[p];for(;;){const q=adjacent(current,7).find(x=>x.d===d);if(!q||BLOCKS.includes(q.p)||s.board[q.p])break;current=q.p;path.push(current);}if(current===p)return null;const board=[...s.board],escaped=[...s.escaped];board[p]=null;const out=current===EXIT;if(out)escaped[s.turn]++;else board[current]=c;return {...s,board,escaped,turn:1-s.turn,winner:escaped[s.turn]>=2?s.turn:null,moves:s.moves+1,lastPath:path,lastMove:{from:p,to:current,piece:c.value,side:c.side,out}};}
+// Precomputed rays keep multi-ply search and route estimates inexpensive.
+const EXIT_RAYS=Array.from({length:49},(_,p)=>DIRS.map(([dy,dx])=>{const ray=[];let y=Math.floor(p/7)+dy,x=p%7+dx;while(y>=0&&y<7&&x>=0&&x<7){const q=y*7+x;if(BLOCKS.includes(q))break;ray.push(q);y+=dy;x+=dx;}return ray;}));
+function exitSlide(s,p,d){
+ const c=s.board[p];if(!c||c.side!==s.turn||!EXIT_RAYS[p]?.[d])return null;let current=p,path=[p];for(const q of EXIT_RAYS[p][d]){if(s.board[q])break;current=q;path.push(q);}if(current===p)return null;
+ const board=[...s.board],escaped=[...s.escaped];board[p]=null;const out=current===EXIT;if(out)escaped[s.turn]++;else board[current]=c;
+ return {...s,board,escaped,turn:1-s.turn,winner:escaped[s.turn]>=2?s.turn:null,moves:s.moves+1,lastPath:path,lastMove:{from:p,to:current,piece:c.value,side:c.side,out},positionHistory:[...(s.positionHistory||[]),exitKey(s)].slice(-24)};
+}
 function exitMoves(s,side=s.turn){const out=[];for(let p=0;p<49;p++)if(s.board[p]?.side===side)for(let d=0;d<4;d++){const next=exitSlide({...s,turn:side},p,d);if(next)out.push({p,d,next});}return out;}
-function exitDistance(s,p){const owner=s.board[p].side,queue=[{p,board:s.board,steps:0}],seen=new Set([p]);for(let i=0;i<queue.length;i++){const a=queue[i];if(a.steps>=4)continue;for(let d=0;d<4;d++){const next=exitSlide({...s,board:a.board,turn:owner},a.p,d);if(!next)continue;const end=next.lastMove.to;if(end===EXIT)return a.steps+1;if(!seen.has(end)){seen.add(end);queue.push({p:end,board:next.board,steps:a.steps+1});}}}return 6;}
-function exitEval(s,side){if(s.winner!==null)return s.winner===side?100000:-100000;let score=(s.escaped[side]-s.escaped[1-side])*1200;for(let p=0;p<49;p++)if(s.board[p])score+=(s.board[p].side===side?1:-1)*(7-exitDistance(s,p))*12;return score;}
-function exitAI(s,r=Math.random){const side=s.turn,moves=exitMoves(s);if(!moves.length)return null;for(const m of moves)if(m.next.winner===side)return m;const ranked=moves.map(m=>({m,v:exitEval(m.next,side)})).sort((a,b)=>b.v-a.v).slice(0,12);for(const q of ranked){const responses=exitMoves(q.m.next);q.v=(responses.length?Math.min(...responses.map(m=>exitEval(m.next,side))):q.v)+q.v*.08;}ranked.sort((a,b)=>b.v-a.v);return pick(ranked.filter(q=>Math.abs(q.v-ranked[0].v)<.01),r).m;}
+function exitRoutes(s,p){
+ if(!s.board[p])return {exit:6,setup:6};const seen=new Uint8Array(49),queue=[p],depth=[0],stops=[17,23,25,31];let goal=6,setup=stops.includes(p)?0:6;seen[p]=1;
+ for(let k=0;k<queue.length;k++){if(depth[k]>=4)continue;for(const ray of EXIT_RAYS[queue[k]]){let end=queue[k];for(const q of ray){if(q!==p&&s.board[q])break;end=q;}if(end===EXIT)goal=Math.min(goal,depth[k]+1);if(stops.includes(end))setup=Math.min(setup,depth[k]+1);if(goal<6&&setup<6)return{exit:goal,setup};if(!seen[end]){seen[end]=1;queue.push(end);depth.push(depth[k]+1);}}}return {exit:goal,setup};
+}
+function exitDistance(s,p){return exitRoutes(s,p).exit;}
+function exitKey(s){return s.turn+':'+s.escaped.join('')+':'+s.board.map(c=>c?c.side?'B':'A':'.').join('');}
+function exitImmediate(s){if(s.escaped[s.turn]<1)return false;for(let p=0;p<49;p++)if(s.board[p]?.side===s.turn)for(const ray of EXIT_RAYS[p]){let end=p;for(const q of ray){if(s.board[q])break;end=q;}if(end===EXIT)return true;}return false;}
+function exitEval(s,side){
+ if(s.winner!==null)return s.winner===side?AI_MATE:-AI_MATE;
+ const routes=[[],[]],preparation=[[],[]],weights={1:1600,2:380,3:95,4:22,6:0},setupWeight={0:35,1:22,2:9,3:3,4:1,6:0};for(let p=0;p<49;p++)if(s.board[p]){const d=exitRoutes(s,p);routes[s.board[p].side].push(d.exit);preparation[s.board[p].side].push(d.setup);}
+ let total=(s.escaped[side]-s.escaped[1-side])*22000;
+ for(let owner=0;owner<2;owner++){routes[owner].sort((a,b)=>a-b);const needed=2-s.escaped[owner],routeValue=routes[owner].slice(0,needed).reduce((a,d,i)=>a+(weights[d]||0)*(i?.6:1),0);const setup=Math.max(0,...preparation[owner].map(d=>setupWeight[d]||0));total+=(owner===side?1:-1)*(routeValue+setup);}
+ return total;
+}
+function exitAI(s,r=Math.random,options={}){
+ const previous=new Set(s.positionHistory||[]),ctx={depth:6,rootBeam:18,beam:9,pass:true,key:exitKey,immediate:exitImmediate,evaluate:p=>exitEval(p,p.turn),
+  moves:p=>exitMoves(p),order(p,moves,evaluate,root){
+   return moves.map(m=>({m,value:m.next.winner===p.turn?AI_MATE:-evaluate(m.next)-(exitImmediate(m.next)?AI_MATE/2:0)-(root&&previous.has(exitKey(m.next))?800:0)})).sort((a,b)=>b.value-a.value).map(q=>q.m);
+  }};
+ return duelSearch(s,ctx,{timeMs:650,maxNodes:10000,...options});
+}
 // Rainbow Sequence: every column contains all seven colors exactly once.
 const digitSum=n=>[...String(Math.abs(n))].reduce((a,b)=>a+ +b,0),digitProduct=n=>[...String(Math.abs(n))].reduce((a,b)=>a* +b,1),primes=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67];
 function sequence(kind,r=Math.random){let a=[],rule='';const x=int(1,8,r),d=int(2,7,r),q=int(2,9,r);if(kind===0){a=Array.from({length:7},(_,k)=>x+k*d+q*k*(k-1)/2);rule=`차이는 ${d}부터 시작해 ${q}씩 증가`;}if(kind===1){a=[x];for(let k=1;k<7;k++)a.push(a.at(-1)+(k%2?d+2:-d));rule=`+${d+2}, −${d}를 번갈아 적용`;}if(kind===2){a=Array.from({length:7},(_,k)=>x+d*(2**k-1));rule=`차이 ${d}부터 두 배씩 증가`;}if(kind===3){a=Array.from({length:7},(_,k)=>k%2===0?(k/2+1)**2+x:2**((k+1)/2));rule=`홀수 번째는 제곱수+${x}, 짝수 번째는 2의 거듭제곱`;}if(kind===4){const start=int(0,10,r);a=primes.slice(start,start+7);rule='연속된 소수';}if(kind===5){a=[int(11,29,r)];for(let k=1;k<7;k++)a.push(a.at(-1)+digitSum(a.at(-1)));rule='이전 항에 그 자릿수의 합을 더함';}if(kind===6){do{a=[int(11,37,r)];for(let k=1;k<7;k++)a.push(a.at(-1)+digitProduct(a.at(-1)));}while(new Set(a).size<7||Math.max(...a)>900);rule='이전 항에 그 자릿수의 곱을 더함';}if(kind===7){const scale=int(1,2,r);a=[2,3,5,10,25,75,250].map(n=>n*scale);rule='앞의 두 항의 차에 5를 곱함';}if(kind===8){a=[8,4,4,6,12,30,90].map(n=>n*x);rule='곱하는 수가 0.5, 1, 1.5, 2, 2.5, 3';}if(kind===9){a=[int(5,9,r)];for(let k=1;k<7;k++)a.push(k%2?a.at(-1)-k:a.at(-1)*k);rule='−1, ×2, −3, ×4, −5, ×6';}if(kind===10){const start=pick([13,16,19],r);a=Array.from({length:7},(_,k)=>Number(String(start+k*3).split('').reverse().join('')));rule=`각 항을 뒤집으면 ${start}부터 3씩 증가`;}if(kind===11){const m=pick([3,4,7,9],r),text=Array.from({length:20},(_,k)=>m*(k+1)).join('');a=Array.from({length:7},(_,k)=>Number(text.slice(k*2,k*2+2)));rule=`${m}의 배수를 이어 쓴 뒤 두 자리씩 구분`;}
