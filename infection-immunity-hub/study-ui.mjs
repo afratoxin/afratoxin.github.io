@@ -1,9 +1,10 @@
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115c';
-import {practiceLayout} from './practice-layout.mjs?v=20261115c';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115c';
-import {grade,stats,readProgress,restoreSession,readBookmarks} from './logic.mjs?v=20261115c';
-import {nextRound,sourceText,topicProgress} from './study-core.mjs?v=20261115c';
-import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261115c';
+import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115d';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115d';
+import {practiceLayout} from './practice-layout.mjs?v=20261115d';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115d';
+import {grade,stats,readProgress,restoreSession,readBookmarks} from './logic.mjs?v=20261115d';
+import {nextRound,sourceText,topicProgress} from './study-core.mjs?v=20261115d';
+import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261115d';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const externalLinks=q=>(q.externalRefs||[]).filter(r=>/^https:\/\//.test(r.url||'')).map(r=>`<a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.title||'보충 근거')} ↗</a>`).join(' · ');
 
@@ -30,7 +31,7 @@ export function createStudyUI({id,tab,title,subtitle,bank,topics,read,save,openT
   $('units').hidden=learningView!=='units';$('viewbar').hidden=!['mixed','practice'].includes(learningView);$('mixed-intro').hidden=learningView!=='mixed';
   if(learningView==='mixed')$('settings').open=true;
  }
- const filters=()=>({topic:scopes?'all':$('topic').value,...(scopes&&scopes[$('topic').value]?{scope:$('topic').value,questionIds:scopes[$('topic').value].questionIds}:{}),mode:$('mode').value,count:Number($('count').value),format:'mcq'});
+ const filters=()=>({topic:scopes?'all':$('topic').value,...(scopes&&scopes[$('topic').value]?{scope:$('topic').value,questionIds:scopes[$('topic').value].questionIds}:{}),mode:$('mode').value,count:Number($('count').value),format:drill?'all':'mcq'});
  function setFilters(f){$('topic').value=scopes?(scopes[f.scope]?f.scope:'all'):(topics[f.topic]?f.topic:'all');$('mode').value=f.mode||'all';$('count').value=String(f.count??(drill?0:10));}
  function eligible(){const f=filters();return bank.filter(q=>(!Array.isArray(f.questionIds)||f.questionIds.includes(q.id))&&(f.topic==='all'||q.topic===f.topic)&&(f.mode!=='wrong'||progress[q.id]?.correct===false)&&(f.mode!=='unanswered'||!progress[q.id])&&(f.mode!=='bookmarks'||bookmarks.includes(q.id)));}
  function update(){const s=stats(bank,progress),n=eligible().length;$('stats').textContent=`정답 ${s.correct} · 오답 ${s.wrong} · 미풀이 ${s.unanswered}`;$('eligible').textContent=n?`${n}개 항목${drill&&filters().count===0?' · 순서를 바꾸며 계속 반복':''}`:'선택 조건에 해당하는 문제가 없습니다.';if(drill)renderTable();
@@ -54,7 +55,7 @@ export function createStudyUI({id,tab,title,subtitle,bank,topics,read,save,openT
   if(!session.items.length){$('stage').innerHTML='<div class="empty-state"><h2>선택한 조건의 문제가 없습니다.</h2><p>오답을 모두 해결했거나 아직 해당 기록이 없을 수 있습니다. 범위를 바꾸어 시작하세요.</p><button type="button" class="button outline" data-study-all>전체 문제로 돌아가기 →</button></div>';return;}
   if(session.position>=session.items.length){summary();return;}
   const item=session.items[session.position],q=bank.find(q=>q.id===item.id),graded=item.selected!==null;
-  const question=`<article class="question-card study-question" id="${id}-question" tabindex="-1" aria-labelledby="${id}-stem"><div class="q-top"><div class="q-tags"><span class="pill">${e(drill?(scopes?.[session.filters.scope]?.title||'표 암기'):!graded&&(session.filters.topic==='all'||q.topic==='integrated')?'종합·통합 감별':topics[q.topic]?.title||q.topic)}</span><span class="format-tag">${drill?'표 암기':q.kind==='case'?'증례 감별':'키워드 감별'} · 5지선다</span></div><button type="button" class="bookmark" data-study-bookmark="${e(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}" aria-pressed="${bookmarks.includes(q.id)}">${bookmarks.includes(q.id)?'★':'☆'}</button></div><div class="session-line"><span>${drill&&session.filters.count===0?`라운드 ${session.round||1} · `:''}문제 <b>${session.position+1}</b> / ${session.items.length}</span><span>${session.tally?.correct||0} / ${session.tally?.total||0} 정답</span></div><div class="session-track"><span style="width:${session.position/session.items.length*100}%"></span></div><h2 class="question-stem" id="${id}-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">가장 적절한 답 하나 · 키보드 1–5${graded?' · Enter로 다음 문제':''}</p><div class="choices study-keywords" role="group" aria-labelledby="${id}-stem">${item.choices.map((c,i)=>`<button type="button" class="choice${graded?(i===item.answer?' right':i===item.selected?' wrong':' dim'):''}" data-study-answer="${i}" ${graded?'disabled':''}><span class="choice-num" aria-hidden="true">${i+1}</span><span class="choice-copy">${e(c)}</span>${graded&&i===item.answer?'<span class="choice-label">정답</span>':graded&&i===item.selected?'<span class="choice-label">내 선택</span>':''}</button>`).join('')}</div><div class="question-actions"><button type="button" class="text-button" data-study-previous ${session.position===0?'disabled':''}>← 이전</button><button type="button" class="${graded?'button primary':'text-button'}" data-study-next>${graded?'다음 문제 →':'건너뛰기 →'}</button></div></article>`;
+  const question=`<article class="question-card study-question" id="${id}-question" tabindex="-1" aria-labelledby="${id}-stem"><div class="q-top"><div class="q-tags"><span class="pill">${e(drill?(scopes?.[session.filters.scope]?.title||'표 암기'):!graded&&(session.filters.topic==='all'||q.topic==='integrated')?'종합·통합 감별':topics[q.topic]?.title||q.topic)}</span><span class="format-tag">${drill?'표 암기':q.kind==='case'?'증례 감별':'키워드 감별'} · ${q.format==='ox'?'O/X':'5지선다'}</span></div><button type="button" class="bookmark" data-study-bookmark="${e(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}" aria-pressed="${bookmarks.includes(q.id)}">${bookmarks.includes(q.id)?'★':'☆'}</button></div><div class="session-line"><span>${drill&&session.filters.count===0?`라운드 ${session.round||1} · `:''}문제 <b>${session.position+1}</b> / ${session.items.length}</span><span>${session.tally?.correct||0} / ${session.tally?.total||0} 정답</span></div><div class="session-track"><span style="width:${session.position/session.items.length*100}%"></span></div><h2 class="question-stem" id="${id}-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${q.format==='ox'?'1 = O · 2 = X':'가장 적절한 답 하나 · 키보드 1–5'} · Enter로 다음 문제</p><div class="choices study-keywords${q.format==='ox'?' ox':''}" role="group" aria-labelledby="${id}-stem">${item.choices.map((c,i)=>`<button type="button" class="choice${graded?(i===item.answer?' right':i===item.selected?' wrong':' dim'):''}" data-study-answer="${i}" ${graded?'disabled':''}><span class="choice-num" aria-hidden="true">${i+1}</span><span class="choice-copy">${e(c)}</span>${graded&&i===item.answer?'<span class="choice-label">정답</span>':graded&&i===item.selected?'<span class="choice-label">내 선택</span>':''}</button>`).join('')}</div><div class="question-actions"><button type="button" class="text-button" data-study-previous ${session.position===0?'disabled':''}>← 이전</button><button type="button" class="${graded?'button primary':'text-button'}" data-study-next>${graded?'다음 문제 →':'건너뛰기 →'}</button></div></article>`;
   $('stage').innerHTML=practiceLayout({question,feedback:graded?studyFeedback(q,item.selected===item.answer,item.choices):'',q,session,sourceLabel:sourceText(q,DOCUMENTS)});
  }
  function summary(){
@@ -112,12 +113,11 @@ export function createStudyUI({id,tab,title,subtitle,bank,topics,read,save,openT
   }
  });
  document.addEventListener('keydown',event=>{
-  if((!drill&&learningView!=='practice')||document.querySelector('dialog[open]'))return;
-  if(event.defaultPrevented||event.ctrlKey||event.altKey||event.metaKey||event.repeat||!isActive()||!session||session.position>=session.items.length||!$('replace').hidden)return;
-  if(event.target.closest('input,select,textarea,[role=tablist]'))return;
+  if((!drill&&learningView!=='practice')||!isActive()||!session||session.position>=session.items.length)return;
   const item=session.items[session.position];
-  if(/^[1-5]$/.test(event.key)&&item.selected===null){event.preventDefault();answer(Number(event.key)-1);}
-  else if(event.key==='Enter'&&item.selected!==null&&!event.target.closest('button,summary,a')){event.preventDefault();next();}
+  const action=quizKeyboardAction(event,{answered:item.selected!==null,choiceCount:item.choices.length,blocked:Boolean(document.querySelector('dialog[open]'))||!$('replace').hidden});
+  if(!action)return;event.preventDefault();
+  if(action.type==='answer')answer(action.index);else next();
  });
  window.addEventListener('storage',event=>{
   if(event.key===keys.progress||event.key===null){progress=readProgress(event.newValue,bank);update();onChange();}

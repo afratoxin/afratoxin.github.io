@@ -1,12 +1,16 @@
-import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261115c';
-import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261115c';
-import {stats} from './logic.mjs?v=20261115c';
+import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261115d';
+import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261115d';
+import {stats} from './logic.mjs?v=20261115d';
 
 const parts={...EXTENSION_PARTS};
 function p(doc,key,title,what,how,why){parts[`${doc}:${key}`]={id:`${doc}:${key}`,lecture:doc,title,what,how,why};}
 p('261102_05','oral','항생제 경구 투여','전신 감염 경구 치료 가능 약과 장내 국소 작용 약을 구분합니다.','약제명을 보고 경구/정주를 나누고 vancomycin의 장내 예외를 붙입니다.','먹을 수 있다는 말과 전신 유효 농도에 도달한다는 말을 구분합니다.');
 p('261102_05','bbb','항생제 BBB 통과','수막 염증 때 CSF 이행이 좋은 약과 부족한 약을 비교합니다.','1세대 cephalosporin·aminoglycoside를 3/4세대와 바꿔 봅니다.','혈중 감수성이 있어도 수막염 약제로 적절하지 않을 수 있습니다.');
 p('261102_05','pregnancy','임신 중 약제 선택','상대적으로 안전한 계열과 주수·적응증에 따라 주의할 약을 나눕니다.','Penicillin/cephalosporin을 기준으로 비슷한 약제 이름을 비교합니다.','주의와 모든 상황의 절대금기를 같은 뜻으로 외우지 않습니다.');
+p('261102_05','cases-cns','수막염·감수성 기준','수막염의 감수성 기준과 CSF 이행을 약제 선택에 연결합니다.','같은 S 결과에서도 penicillin MIC와 감염 부위를 먼저 확인합니다.','검사실 감수성과 실제 중추신경계 치료 적합성을 구분합니다.');
+p('261102_05','cases-typhi','장티푸스·감수성과 약제','감수성이 확인된 장티푸스의 약제 선택과 부적절한 대안을 비교합니다.','Ciprofloxacin과 gentamicin·cefuroxime을 감염 부위 맥락에서 비교합니다.','감수성 S라는 글자 하나만으로 치료제를 고르지 않도록 합니다.');
+p('261102_05','cases-pyelonephritis','신우신염·경구 전환·임신','신우신염의 투여 경로·임신 중 선택·지속 발열의 평가를 연결합니다.','구토→정주, 호전·식사→경구 전환, 지속 발열→합병증 순서로 비교합니다.','같은 균과 약제라도 숙주와 경과에 따라 달라지는 판단을 연습합니다.');
+p('261102_05','cases-management','감염원 관리·C. difficile','항생제가 필요한 상황과 배농·장내 약물 작용을 구분합니다.','바이러스 상기도감염·고름집·항생제 후 설사의 핵심 처치를 비교합니다.','항생제 선택 전 감염원 조절과 실제 약물이 작용할 부위를 확인합니다.');
 p('261104_01','identity','Gram·catalase·coagulase','알균 배열과 catalase/coagulase·H₂O₂·응고 반응을 연결합니다.','Staph↔Strep 다음 S. aureus↔CNS 순서로 두 갈래를 나눕니다.','균 이름만 보지 않고 검사 성상 두 개로 동정하는 문제를 풉니다.');
 p('261104_01','surface','Protein A·slime·부착','IgG Fc 결합·기구 부착·fibrinogen 결합의 인자를 구분합니다.','숙주 분자/기구 표면을 먼저 쓰고 인자명을 가려 회상합니다.','항식균이라는 공통 기능 안에서 구체적인 결합 대상을 구분합니다.');
 p('261104_01','toxin','독소·ETA↔ETB','표피탈락·식중독·독성쇼크와 ETA/ETB 위치·열안정성을 비교합니다.','독소명↔증상 다음 ETA↔ETB 두 행 표를 양방향으로 채웁니다.','구토·표피탈락·쇼크를 서로 바꾼 선지와 비슷한 독소 약어를 구분합니다.');

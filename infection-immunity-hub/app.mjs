@@ -1,14 +1,15 @@
-import {createRecallUI} from './recall-ui.mjs?v=20261115c';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115c';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115c';
-import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261115c';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115c';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115c';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115c';
-import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115c';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115c';
-import {sourceText} from './study-core.mjs?v=20261115c';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115c';
+import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115d';
+import {createRecallUI} from './recall-ui.mjs?v=20261115d';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115d';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115d';
+import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261115d';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115d';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115d';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115d';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115d';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115d';
+import {sourceText} from './study-core.mjs?v=20261115d';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115d';
 
 installEvidenceViewer();
 const $=id=>document.getElementById(id);
@@ -106,7 +107,7 @@ function renderSession(){
   const question=`<article id="questionCard" class="question-card" tabindex="-1" aria-labelledby="questionStem">
     <div class="q-top"><div class="q-tags"><span class="pill">${TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX 퀴즈'}</span></div><button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button></div>
     <div class="session-line"><span>문제 <b>${session.position+1}</b> / ${session.items.length}</span><span>${answered.length}문항 채점 완료</span></div><div class="session-track" aria-hidden="true"><span style="width:${session.position/session.items.length*100}%"></span></div>
-    <h2 id="questionStem" class="question-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${q.format==='mcq'?'가장 적절한 답을 하나 고르세요. · 키보드 1–5':'문장이 옳으면 O, 틀리면 X를 고르세요. · 키보드 O / X'}</p>
+    <h2 id="questionStem" class="question-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${q.format==='mcq'?'가장 적절한 답 하나 · 키보드 1–5':'OX · 키보드 1(O) / 2(X)'} · 채점 후 Enter로 다음 문제</p>
     <div class="choices${q.format==='ox'?' ox':''}" role="group" aria-labelledby="questionStem">${item.choices.map((c,i)=>{
       let cls='',label='';
       if(graded){if(i===item.answer){cls=' right';label='정답';}else if(i===item.selected){cls=' wrong';label='내 선택';}else cls=' dim';}
@@ -197,14 +198,11 @@ document.addEventListener('click',e=>{
   if(b.dataset.action==='previous' && session){session.position=Math.max(0,session.position-1);save(KEYS.session,session);renderSession();focusQuestion();}
 });
 document.addEventListener('keydown',e=>{
-  if(document.querySelector('dialog[open]'))return;
-  if(e.defaultPrevented||e.ctrlKey||e.altKey||e.metaKey||e.repeat||activeTab!=='quiz'||!session||session.position>=session.items.length||!$('replacePrompt').hidden)return;
-  if(e.target.closest('input,select,textarea,[role=tablist]'))return;
-  const item=session.items[session.position];if(item.selected!==null)return;
-  const q=QUESTIONS.find(q=>q.id===item.id);let selected;
-  if(q.format==='mcq'&&/^[1-5]$/.test(e.key))selected=Number(e.key)-1;
-  if(q.format==='ox'){if(['o','O','1'].includes(e.key))selected=0;if(['x','X','2'].includes(e.key))selected=1;}
-  if(selected!==undefined){e.preventDefault();answer(selected);}
+  if(activeTab!=='quiz'||!session||session.position>=session.items.length)return;
+  const item=session.items[session.position];
+  const action=quizKeyboardAction(e,{answered:item.selected!==null,choiceCount:item.choices.length,blocked:Boolean(document.querySelector('dialog[open]'))||!$('replacePrompt').hidden});
+  if(!action)return;e.preventDefault();
+  if(action.type==='answer')answer(action.index);else moveNext();
 });
 function followHash(){const tab=tabFromHash(location.hash);if(tab)navigate(tab);}
 window.addEventListener('hashchange',followHash);

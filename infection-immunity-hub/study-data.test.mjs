@@ -19,9 +19,9 @@ test('lectures and integrated questions have short options and complete source m
  assert.ok(LECTURE_QUESTIONS.every(q=>!PATH_QUESTIONS.some(p=>p.stem===q.stem)));
 });
 test('table drills cover the existing antibiotic classifications and sourced microbe mappings',()=>{
- for(const key of ['table-abx-oral','table-abx-bbb','table-abx-pregnancy'])assert.equal(TABLE_QUESTIONS.filter(q=>q.topic===key).length,8);
+ for(const key of ['table-abx-oral','table-abx-bbb','table-abx-pregnancy'])assert.equal(TABLE_QUESTIONS.filter(q=>q.topic===key).length,16);
  assert.ok(TABLE_QUESTIONS.length>=72);assert.ok(Object.keys(TABLE_TOPICS).length>=8);
- for(const q of TABLE_QUESTIONS){assert.equal(q.choices.length,5);assert.equal(new Set(q.choices).size,5);assert.ok(q.answer>=0&&q.answer<5);assert.ok(TABLE_TOPICS[q.topic]);}
+ for(const q of TABLE_QUESTIONS){const size=q.format==='ox'?2:5;assert.equal(q.choices.length,size);assert.equal(new Set(q.choices).size,size);assert.ok(q.answer>=0&&q.answer<size);assert.ok(TABLE_TOPICS[q.topic]);}
 });
 test('all new source pages are real PDF pages and every canonical ID is globally unique',()=>{
  const all=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...TABLE_QUESTIONS];assert.equal(new Set(all.map(q=>q.id)).size,all.length);
