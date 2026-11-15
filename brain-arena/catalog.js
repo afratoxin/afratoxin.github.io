@@ -367,7 +367,7 @@ window.BrainArenaCatalog = {
       "title": "히든미션",
       "description": "6×6 판의 같은 그림 18쌍을 찾아 글자를 열고, 숨겨진 문제의 답을 먼저 추리하세요. 더블·오픈 아이템도 활용합니다.",
       "tag": "시즌 2 · 기억 / 문장 추리 · 3라운드",
-      "href": "../hidden-mission/?v=20261115-themes"
+      "href": "../hidden-mission/?v=20261115-clear-shapes"
     }
   ],
   "groups": [

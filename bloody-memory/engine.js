@@ -67,7 +67,7 @@ function patternRun(r=Math.random){
  return{maps,questions:maps.flatMap(map=>Array.from({length:3},(_,i)=>blockQuestion(map,r,i===0)))};
 }
 // A board uses exactly one vocabulary, with deliberately similar symbols within it.
-const HIDDEN_THEMES={hanja:{label:'한자판',hint:'비슷한 한자의 획과 위치를 구분하세요.'},letters:{label:'글자판',hint:'닮은 자음과 쌍자음을 구분하세요.'},picture:{label:'그림판',hint:'같은 도형의 회전 방향과 작은 점의 위치를 구분하세요.'}};
+const HIDDEN_THEMES={hanja:{label:'한자판',hint:'비슷한 한자의 획과 위치를 구분하세요.'},letters:{label:'글자판',hint:'닮은 자음과 쌍자음을 구분하세요.'},picture:{label:'그림판',hint:'도형의 회전 방향과 굵은 선·홈·윤곽 차이를 구분하세요.'}};
 const HIDDEN_SYMBOLS=[
  ...Array.from('日曰目自白百田由甲申旦早旧旭月用甩冊皿且具直真首').map(glyph=>({group:'hanja',family:'hanja',glyph})),
  ...Array.from('ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ').map(glyph=>({group:'letters',family:'consonants',glyph})),
@@ -77,8 +77,10 @@ function hiddenSymbolSVG(id,label='그림'){
  const p=HIDDEN_SYMBOLS[id];if(!p)throw Error('Unknown hidden symbol');
  let body;if(p.glyph)body='<text x="50" y="53" dominant-baseline="central" text-anchor="middle" fill="currentColor" font-family="Noto Sans CJK KR, Malgun Gothic, sans-serif" font-size="65" font-weight="650">'+p.glyph+'</text>';
  else{
-  const paths={frame:'M38 15H15V85H85V15H57',ring:'M38 17A35 35 0 1 0 62 17',arrow:'M50 12L84 46H64V86H36V46H16Z'},points=p.family==='arrow'?[[43,48],[57,48],[43,62],[57,62],[43,76],[57,76]]:[[30,32],[50,32],[70,32],[30,64],[50,64],[70,64]],[x,y]=points[p.variant];
-  body='<g transform="rotate('+p.rotation*90+' 50 50)"><path d="'+paths[p.family]+'" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="miter"/><circle cx="'+x+'" cy="'+y+'" r="4" fill="currentColor"/></g>';
+  const outlines={frame:'M38 15H15V85H85V15H57',ring:'M38 17A35 35 0 1 0 62 17'},details=['','M30 50H70','M50 30V70','M30 38L50 63 70 38','M30 50H70M50 30V70','M50 28L72 50 50 72 28 50Z'];
+  const arrows=['M50 12L84 46H64V86H36V46H16Z','M50 8L94 48H64V86H36V48H6Z','M50 12L84 46H64V88L50 72 36 88V46H16Z','M50 12L84 46H58V86H42V46H16Z','M50 12L84 46H64V86H36V46H16ZM28 47L50 26 72 47','M50 12L84 46H64V86H36V46H16ZM22 65H78'];
+  const d=p.family==='arrow'?arrows[p.variant]:outlines[p.family]+details[p.variant];
+  body='<g transform="rotate('+p.rotation*90+' 50 50)"><path d="'+d+'" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="miter"/></g>';
  }
  return '<svg class="line-pattern" viewBox="0 0 100 100" role="img" aria-label="'+label+'">'+body+'</svg>';
 }

@@ -45,5 +45,5 @@ console.log('PASS: six block questions, 60/10-second boundaries, two memory maps
 }
 console.log('PASS: both new games appear in the correct source folder, alongside every existing Bloody Game title.');
 
-for(const family of ['frame','ring','arrow']){const ids=E.HIDDEN_SYMBOLS.map((p,i)=>p.family===family?i:null).filter(i=>i!==null);A.equal(ids.length,24);A.equal(new Set(ids.map(i=>E.hiddenSymbolSVG(i))).size,24);for(let variant=0;variant<6;variant++)A.deepEqual(ids.map(i=>E.HIDDEN_SYMBOLS[i]).filter(p=>p.variant===variant).map(p=>p.rotation).sort(),[0,1,2,3]);}
+for(const family of ['frame','ring','arrow']){const ids=E.HIDDEN_SYMBOLS.map((p,i)=>p.family===family?i:null).filter(i=>i!==null);A.equal(ids.length,24);A(ids.every(i=>!E.hiddenSymbolSVG(i).includes('<circle')));A.equal(new Set(ids.map(i=>E.hiddenSymbolSVG(i))).size,24);for(let variant=0;variant<6;variant++)A.deepEqual(ids.map(i=>E.HIDDEN_SYMBOLS[i]).filter(p=>p.variant===variant).map(p=>p.rotation).sort(),[0,1,2,3]);}
 console.log('PASS: one theme per board, all three themes per run, one picture family per board and distinct six-detail/four-rotation variants.');
