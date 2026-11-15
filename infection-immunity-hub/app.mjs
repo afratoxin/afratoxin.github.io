@@ -1,13 +1,13 @@
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115a';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115a';
-import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261115a';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115a';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115a';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115a';
-import {LECTURES,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115a';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115a';
-import {sourceText} from './study-core.mjs?v=20261115a';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115a';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115b';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115b';
+import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261115b';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115b';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115b';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115b';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115b';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115b';
+import {sourceText} from './study-core.mjs?v=20261115b';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115b';
 
 installEvidenceViewer();
 const $=id=>document.getElementById(id);
@@ -26,7 +26,7 @@ let pendingFilters=null;
 let pathologyUI=null;
 let lectureUI=null,drillUI=null;
 const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...TABLE_QUESTIONS];
-const ALL_TOPICS={...TOPICS,...PATH_TOPICS,...LECTURES,...TABLE_TOPICS};
+const ALL_TOPICS={...TOPICS,...PATH_TOPICS,...STUDY_TOPICS,...TABLE_TOPICS};
 const isPath=q=>q.id.startsWith('path-');
 const isStudy=q=>q.id.startsWith('lecture-')||q.id.startsWith('table-');
 const allProgress=()=>({...progress,...pathologyUI?.getProgress(),...lectureUI?.getProgress(),...drillUI?.getProgress()});
@@ -54,6 +54,8 @@ function updateDashboard(){
     const value=stats(bank,ui?.getProgress()||{});
     $(`${prefix}CourseStats`).textContent=`정답 ${value.correct} · 오답 ${value.wrong} · 미풀이 ${value.unanswered}`;
     $(`${prefix}CourseCount`).textContent=`${bank.length}문항`;
+    const courseTrack=$(`${prefix}CourseTrack`);
+    if(courseTrack){courseTrack.innerHTML=track(value);courseTrack.setAttribute('aria-label',`${value.total}문항 중 ${value.attempted}문항 풀이, 정답 ${value.correct}, 오답 ${value.wrong}`);}
   }
   $('libraryCount').innerHTML=`4개 퀴즈 단원 <b>${ALL_QUESTIONS.length}문항</b>`;
   if(!memoryOnly)$('saveStatus').innerHTML='<i aria-hidden="true"></i> 이 브라우저에 학습 기록 저장';
@@ -175,7 +177,7 @@ $('lectureResumeButton').addEventListener('click',()=>lectureUI.resume());
 $('homeDrillStart').addEventListener('click',()=>drillUI.start({topic:'all',mode:'all',count:0}));
 $('lectureRetryAll').addEventListener('click',()=>lectureUI.start({topic:'all',mode:'wrong',count:0}));
 $('drillRetryAll').addEventListener('click',()=>drillUI.start({topic:'all',mode:'wrong',count:0}));
-$('reviewTopic').insertAdjacentHTML('beforeend',`<optgroup label="강의별 감별">${Object.entries(LECTURES).map(([id,t])=>`<option value="${id}">${t.order}. ${escape(t.title)}</option>`).join('')}</optgroup><optgroup label="표 암기">${Object.entries(TABLE_TOPICS).map(([id,t])=>`<option value="${id}">${escape(t.title)}</option>`).join('')}</optgroup>`);
+$('reviewTopic').insertAdjacentHTML('beforeend',`<optgroup label="강의별 감별">${Object.entries(STUDY_TOPICS).map(([id,t])=>`<option value="${id}">${t.order?t.order+". ":""}${escape(t.title)}</option>`).join('')}</optgroup><optgroup label="표 암기">${Object.entries(TABLE_TOPICS).map(([id,t])=>`<option value="${id}">${escape(t.title)}</option>`).join('')}</optgroup>`);
 $('reviewTopic').addEventListener('change',renderReview);$('reviewSearch').addEventListener('input',renderReview);
 document.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||b.disabled)return;
@@ -208,6 +210,6 @@ if(session)setFilters(session.filters||{});
 $('antibioticTables').innerHTML=renderTables(ANTIBIOTIC_TABLES);
 pathologyUI=createPathologyUI({read,save,openTab:navigate,announce,onChange(){updateDashboard();if(activeTab==='review')renderReview();}});
 const studyChange=()=>{updateDashboard();if(activeTab==='review')renderReview();};
-lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 감별 문제',subtitle:'16개 강의 · 짧은 키워드 선택지 · 증례와 특이 소견',bank:LECTURE_QUESTIONS,topics:LECTURES,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='lectures'});
+lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 감별 문제',subtitle:'16개 강의 + 단원 통합 · 배양·기본 특성·증례 감별',bank:LECTURE_QUESTIONS,topics:STUDY_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='lectures'});
 drillUI=createStudyUI({id:'drill',tab:'drill',title:'표 암기 반복 퀴즈',subtitle:'항생제 · 동정검사 · 독소 · 병리 · 매개체',bank:TABLE_QUESTIONS,topics:TABLE_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='drill',drill:true});
 navigate(tabFromHash(location.hash)||'home');

@@ -1,4 +1,9 @@
-import {buildSession} from './logic.mjs?v=20261115a';
+import {buildSession,stats} from './logic.mjs?v=20261115b';
+
+export function topicProgress(bank,progress,topic){
+ const s=stats(bank.filter(q=>q.topic===topic),progress);
+ return {...s,percent:s.total?Math.round(s.attempted/s.total*100):0};
+}
 
 export function factQuestion(fact){
  const pool=[...new Set(fact.pool)];

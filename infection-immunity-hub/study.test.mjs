@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {factQuestion,nextRound} from './study-core.mjs';
+import {factQuestion,nextRound,topicProgress} from './study-core.mjs';
 import {buildSession,grade,restoreSession,stats,tabFromHash} from './logic.mjs';
 
 const fact={id:'fact-example',category:'cocci',prompt:'α용혈·optochin 감수성·담즙 용해',answer:'S. pneumoniae',pool:['S. mitis','S. pneumoniae','S. pyogenes','S. agalactiae','E. faecalis','S. mutans'],explanation:'Optochin 감수성과 담즙 용해가 감별 단서.',sourceRefs:[{doc:'261105_01',pages:[26,27]}]};
@@ -25,4 +25,13 @@ test('new rounds avoid immediate repetition and terminate an empty wrong-only po
 test('new routes preserve existing routes and skip anchor semantics',()=>{
  for(const tab of ['lectures','drill','home','quiz','pathology','review','notes'])assert.equal(tabFromHash('#'+tab),tab);
  assert.equal(tabFromHash('#mainContent'),null);
+});
+
+test('lecture progress counts latest unique answers per topic and survives reload',()=>{
+ const bank=[{id:'a',topic:'one'},{id:'b',topic:'one'},{id:'c',topic:'two'}];
+ const saved=JSON.stringify({a:{correct:true},b:{correct:false},c:{correct:true},retired:{correct:true}});
+ const restored=JSON.parse(saved);
+ assert.deepEqual(topicProgress(bank,restored,'one'),{total:2,attempted:2,correct:1,wrong:1,unanswered:0,percent:100});
+ assert.deepEqual(topicProgress(bank,{a:{correct:false}},'one'),{total:2,attempted:1,correct:0,wrong:1,unanswered:1,percent:50});
+ assert.equal(topicProgress(bank,restored,'missing').percent,0);
 });

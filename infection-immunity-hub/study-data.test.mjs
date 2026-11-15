@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {LECTURES,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs';
 import {QUESTIONS} from './bank.mjs';
 import {PATH_QUESTIONS} from './pathology-bank.mjs';
-test('sixteen lectures have ten original short-option questions with complete source metadata',()=>{
- assert.equal(Object.keys(LECTURES).length,16);assert.equal(LECTURE_QUESTIONS.length,160);
+test('lectures and integrated questions have short options and complete source metadata',()=>{
+ assert.equal(Object.keys(LECTURES).length,16);assert.ok(LECTURE_QUESTIONS.length>=300);
  const ids=new Set();
- for(const code of Object.keys(LECTURES))assert.equal(LECTURE_QUESTIONS.filter(q=>q.lecture===code).length,10,code);
+ for(const code of Object.keys(LECTURES))assert.ok(LECTURE_QUESTIONS.filter(q=>q.lecture===code).length>=10,code);
  for(const q of LECTURE_QUESTIONS){
-  assert.ok(!ids.has(q.id));ids.add(q.id);assert.ok(LECTURES[q.lecture]);
+  assert.ok(!ids.has(q.id));ids.add(q.id);assert.ok(STUDY_TOPICS[q.lecture]);
   assert.equal(q.format,'mcq');assert.equal(q.choices.length,5);assert.equal(new Set(q.choices).size,5);
   assert.ok(q.choices.every(s=>s.trim()===s&&s.length<=55),`long choice ${q.id}`);
   assert.ok(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<5);assert.ok(q.explanation&&q.keyClue);

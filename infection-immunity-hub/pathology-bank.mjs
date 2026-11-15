@@ -1,4 +1,5 @@
-import {PHOTOS} from './photo-data.mjs?v=20261115a';
+import {revisedPathologySet} from './pathology-statements.mjs?v=20261115b';
+import {PHOTOS} from './photo-data.mjs?v=20261115b';
 export {PHOTOS};
 export const PATH_TOPICS={
  'path-image':{title:'사진 → 원인균',short:'사진형',sub:'짧은 증례와 강의 사진으로 판단'},
@@ -209,11 +210,12 @@ const traits=[
 traits.find(t=>t.name==='Cryptococcus').sources.push(src('path1',15));
 
 function makePair(set,topic,n){
+ set=revisedPathologySet(set,topic);
  for(const [kind,target] of [['correct',(n*2)%5],['incorrect',(n*2+3)%5]]){
   const choices=set.facts.map((f,i)=>f[(kind==='correct'?i!==target:i===target)?1:0]);
-  bank.push({id:`${topic}-${String(n*2+(kind==='correct'?1:2)).padStart(2,'0')}`,topic,format:'mcq',ask:kind,
+  bank.push({id:`${topic}-${String(n*2+(kind==='correct'?1:2)).padStart(2,'0')}-q3`,topic,format:'mcq',ask:kind,
    stem:`${set.context}에 대한 설명으로 ${kind==='correct'?'가장 옳은 것은?':'옳지 않은 것은?'}`,choices,answer:target,
-   explanation:`${set.name}: ${set.facts[target][2]}`,choiceNotes:set.facts.map(f=>f[2]),photos:[],sourceRefs:set.sources,examRefs:set.exam||[],refs:[],pages:set.sources[0].pages});
+   explanation:`${set.name}: ${set.facts[target][2]}`,choiceNotes:set.facts.map(f=>f[2]),choiceEvidence:set.facts.map((f,i)=>({trueStatement:f[0],falseStatement:f[1],shownIsTrue:kind==='correct'?i===target:i!==target,sourceRefs:set.sources,technique:'근접 사실 치환'})),photos:[],sourceRefs:set.sources,examRefs:set.exam||[],refs:[],pages:set.sources[0].pages});
  }
 }
 traits.forEach((t,n)=>makePair(t,'path-traits',n));

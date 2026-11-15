@@ -40,7 +40,8 @@ test('every question has its actual cited page assets and no local source paths 
   const refs=q.sourceRefs?.length?q.sourceRefs:[{doc:'antibiotics',pages:q.pages}],keys=new Set(refs.flatMap(ref=>ref.pages.map(page=>`${aliases[ref.doc]||ref.doc}:${page}`)));
   assert.equal(sourcePages(q).length,keys.size,`incomplete evidence for ${q.id}`);
  }
- assert.equal(Object.keys(SOURCE_PAGES).length,415);
+ const manifest=JSON.parse(fs.readFileSync(new URL('./assets/evidence/manifest.json',import.meta.url),'utf8'));
+ assert.equal(Object.keys(SOURCE_PAGES).length,manifest.count);assert.ok(manifest.count>=415);
  for(const page of Object.values(SOURCE_PAGES)){
   assert.match(page.src,/^assets\/evidence\/[a-z0-9_]+-\d{3}\.webp$/);
   assert.ok(fs.existsSync(new URL(page.src,import.meta.url)),page.src);

@@ -1,8 +1,8 @@
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115a';
-import {PATH_QUESTIONS,PATH_TOPICS,PHOTOS,PATH_DOCUMENTS,EXAM_REVIEW,pathSource} from './pathology-bank.mjs?v=20261115a';
-import {buildSession,grade,stats,readProgress,restoreSession,readBookmarks} from './logic.mjs?v=20261115a';
-import {PATHOLOGY_TABLES,renderTables} from './reference-tables.mjs?v=20261115a';
-import {practiceLayout} from './practice-layout.mjs?v=20261115a';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115b';
+import {PATH_QUESTIONS,PATH_TOPICS,PHOTOS,PATH_DOCUMENTS,EXAM_REVIEW,pathSource} from './pathology-bank.mjs?v=20261115b';
+import {buildSession,grade,stats,readProgress,restoreSession,readBookmarks} from './logic.mjs?v=20261115b';
+import {PATHOLOGY_TABLES,renderTables} from './reference-tables.mjs?v=20261115b';
+import {practiceLayout} from './practice-layout.mjs?v=20261115b';
 
 const e=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=id=>document.getElementById(id);
