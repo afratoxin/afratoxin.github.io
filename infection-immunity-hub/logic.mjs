@@ -2,7 +2,7 @@ export const VERSION=1;
 export function tabFromHash(hash) {
   if(hash==='#mainContent')return null;
   const tab=hash.replace(/^#/,'');
-  return ['home','quiz','pathology','lectures','drill','review','notes'].includes(tab)?tab:'home';
+  return ['home','quiz','pathology','lectures','drill','bookmarks','review','notes'].includes(tab)?tab:'home';
 }
 export function shuffle(values,rng=Math.random) {
   const result=[...values];
@@ -17,6 +17,12 @@ export function readProgress(raw,bank) {
 }
 export function readBookmarks(raw,bank) {
   try{const value=JSON.parse(raw);return Array.isArray(value)?[...new Set(value.filter(id=>bank.some(q=>q.id===id)))]:[];}catch{return [];}
+}
+export function toggleBookmark(raw,id) {
+  let saved=[];
+  try{const value=JSON.parse(raw);if(Array.isArray(value))saved=[...new Set(value.filter(item=>typeof item==='string'))];}catch{}
+  if(typeof id!=='string'||!id)return saved;
+  return saved.includes(id)?saved.filter(item=>item!==id):[...saved,id];
 }
 export function stats(bank,progress) {
   const correct=bank.filter(q=>progress[q.id]?.correct===true).length;

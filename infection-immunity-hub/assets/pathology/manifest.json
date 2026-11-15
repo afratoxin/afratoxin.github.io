@@ -408,122 +408,341 @@
     "sha256": "0384c84d5ab6779e6d89518ddbdb838dabf5590413b4f13d3d478b26c4c73431"
   },
   {
-    "file": "figure-25.webp",
-    "document": "lab",
-    "page": 53,
-    "nativeImage": "lab-p53-i00",
-    "originalSize": [
-      1536,
-      1152
-    ],
+    "file": "edu-01.webp",
+    "document": "pathedu",
+    "page": 1,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      1400,
-      1050
+      900,
+      500
     ],
-    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
-    "sha256": "5c8cae069e26a19332722be0dfd6fdbaa62524967c648545093802329568e8cb"
+    "sha256": "b1eff47d3c71dd692aca9249631dececef4845b39aaffe7879e6a218ff5caa37"
   },
   {
-    "file": "figure-26.webp",
-    "document": "path2",
-    "page": 50,
-    "nativeImage": "path2-p50-i02",
-    "originalSize": [
-      407,
-      271
-    ],
+    "file": "edu-02.webp",
+    "document": "pathedu",
+    "page": 2,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      407,
-      271
+      900,
+      470
     ],
-    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
-    "sha256": "326758dc73e824a084017f2a168cb549f83a8182bf85c162f680fadd61d94d7d"
+    "sha256": "0e269e1ec5467de4f8d73c16190f65affc49cb018de42fcd210059962aedeec0"
   },
   {
-    "file": "figure-27.webp",
-    "document": "lab",
-    "page": 55,
-    "nativeImage": "lab-p55-i00",
-    "originalSize": [
-      428,
-      321
-    ],
+    "file": "edu-03.webp",
+    "document": "pathedu",
+    "page": 3,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      428,
-      321
+      800,
+      650
     ],
-    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
-    "sha256": "b94529852596d48ec5ea7dde6a50081f83d6773ec75ad74017b411da332ed220"
+    "sha256": "b3f6025aded0aae18f738a1bccfb3c84ab6ead3292186ab7651889e64aa6d315"
   },
   {
-    "file": "figure-28.webp",
-    "document": "lab",
-    "page": 56,
-    "nativeImage": "lab-p56-i00",
-    "originalSize": [
-      189,
-      195
-    ],
+    "file": "edu-04.webp",
+    "document": "pathedu",
+    "page": 4,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      189,
-      195
+      800,
+      650
     ],
-    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
-    "sha256": "bf08c59d3672417ae8edc5a9378c8d8d78161f6b2e94fe6430ee7a1c3db6a9a2"
+    "sha256": "0352263ad7cc1cca12894ec4750c2434f46c8113277310d24b4578494ef02f35"
   },
   {
-    "file": "figure-29.webp",
-    "document": "lab",
-    "page": 62,
-    "nativeImage": "lab-p62-i00",
-    "originalSize": [
-      1029,
-      772
-    ],
+    "file": "edu-05.webp",
+    "document": "pathedu",
+    "page": 5,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      1029,
-      772
+      900,
+      420
     ],
-    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
-    "sha256": "1d2399cd167d3290808065ec903dc467a6039b944118da2e59b16c430067ff0c"
+    "sha256": "26901678299f11d78e094100e6def742408a8f8b61ab752cce16330667094247"
   },
   {
-    "file": "figure-30.webp",
-    "document": "lab",
-    "page": 64,
-    "nativeImage": "lab-p64-i00",
-    "originalSize": [
-      1029,
-      772
-    ],
+    "file": "edu-06.webp",
+    "document": "pathedu",
+    "page": 6,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      1029,
-      772
+      800,
+      650
     ],
-    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
-    "sha256": "49875a8fc08df43180e829a1661635654afa2f735e2261fcf96e2577508e16f9"
+    "sha256": "074242e8e8652813ec38ad146f1d806c5176b9902bcffd1695a46c839187312f"
   },
   {
-    "file": "figure-31.webp",
-    "document": "lab",
-    "page": 66,
-    "nativeImage": "lab-p66-i00",
-    "originalSize": [
-      1029,
-      772
-    ],
+    "file": "edu-07.webp",
+    "document": "pathedu",
+    "page": 7,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
     "outputSize": [
-      1029,
-      772
+      800,
+      650
     ],
-    "method": "Extracted original slide photo; excludes slide titles, organism labels and student annotations",
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
     "labelFreeVisualReview": true,
-    "sha256": "9449f6e2242e080bcd0091199bf56859c1a770709f075205653c1d595b8a4aef"
+    "sha256": "f1b9bad976a3a8ea2f68beff740b13c6f36cebe081604143c05f90e52bd75fa2"
+  },
+  {
+    "file": "edu-08.webp",
+    "document": "pathedu",
+    "page": 8,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "cb50f1f6b836272bb9de12eed92ce296b0e19f36277c6598467a5241d9381001"
+  },
+  {
+    "file": "edu-09.webp",
+    "document": "pathedu",
+    "page": 9,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "5c60511b6389a98dbb3fe81a95f3d61ea2d6e337f2b0930484a447e491669a46"
+  },
+  {
+    "file": "edu-10.webp",
+    "document": "pathedu",
+    "page": 10,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "5c4e82bdbd1fbf88a87024896acb9524b17f0db7b9a9375e3ab3952c21ef6531"
+  },
+  {
+    "file": "edu-11.webp",
+    "document": "pathedu",
+    "page": 11,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "80f8a1213c566c0fe31279693de0a8d1270c17274a7597645364b8cda0928e70"
+  },
+  {
+    "file": "edu-12.webp",
+    "document": "pathedu",
+    "page": 12,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "dc1aad3901cfc3aee5f62cbe69148248737e19d5b9ddea289f495686f31420e7"
+  },
+  {
+    "file": "edu-13.webp",
+    "document": "pathedu",
+    "page": 13,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      590,
+      430
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "620053cebdd96ab7662f1298a50bed9c201f308cbc21397e73d272ea2d600763"
+  },
+  {
+    "file": "edu-14.webp",
+    "document": "pathedu",
+    "page": 14,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "da14bc346fa8f22b987e3abd5926c6fd787f62f85b166358308c491db5be7d30"
+  },
+  {
+    "file": "edu-15.webp",
+    "document": "pathedu",
+    "page": 15,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "e3311371bca502d09b573a70a462be7fc51b7993c06219ac8a5cbe8890ceea48"
+  },
+  {
+    "file": "edu-16.webp",
+    "document": "pathedu",
+    "page": 16,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "6e92b4fe6cae1d08c3dd17657c7267ea291177d450a44b8b73d0a4b0f1c6311c"
+  },
+  {
+    "file": "edu-17.webp",
+    "document": "pathedu",
+    "page": 17,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "36790ac42dfc01ac20ca1981e183c116313e5fa11ffb8ac543220e7ea162913a"
+  },
+  {
+    "file": "edu-18.webp",
+    "document": "pathedu",
+    "page": 18,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "1cc74fba9166bdd5a5239a873a654e5f0fe85f7d8d2886e8beb4975b1aba99c4"
+  },
+  {
+    "file": "edu-19.webp",
+    "document": "pathedu",
+    "page": 19,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "4acab40a68ae223acbb6c16ded53ee6a79165b88fa27476ff81add2cf3d815fd"
+  },
+  {
+    "file": "edu-20.webp",
+    "document": "pathedu",
+    "page": 20,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "02468e2da4305f52ba1916fe50859e91ce03984be5a8c5ae7e59b760c60824fa"
+  },
+  {
+    "file": "edu-21.webp",
+    "document": "pathedu",
+    "page": 21,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "2fe24e6af2efaadbfb45e7b72f28d881e13d5498260b8356511ec8000cae7053"
+  },
+  {
+    "file": "edu-22.webp",
+    "document": "pathedu",
+    "page": 22,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "b09bfad573ad523ea1df0eb01ee53027f7805b2a2f3dec0f80cca78aaabe8bdb"
+  },
+  {
+    "file": "edu-23.webp",
+    "document": "pathedu",
+    "page": 23,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "36bd434d2cfbfe12b94e3e656a0f02784c9caf995073e80323ad3a8b7a3cca82"
+  },
+  {
+    "file": "edu-24.webp",
+    "document": "pathedu",
+    "page": 24,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "d42cac36a672c4b8ac1081da17a69af3feb18dbddb7f71318b6963285f6dd3da"
+  },
+  {
+    "file": "edu-25.webp",
+    "document": "pathedu",
+    "page": 25,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "e0ffe13857b07a80b9d97fa8609203ca07b1738094e6b7ef54224d4fbeca8cd1"
+  },
+  {
+    "file": "edu-26.webp",
+    "document": "pathedu",
+    "page": 26,
+    "sourceUrl": "https://pathedu.snu.ac.kr/library",
+    "outputSize": [
+      800,
+      650
+    ],
+    "method": "Viewer screenshot, tissue field only; labels and controls excluded",
+    "labelFreeVisualReview": true,
+    "sha256": "419a80ab8c9392d72a34cd3eab7626441f4d36a5b49da72ab78af261d7b0c310"
   }
 ]

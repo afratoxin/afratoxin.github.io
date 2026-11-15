@@ -1,4 +1,4 @@
-import {reviseAntibioticQuestions} from './antibiotic-revision.mjs?v=20261115d';
+import {reviseAntibioticQuestions} from './antibiotic-revision.mjs?v=20261115f';
 export const TOPICS = {
   oral: { title:'경구 투여', sub:'먹는 약으로 바꿀 수 있을까?', short:'경구', icon:'PO', pages:'36–40' },
   bbb: { title:'BBB 통과', sub:'감염 부위까지 도달할까?', short:'BBB', icon:'BBB', pages:'23–29' },

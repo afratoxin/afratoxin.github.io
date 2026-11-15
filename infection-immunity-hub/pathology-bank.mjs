@@ -1,13 +1,13 @@
-import {revisedPathologySet} from './pathology-statements.mjs?v=20261115d';
-import {PHOTOS} from './photo-data.mjs?v=20261115d';
-export {PHOTOS};
+import {PATHEDU_QUESTIONS,PATHEDU_PHOTOS} from './pathedu-bank.mjs?v=20261115f';
+import {revisedPathologySet} from './pathology-statements.mjs?v=20261115f';
+import {PHOTOS as ALL_PHOTOS} from './photo-data.mjs?v=20261115f';
 export const PATH_TOPICS={
  'path-image':{title:'사진 → 원인균',short:'사진형',sub:'짧은 증례와 강의 사진으로 판단'},
  'path-traits':{title:'원인균 특성 판별',short:'특성형',sub:'서로 다른 병원체의 특징을 구별'},
  'path-general':{title:'총론 · 옳고 그름',short:'총론형',sub:'조직반응·방어기전·진단법 연결'}
 };
-export const PATH_DOCUMENTS={path1:'병리 1',path2:'병리 2',lab:'병리 통합실습'};
-export const EXAM_REVIEW={pages:[10,11,12,13,14,15],count:22,years:[{year:2025,numbers:[30,72,85,100]},{year:2023,numbers:[28,69,79,88]},{year:2022,numbers:[12,36,38,41,75,77]},{year:2021,numbers:[13,14,15,16,18]},{year:2020,numbers:[14,16,17]}],note:'기출의 발문과 감별 구조를 참고한 새 문제입니다. 2025 답안표의 문항 번호는 본문과 불일치하여 자동 정답 매핑에 사용하지 않았습니다.'};
+export const PATH_DOCUMENTS={path1:'병리 1',path2:'병리 2',lab:'병리 통합실습',pathedu:'서울대학교 병리교육 라이브러리'};
+export const EXAM_REVIEW={pages:[10,11,12,13,14,15],count:20,years:[{year:2025,numbers:[30,72,85,100]},{year:2023,numbers:[69,79,88]},{year:2022,numbers:[12,36,38,41,75,77]},{year:2021,numbers:[13,14,15,16,18]},{year:2020,numbers:[16,17]}],note:'기출의 발문과 감별 구조를 참고한 새 문제입니다. 2025 답안표의 문항 번호는 본문과 불일치하여 자동 정답 매핑에 사용하지 않았습니다.'};
 const src=(doc,...pages)=>({doc,pages});
 const organisms={
  hsv:['Herpes simplex virus (HSV)','상피세포의 다핵화·핵 molding과 ground-glass 핵 변화가 특징이며 잠복·재활성화가 가능합니다.'],
@@ -307,5 +307,39 @@ const general=[
  ]}
 ];
 general.forEach((t,n)=>makePair(t,'path-general',n));
-export const PATH_QUESTIONS=Object.freeze(bank.map(q=>Object.freeze(q)));
+const outsidePathologyScope=new Set(['path-image-19','path-image-20','path-image-21','path-image-22','path-image-23','path-image-24','path-general-21-q3','path-general-22-q3']);
+function scopedPathologyQuestion(original){
+ let q=original;
+ const replacements={
+  'path-image-08':{from:'Entamoeba histolytica',to:'Salmonella enterica',note:'장내세균으로 장염을 일으킬 수 있으며, 항생제 사용 후 위막성 병변의 전형적인 원인과 구분합니다.'},
+  'path-image-11':{from:'Sarcoptes scabiei',to:organisms.crypto[0],note:organisms.crypto[1]},
+  'path-image-13':{from:'Trichomonas vaginalis',to:organisms.cmv[0],note:organisms.cmv[1]},
+  'path-image-16':{from:'Trichomonas vaginalis',to:organisms.asper[0],note:organisms.asper[1]}
+ };
+ const replacement=replacements[q.id];
+ if(replacement){
+  const index=q.choices.indexOf(replacement.from),choices=[...q.choices],choiceNotes=[...q.choiceNotes];
+  choices[index]=replacement.to;choiceNotes[index]=replacement.note;
+  q={...q,id:q.id+'-scope4',choices,choiceNotes};
+  if(original.id==='path-image-16'){
+   q.explanation='출아 효모와 pseudohyphae를 함께 보이는 Candida 감염의 형태입니다. 격막성 균사를 보이는 Aspergillus나 피막성 효모가 특징인 Cryptococcus와 구별합니다.';
+   q.choiceNotes[q.answer]=q.explanation;
+  }
+ }
+ if(q.choiceEvidence){
+  const choiceEvidence=q.choiceEvidence.map(e=>{
+   if(e.trueStatement==='PAS 양성 영양형은 아메바 감염에서 관찰된다.')return {...e,trueStatement:'PAS 염색은 진균 세포벽 평가에 이용한다.',falseStatement:'PAS 염색은 세균 핵산 서열 평가에 이용한다.',sourceRefs:[src('path1',15),src('path2',43)]};
+   if(/P\. jirovecii는 현재 원충으로 분류/.test(e.falseStatement))return {...e,falseStatement:e.falseStatement.replace('원충','세균')};
+   return e;
+  });
+  const choices=choiceEvidence.map(e=>e.shownIsTrue?e.trueStatement:e.falseStatement);
+  const changed=choices.some((c,i)=>c!==q.choices[i]);
+  q={...q,id:changed?q.id.replace(/-q3$/,'-q4'):q.id,choiceEvidence,choices,choiceNotes:choiceEvidence.map(e=>e.trueStatement)};
+ }
+ return Object.freeze(q);
+}
+const lecturePathologyQuestions=bank.filter(q=>!outsidePathologyScope.has(q.id)).map(q=>Object.freeze({...scopedPathologyQuestion(q),sourceScope:'lecture'}));
+export const PATH_QUESTIONS=Object.freeze([...lecturePathologyQuestions,...PATHEDU_QUESTIONS.map(q=>Object.freeze({...q,sourceScope:'library'}))]);
+const activePathologyPhotoIds=new Set(PATH_QUESTIONS.flatMap(q=>q.photos));
+export const PHOTOS=Object.freeze(Object.fromEntries(Object.entries({...ALL_PHOTOS,...PATHEDU_PHOTOS}).filter(([id])=>activePathologyPhotoIds.has(id))));
 export function pathSource(q){return q.sourceRefs.map(s=>`${PATH_DOCUMENTS[s.doc]} PDF ${s.pages.join('·')}쪽`).join(' / ');}

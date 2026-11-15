@@ -1,10 +1,10 @@
-import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115d';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115d';
-import {practiceLayout} from './practice-layout.mjs?v=20261115d';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115d';
-import {grade,stats,readProgress,restoreSession,readBookmarks} from './logic.mjs?v=20261115d';
-import {nextRound,sourceText,topicProgress} from './study-core.mjs?v=20261115d';
-import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261115d';
+import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115f';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115f';
+import {practiceLayout} from './practice-layout.mjs?v=20261115f';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115f';
+import {grade,stats,readProgress,restoreSession,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261115f';
+import {nextRound,sourceText,topicProgress} from './study-core.mjs?v=20261115f';
+import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261115f';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const externalLinks=q=>(q.externalRefs||[]).filter(r=>/^https:\/\//.test(r.url||'')).map(r=>`<a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.title||'보충 근거')} ↗</a>`).join(' · ');
 
@@ -109,7 +109,7 @@ export function createStudyUI({id,tab,title,subtitle,bank,topics,read,save,openT
   if(b.hasAttribute('data-study-previous')){clearTimeout(timer);session.position=Math.max(0,session.position-1);save(keys.session,session);render();focus();return;}
   if(b.dataset.studyJump!==undefined){session.position=Number(b.dataset.studyJump);save(keys.session,session);render();focus();return;}
   if(b.dataset.studyBookmark){
-   const qid=b.dataset.studyBookmark;bookmarks=bookmarks.includes(qid)?bookmarks.filter(x=>x!==qid):[...bookmarks,qid];save(keys.bookmarks,bookmarks);update();render();announce(bookmarks.includes(qid)?'북마크에 저장했습니다.':'북마크를 해제했습니다.');
+   const qid=b.dataset.studyBookmark,saved=toggleSavedBookmark(read(keys.bookmarks),qid);bookmarks=readBookmarks(JSON.stringify(saved),bank);save(keys.bookmarks,saved);update();render();announce(bookmarks.includes(qid)?'북마크에 저장했습니다.':'북마크를 해제했습니다.');
   }
  });
  document.addEventListener('keydown',event=>{

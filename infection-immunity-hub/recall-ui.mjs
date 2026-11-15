@@ -1,7 +1,7 @@
-import {createStudyUI} from './study-ui.mjs?v=20261115d';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115d';
-import {RECALL_SETS,RECALL_LECTURES,recallProgress} from './recall-catalog.mjs?v=20261115d';
-import {DOCUMENTS} from './study-bank.mjs?v=20261115d';
+import {createStudyUI} from './study-ui.mjs?v=20261115f';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115f';
+import {RECALL_SETS,RECALL_LECTURES,recallProgress} from './recall-catalog.mjs?v=20261115f';
+import {DOCUMENTS} from './study-bank.mjs?v=20261115f';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function progressMarkup(s){return `<div class="recall-progress-line"><b>${s.attempted}<small> / ${s.total} 풀이</small></b><span>${s.percent}%</span></div><div class="unit-progress-track" role="progressbar" aria-label="풀이 진행도" aria-valuemin="0" aria-valuemax="${s.total}" aria-valuenow="${s.attempted}"><span class="unit-correct" style="width:${s.total?s.correct/s.total*100:0}%"></span><span class="unit-wrong" style="width:${s.total?s.wrong/s.total*100:0}%"></span></div><p class="unit-progress-results"><span>정답 <b>${s.correct}</b></span><span>오답 <b>${s.wrong}</b></span><span>미풀이 ${s.unanswered}</span></p>`;}
 

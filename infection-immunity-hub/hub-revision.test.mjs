@@ -7,7 +7,7 @@ import {TABLE_QUESTIONS} from './study-bank.mjs';
 test('course entry points live in the hub, not in the top navigation',()=>{
  const html=fs.readFileSync(new URL('./index.html',import.meta.url),'utf8');
  const nav=html.match(/<nav class="main-nav"[\s\S]*?<\/nav>/)[0];
- assert.deepEqual([...nav.matchAll(/data-tab="([^"]+)"/g)].map(m=>m[1]),['home','review']);
+ assert.deepEqual([...nav.matchAll(/data-tab="([^"]+)"/g)].map(m=>m[1]),['home','bookmarks','review']);
  assert.doesNotMatch(nav,/role="tab/);
  const home=html.slice(html.indexOf('id="panel-home"'),html.indexOf('id="panel-quiz"'));
  assert.match(home,/id="homeLectureUnits"[^>]*>단원별 학습/);

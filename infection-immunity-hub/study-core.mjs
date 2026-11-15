@@ -1,4 +1,4 @@
-import {buildSession,stats} from './logic.mjs?v=20261115d';
+import {buildSession,stats} from './logic.mjs?v=20261115f';
 
 export function topicProgress(bank,progress,topic){
  const s=stats(bank.filter(q=>q.topic===topic),progress);

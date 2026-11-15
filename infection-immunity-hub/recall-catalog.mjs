@@ -1,8 +1,9 @@
-import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261115d';
-import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261115d';
-import {stats} from './logic.mjs?v=20261115d';
+import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261115f';
+import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261115f';
+import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261115f';
+import {stats} from './logic.mjs?v=20261115f';
 
-const parts={...EXTENSION_PARTS};
+const parts={...EXTENSION_PARTS,...ENTERIC_MEDIA_PARTS};
 function p(doc,key,title,what,how,why){parts[`${doc}:${key}`]={id:`${doc}:${key}`,lecture:doc,title,what,how,why};}
 p('261102_05','oral','항생제 경구 투여','전신 감염 경구 치료 가능 약과 장내 국소 작용 약을 구분합니다.','약제명을 보고 경구/정주를 나누고 vancomycin의 장내 예외를 붙입니다.','먹을 수 있다는 말과 전신 유효 농도에 도달한다는 말을 구분합니다.');
 p('261102_05','bbb','항생제 BBB 통과','수막 염증 때 CSF 이행이 좋은 약과 부족한 약을 비교합니다.','1세대 cephalosporin·aminoglycoside를 3/4세대와 바꿔 봅니다.','혈중 감수성이 있어도 수막염 약제로 적절하지 않을 수 있습니다.');
@@ -23,7 +24,7 @@ p('261104_03','immune','면역저하·항산균 병리','결핵·MAC·한센병�
 p('261104_05','viral','실습·HSV↔CMV','핵 molding·다핵화와 거대세포·owl’s eye를 비교합니다.','세포 전체 크기와 핵 변화를 따로 관찰한 뒤 이름을 연결합니다.','같은 핵 내 변화라도 바이러스별 표본 감별점을 찾습니다.');
 p('261104_05','fungi','실습·진균 대응','효모·가성균사·낭벽·넓은 균사의 조직 소견을 연결합니다.','현미경 소견의 세 단어만 남겨 원인체를 떠올립니다.','균 이름을 보지 않은 조직 설명에서도 같은 표를 적용합니다.');
 p('261105_02','identity','기본 성상·oxidase','장내세균의 Gram·모양·oxidase·아포·운동성을 구분합니다.','장내세균 기준행을 쓰고 Pseudomonas/Vibrio 예외와 비교합니다.','그람음성 막대균이라는 정보 하나로 원인균을 단정하지 않습니다.');
-p('261105_02','media','MacConkey·KIA 판독','선택 성분·lactose 지시약·H₂S 검은 침전·가스를 구분합니다.','기질/지시약/억제 성분을 나누고 KIA 색·균열을 역으로 묻습니다.','배지 이름만 외우지 않고 어떤 생화학 성질을 읽는지 연결합니다.');
+p('261105_02','media','MacConkey·젖당 발효 표','선택 성분·지시약·집락 색과 첨부 강의표의 균별 배치를 비교합니다.','억제/감별 성분을 먼저 나눈 뒤 젖당 발효와 붉은색/투명 집락을 연결합니다.','성분의 이름과 역할, 균속과 강의표의 행·열을 바꾼 선지를 구분합니다.');
 p('261105_02','antigen','O/H/K·섬모·편모','체성·편모·협막 항원과 lipid A·접합·부착 구조를 비교합니다.','O/H/K 이름을 가리고 위치·열성질·기능을 왕복 회상합니다.','항원 분류·운동성·내독소 기능을 서로 바꾸는 문제를 대비합니다.');
 p('261105_03','imvic','IMViC·효소 판독','Indole/MR/VP/citrate와 E. coli·Klebsiella의 대표 조합을 외웁니다.','I-M-V-C 순서를 고정하고 ++--와 --++를 교대로 채웁니다.','검사 이름은 알지만 대사 경로나 부호 순서를 바꾸는 오류를 줄입니다.');
 p('261105_03','enteritis','E. coli 병원형·장염','ETEC/EPEC/EIEC/EHEC/EAEC의 독소·부착·침습과 증상을 비교합니다.','수양성/혈성/지속성 설사를 먼저 나누고 병원형을 넣습니다.','한 단원에서 이름만 보고 답하지 않고 HUS·침습 단서를 구분합니다.');
@@ -55,7 +56,6 @@ p('261110_03','cells','세포질↔포식소체·혈구','Rickettsia/Orientia와
 
 p('261104_02','reaction','조직반응·육아종·Prion','화농·육아종·DAD·해면상 변화를 구성 성분과 연결합니다.','세포·괴사·유리막·단백질이라는 관찰 대상을 먼저 고릅니다.','병원체 이름을 모르는 조직 사진에서도 반응 유형을 구분합니다.');
 p('261104_03','viral','EBV·HPV 표지자','반응성 CD8·p16 IHC·EBER ISH를 감염 표적과 검사법에 연결합니다.','B세포/CD8, 단백질 IHC/RNA ISH 두 비교표를 따로 채웁니다.','Anki에서 반복한 세포 계통·핵산과 단백질 검사의 바꿔치기를 구분합니다.');
-p('261104_03','parasites','원충 형태 대응','대장 궤양 영양형과 질염의 서양배 모양 충체를 구분합니다.','침범 장기와 운동·형태를 먼저 연결하고 원충 이름을 떠올립니다.','효모·가성균사와 원충을 형태 단서로 구분합니다.');
 const aliases={path1:'261104_02',path2:'261104_03',lab:'261104_05',antibiotics:'261102_05'};
 export function recallLecture(q){return LECTURES[q.lecture]?q.lecture:aliases[q.sourceRefs?.[0]?.doc]||q.sourceRefs?.[0]?.doc;}
 function section(q,doc){
@@ -69,7 +69,7 @@ function section(q,doc){
  case '261104_02':part=/gms|capsule/.test(key)?'stain':'viral';break;
  case '261104_03':part=/fact-b-(13|14|15|16)/.test(id)?'immune':'fungi';break;
  case '261104_05':part=/table-lab-morph/.test(id)?'fungi':'viral';break;
- case '261105_02':part=/macconkey|indicator|kia-/.test(key)?'media':/^(h|o|lipida|conjugation|adhesion)$/.test(key)||/fact-/.test(id)?'antigen':'identity';break;
+ case '261105_02':part=/kia-/.test(key)?'kia':/macconkey|indicator/.test(key)?'media':/^(h|o|lipida|conjugation|adhesion)$/.test(key)||/fact-/.test(id)?'antigen':'identity';break;
  case '261105_03':part=/imvic|indole|^mr$|^vp$|citrate/.test(key)?'imvic':/fact-b-0[1-7]/.test(id)?'enteritis':'identification';break;
  case '261105_05':part=/pseudo|pyocyanin|pyoverdine/.test(key)?'pseudomonas':/campy|microaerophile|hpylori/.test(key)?'curved':'vibrio';break;
  case '261105_06':part=/^wall$|cold-agglutinin/.test(key)?'mycoplasma':key?'ebrb':'clinical';break;

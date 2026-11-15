@@ -1,24 +1,31 @@
-import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115d';
-import {createRecallUI} from './recall-ui.mjs?v=20261115d';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115d';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115d';
-import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261115d';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115d';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115d';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115d';
-import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115d';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115d';
-import {sourceText} from './study-core.mjs?v=20261115d';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115d';
+import {createBookmarkUI} from './bookmark-ui.mjs?v=20261115f';
+import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115f';
+import {createRecallUI} from './recall-ui.mjs?v=20261115f';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115f';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115f';
+import {buildSession,grade,stats,restoreSession,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash} from './logic.mjs?v=20261115f';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115f';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115f';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115f';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115f';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115f';
+import {sourceText} from './study-core.mjs?v=20261115f';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115f';
 
 installEvidenceViewer();
 const $=id=>document.getElementById(id);
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const KEYS={progress:'infection-immunity.progress.v1',session:'infection-immunity.session.v1',bookmarks:'infection-immunity.bookmarks.v1'};
 let memoryOnly=false;
+const volatileStorage=new Map();
 function storageNotice(){memoryOnly=true;$('saveStatus').textContent='이번 방문에서만 기록됩니다 · 브라우저 저장 불가';}
-function read(key){try{return localStorage.getItem(key);}catch{storageNotice();return null;}}
-function save(key,value){try{if(key.includes('.progress.')){let previous={};try{previous=JSON.parse(localStorage.getItem(key))||{};}catch{}value={...previous,...value};}localStorage.setItem(key,JSON.stringify(value));}catch{storageNotice();}}
+function read(key){if(memoryOnly&&volatileStorage.has(key))return volatileStorage.get(key);try{const value=localStorage.getItem(key);if(value===null)volatileStorage.delete(key);else volatileStorage.set(key,value);return value;}catch{storageNotice();return volatileStorage.get(key)??null;}}
+function save(key,value){
+  if(key.includes('.progress.')){let previous={};try{previous=JSON.parse(read(key))||{};}catch{}value={...previous,...value};}
+  const encoded=JSON.stringify(value);volatileStorage.set(key,encoded);
+  try{localStorage.setItem(key,encoded);}catch{storageNotice();}
+  if(key.endsWith('.bookmarks.v1'))queueMicrotask(()=>window.dispatchEvent(new StorageEvent('storage',{key,newValue:encoded})));
+}
 let progress=readProgress(read(KEYS.progress),QUESTIONS);
 let session=restoreSession(read(KEYS.session),QUESTIONS);
 let bookmarks=[];
@@ -26,9 +33,15 @@ try{const b=JSON.parse(read(KEYS.bookmarks));if(Array.isArray(b))bookmarks=[...n
 let activeTab='home';
 let pendingFilters=null;
 let pathologyUI=null;
-let lectureUI=null,drillUI=null;
+let lectureUI=null,drillUI=null,bookmarkUI=null;
 const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...TABLE_QUESTIONS];
 const ALL_TOPICS={...TOPICS,...PATH_TOPICS,...STUDY_TOPICS,...TABLE_TOPICS};
+const BOOKMARK_GROUPS=[
+ {id:'antibiotics',label:'항생제',key:KEYS.bookmarks,questions:QUESTIONS},
+ {id:'pathology',label:'병리',key:'infection-immunity.pathology.bookmarks.v1',questions:PATH_QUESTIONS},
+ {id:'lectures',label:'강의별',key:'infection-immunity.lectures.bookmarks.v1',questions:LECTURE_QUESTIONS},
+ {id:'drill',label:'표 암기',key:'infection-immunity.drill.bookmarks.v1',questions:TABLE_QUESTIONS}
+];
 const isPath=q=>q.id.startsWith('path-');
 const isStudy=q=>q.id.startsWith('lecture-')||q.id.startsWith('table-');
 const allProgress=()=>({...progress,...pathologyUI?.getProgress(),...lectureUI?.getProgress(),...drillUI?.getProgress()});
@@ -44,12 +57,15 @@ function updateDashboard(){
   $('homeTotal').textContent=s.total;
   $('homeTrack').innerHTML=track(s);$('homeTrack').setAttribute('aria-label',`전체 ${s.total}문항 중 정답 ${s.correct}, 오답 ${s.wrong}, 미풀이 ${s.unanswered}`);
   $('wrongBadge').textContent=s.wrong;
+  $('bookmarkBadge').textContent=bookmarkUI?.count()||0;
   $('resumeButton').hidden=!session || session.position>=session.items.length;
   if(session)$('resumeButton').textContent=`이어서 풀기 · ${Math.min(session.position+1,session.items.length)}/${session.items.length} →`;
   const a=stats(QUESTIONS,progress),p=stats(PATH_QUESTIONS,pathologyUI?.getProgress()||{});
   $('abxCourseTrack').innerHTML=track(a);$('pathCourseTrack').innerHTML=track(p);
   $('abxCourseStats').textContent=`정답 ${a.correct} · 오답 ${a.wrong} · 미풀이 ${a.unanswered}`;
   $('pathCourseStats').textContent=`정답 ${p.correct} · 오답 ${p.wrong} · 미풀이 ${p.unanswered}`;
+  $('pathCourseCount').textContent=`${PATH_QUESTIONS.length}문항`;
+  for(const [id,topic,label] of [['pathImageCaption','path-image','조직 사진 감별'],['pathTraitsCaption','path-traits','옳은 것 / 옳지 않은 것'],['pathGeneralCaption','path-general','조직반응·방어·진단법']])$(''+id).textContent=`${label} · ${PATH_QUESTIONS.filter(q=>q.topic===topic).length}문항`;
   $('pathResumeButton').hidden=!pathologyUI?.hasSession();
   $('lectureResumeButton').hidden=!lectureUI?.hasSession();
   $('drillResumeButton').hidden=!drillUI?.hasSession();
@@ -64,18 +80,19 @@ function updateDashboard(){
   if(!memoryOnly)$('saveStatus').innerHTML='<i aria-hidden="true"></i> 이 브라우저에 학습 기록 저장';
 }
 function navigate(tab,focus=false){
-  if(!['home','quiz','pathology','lectures','drill','review','notes'].includes(tab))tab='home';
+  if(!['home','quiz','pathology','lectures','drill','bookmarks','review','notes'].includes(tab))tab='home';
   const changed=activeTab!==tab;
   activeTab=tab;
-  for(const name of ['home','quiz','pathology','lectures','drill','review','notes']){
+  for(const name of ['home','quiz','pathology','lectures','drill','bookmarks','review','notes']){
     $(`panel-${name}`).hidden=name!==tab;
   }
-  const mainTab=tab==='review'?'review':'home';
-  for(const name of ['home','review']){const button=$(`tab-${name}`);if(name===mainTab)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
+  const mainTab=['bookmarks','review'].includes(tab)?tab:'home';
+  for(const name of ['home','bookmarks','review']){const button=$(`tab-${name}`);if(name===mainTab)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
   if(location.hash!==`#${tab}`)history.pushState(null,'',`#${tab}`);
   updateDashboard();
   if(tab==='quiz'){updateEligible();renderSession();}
   if(tab==='review')renderReview();
+  if(tab==='bookmarks')bookmarkUI?.render();
   if(tab==='pathology')pathologyUI?.open();
   if(tab==='lectures')lectureUI?.open();
   if(tab==='drill')drillUI?.open();
@@ -130,7 +147,7 @@ function answer(selected){
 function moveNext(){if(!session)return;session.position=Math.min(session.position+1,session.items.length);save(KEYS.session,session);renderSession();updateDashboard();focusQuestion();}
 function toggleBookmark(id){
   if(!QUESTIONS.some(q=>q.id===id))return;
-  bookmarks=bookmarks.includes(id)?bookmarks.filter(x=>x!==id):[...bookmarks,id];save(KEYS.bookmarks,bookmarks);
+  const saved=toggleSavedBookmark(read(KEYS.bookmarks),id);bookmarks=readBookmarks(JSON.stringify(saved),QUESTIONS);save(KEYS.bookmarks,saved);
   document.querySelectorAll('[data-bookmark]').forEach(b=>{if(b.dataset.bookmark===id){const on=bookmarks.includes(id);b.textContent=on?'★':'☆';b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',on?'북마크 해제':'이 문제 북마크');}});
   updateEligible();announce(bookmarks.includes(id)?'북마크에 저장했습니다.':'북마크를 해제했습니다.');
 }
@@ -207,11 +224,18 @@ document.addEventListener('keydown',e=>{
 function followHash(){const tab=tabFromHash(location.hash);if(tab)navigate(tab);}
 window.addEventListener('hashchange',followHash);
 window.addEventListener('popstate',followHash);
-window.addEventListener('storage',e=>{if(e.key===KEYS.progress){progress=readProgress(e.newValue,QUESTIONS);updateDashboard();updateEligible();if(activeTab==='review')renderReview();}if(e.key===KEYS.bookmarks){try{const b=JSON.parse(e.newValue);if(Array.isArray(b))bookmarks=b.filter(id=>QUESTIONS.some(q=>q.id===id));}catch{}updateEligible();}});
+window.addEventListener('storage',e=>{
+  if(e.key===null)volatileStorage.clear();else if(e.newValue===null)volatileStorage.delete(e.key);else volatileStorage.set(e.key,e.newValue);
+  if(e.key===KEYS.progress||e.key===null){progress=readProgress(e.newValue,QUESTIONS);updateDashboard();updateEligible();if(activeTab==='review')renderReview();}
+  if(e.key===KEYS.bookmarks||e.key===null){bookmarks=readBookmarks(e.newValue,QUESTIONS);updateEligible();if(activeTab==='quiz')renderSession();}
+  if(e.key===null){for(const group of BOOKMARK_GROUPS)window.dispatchEvent(new StorageEvent('storage',{key:group.key,newValue:read(group.key)}));}
+  if(e.key===null||BOOKMARK_GROUPS.some(group=>group.key===e.key)){bookmarkUI?.render();updateDashboard();}
+});
 if(session)setFilters(session.filters||{});
 $('antibioticTables').innerHTML=renderTables(ANTIBIOTIC_TABLES);
 pathologyUI=createPathologyUI({read,save,openTab:navigate,announce,onChange(){updateDashboard();if(activeTab==='review')renderReview();}});
 const studyChange=()=>{updateDashboard();if(activeTab==='review')renderReview();};
 lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 감별 문제',subtitle:'일반 9강 · 세균·진균 13강 · 바이러스 7강 · 단원 통합',bank:LECTURE_QUESTIONS,topics:STUDY_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='lectures'});
 drillUI=createRecallUI({id:'drill',tab:'drill',title:'표 암기 반복 퀴즈',subtitle:'일반 · 세균·진균 · 바이러스 · 핵심 관계 반복',bank:TABLE_QUESTIONS,topics:TABLE_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='drill',drill:true});
+bookmarkUI=createBookmarkUI({root:$('bookmarkContent'),groups:BOOKMARK_GROUPS,read,save,onRetry:oneQuestion,topicTitle:q=>ALL_TOPICS[q.topic]?.title||'',formatPrompt:emphasizePrompt,renderDetails(q){return `${isPath(q)?imageMarkup(q):''}${q.choices.map((choice,index)=>`<div class="review-choice${index===q.answer?' is-answer':''}"><span>${index+1}. ${escape(choice)}</span>${index===q.answer?'<small>정답</small>':''}</div>`).join('')}${explanation(q,false)}`;},onChange(){updateDashboard();announce('별표를 해제했습니다.');}});
 navigate(tabFromHash(location.hash)||'home');

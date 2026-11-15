@@ -6,7 +6,7 @@
     "format": "WebP",
     "quality": 70
   },
-  "count": 626,
+  "count": 627,
   "pages": [
     {
       "doc": "261102_02",
@@ -1017,6 +1017,16 @@
       "height": 675,
       "bytes": 70546,
       "sha256": "00ad2c72c1ccabf830f977abf5dac2c159ee3a92b755e8f1f46d3e63053e539a"
+    },
+    {
+      "doc": "261104_03",
+      "page": 39,
+      "title": "감염성 질환의 병리 2",
+      "src": "assets/evidence/261104_03-039.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 45812,
+      "sha256": "91df4f9f2c5e695428a76e6de81b0ffd19a19ba158a042bc82c7ad502953dcf7"
     },
     {
       "doc": "261104_03",
