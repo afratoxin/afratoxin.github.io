@@ -7,6 +7,12 @@ import {QUESTIONS} from './bank.mjs';
 import {PATH_QUESTIONS} from './pathology-bank.mjs';
 import {LECTURE_QUESTIONS,TABLE_QUESTIONS} from './study-bank.mjs';
 
+test('continuous learning reports whole-scope progress and all remaining work',()=>{
+ const html=practiceLayout({question:'<article>question</article>',q:{id:'q'},session:{queueCounts:{total:72,correct:10,wrong:2,unanswered:60},items:[{selected:null,answer:0}]}});
+ assert.match(html,/전체 진행/);assert.match(html,/미풀이 60/);assert.match(html,/오답 2/);assert.doesNotMatch(html,/현재 세트/);
+ assert.match(html,/value="10" max="72"/);
+});
+
 test('session accuracy counts only graded questions and handles an empty set',()=>{
  assert.deepEqual(sessionMetrics(null),{answered:0,correct:0,wrong:0,total:0,rate:null});
  const session={position:2,items:[{selected:2,answer:2},{selected:0,answer:1},{selected:null,answer:3}]};

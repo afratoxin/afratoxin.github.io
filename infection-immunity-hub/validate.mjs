@@ -15,9 +15,9 @@ for(const m of html.matchAll(/(?:src|href)="([^"#][^"]+)"/g)) {
   if(/^(?:https?:|data:|\.\.\/)/.test(path))continue;
   assert.ok(fs.existsSync(new URL(path,import.meta.url)),`missing asset ${path}`);
 }
-const modules=['app.mjs','bank.mjs','logic.mjs','pathology-bank.mjs','pathology-ui.mjs','photo-data.mjs','reference-tables.mjs','study-bank.mjs','study-core.mjs','study-ui.mjs','emphasis.mjs','practice-layout.mjs','source-pages.mjs','antibiotic-revision.mjs','pathology-statements.mjs','supplemental-bank.mjs','course-catalog.mjs','extension-bank.mjs','extension-integrated.mjs','recall-catalog.mjs','recall-ui.mjs','quiz-keyboard.mjs','bookmark-ui.mjs','enteric-media-bank.mjs','pathedu-bank.mjs'];
+const modules=['app.mjs','bank.mjs','logic.mjs','pathology-bank.mjs','pathology-ui.mjs','photo-data.mjs','reference-tables.mjs','study-bank.mjs','study-core.mjs','study-ui.mjs','emphasis.mjs','practice-layout.mjs','source-pages.mjs','antibiotic-revision.mjs','pathology-statements.mjs','supplemental-bank.mjs','course-catalog.mjs','extension-bank.mjs','extension-integrated.mjs','recall-catalog.mjs','recall-ui.mjs','quiz-keyboard.mjs','continuous-queue.mjs','bookmark-ui.mjs','enteric-media-bank.mjs','pathedu-bank.mjs'];
 for(const name of modules)for(const m of read(name).matchAll(/from '([^']+)'/g))assert.ok(fs.existsSync(new URL(m[1].split('?')[0],import.meta.url)),`missing module ${m[1]}`);
-const version='20261115g';
+const version='20261115h';
 assert.ok([...html.matchAll(/\?v=([^"']+)/g)].every(m=>m[1]===version),'HTML cache versions differ');
 for(const name of modules)assert.ok([...read(name).matchAll(/\?v=([^"']+)/g)].every(m=>m[1]===version),`module cache versions differ: ${name}`);
 for(const q of QUESTIONS)for(const ref of q.refs)assert.ok(SOURCES[ref],`unknown source ${ref}`);

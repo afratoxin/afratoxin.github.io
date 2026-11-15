@@ -1,16 +1,17 @@
-import {createBookmarkUI} from './bookmark-ui.mjs?v=20261115g';
-import {quizKeyboardAction} from './quiz-keyboard.mjs?v=20261115g';
-import {createRecallUI} from './recall-ui.mjs?v=20261115g';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115g';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115g';
-import {buildSession,grade,stats,restoreSession,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash} from './logic.mjs?v=20261115g';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115g';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115g';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115g';
-import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115g';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115g';
-import {sourceText} from './study-core.mjs?v=20261115g';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115g';
+import {createBookmarkUI} from './bookmark-ui.mjs?v=20261115h';
+import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261115h';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261115h';
+import {createRecallUI} from './recall-ui.mjs?v=20261115h';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115h';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115h';
+import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash} from './logic.mjs?v=20261115h';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115h';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115h';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115h';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115h';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115h';
+import {sourceText} from './study-core.mjs?v=20261115h';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115h';
 
 installEvidenceViewer();
 const $=id=>document.getElementById(id);
@@ -27,11 +28,13 @@ function save(key,value){
   if(key.endsWith('.bookmarks.v1'))queueMicrotask(()=>window.dispatchEvent(new StorageEvent('storage',{key,newValue:encoded})));
 }
 let progress=readProgress(read(KEYS.progress),QUESTIONS);
-let session=restoreSession(read(KEYS.session),QUESTIONS);
+let session=null;
 let bookmarks=[];
 try{const b=JSON.parse(read(KEYS.bookmarks));if(Array.isArray(b))bookmarks=[...new Set(b.filter(id=>QUESTIONS.some(q=>q.id===id)))];}catch{}
+session=resumeContinuousSession(read(KEYS.session),QUESTIONS,progress,Math.random,bookmarks);
+if(session)save(KEYS.session,session);
 let activeTab='home';
-let pendingFilters=null;
+const phaseTitle=phase=>phase==='wrong'?'오답 복습':phase==='review'?'직접 복습':'미풀이 학습';
 let pathologyUI=null;
 let lectureUI=null,drillUI=null,bookmarkUI=null;
 const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...TABLE_QUESTIONS];
@@ -59,7 +62,7 @@ function updateDashboard(){
   $('wrongBadge').textContent=s.wrong;
   $('bookmarkBadge').textContent=bookmarkUI?.count()||0;
   $('resumeButton').hidden=!session || session.position>=session.items.length;
-  if(session)$('resumeButton').textContent=`이어서 풀기 · ${Math.min(session.position+1,session.items.length)}/${session.items.length} →`;
+  if(session){const pending=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);$('resumeButton').textContent=`이어서 풀기 · 미풀이 ${pending.unanswered} · 오답 ${pending.wrong} →`;}
   const a=stats(QUESTIONS,progress),p=stats(PATH_QUESTIONS,pathologyUI?.getProgress()||{});
   $('abxCourseTrack').innerHTML=track(a);$('pathCourseTrack').innerHTML=track(p);
   $('abxCourseStats').textContent=`정답 ${a.correct} · 오답 ${a.wrong} · 미풀이 ${a.unanswered}`;
@@ -89,6 +92,7 @@ function navigate(tab,focus=false){
   const mainTab=['bookmarks','review'].includes(tab)?tab:'home';
   for(const name of ['home','bookmarks','review']){const button=$(`tab-${name}`);if(name===mainTab)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
   if(location.hash!==`#${tab}`)history.pushState(null,'',`#${tab}`);
+  if(tab==='quiz'&&changed){progress=readProgress(read(KEYS.progress),QUESTIONS);session=resumeContinuousSession(read(KEYS.session),QUESTIONS,progress,Math.random,bookmarks);if(session){setFilters(session.filters);save(KEYS.session,session);}}
   updateDashboard();
   if(tab==='quiz'){updateEligible();renderSession();}
   if(tab==='review')renderReview();
@@ -99,52 +103,50 @@ function navigate(tab,focus=false){
   if(changed)window.scrollTo({top:0,behavior:'auto'});
   if(focus)$(`tab-${mainTab}`).focus();
 }
-function filters(){return {topic:$('topicFilter').value,format:$('formatFilter').value,mode:$('modeFilter').value,count:Number($('countFilter').value)};}
-function setFilters(f){$('topicFilter').value=f.topic||'all';$('formatFilter').value=f.format||'all';$('modeFilter').value=f.mode||'all';$('countFilter').value=String(f.count??20);updateEligible();}
+function filters(){return {topic:$('topicFilter').value,format:$('formatFilter').value,mode:$('modeFilter').value,count:0};}
+function setFilters(f){$('topicFilter').value=f.topic||'all';$('formatFilter').value=f.format||'all';$('modeFilter').value=['all','unanswered','wrong','bookmarks'].includes(f.mode)?f.mode:'all';updateEligible();}
 function updateEligible(){
-  const f=filters(),n=buildSession(QUESTIONS,{...f,count:0},progress,Math.random,bookmarks).items.length;
-  const used=f.count?Math.min(f.count,n):n;
-  $('eligibleCount').textContent=n?`선택 가능한 ${n}문항 중 ${used}문항 · 순서는 매번 섞입니다`:'선택 조건에 해당하는 문제가 없습니다';
+  const f=filters(),s=continuousProgress(QUESTIONS,f,progress,bookmarks);
+  $('eligibleCount').textContent=s.total?`선택 범위 전체 ${s.total}문항 · 미풀이 ${s.unanswered} → 오답 ${s.wrong} · 정답 ${s.correct}`:'선택 조건에 해당하는 문제가 없습니다';
 }
-function startSession(f,force=false){
-  if(!force && session && session.position<session.items.length){pendingFilters={...f};navigate('quiz');$('replacePrompt').hidden=false;$('quizSettings').open=true;$('confirmReplace').focus();return;}
-  $('replacePrompt').hidden=true;pendingFilters=null;
-  setFilters(f);session=buildSession(QUESTIONS,f,progress,Math.random,bookmarks);save(KEYS.session,session);
-  navigate('quiz');focusQuestion();
+function startSession(f={}){
+  progress=readProgress(read(KEYS.progress),QUESTIONS);
+  session=startContinuousSession(QUESTIONS,{...f,count:0},progress,Math.random,bookmarks,f.mode==='review'?null:session);
+  setFilters(session.filters);save(KEYS.session,session);navigate('quiz');focusQuestion();
 }
 function focusQuestion(){requestAnimationFrame(()=>{const card=$('questionCard')||$('sessionSummary');if(card){card.focus({preventScroll:true});card.scrollIntoView({behavior:'auto',block:'nearest'});}});}
 function renderSession(){
   const stage=$('quizStage');
-  $('quizSettings').open=!(session&&session.position<session.items.length);
-  if(!session){stage.innerHTML='<div class="empty-state"><span class="empty-icon" aria-hidden="true">✚</span><h2>오늘은 어떤 문제를 풀까요?</h2><p>위에서 범위를 고르거나 종합 20문항으로 시작하세요.<br>답을 고르면 바로 채점하고, 해설과 강의 근거를 보여 드립니다.</p><button type="button" class="button primary" data-start="mixed">종합 20문항 시작 →</button></div>';return;}
-  if(!session.items.length){stage.innerHTML='<div class="empty-state"><span class="empty-icon" aria-hidden="true">✓</span><h2>이 조건에 해당하는 문제가 없습니다.</h2><p>오답이 없거나 선택한 형식·주제의 문제가 없을 수 있습니다. 위 필터를 바꾸어 새 세트를 시작하세요.</p><button type="button" class="button outline" data-start="mixed">전체에서 종합 20문항 풀기 →</button></div>';return;}
-  if(session.position>=session.items.length){renderSummary();return;}
+  $('quizSettings').open=!(session&&session.phase!=='complete'&&session.position<session.items.length);
+  if(!session){stage.innerHTML='<div class="empty-state"><span class="empty-icon" aria-hidden="true">✚</span><h2>미풀이부터 이어서 학습하세요.</h2><p>선택한 범위의 미풀이를 모두 푼 뒤 남은 오답을 복습합니다.<br>답을 고르면 해설과 강의 근거를 보여 드립니다.</p><button type="button" class="button primary" data-start="mixed">전체 문항 이어서 풀기 →</button></div>';return;}
+  if(session.phase==='complete'||session.position>=session.items.length){renderSummary();return;}
   const item=session.items[session.position],q=QUESTIONS.find(q=>q.id===item.id),graded=item.selected!==null;
-  const answered=session.items.filter(i=>i.selected!==null);
+  const total=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);session.queueCounts=total;
   const question=`<article id="questionCard" class="question-card" tabindex="-1" aria-labelledby="questionStem">
     <div class="q-top"><div class="q-tags"><span class="pill">${TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX 퀴즈'}</span></div><button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button></div>
-    <div class="session-line"><span>문제 <b>${session.position+1}</b> / ${session.items.length}</span><span>${answered.length}문항 채점 완료</span></div><div class="session-track" aria-hidden="true"><span style="width:${session.position/session.items.length*100}%"></span></div>
-    <h2 id="questionStem" class="question-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${q.format==='mcq'?'가장 적절한 답 하나 · 키보드 1–5':'OX · 키보드 1(O) / 2(X)'} · 채점 후 Enter로 다음 문제</p>
+    <div class="session-line"><span>${phaseTitle(session.phase)} <b>${session.position+1}</b> / ${session.items.length}</span><span>전체 ${total.total} · 정답 ${total.correct} · 미풀이 ${total.unanswered} · 오답 ${total.wrong}</span></div><div class="session-track" aria-hidden="true"><span style="width:${total.total?total.correct/total.total*100:0}%"></span></div>
+    <h2 id="questionStem" class="question-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${graded?'채점 완료 · Enter로 다음 문제':q.format==='mcq'?'키보드 1–5로 답 선택 · 채점 후 Enter로 다음 문제':'OX · 키보드 1(O) / 2(X) · 채점 후 Enter로 다음 문제'}</p>
     <div class="choices${q.format==='ox'?' ox':''}" role="group" aria-labelledby="questionStem">${item.choices.map((c,i)=>{
       let cls='',label='';
       if(graded){if(i===item.answer){cls=' right';label='정답';}else if(i===item.selected){cls=' wrong';label='내 선택';}else cls=' dim';}
       return `<button type="button" class="choice${cls}" data-answer="${i}" ${graded?'disabled':''}><span class="choice-num" aria-hidden="true">${i+1}</span><span class="choice-copy">${escape(c)}</span>${label?`<span class="choice-label">${label}</span>`:''}</button>`;
     }).join('')}</div>
-    <div class="question-actions"><button type="button" class="text-button" data-action="${session.position?'previous':'menu'}">${session.position?'← 이전 문제':'← 학습 허브'}</button>${graded?`<button type="button" class="button primary" id="nextQuestion" data-action="next">${session.position===session.items.length-1?'세트 결과 보기':'다음 문제'} →</button>`:'<button type="button" class="text-button" data-action="skip">건너뛰기 →</button>'}</div></article>`;
+    <div class="question-actions"><button type="button" class="text-button" data-action="${session.position?'previous':'menu'}">${session.position?'← 이전 문제':'← 학습 허브'}</button>${graded?'<button type="button" class="button primary" id="nextQuestion" data-action="next">다음 문제 →</button>':'<button type="button" class="text-button" data-action="skip">건너뛰기 →</button>'}</div></article>`;
   stage.innerHTML=practiceLayout({question,feedback:graded?explanation(q,item.selected===item.answer):'',q,session,sourceLabel:source(q)});
 }
 function renderSummary(){
-  const answered=session.items.filter(i=>i.selected!==null),correct=answered.filter(i=>i.selected===i.answer).length,wrong=answered.length-correct;
-  $('quizStage').innerHTML=`<article id="sessionSummary" class="summary-card" tabindex="-1"><p class="eyebrow green">SESSION COMPLETE</p><h2>한 세트를 마쳤습니다.</h2><p class="muted">${session.items.length}문항 중 ${answered.length}문항 채점 · ${session.items.length-answered.length}문항 건너뜀</p><div class="summary-score">${correct}<small> / ${answered.length} 정답</small></div><p class="muted">${answered.length?`채점한 문제의 정답률 ${Math.round(correct/answered.length*100)}%`:'채점한 문제가 없습니다.'} · 오답 ${wrong}문항</p><div class="summary-results">${session.items.map((i,n)=>`<button type="button" class="result-number ${i.selected===null?'':i.selected===i.answer?'correct':'wrong'}" data-jump="${n}" aria-label="${n+1}번 ${i.selected===null?'미풀이':i.selected===i.answer?'정답':'오답'} 확인">${n+1}</button>`).join('')}</div><div class="summary-actions"><button type="button" class="button primary" data-start="wrong" ${!stats(QUESTIONS,progress).wrong?'disabled':''}>오답만 다시 풀기 →</button><button type="button" class="button outline" data-start="again">현재 설정으로 새 세트</button><button type="button" class="text-button" data-tab="home">학습 허브로</button></div><p class="muted" style="margin-top:20px">번호를 누르면 해당 문제를 다시 확인할 수 있습니다.</p></article>`;
+  const total=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);session.queueCounts=total;
+  const heading=!total.total?'선택한 범위에 문항이 없습니다.':session.filters.mode==='review'?'문항 복습을 마쳤습니다.':total.unanswered?'현재 남아 있는 오답을 모두 복습했습니다.':'선택한 범위를 모두 맞혔습니다.';
+  $('quizStage').innerHTML=`<article id="sessionSummary" class="summary-card" tabindex="-1"><p class="eyebrow green">LEARNING COMPLETE</p><h2>${heading}</h2><p class="muted">선택 범위 전체 ${total.total}문항 · 정답 ${total.correct} · 미풀이 ${total.unanswered} · 오답 ${total.wrong}</p><div class="summary-score">${total.correct}<small> / ${total.total} 정답</small></div><div class="summary-actions">${total.unanswered||total.wrong?'<button type="button" class="button primary" data-start="again">미풀이 → 오답 이어서 학습 →</button>':''}${total.total?'<button type="button" class="button outline" data-start="review">선택 범위 직접 복습</button>':''}<button type="button" class="text-button" data-tab="home">학습 허브로</button></div><p class="muted" style="margin-top:20px">학습 기록은 문항별로 저장되며, 다시 돌아오면 남은 미풀이부터 이어집니다.</p></article>`;
 }
 function answer(selected){
   if(activeTab!=='quiz'||!session||session.position>=session.items.length)return;
   const result=grade(session,progress,session.position,selected,QUESTIONS);if(result.duplicate)return;
-  progress=result.progress;save(KEYS.progress,progress);save(KEYS.session,session);updateDashboard();updateEligible();renderSession();
+  progress=result.progress;session.queueCounts=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);save(KEYS.progress,progress);save(KEYS.session,session);updateDashboard();updateEligible();renderSession();
   announce(result.correct?'정답입니다.':'오답입니다. 해설을 확인하세요.');
   requestAnimationFrame(()=>{const fb=document.querySelector('#quizStage .feedback');fb?.focus({preventScroll:true});});
 }
-function moveNext(){if(!session)return;session.position=Math.min(session.position+1,session.items.length);save(KEYS.session,session);renderSession();updateDashboard();focusQuestion();}
+function moveNext(){if(!session)return;session=advanceContinuousSession(session,progress,QUESTIONS,Math.random,bookmarks);save(KEYS.session,session);renderSession();updateDashboard();focusQuestion();}
 function toggleBookmark(id){
   if(!QUESTIONS.some(q=>q.id===id))return;
   const saved=toggleSavedBookmark(read(KEYS.bookmarks),id);bookmarks=readBookmarks(JSON.stringify(saved),QUESTIONS);save(KEYS.bookmarks,saved);
@@ -171,22 +173,19 @@ function oneQuestion(id){
   if(id.startsWith('table-')){drillUI.retry(id);return;}
   if(id.startsWith('path-')){pathologyUI.retry(id);return;}
   const q=QUESTIONS.find(q=>q.id===id);if(!q)return;
-  // A one-question retry keeps the bank ID, so a correct answer resolves its old mistake.
-  if(session && session.position<session.items.length){pendingFilters={single:id,topic:q.topic,format:q.format,mode:'wrong',count:10};navigate('quiz');$('replacePrompt').hidden=false;$('confirmReplace').focus();return;}
-  session=buildSession([q],{topic:q.topic,format:q.format,mode:'all',count:0},progress,Math.random,bookmarks);setFilters(session.filters);save(KEYS.session,session);navigate('quiz');focusQuestion();
+  startSession({topic:q.topic,format:q.format,mode:'review',questionIds:[id],count:0});
 }
 function beginAction(name){
-  if(name==='mixed')startSession({topic:'all',format:'all',mode:'all',count:20});
+  if(name==='mixed')startSession({topic:'all',format:'all',mode:'all',count:0});
   if(name==='wrong')startSession({topic:'all',format:'all',mode:'wrong',count:0});
-  if(name==='again')startSession(session?.filters||filters());
+  if(name==='again'){const f=session?.filters||filters();startSession({...f,mode:f.mode==='bookmarks'?'bookmarks':'all',count:0});}
+  if(name==='review')startSession({...session?.filters||filters(),mode:'review',count:0});
 }
 
 $('sourceLinks').innerHTML=Object.values(SOURCES).map(s=>`<a href="${escape(s.url)}" target="_blank" rel="noopener noreferrer">${escape(s.title)} ↗</a>`).join('');
 $('quizSetup').addEventListener('submit',e=>{e.preventDefault();startSession(filters());});
-for(const id of ['topicFilter','formatFilter','modeFilter','countFilter'])$(id).addEventListener('change',updateEligible);
-$('confirmReplace').addEventListener('click',()=>{const f=pendingFilters;$('replacePrompt').hidden=true;pendingFilters=null;if(!f)return;if(f.single){session=null;oneQuestion(f.single);}else startSession(f,true);});
-$('cancelReplace').addEventListener('click',()=>{$('replacePrompt').hidden=true;pendingFilters=null;focusQuestion();});
-$('resumeButton').addEventListener('click',()=>{if(session)setFilters(session.filters||{});navigate('quiz');focusQuestion();});
+for(const id of ['topicFilter','formatFilter','modeFilter'])$(id).addEventListener('change',updateEligible);
+$('resumeButton').addEventListener('click',()=>{progress=readProgress(read(KEYS.progress),QUESTIONS);session=resumeContinuousSession(read(KEYS.session),QUESTIONS,progress,Math.random,bookmarks);if(session){setFilters(session.filters);save(KEYS.session,session);}navigate('quiz');focusQuestion();});
 $('retryAll').addEventListener('click',()=>beginAction('wrong'));
 $('pathRetryAll').addEventListener('click',()=>pathologyUI.start({topic:'all',mode:'wrong',count:0}));
 $('homePathTables').addEventListener('click',()=>{navigate('pathology');pathologyUI.show('tables');});
@@ -205,7 +204,7 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||b.disabled)return;
   if(b.dataset.tab){navigate(b.dataset.tab);return;}
   if(b.dataset.start){beginAction(b.dataset.start);return;}
-  if(b.dataset.topic){startSession({topic:b.dataset.topic,format:'all',mode:'all',count:20});return;}
+  if(b.dataset.topic){startSession({topic:b.dataset.topic,format:'all',mode:'all',count:0});return;}
   if(b.dataset.answer!==undefined){answer(Number(b.dataset.answer));return;}
   if(b.dataset.bookmark){toggleBookmark(b.dataset.bookmark);return;}
   if(b.dataset.retry){oneQuestion(b.dataset.retry);return;}
@@ -214,19 +213,12 @@ document.addEventListener('click',e=>{
   if(b.dataset.action==='next'||b.dataset.action==='skip'){moveNext();return;}
   if(b.dataset.action==='previous' && session){session.position=Math.max(0,session.position-1);save(KEYS.session,session);renderSession();focusQuestion();}
 });
-document.addEventListener('keydown',e=>{
-  if(activeTab!=='quiz'||!session||session.position>=session.items.length)return;
-  const item=session.items[session.position];
-  const action=quizKeyboardAction(e,{answered:item.selected!==null,choiceCount:item.choices.length,blocked:Boolean(document.querySelector('dialog[open]'))||!$('replacePrompt').hidden});
-  if(!action)return;e.preventDefault();
-  if(action.type==='answer')answer(action.index);else moveNext();
-});
 function followHash(){const tab=tabFromHash(location.hash);if(tab)navigate(tab);}
 window.addEventListener('hashchange',followHash);
 window.addEventListener('popstate',followHash);
 window.addEventListener('storage',e=>{
   if(e.key===null)volatileStorage.clear();else if(e.newValue===null)volatileStorage.delete(e.key);else volatileStorage.set(e.key,e.newValue);
-  if(e.key===KEYS.progress||e.key===null){progress=readProgress(e.newValue,QUESTIONS);updateDashboard();updateEligible();if(activeTab==='review')renderReview();}
+  if(e.key===KEYS.progress||e.key===null){progress=readProgress(e.newValue,QUESTIONS);if(session)session.queueCounts=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);updateDashboard();updateEligible();if(activeTab==='review')renderReview();if(activeTab==='quiz')renderSession();}
   if(e.key===KEYS.bookmarks||e.key===null){bookmarks=readBookmarks(e.newValue,QUESTIONS);updateEligible();if(activeTab==='quiz')renderSession();}
   if(e.key===null){for(const group of BOOKMARK_GROUPS)window.dispatchEvent(new StorageEvent('storage',{key:group.key,newValue:read(group.key)}));}
   if(e.key===null||BOOKMARK_GROUPS.some(group=>group.key===e.key)){bookmarkUI?.render();updateDashboard();}
@@ -239,3 +231,4 @@ lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 감별 �
 drillUI=createRecallUI({id:'drill',tab:'drill',title:'표 암기 반복 퀴즈',subtitle:'일반 · 세균·진균 · 바이러스 · 핵심 관계 반복',bank:TABLE_QUESTIONS,topics:TABLE_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='drill',drill:true});
 bookmarkUI=createBookmarkUI({root:$('bookmarkContent'),groups:BOOKMARK_GROUPS,read,save,onRetry:oneQuestion,topicTitle:q=>ALL_TOPICS[q.topic]?.title||'',formatPrompt:emphasizePrompt,renderDetails(q){return `${isPath(q)?imageMarkup(q):''}${q.choices.map((choice,index)=>`<div class="review-choice${index===q.answer?' is-answer':''}"><span>${index+1}. ${escape(choice)}</span>${index===q.answer?'<small>정답</small>':''}</div>`).join('')}${explanation(q,false)}`;},onChange(){updateDashboard();announce('별표를 해제했습니다.');}});
 navigate(tabFromHash(location.hash)||'home');
+installQuizKeyboard();

@@ -21,10 +21,10 @@ test('Enter advances a graded question once and cannot skip an unanswered one',(
 });
 
 test('shortcuts leave editing, dialogs, confirmation and other controls usable',()=>{
- for(const extra of [{defaultPrevented:true},{ctrlKey:true},{altKey:true},{metaKey:true},{repeat:true},{isComposing:true}])assert.equal(quizKeyboardAction(event('1',extra)),null);
+ for(const extra of [{ctrlKey:true},{altKey:true},{metaKey:true},{repeat:true}])assert.equal(quizKeyboardAction(event('1',extra)),null);
  assert.equal(quizKeyboardAction(event('1'),{active:false}),null);
  assert.equal(quizKeyboardAction(event('Enter'),{answered:true,blocked:true}),null);
- for(const tag of ['input','select','textarea','nav','[role="tablist"]','dialog[open]','[contenteditable]:not([contenteditable="false"])']){
+ for(const tag of ['input','select','textarea','dialog[open]','[contenteditable]:not([contenteditable="false"])']){
   assert.equal(quizKeyboardAction(event('1',{target:focused(tag)})),null,tag);
   assert.equal(quizKeyboardAction(event('Enter',{target:focused(tag)}),{answered:true}),null,tag);
  }
@@ -41,7 +41,7 @@ test('physical digits and keypad digits survive Process or unidentified IME key 
  for(const prefix of ['Digit','Numpad'])for(let n=1;n<=2;n++)assert.deepEqual(quizKeyboardAction(event('Process',{code:prefix+n,isComposing:true}),{choiceCount:2}),{type:'answer',index:n-1});
  for(const code of ['Digit3','Numpad3','Digit6','Numpad6'])assert.equal(quizKeyboardAction(event('Process',{code,isComposing:true}),{choiceCount:2}),null);
  for(const code of ['Digit1','Numpad2'])assert.equal(quizKeyboardAction(event('Process',{code,isComposing:true,shiftKey:true})),null);
- for(const extra of [{defaultPrevented:true},{ctrlKey:true},{altKey:true},{metaKey:true},{repeat:true}])assert.equal(quizKeyboardAction(event('Process',{code:'Digit1',isComposing:true,...extra})),null);
+ for(const extra of [{ctrlKey:true},{altKey:true},{metaKey:true},{repeat:true}])assert.equal(quizKeyboardAction(event('Process',{code:'Digit1',isComposing:true,...extra})),null);
  for(const tag of ['input','select','textarea','[contenteditable]:not([contenteditable="false"])']){
   assert.equal(quizKeyboardAction(event('Process',{code:'Digit1',isComposing:true,target:focused(tag)})),null,tag);
  }

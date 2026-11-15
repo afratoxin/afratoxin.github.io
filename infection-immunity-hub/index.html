@@ -7,14 +7,14 @@
   <meta name="description" content="감염과 면역 학습 허브. 강의별·단원 통합 감별 499문항, 강의별 작은 표 암기 묶음, 항생제·병리 퀴즈와 통합 오답 노트로 복습하세요.">
   <title>감염과 면역 · 학습 허브</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23153d3b'/%3E%3Cpath d='M20 10v20M10 20h20' stroke='%23c1ebd7' stroke-width='5'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="style.css?v=20261115g">
-  <link rel="stylesheet" href="study.css?v=20261115g">
-  <link rel="stylesheet" href="readability.css?v=20261115g">
-  <link rel="stylesheet" href="workspace.css?v=20261115g">
+  <link rel="stylesheet" href="style.css?v=20261115h">
+  <link rel="stylesheet" href="study.css?v=20261115h">
+  <link rel="stylesheet" href="readability.css?v=20261115h">
+  <link rel="stylesheet" href="workspace.css?v=20261115h">
   <link rel="preload" href="assets/fonts/SUIT-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="studio.css?v=20261115g">
-  <link rel="stylesheet" href="recall.css?v=20261115g">
-  <link rel="stylesheet" href="bookmark.css?v=20261115g">
+  <link rel="stylesheet" href="studio.css?v=20261115h">
+  <link rel="stylesheet" href="recall.css?v=20261115h">
+  <link rel="stylesheet" href="bookmark.css?v=20261115h">
 </head>
 <body>
   <a class="skip-link" href="#mainContent">본문으로 건너뛰기</a>
@@ -28,7 +28,7 @@
       <section id="panel-home" aria-label="학습 허브">
         <div class="home-intro"><div><p class="eyebrow green">STUDY WORKSPACE</p><h1>감염과 면역 학습실</h1><p>학습할 내용을 고르고, 문제와 근거를 함께 확인하세요.</p></div><span id="libraryCount" class="library-count">4개 퀴즈 단원 <b>1104문항</b></span></div>
         <div class="course-grid">
-          <article class="course-card"><div class="course-heading"><span class="course-icon" aria-hidden="true">Rx</span><div><span class="course-kicker">감염병의 치료원칙</span><h2>항생제 사용</h2></div><span class="course-count">72문항</span></div><p>임신부 사용 · BBB 통과 · 경구 투여 · 임상 적용</p><div id="abxCourseTrack" class="progress-track" aria-hidden="true"></div><p id="abxCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button primary small" id="homeAbxStart" data-start="mixed">퀴즈 풀기 →</button><button type="button" class="button outline small" data-tab="notes">정리표</button><button id="resumeButton" type="button" class="text-button" hidden>이어서 풀기 →</button></div></article>
+          <article class="course-card"><div class="course-heading"><span class="course-icon" aria-hidden="true">Rx</span><div><span class="course-kicker">감염병의 치료원칙</span><h2>항생제 사용</h2></div><span class="course-count">72문항</span></div><p>임신부 사용 · BBB 통과 · 경구 투여 · 임상 적용</p><div id="abxCourseTrack" class="progress-track" aria-hidden="true"></div><p id="abxCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button primary small" id="homeAbxStart" data-start="mixed">전체 이어서 풀기 →</button><button type="button" class="button outline small" data-tab="notes">정리표</button><button id="resumeButton" type="button" class="text-button" hidden>이어서 풀기 →</button></div></article>
           <article class="course-card pathology-course"><div class="course-heading"><span class="course-icon" aria-hidden="true">▧</span><div><span class="course-kicker">병리 1·2 + 통합실습</span><h2>감염성 질환의 병리</h2></div><span class="course-count" id="pathCourseCount"></span></div><p>사진 → 원인균 · 원인균 특성 · 총론 판별</p><div id="pathCourseTrack" class="progress-track" aria-hidden="true"></div><p id="pathCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button path-primary small" data-path-start="mixed">퀴즈 풀기 →</button><button type="button" class="button outline small" id="homePathTables">정리표</button><button type="button" class="text-button" id="pathResumeButton" hidden>이어서 풀기 →</button></div></article>
 
 <article class="course-card"><div class="course-heading"><span class="course-icon" aria-hidden="true">Dx</span><div><span class="course-kicker">일반 · 세균·진균 · 바이러스 29강</span><h2>강의별 감별 문제</h2></div><span class="course-count" id="lectureCourseCount"></span></div><p>강의별 진행도 · 배양·동정·기본 특성 · 단원 통합 감별</p><div id="lectureCourseTrack" class="progress-track" role="img"></div><p id="lectureCourseStats" class="course-stats"></p><div class="course-actions"><button type="button" class="button primary small" id="homeLectureUnits">단원별 학습</button><button type="button" class="button outline small" id="homeLectureStart">종합 학습</button><button type="button" class="text-button" id="lectureResumeButton" hidden>이어서 풀기 →</button></div></article>
@@ -43,14 +43,12 @@
         <div class="subnav" aria-label="항생제 학습 방식"><button type="button" class="active" data-tab="quiz" aria-pressed="true">문제 풀기</button><button type="button" data-tab="notes" aria-pressed="false">정리표</button></div>
         <div class="section-heading page-heading"><div><p class="eyebrow green">ANTIBIOTICS · INTEGRATED PRACTICE</p><h1>항생제 사용</h1><p class="muted">경구 · BBB · 임신 · 증례, 원하는 범위로 연습하세요.</p></div><button class="text-button" data-tab="notes" type="button">핵심 정리 보기 ↗</button></div>
         <details id="quizSettings" class="study-settings" open><summary>학습 범위·문제 형식 설정</summary><form id="quizSetup" class="setup-card">
-          <div class="filter-grid">
+          <div class="filter-grid path-filter-grid">
             <label>학습 주제<select id="topicFilter"><option value="all">4개 영역 종합</option><option value="oral">경구 투여</option><option value="bbb">BBB 통과</option><option value="pregnancy">임신 중 선택</option><option value="cases">증례별 선택</option></select></label>
             <label>문제 형식<select id="formatFilter"><option value="all">5지선다 + OX</option><option value="mcq">5지선다만</option><option value="ox">OX만</option></select></label>
-            <label>풀 문제<select id="modeFilter"><option value="all">전체 문제</option><option value="unanswered">아직 안 푼 문제</option><option value="wrong">틀린 문제</option><option value="bookmarks">북마크한 문제</option></select></label>
-            <label>세트 길이<select id="countFilter"><option value="10">10문항</option><option value="20" selected>20문항</option><option value="0">선택 범위 전체</option></select></label>
+            <label>풀 문제<select id="modeFilter"><option value="all">미풀이 → 오답 자동 진행</option><option value="unanswered">미풀이부터 이어서</option><option value="wrong">오답부터 복습</option><option value="bookmarks">북마크한 문제</option></select></label>
           </div>
-          <div class="setup-bottom"><p id="eligibleCount" class="muted" aria-live="polite"></p><button type="submit" class="button primary">새 세트 시작 <span aria-hidden="true">→</span></button></div>
-          <div id="replacePrompt" class="replace-prompt" hidden><p>진행 중인 세트를 새 세트로 바꿀까요? 이미 채점한 진도와 오답은 유지됩니다.</p><button id="confirmReplace" type="button" class="button primary small">새 세트로 시작</button><button id="cancelReplace" type="button" class="button outline small">이어서 풀기</button></div>
+          <div class="setup-bottom"><p id="eligibleCount" class="muted" aria-live="polite"></p><button type="submit" class="button primary">선택 범위 이어서 학습 <span aria-hidden="true">→</span></button></div>
         </form></details>
         <div id="quizStage"></div>
       </section>
@@ -85,6 +83,6 @@
     <footer><span>감염과 면역 · 학습 허브</span><span>강의 기반 학습 · 기록은 현재 브라우저에 저장됩니다</span><a href="https://github.com/afratoxin/afratoxin.github.io/tree/master/infection-immunity-hub" target="_blank" rel="noopener noreferrer">GitHub ↗</a></footer>
   </div>
   <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
-  <script type="module" src="app.mjs?v=20261115g"></script>
+  <script type="module" src="app.mjs?v=20261115h"></script>
 </body>
 </html>
