@@ -54,9 +54,25 @@ function sequence(kind,r=Math.random){let a=[],rule='';const x=int(1,8,r),d=int(
  if(kind===14){a=Array.from({length:7},(_,k)=>x+(k+1)*(k+2)/2);rule=`삼각수 1, 3, 6, 10…에 ${x}를 더함`;}
  if(kind===16){a=Array.from({length:7},(_,k)=>(k+1)**2+x);rule=`제곱수에 ${x}를 더함`;}
  if(kind===17){a=Array.from({length:7},(_,k)=>x+7*d-k*d);rule=`${d}씩 감소`;}
+ // Advanced rules combine two observable operations, without changing the 7×7 board or timers.
+ if(kind===18){const base=int(2,5,r),step=int(2,4,r);a=Array.from({length:7},(_,k)=>k%2===0?(k/2+base)**2+x:step**((k+1)/2)+d);rule=`홀수 번째는 ${base}부터의 제곱수+${x}, 짝수 번째는 ${step}의 거듭제곱+${d}`;}
+ if(kind===19){const m=int(2,3,r),b=int(2,6,r);a=[x];for(let k=1;k<7;k++)a.push(k%2?a.at(-1)*m+k:a.at(-1)*m-b*k);rule=`이전 항을 ${m}배 한 뒤 홀수 번째 연산은 순서 번호를 더하고, 짝수 번째 연산은 순서 번호의 ${b}배를 뺌`;}
+ if(kind===20){const c=int(2,5,r),b=int(1,4,r);a=[x,d];for(let k=2;k<7;k++)a.push(c*a[k-1]-a[k-2]+b);rule=`둘째 항부터, 다음 항 = 바로 앞 항×${c} − 그 전 항 + ${b}`;}
+ if(kind===21){const c=int(2,4,r);a=[int(12,28,r)];for(let k=1;k<7;k++)a.push(a.at(-1)+c*digitSum(a.at(-1))+k);rule=`이전 항에 자릿수 합의 ${c}배와 연산 순서 1, 2, 3…을 더함`;}
+ if(kind===22){const start=int(2,5,r),step=int(1,2,r);a=Array.from({length:7},(_,k)=>Number(String((start+k*step)**2).split('').reverse().join('')));rule=`${start}부터 ${step}씩 증가하는 수를 제곱한 뒤 자릿수 순서를 뒤집음 (앞의 0은 생략)`;}
+ if(kind===23){const start=int(0,5,r),m=int(2,5,r);a=[x];for(let k=1;k<7;k++)a.push(a.at(-1)+(k%2?1:-1)*primes[start+k-1]*m);rule=`연속 소수 ${primes[start]}부터 각각 ${m}배한 수를 번갈아 더하고 뺌`;}
+ if(kind===24){const b=int(2,5,r);a=[x];for(let k=1;k<7;k++)a.push(a.at(-1)+b*k**3+(k%2?d:-d));rule=`차이는 ${b}×1³+${d}, ${b}×2³−${d}, ${b}×3³+${d}…`;}
+ if(kind===25){const start=int(2,5,r),offset=int(1,4,r),text=Array.from({length:20},(_,k)=>(start+k)**2+offset).join('');a=Array.from({length:7},(_,k)=>Number(text.slice(k*2,k*2+2)));rule=`${start}부터 연속된 수의 제곱에 ${offset}을 더해 이어 쓴 뒤 두 자리씩 구분`;}
  return {values:a,rule,kind};}
-const RAINBOW_LEVELS=[{medium:3,hard:0},{medium:3,hard:1},{medium:3,hard:2},{medium:2,hard:4},{medium:1,hard:6}];
-function rainbow(r=Math.random,level=0,pools=null){if(pools)return JSON.parse(JSON.stringify(pick(pools[level-1],r)));let kinds;if(level){const c=RAINBOW_LEVELS[level-1];kinds=[...shuffle([12,13,14,16,17,0,4],r).slice(0,7-c.medium-c.hard),...shuffle([1,2,5,9],r).slice(0,c.medium),...shuffle([3,6,7,8,10,11],r).slice(0,c.hard)];}else kinds=shuffle(Array.from({length:12},(_,i)=>i),r).slice(0,7);const sequences=shuffle(kinds,r).map(k=>sequence(k,r)),cells=Array(49);for(let col=0;col<7;col++)shuffle([0,1,2,3,4,5,6],r).forEach((color,row)=>cells[row*7+col]={color,value:sequences[color].values[col]});return {cells,sequences,level};}
+const RAINBOW_LEVELS=[{medium:3,hard:4,advanced:0,label:'방송 수준'},{medium:0,hard:4,advanced:3,label:'심화'},{medium:0,hard:0,advanced:7,label:'최상급'}];
+const RAINBOW_MEDIUM=[0,1,2,4,5,9],RAINBOW_HARD=[3,6,7,8,10,11],RAINBOW_ADVANCED=[18,19,20,21,22,23,24,25];
+function rainbow(r=Math.random,level=0,pools=null){
+ if(pools)return JSON.parse(JSON.stringify(pick(pools[level-1],r)));
+ const c=RAINBOW_LEVELS[(level||1)-1];if(!c)throw Error('Rainbow stage must be 1–3');
+ const kinds=[...shuffle(RAINBOW_MEDIUM,r).slice(0,c.medium),...shuffle(RAINBOW_HARD,r).slice(0,c.hard),...shuffle(RAINBOW_ADVANCED,r).slice(0,c.advanced)],sequences=shuffle(kinds,r).map(k=>sequence(k,r)),cells=Array(49);
+ for(let col=0;col<7;col++)shuffle([0,1,2,3,4,5,6],r).forEach((color,row)=>cells[row*7+col]={color,value:sequences[color].values[col]});
+ return{cells,sequences,level,mediumCount:c.medium,hardCount:c.hard,advancedCount:c.advanced,difficultyLabel:c.label};
+}
 // A six-face orientation is tracked independently of the hand printed on each face.
 const RPS_FLOOR=['가바보가보바가','보가바바가보보','바보가보바바가','가보바보가보바','보바바가보보보','바가가보바보가','바가바가바가바'].join('').split('').map(c=>({바:0,보:1,가:2})[c]);
 const RPS_NETS=[[0,0,1,2,2,1],[0,2,2,1,1,0],[2,1,1,2,0,0]];

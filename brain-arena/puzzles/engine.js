@@ -154,6 +154,8 @@ function blockSVG(p,layer=null,turns=0){
  return '<svg class="block-model" viewBox="'+[minX,minY,maxX-minX,maxY-minY].join(' ')+'" role="img" aria-label="'+p.name+' 형태의 정육면체 블록 그림'+(layer===null?'':' · '+layer+'층')+'"><g stroke="#263a52" stroke-width="1.3" stroke-linejoin="round">'+body+'</g></svg>';
 }
 
+// Filled vector arrows use the same silhouette and spacing in the board and target.
+function patternArrowSVG(direction){return '<svg class="pattern-arrow" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50 5L95 49H70V95H30V49H5Z" fill="currentColor" transform="rotate('+direction*90+' 50 50)"/></svg>';}
 // Clockwise rotation moves both arrow positions and arrow directions.
 function rotatePattern(a){return[(a[2]+1)%4,(a[0]+1)%4,(a[3]+1)%4,(a[1]+1)%4];}
 function patternVariants(a){const out=[];for(let k=0;k<4;k++){out.push(a);a=rotatePattern(a);}return out;}
@@ -177,6 +179,6 @@ function patternAction(p,found,action){
  const correct=Number.isInteger(action)&&p.solutions.includes(action)&&!found.includes(action);
  return{delta:correct?1:-1,complete:false,found:correct?[...found,action]:[...found]};
 }
-const api={int,shuffle,sum,mod,scale,scaleSolutions,validScale,time,timeParts,validTime,rotatePixels,rotated,PIXEL_COLORS,mixPixels,art,artSolution,validArt,BLOCK_NAMES,blockFamilies,blocks,blockSVG,rotatePattern,patternVariants,patternKey,windowAt,patternSolutions,patternSet,patternAction};
+const api={int,shuffle,sum,mod,scale,scaleSolutions,validScale,time,timeParts,validTime,rotatePixels,rotated,PIXEL_COLORS,mixPixels,art,artSolution,validArt,BLOCK_NAMES,blockFamilies,blocks,blockSVG,patternArrowSVG,rotatePattern,patternVariants,patternKey,windowAt,patternSolutions,patternSet,patternAction};
 if(typeof module!=='undefined'&&module.exports)module.exports=api;root.ArenaPuzzles=api;
 })(typeof window!=='undefined'?window:globalThis);

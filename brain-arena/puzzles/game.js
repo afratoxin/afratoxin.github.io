@@ -6,7 +6,7 @@ const isMystery=kind==='mystery-sign',totalLevels=kind==='scale-balance'?5:isMys
 const isPattern=kind==='same-pattern',titles={'scale-balance':'저울','time-shift':'시간이동','pixel-art':'픽셀아트','block-count':'블록 개수 세기','same-pattern':'같은 패턴 찾기','mystery-sign':'미스터리 사인'};
 let phase='idle',puzzle=null,level=1,round=1,score=0,started=0,stopped=0,deadline=Infinity,retryAt=0,cleared=false,practice=true;
 let counts=[],slots=[],activeSlot=0,selected=[],blockAnswer='',patternAnswer='',found=[],patternRun=[],seen=new Set(),blockTurn=0,blockFamiliesSeen=[],mysterySeen=[];
-const arrows=['↑','→','↓','←'];
+
 function button(text,fn,cls='secondary'){const b=document.createElement('button');b.type='button';b.textContent=text;b.className=cls;b.onclick=fn;return b;}
 function message(text,type=''){const s=$('status');s.textContent=text;s.className='status message '+type;}
 const editable=()=>phase==='play';
@@ -76,12 +76,12 @@ function renderMystery(){
 }
 function patternCoord(i){return String.fromCharCode(65+Math.floor(i/10))+(i%10+1);}
 function readCoord(value){const m=value.trim().toUpperCase().match(/^([A-G])([1-9])$/);return m?(m[1].charCodeAt(0)-65)*10+(+m[2]-1):null;}
-function patternHTML(a){return '<div class="pattern-target-grid" aria-label="2행 2열 목표 패턴">'+a.map(d=>'<span>'+arrows[d]+'</span>').join('')+'</div>';}
+function patternHTML(a){return '<div class="pattern-target-grid" aria-label="2행 2열 목표 패턴">'+a.map(d=>'<span>'+E.patternArrowSVG(d)+'</span>').join('')+'</div>';}
 function renderPattern(){
  const target=document.createElement('div');target.className='pattern-target';target.innerHTML='<div><span class="eyebrow">TARGET PATTERN</span><h2>같은 패턴을 찾으세요</h2><p>정방향과 회전만 인정 · 대칭 반전은 제외</p></div>'+patternHTML(puzzle.target);$('answerArea').append(target);
  const grid=document.createElement('div');grid.className='pattern-board';grid.append(document.createElement('span'));for(let x=1;x<=10;x++){const label=document.createElement('span');label.className='pattern-axis';label.textContent=String(x);grid.append(label);}
  const selectedAt=readCoord(patternAnswer),known=phase==='review'?puzzle.solutions:found,matched=new Set(known.flatMap(i=>[i,i+1,i+10,i+11])),highlight=new Set(selectedAt===null?[]:[selectedAt,selectedAt+1,selectedAt+10,selectedAt+11]);
- puzzle.board.forEach((row,y)=>{const label=document.createElement('span');label.className='pattern-axis';label.textContent=String.fromCharCode(65+y);grid.append(label);row.forEach((d,x)=>{const i=y*10+x,b=button(arrows[d],()=>{if(editable()){patternAnswer=patternCoord(i);render();}},'pattern-cell'+(matched.has(i)?' matched':'')+(highlight.has(i)?' selected':''));b.disabled=!editable()||x===9||y===7;b.setAttribute('aria-label',patternCoord(i)+' '+['위','오른쪽','아래','왼쪽'][d]+' 화살표');b.id='pattern-cell-'+i;grid.append(b);});});$('board').append(grid);
+ puzzle.board.forEach((row,y)=>{const label=document.createElement('span');label.className='pattern-axis';label.textContent=String.fromCharCode(65+y);grid.append(label);row.forEach((d,x)=>{const i=y*10+x,b=button('',()=>{if(editable()){patternAnswer=patternCoord(i);render();}},'pattern-cell'+(matched.has(i)?' matched':'')+(highlight.has(i)?' selected':''));b.disabled=!editable()||x===9||y===7;b.setAttribute('aria-label',patternCoord(i)+' '+['위','오른쪽','아래','왼쪽'][d]+' 화살표');b.id='pattern-cell-'+i;b.innerHTML=E.patternArrowSVG(d);grid.append(b);});});$('board').append(grid);
  numericInput('패턴 왼쪽 위 좌표',patternAnswer,v=>patternAnswer=v,'예: A1');const note=document.createElement('p');note.className='puzzle-note';note.textContent='찾은 좌표: '+(found.length?found.map(patternCoord).join(' · '):'아직 없음')+' · 남은 개수는 공개하지 않습니다.';$('answerArea').append(note);
 }
 function wrong(text){phase='cooldown';retryAt=Date.now()+10000;message(text+' 10초 뒤 다시 답할 수 있습니다.','bad');render();}

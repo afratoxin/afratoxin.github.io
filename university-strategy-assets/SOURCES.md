@@ -27,3 +27,9 @@ Free practice removes deadlines. Triple Maze keeps reference maps visible; Rainb
 ## Rotating RPS visual orientation
 
 The visible cube now uses six stable face colors matching the study net and vector hand glyphs projected onto the actual face planes. Per-face print-up vectors rotate with the cube. The printed arrow follows those same vectors; it indicates picture orientation. The front and right face directions are explained relative to the board arrows. The hand type and floor scoring remain unchanged. Tests verify face-frame orthogonality and four-roll return, as well as the projected visible colors and transforms.
+
+## Rainbow difficulty revision (2026-11-15)
+
+The three practice stages use the broadcast's seven-color, 7×7 board, five-minute study, hidden seventh column and 1/4 scoring. [Official Coupang announcement](https://news.coupang.com/archives/49654/) and the linked official preview identify the combined sequence/memory challenge. [Episode rule/sequence record](https://www.namu.moe/w/대학전쟁2/3회전) lists changing differences, alternating operations, interleaved subsequences, digit operations, reversal and concatenation. Stage 1 uses seven rules from those families, without the old simple arithmetic/geometric introductory pool. It is a difficulty interpretation, not a claim of exact broadcast calibration.
+
+Stage 2 adds three new combined rules among four broadcast-style complex rules. Stage 3 uses seven distinct combined rules: nonlinear interleaving, indexed alternating affine updates, second-order recurrences, digit-sum/step updates, reversed squares, signed prime increments, alternating cubic differences, or concatenated offset squares. Each stage has twelve generated questions. No timer reduction or board enlargement supplies the difficulty increase. Independent recurrence checks and a full 147-cell three-stage controller journey are in the existing tests.

@@ -90,9 +90,9 @@ window.BrainArenaCatalog = {
       "id": "mix-and-match-2",
       "category": "bloody-game",
       "title": "믹스 앤 매치 II",
-      "description": "번갈아 나타나는 검정 격자 조각을 겹쳐 2~4글자 단어를 찾으세요. 정답 선언 후 5초 안에 답합니다.",
-      "tag": "혼자 플레이 · 피의 게임 X / 12라운드",
-      "href": "../mix-and-match-2/?v=20261114-unified"
+      "description": "글자당 7×11칸의 검정 격자 조각을 겹쳐 단어를 찾으세요. 2글자 4단계, 3글자 5단계, 4글자 3단계.",
+      "tag": "혼자 플레이 · 피의 게임 X / 12단계",
+      "href": "../mix-and-match-2/?v=20261115-grid711"
     },
     {
       "id": "memory-30",
@@ -264,9 +264,9 @@ window.BrainArenaCatalog = {
       "id": "rainbow-sequence",
       "category": "university-war",
       "title": "레인보우 수열",
-      "description": "기본과 변화 규칙이 섞인 시작 단계부터 복합 규칙까지, 5단계의 색별 숫자 수열을 기억하고 복원하세요.",
-      "tag": "5단계 · 기억 / 수열 추론",
-      "href": "../rainbow-sequence/?v=20261114-unified"
+      "description": "방송 수준에서 시작해 심화·최상급으로 올라가는 3단계. 일곱 색의 복합 수열을 추론하고 숫자와 위치를 기억하세요.",
+      "tag": "3단계 · 방송 수준 → 심화 → 최상급",
+      "href": "../rainbow-sequence/?v=20261115-rainbow3"
     },
     {
       "id": "rotating-rps",
@@ -316,7 +316,7 @@ window.BrainArenaCatalog = {
       "title": "같은 패턴 찾기",
       "description": "10×8 화살표판에서 목표 2×2 패턴을 찾으세요. 회전은 인정, 반전은 제외. 모두 찾았다면 끝을 선언하세요.",
       "tag": "1인 연습 · 숨은 패턴 찾기 / 6라운드",
-      "href": "../same-pattern/?v=20261114-unified"
+      "href": "../same-pattern/?v=20261115-thick"
     },
     {
       "id": "time-shift",
@@ -357,9 +357,9 @@ window.BrainArenaCatalog = {
       "id": "pattern-block",
       "category": "bloody-game",
       "title": "패턴블록",
-      "description": "25개 선 패턴의 번호를 기억하고, 다섯 숫자 블록의 면과 방향을 바꿔 목표 그림을 재현하세요.",
+      "description": "25개 선 패턴의 번호를 기억하고, 한 칸짜리 숫자 블록을 자유롭게 배치해 목표 그림을 재현하세요.",
       "tag": "시즌 2 · 암기 / 블록 배치 · 6문제",
-      "href": "../pattern-block/?v=20261115-memory"
+      "href": "../pattern-block/?v=20261115-flex"
     },
     {
       "id": "hidden-mission",
@@ -367,7 +367,7 @@ window.BrainArenaCatalog = {
       "title": "히든미션",
       "description": "6×6 판의 같은 그림 18쌍을 찾아 글자를 열고, 숨겨진 문제의 답을 먼저 추리하세요. 더블·오픈 아이템도 활용합니다.",
       "tag": "시즌 2 · 기억 / 문장 추리 · 3라운드",
-      "href": "../hidden-mission/?v=20261115-memory"
+      "href": "../hidden-mission/?v=20261115-flex"
     }
   ],
   "groups": [

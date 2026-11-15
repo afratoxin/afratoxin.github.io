@@ -136,7 +136,7 @@ html[data-arena="hub"] .breadcrumb { margin-top: 24px; }
 @media(max-width: 900px) {
   html[data-arena="game"] :is(.layout, .arithmetic-layout, .death-layout),
   html[data-arena="game"][data-arena-id="formula-maze"] .shell > main { grid-template-columns: 1fr; }
-  html[data-arena="game"] :is(.side, main > aside) { display: flex; flex-direction: column; }
+  html[data-arena="game"] :is(.side, main > aside) { display: flex; flex-direction: column; align-items: stretch; }
 }
 @media(max-width: 650px) {
   html[data-arena] :is(.shell, .wrap, body > main) { padding: 0 16px 30px; }

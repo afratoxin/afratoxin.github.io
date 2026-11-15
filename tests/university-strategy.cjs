@@ -55,14 +55,14 @@ console.log('PASS: playable controller flows for five games, two maze goals, act
 }
 {
  const r=runtime('rainbow-sequence');let first=r.puzzle().id;r.get('actions').children[0].onclick();r.at(0,7).onclick();r.get('rainbowAnswer').value=String(r.puzzle().cells[0].value+1);r.get('inputArea').children[0].onsubmit({preventDefault(){}});A.equal(r.progression().level,1);r.advance(10000);A.equal(r.puzzle().id,first);r.get('giveup').onclick();r.get('next').onclick();A.equal(r.progression().level,1);A.notEqual(r.puzzle().id,first);
- for(let level=1;level<=5;level++){
+ for(let level=1;level<=3;level++){
   const p=r.puzzle();A.equal(p.level,level);r.get('actions').children[0].onclick();
   for(let i=0;i<49;i++){r.at(i,7).onclick();r.get('rainbowAnswer').value=String(p.cells[i].value);r.get('inputArea').children[0].onsubmit({preventDefault(){}});}
-  A.equal(r.get('review').hidden,false);A(r.progression().cleared);A.equal(+r.get('score').textContent,level*70);A.equal(r.get('next').hidden,level===5);if(level<5)r.get('next').onclick();
+  A.equal(r.get('review').hidden,false);A(r.progression().cleared);A.equal(+r.get('score').textContent,level*70);A.equal(r.get('next').hidden,level===3);if(level<3)r.get('next').onclick();
  }
  A.match(r.get('resultTitle').textContent,/전체 단계 클리어/);
 }
-console.log('PASS: complete five-stage journeys for Maze and Rainbow; forfeit and wrong-answer retries never advance; 245 rainbow cells scored; final completion stops advancement.');
+console.log('PASS: complete five-stage Maze and three-stage Rainbow journeys; forfeit and wrong-answer retries never advance; 147 rainbow cells scored; final completion stops advancement.');
 {
  const start=E.newRPS(1,rng),normals=[[0,0,-1],[0,1,0],[-1,0,0],[1,0,0],[0,0,1],[0,-1,0]];let ups=start.faceUp.map(a=>[...a]),normal=normals.map(a=>[...a]);for(let k=0;k<80;k++){const d=E.int(0,3,rng);ups=ups.map(v=>E.rotateVector(v,d));normal=normal.map(v=>E.rotateVector(v,d));ups.forEach((v,i)=>{A.equal(v.reduce((sum,n,j)=>sum+n*normal[i][j],0),0);A.equal(v.reduce((sum,n)=>sum+n*n,0),1);});}for(let d=0;d<4;d++){let v=E.RPS_FACE_UP.map(a=>[...a]);for(let k=0;k<4;k++)v=v.map(a=>E.rotateVector(a,d));A.deepEqual(v,E.RPS_FACE_UP);}
  const r=runtime('rotating-rps'),summary=()=>r.get('board').children[0].innerHTML,entry=()=>r.get('board').children[1].innerHTML;
