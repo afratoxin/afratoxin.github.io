@@ -1,13 +1,13 @@
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261114c';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261114c';
-import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261114c';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261114c';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261114c';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261114c';
-import {LECTURES,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261114c';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261114c';
-import {sourceText} from './study-core.mjs?v=20261114c';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261114c';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115a';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115a';
+import {buildSession,grade,stats,restoreSession,readProgress,tabFromHash} from './logic.mjs?v=20261115a';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115a';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115a';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115a';
+import {LECTURES,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115a';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115a';
+import {sourceText} from './study-core.mjs?v=20261115a';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115a';
 
 installEvidenceViewer();
 const $=id=>document.getElementById(id);
@@ -16,7 +16,7 @@ const KEYS={progress:'infection-immunity.progress.v1',session:'infection-immunit
 let memoryOnly=false;
 function storageNotice(){memoryOnly=true;$('saveStatus').textContent='이번 방문에서만 기록됩니다 · 브라우저 저장 불가';}
 function read(key){try{return localStorage.getItem(key);}catch{storageNotice();return null;}}
-function save(key,value){try{localStorage.setItem(key,JSON.stringify(value));}catch{storageNotice();}}
+function save(key,value){try{if(key.includes('.progress.')){let previous={};try{previous=JSON.parse(localStorage.getItem(key))||{};}catch{}value={...previous,...value};}localStorage.setItem(key,JSON.stringify(value));}catch{storageNotice();}}
 let progress=readProgress(read(KEYS.progress),QUESTIONS);
 let session=restoreSession(read(KEYS.session),QUESTIONS);
 let bookmarks=[];
@@ -49,6 +49,7 @@ function updateDashboard(){
   $('abxCourseStats').textContent=`정답 ${a.correct} · 오답 ${a.wrong} · 미풀이 ${a.unanswered}`;
   $('pathCourseStats').textContent=`정답 ${p.correct} · 오답 ${p.wrong} · 미풀이 ${p.unanswered}`;
   $('pathResumeButton').hidden=!pathologyUI?.hasSession();
+  $('lectureResumeButton').hidden=!lectureUI?.hasSession();
   for(const [prefix,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI]]){
     const value=stats(bank,ui?.getProgress()||{});
     $(`${prefix}CourseStats`).textContent=`정답 ${value.correct} · 오답 ${value.wrong} · 미풀이 ${value.unanswered}`;
@@ -64,8 +65,8 @@ function navigate(tab,focus=false){
   for(const name of ['home','quiz','pathology','lectures','drill','review','notes']){
     $(`panel-${name}`).hidden=name!==tab;
   }
-  const mainTab=tab==='notes'?'quiz':tab;
-  for(const name of ['home','quiz','pathology','lectures','drill','review']){$(`tab-${name}`).setAttribute('aria-selected',String(name===mainTab));$(`tab-${name}`).tabIndex=name===mainTab?0:-1;}
+  const mainTab=tab==='review'?'review':'home';
+  for(const name of ['home','review']){const button=$(`tab-${name}`);if(name===mainTab)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
   if(location.hash!==`#${tab}`)history.pushState(null,'',`#${tab}`);
   updateDashboard();
   if(tab==='quiz'){updateEligible();renderSession();}
@@ -84,7 +85,7 @@ function updateEligible(){
   $('eligibleCount').textContent=n?`선택 가능한 ${n}문항 중 ${used}문항 · 순서는 매번 섞입니다`:'선택 조건에 해당하는 문제가 없습니다';
 }
 function startSession(f,force=false){
-  if(!force && session && session.position<session.items.length){pendingFilters={...f};navigate('quiz');$('replacePrompt').hidden=false;$('confirmReplace').focus();return;}
+  if(!force && session && session.position<session.items.length){pendingFilters={...f};navigate('quiz');$('replacePrompt').hidden=false;$('quizSettings').open=true;$('confirmReplace').focus();return;}
   $('replacePrompt').hidden=true;pendingFilters=null;
   setFilters(f);session=buildSession(QUESTIONS,f,progress,Math.random,bookmarks);save(KEYS.session,session);
   navigate('quiz');focusQuestion();
@@ -92,15 +93,16 @@ function startSession(f,force=false){
 function focusQuestion(){requestAnimationFrame(()=>{const card=$('questionCard')||$('sessionSummary');if(card){card.focus({preventScroll:true});card.scrollIntoView({behavior:'auto',block:'nearest'});}});}
 function renderSession(){
   const stage=$('quizStage');
+  $('quizSettings').open=!(session&&session.position<session.items.length);
   if(!session){stage.innerHTML='<div class="empty-state"><span class="empty-icon" aria-hidden="true">✚</span><h2>오늘은 어떤 문제를 풀까요?</h2><p>위에서 범위를 고르거나 종합 20문항으로 시작하세요.<br>답을 고르면 바로 채점하고, 해설과 강의 근거를 보여 드립니다.</p><button type="button" class="button primary" data-start="mixed">종합 20문항 시작 →</button></div>';return;}
   if(!session.items.length){stage.innerHTML='<div class="empty-state"><span class="empty-icon" aria-hidden="true">✓</span><h2>이 조건에 해당하는 문제가 없습니다.</h2><p>오답이 없거나 선택한 형식·주제의 문제가 없을 수 있습니다. 위 필터를 바꾸어 새 세트를 시작하세요.</p><button type="button" class="button outline" data-start="mixed">전체에서 종합 20문항 풀기 →</button></div>';return;}
   if(session.position>=session.items.length){renderSummary();return;}
   const item=session.items[session.position],q=QUESTIONS.find(q=>q.id===item.id),graded=item.selected!==null;
   const answered=session.items.filter(i=>i.selected!==null);
   const question=`<article id="questionCard" class="question-card" tabindex="-1" aria-labelledby="questionStem">
-    <div class="q-top"><div class="q-tags"><span class="pill">${TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX 퀴즈'}</span><span class="format-tag">${q.id}</span></div><button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button></div>
+    <div class="q-top"><div class="q-tags"><span class="pill">${TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX 퀴즈'}</span></div><button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button></div>
     <div class="session-line"><span>문제 <b>${session.position+1}</b> / ${session.items.length}</span><span>${answered.length}문항 채점 완료</span></div><div class="session-track" aria-hidden="true"><span style="width:${session.position/session.items.length*100}%"></span></div>
-    <h2 id="questionStem" class="question-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${q.format==='mcq'?'가장 적절한 답을 하나 고르세요. · 키보드 1–5':'물음에 대한 답이 예이면 O, 아니요이면 X를 고르세요. · 키보드 O / X'}</p>
+    <h2 id="questionStem" class="question-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${q.format==='mcq'?'가장 적절한 답을 하나 고르세요. · 키보드 1–5':'문장이 옳으면 O, 틀리면 X를 고르세요. · 키보드 O / X'}</p>
     <div class="choices${q.format==='ox'?' ox':''}" role="group" aria-labelledby="questionStem">${item.choices.map((c,i)=>{
       let cls='',label='';
       if(graded){if(i===item.answer){cls=' right';label='정답';}else if(i===item.selected){cls=' wrong';label='내 선택';}else cls=' dim';}
@@ -167,7 +169,9 @@ $('retryAll').addEventListener('click',()=>beginAction('wrong'));
 $('pathRetryAll').addEventListener('click',()=>pathologyUI.start({topic:'all',mode:'wrong',count:0}));
 $('homePathTables').addEventListener('click',()=>{navigate('pathology');pathologyUI.show('tables');});
 $('pathResumeButton').addEventListener('click',()=>pathologyUI.resume());
-$('homeLectureStart').addEventListener('click',()=>lectureUI.start({topic:'all',mode:'all',count:20}));
+$('homeLectureUnits').addEventListener('click',()=>lectureUI.choose('units'));
+$('homeLectureStart').addEventListener('click',()=>lectureUI.choose('mixed'));
+$('lectureResumeButton').addEventListener('click',()=>lectureUI.resume());
 $('homeDrillStart').addEventListener('click',()=>drillUI.start({topic:'all',mode:'all',count:0}));
 $('lectureRetryAll').addEventListener('click',()=>lectureUI.start({topic:'all',mode:'wrong',count:0}));
 $('drillRetryAll').addEventListener('click',()=>drillUI.start({topic:'all',mode:'wrong',count:0}));
@@ -185,11 +189,6 @@ document.addEventListener('click',e=>{
   if(b.dataset.action==='menu'){navigate('home');return;}
   if(b.dataset.action==='next'||b.dataset.action==='skip'){moveNext();return;}
   if(b.dataset.action==='previous' && session){session.position=Math.max(0,session.position-1);save(KEYS.session,session);renderSession();focusQuestion();}
-});
-document.querySelector('.main-nav [role=tablist]').addEventListener('keydown',e=>{
-  const tabs=[...document.querySelectorAll('.main-nav [role=tab]')],i=tabs.indexOf(e.target);if(i<0)return;
-  let n;if(e.key==='ArrowRight')n=(i+1)%tabs.length;else if(e.key==='ArrowLeft')n=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')n=0;else if(e.key==='End')n=tabs.length-1;else return;
-  e.preventDefault();navigate(tabs[n].dataset.tab,true);
 });
 document.addEventListener('keydown',e=>{
   if(document.querySelector('dialog[open]'))return;

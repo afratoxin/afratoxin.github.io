@@ -1,3 +1,4 @@
+import {reviseAntibioticQuestions} from './antibiotic-revision.mjs?v=20261115a';
 export const TOPICS = {
   oral: { title:'경구 투여', sub:'먹는 약으로 바꿀 수 있을까?', short:'경구', icon:'PO', pages:'36–40' },
   bbb: { title:'BBB 통과', sub:'감염 부위까지 도달할까?', short:'BBB', icon:'BBB', pages:'23–29' },
@@ -202,4 +203,4 @@ ox('cases','23','Doxycycline — 강의의 임신부 신우신염에서 숙주 �
 ox('cases','24','Vancomycin PO — C. difficile 대장염에서 장내 치료 목적으로 투여 가능한가?',true,
  '경구 vancomycin은 장내에 약물을 전달해 작용시킬 수 있습니다. 전신 감염 치료를 위한 경구 투여 가능 여부를 묻는 문항과 답이 다릅니다.',[40,48,49],'이 문항은 경구 경로의 사용 가능성을 묻습니다. 쇼크를 동반한 증례 8의 전체 치료를 경구 약 하나로 한정하지 않습니다.',['vanco']);
 
-export const QUESTIONS=Object.freeze(items.map(q=>Object.freeze(q)));
+export const QUESTIONS=Object.freeze(reviseAntibioticQuestions(items).map(q=>Object.freeze(q)));

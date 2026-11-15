@@ -1,4 +1,4 @@
-import {buildSession} from './logic.mjs?v=20261114c';
+import {buildSession} from './logic.mjs?v=20261115a';
 
 export function factQuestion(fact){
  const pool=[...new Set(fact.pool)];
