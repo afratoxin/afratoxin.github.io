@@ -1,17 +1,18 @@
-import {createBookmarkUI} from './bookmark-ui.mjs?v=20261115h';
-import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261115h';
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261115h';
-import {createRecallUI} from './recall-ui.mjs?v=20261115h';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115h';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261115h';
-import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash} from './logic.mjs?v=20261115h';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261115h';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261115h';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261115h';
-import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261115h';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261115h';
-import {sourceText} from './study-core.mjs?v=20261115h';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261115h';
+import {createBookmarkUI} from './bookmark-ui.mjs?v=20261116a';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261116a';
+import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261116a';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261116a';
+import {createRecallUI} from './recall-ui.mjs?v=20261116a';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261116a';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261116a';
+import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash} from './logic.mjs?v=20261116a';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261116a';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261116a';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261116a';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261116a';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261116a';
+import {sourceText} from './study-core.mjs?v=20261116a';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261116a';
 
 installEvidenceViewer();
 const $=id=>document.getElementById(id);
@@ -80,6 +81,7 @@ function updateDashboard(){
     if(courseTrack){courseTrack.innerHTML=track(value);courseTrack.setAttribute('aria-label',`${value.total}문항 중 ${value.attempted}문항 풀이, 정답 ${value.correct}, 오답 ${value.wrong}`);}
   }
   $('libraryCount').innerHTML=`4개 퀴즈 단원 <b>${ALL_QUESTIONS.length}문항</b>`;
+  $('lectureCourseKicker').textContent=`${Object.values(COURSE_GROUPS).map(g=>g.title).join(' · ')} ${Object.keys(LECTURES).length}강`;
   if(!memoryOnly)$('saveStatus').innerHTML='<i aria-hidden="true"></i> 이 브라우저에 학습 기록 저장';
 }
 function navigate(tab,focus=false){
@@ -227,8 +229,8 @@ if(session)setFilters(session.filters||{});
 $('antibioticTables').innerHTML=renderTables(ANTIBIOTIC_TABLES);
 pathologyUI=createPathologyUI({read,save,openTab:navigate,announce,onChange(){updateDashboard();if(activeTab==='review')renderReview();}});
 const studyChange=()=>{updateDashboard();if(activeTab==='review')renderReview();};
-lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 감별 문제',subtitle:'일반 9강 · 세균·진균 13강 · 바이러스 7강 · 단원 통합',bank:LECTURE_QUESTIONS,topics:STUDY_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='lectures'});
-drillUI=createRecallUI({id:'drill',tab:'drill',title:'표 암기 반복 퀴즈',subtitle:'일반 · 세균·진균 · 바이러스 · 핵심 관계 반복',bank:TABLE_QUESTIONS,topics:TABLE_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='drill',drill:true});
+lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 감별 문제',subtitle:Object.entries(COURSE_GROUPS).map(([group,g])=>`${g.title} ${Object.values(LECTURES).filter(t=>t.group===group).length}강`).join(' · ')+' · 단원 통합',bank:LECTURE_QUESTIONS,topics:STUDY_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='lectures'});
+drillUI=createRecallUI({id:'drill',tab:'drill',title:'표 암기 반복 퀴즈',subtitle:Object.values(COURSE_GROUPS).map(g=>g.title).join(' · ')+' · 핵심 관계 반복',bank:TABLE_QUESTIONS,topics:TABLE_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='drill',drill:true});
 bookmarkUI=createBookmarkUI({root:$('bookmarkContent'),groups:BOOKMARK_GROUPS,read,save,onRetry:oneQuestion,topicTitle:q=>ALL_TOPICS[q.topic]?.title||'',formatPrompt:emphasizePrompt,renderDetails(q){return `${isPath(q)?imageMarkup(q):''}${q.choices.map((choice,index)=>`<div class="review-choice${index===q.answer?' is-answer':''}"><span>${index+1}. ${escape(choice)}</span>${index===q.answer?'<small>정답</small>':''}</div>`).join('')}${explanation(q,false)}`;},onChange(){updateDashboard();announce('별표를 해제했습니다.');}});
 navigate(tabFromHash(location.hash)||'home');
 installQuizKeyboard();

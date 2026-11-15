@@ -1,12 +1,12 @@
 {
-  "description": "Selected lecture pages cited by study questions. Original PDF files and examination pages are excluded.",
+  "description": "Selected cited lecture pages, including exam-review pages embedded in the supplied CBL handouts. Original PDF files and standalone examination PDFs are excluded.",
   "pageNumbering": "1-based physical PDF page numbers; printed slide numbers may differ.",
   "render": {
     "width": 900,
     "format": "WebP",
     "quality": 70
   },
-  "count": 627,
+  "count": 653,
   "pages": [
     {
       "doc": "261102_02",
@@ -4499,6 +4499,136 @@
       "sha256": "26a3bd9d2cd609a04500b75e43820d01d843a9520611e448e34a868f80941e2b"
     },
     {
+      "doc": "261109_06",
+      "page": 2,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-002.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 41978,
+      "sha256": "c422aa81dc14de2d771a9179f4b628f28f9efb6b05fe6da2a94046f4e7460c95"
+    },
+    {
+      "doc": "261109_06",
+      "page": 3,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-003.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 43772,
+      "sha256": "bcefde19b79c0541644fb42a96d383cd991ff459dfef65f3201860dc548a9ca0"
+    },
+    {
+      "doc": "261109_06",
+      "page": 4,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-004.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 43304,
+      "sha256": "c646e14a887f045a2394f03a06e43a35b39fac1d966d97c00773c97c392b8e4e"
+    },
+    {
+      "doc": "261109_06",
+      "page": 5,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-005.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 33820,
+      "sha256": "723b05e0b1a6962dde7f7bfc3928e4dd1a2a1e5d588426d89c8512103cb9188e"
+    },
+    {
+      "doc": "261109_06",
+      "page": 6,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-006.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 40002,
+      "sha256": "dbdb8c3e94f0c9341d19d466da53c59fb0a530e34f64107ae5cb1c79ab1c8478"
+    },
+    {
+      "doc": "261109_06",
+      "page": 7,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-007.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 13648,
+      "sha256": "406e1fc1b17d894b78ac7d509c12bf63c64f061baacfed939f7acc9074328d60"
+    },
+    {
+      "doc": "261109_06",
+      "page": 8,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-008.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 25176,
+      "sha256": "decc11dd6bd017ec1eacac67cf685d22b8d9d2668300a7fb414b29218ba7449b"
+    },
+    {
+      "doc": "261109_06",
+      "page": 9,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-009.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 29506,
+      "sha256": "904ac962b9384f5e2844890f27aa0c71739cfa0995e8adf52a38b6789d77e8d7"
+    },
+    {
+      "doc": "261109_06",
+      "page": 10,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-010.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 27462,
+      "sha256": "70cbd8481dd771dd1f73badf1210359ce56826354a614c7a3992fa34ee52ad43"
+    },
+    {
+      "doc": "261109_06",
+      "page": 11,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-011.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 38410,
+      "sha256": "964df648bef405b988e1e2eb5a5e8a29eb877e635c0978ce6483d4e4f6a88f2b"
+    },
+    {
+      "doc": "261109_06",
+      "page": 12,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-012.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 33358,
+      "sha256": "f0743297ec1e7ed4532d5ceb46ce38b19be2945e05ce5fe241967ffac149bf16"
+    },
+    {
+      "doc": "261109_06",
+      "page": 13,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-013.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 19882,
+      "sha256": "88c11cc9745b1b156a9cd5fa3f32fa017ff05ea886552552346416bc4b76470a"
+    },
+    {
+      "doc": "261109_06",
+      "page": 14,
+      "title": "CBL 1",
+      "src": "assets/evidence/261109_06-014.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 21516,
+      "sha256": "50c171c71f70d6400ada436c633df82f1be603c971a66deb18f7dc1ef534e4c4"
+    },
+    {
       "doc": "261110_01",
       "page": 4,
       "title": "렙토스피라·매독균·보렐리아",
@@ -5167,6 +5297,66 @@
       "height": 708,
       "bytes": 59780,
       "sha256": "cb2feb3150fe7d15b04e8423ff7cbd8420fd27fab8419bc74bbd0bc1d95427d3"
+    },
+    {
+      "doc": "261111_03",
+      "page": 1,
+      "title": "CBL 2",
+      "src": "assets/evidence/261111_03-001.webp",
+      "width": 900,
+      "height": 1273,
+      "bytes": 124014,
+      "sha256": "6be6912c37738d33e4c0e26ec2bf774d1fdba7bec6d716243052083374c8aff4"
+    },
+    {
+      "doc": "261111_03",
+      "page": 2,
+      "title": "CBL 2",
+      "src": "assets/evidence/261111_03-002.webp",
+      "width": 900,
+      "height": 1273,
+      "bytes": 77836,
+      "sha256": "49717b9bb3f91824d09a8b7fadcc2fa923efd41bc0c87fa4bbd077bb25e816db"
+    },
+    {
+      "doc": "261111_03",
+      "page": 3,
+      "title": "CBL 2",
+      "src": "assets/evidence/261111_03-003.webp",
+      "width": 900,
+      "height": 1273,
+      "bytes": 66872,
+      "sha256": "055d0c8eeef843bfcfd8496b96c88ccab5f88bed3b83258d381fb4f98738b44b"
+    },
+    {
+      "doc": "261111_03",
+      "page": 4,
+      "title": "CBL 2",
+      "src": "assets/evidence/261111_03-004.webp",
+      "width": 900,
+      "height": 1273,
+      "bytes": 114210,
+      "sha256": "13f8e2631962135da290dbe9d4f4d7cf33b1bb50f986de08671cb03fe5421e79"
+    },
+    {
+      "doc": "261111_03",
+      "page": 5,
+      "title": "CBL 2",
+      "src": "assets/evidence/261111_03-005.webp",
+      "width": 900,
+      "height": 1273,
+      "bytes": 90200,
+      "sha256": "b7ffb10df3d0119bb9d4b80b1584ddaf9e1d024d7bd651561c9c29a373f368e0"
+    },
+    {
+      "doc": "261111_03",
+      "page": 6,
+      "title": "CBL 2",
+      "src": "assets/evidence/261111_03-006.webp",
+      "width": 900,
+      "height": 1273,
+      "bytes": 80700,
+      "sha256": "fd0b8eb4023464bbc8c337bbc996f32565a3f2aba3d22ccd9c855f0dd3934013"
     },
     {
       "doc": "261112_01",
@@ -5977,6 +6167,76 @@
       "height": 675,
       "bytes": 41998,
       "sha256": "9c37b652b42b4243f35df25895d01e18aed3e143c6c3e500dc7082206f57205b"
+    },
+    {
+      "doc": "261113_03",
+      "page": 2,
+      "title": "CBL 3",
+      "src": "assets/evidence/261113_03-002.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 54008,
+      "sha256": "33be9933f5afa1f8f6d3ec5d691fd4daefc073413aa7ba8a492bc0a37b3f547f"
+    },
+    {
+      "doc": "261113_03",
+      "page": 3,
+      "title": "CBL 3",
+      "src": "assets/evidence/261113_03-003.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 51920,
+      "sha256": "8f7c0c8b3ea21a66734868dda01974330c8fe0bcd625ca65f43f555aa9f21e95"
+    },
+    {
+      "doc": "261113_03",
+      "page": 4,
+      "title": "CBL 3",
+      "src": "assets/evidence/261113_03-004.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 91016,
+      "sha256": "a10ba193c76edf0c6779bf2f6854905ff2fd8e112c24399461895d438ae9342e"
+    },
+    {
+      "doc": "261113_03",
+      "page": 5,
+      "title": "CBL 3",
+      "src": "assets/evidence/261113_03-005.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 76858,
+      "sha256": "36d01a7bbde26f8ed0d6d26efa6bc4c1bde83cd804094d331c1fe2b2f7578053"
+    },
+    {
+      "doc": "261113_03",
+      "page": 6,
+      "title": "CBL 3",
+      "src": "assets/evidence/261113_03-006.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 68342,
+      "sha256": "1124da924368b089b25530aa1b62b75a06d46c2ad5d50242d751dd072357d194"
+    },
+    {
+      "doc": "261113_03",
+      "page": 7,
+      "title": "CBL 3",
+      "src": "assets/evidence/261113_03-007.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 67892,
+      "sha256": "782caa6eabf1f6e6d288bc7676f60caef088eef0128909d4697e8edd5156994b"
+    },
+    {
+      "doc": "261113_03",
+      "page": 8,
+      "title": "CBL 3",
+      "src": "assets/evidence/261113_03-008.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 64296,
+      "sha256": "5514d5486ade2c2c9eef6984d937b598b65320b5bd9d0269dbd5d7fed49216ec"
     },
     {
       "doc": "antibiotics",

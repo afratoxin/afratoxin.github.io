@@ -20,8 +20,8 @@ test('a small recall set cannot leak questions from other lectures or topics',()
  assert.equal(restored.filters.scope,'small');assert.deepEqual(restored.filters.questionIds,['a','c']);
 });
 test('all recall questions belong to a lecture and a focused, explained small set',()=>{
- assert.deepEqual(Object.keys(COURSE_GROUPS),['general','bacteria','virus']);
- assert.equal(Object.keys(LECTURES).length,29);
+ assert.deepEqual(Object.keys(COURSE_GROUPS),['general','bacteria','virus','cbl']);
+ assert.equal(Object.keys(LECTURES).length,32);
  const membership=[];
  for(const [id,set] of Object.entries(RECALL_SETS)){
   assert.equal(set.id,id);assert.ok(RECALL_LECTURES[set.lecture],id);assert.ok(set.questionIds.length>0&&set.questionIds.length<=16,id);

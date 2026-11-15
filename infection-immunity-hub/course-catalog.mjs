@@ -1,7 +1,8 @@
 export const COURSE_GROUPS={
  general:{title:'일반',description:'병인·진단·치료·병리·약리·소아감염'},
  bacteria:{title:'세균·진균',description:'균 특성·독소·배양·감별'},
- virus:{title:'바이러스',description:'구조·질환·검사·항원과 항체'}
+ virus:{title:'바이러스',description:'구조·질환·검사·항원과 항체'},
+ cbl:{title:'CBL',description:'증례의 단서·감별진단·검사·치료 판단'}
 };
 export const EXTRA_LECTURES={
  '261102_02':{title:'감염병의 병인론',teacher:'최은화',pages:50,group:'general'},
@@ -18,8 +19,13 @@ export const EXTRA_LECTURES={
  '261113_01':{title:'헤르페스바이러스과',teacher:'김현제',pages:31,group:'virus'},
  '261113_02':{title:'소아감염',teacher:'윤기욱',pages:47,group:'general'}
 };
+export const CBL_LECTURES={
+ '261109_06':{title:'CBL 1 · 침습성 세균감염',short:'CBL 1',teacher:'문송미·강창경',pages:19,group:'cbl'},
+ '261111_03':{title:'CBL 2 · Mpox·수막구균',short:'CBL 2',teacher:'이찬미·이현주',pages:6,group:'cbl'},
+ '261113_03':{title:'CBL 3 · 대상포진·PPGSS',short:'CBL 3',teacher:'윤기옥·이찬미',pages:9,group:'cbl'}
+};
 const pathology=new Set(['261104_02','261104_03','261104_05']);
-export const groupForLecture=code=>EXTRA_LECTURES[code]?.group||(pathology.has(code)?'general':'bacteria');
+export const groupForLecture=code=>CBL_LECTURES[code]?.group||EXTRA_LECTURES[code]?.group||(pathology.has(code)?'general':'bacteria');
 export function orderedLectures(existing){
- return Object.fromEntries(Object.entries({...existing,...EXTRA_LECTURES}).sort(([a],[b])=>a.localeCompare(b)).map(([code,t],i)=>[code,{...t,short:t.short||t.title,order:i+1,group:groupForLecture(code)}]));
+ return Object.fromEntries(Object.entries({...existing,...EXTRA_LECTURES,...CBL_LECTURES}).sort(([a],[b])=>a.localeCompare(b)).map(([code,t],i)=>[code,{...t,short:t.short||t.title,order:i+1,group:groupForLecture(code)}]));
 }

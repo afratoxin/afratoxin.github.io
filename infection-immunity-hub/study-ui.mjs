@@ -1,10 +1,10 @@
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261115h';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261115h';
-import {practiceLayout} from './practice-layout.mjs?v=20261115h';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115h';
-import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261115h';
-import {sourceText,topicProgress} from './study-core.mjs?v=20261115h';
-import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261115h';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261116a';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261116a';
+import {practiceLayout} from './practice-layout.mjs?v=20261116a';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261116a';
+import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261116a';
+import {sourceText,topicProgress} from './study-core.mjs?v=20261116a';
+import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261116a';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const externalLinks=q=>(q.externalRefs||[]).filter(r=>/^https:\/\//.test(r.url||'')).map(r=>`<a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.title||'보충 근거')} ↗</a>`).join(' · ');
 

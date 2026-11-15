@@ -1,9 +1,10 @@
-import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261115h';
-import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261115h';
-import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261115h';
-import {stats} from './logic.mjs?v=20261115h';
+import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261116a';
+import {CBL_PARTS} from './cbl-bank.mjs?v=20261116a';
+import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261116a';
+import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261116a';
+import {stats} from './logic.mjs?v=20261116a';
 
-const parts={...EXTENSION_PARTS,...ENTERIC_MEDIA_PARTS};
+const parts={...EXTENSION_PARTS,...ENTERIC_MEDIA_PARTS,...CBL_PARTS};
 function p(doc,key,title,what,how,why){parts[`${doc}:${key}`]={id:`${doc}:${key}`,lecture:doc,title,what,how,why};}
 p('261102_05','oral','항생제 경구 투여','전신 감염 경구 치료 가능 약과 장내 국소 작용 약을 구분합니다.','약제명을 보고 경구/정주를 나누고 vancomycin의 장내 예외를 붙입니다.','먹을 수 있다는 말과 전신 유효 농도에 도달한다는 말을 구분합니다.');
 p('261102_05','bbb','항생제 BBB 통과','수막 염증 때 CSF 이행이 좋은 약과 부족한 약을 비교합니다.','1세대 cephalosporin·aminoglycoside를 3/4세대와 바꿔 봅니다.','혈중 감수성이 있어도 수막염 약제로 적절하지 않을 수 있습니다.');

@@ -1,9 +1,9 @@
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261115h';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261115h';
-import {PATH_QUESTIONS,PATH_TOPICS,PHOTOS,PATH_DOCUMENTS,EXAM_REVIEW,pathSource} from './pathology-bank.mjs?v=20261115h';
-import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261115h';
-import {PATHOLOGY_TABLES,renderTables} from './reference-tables.mjs?v=20261115h';
-import {practiceLayout} from './practice-layout.mjs?v=20261115h';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261116a';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261116a';
+import {PATH_QUESTIONS,PATH_TOPICS,PHOTOS,PATH_DOCUMENTS,EXAM_REVIEW,pathSource} from './pathology-bank.mjs?v=20261116a';
+import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark} from './logic.mjs?v=20261116a';
+import {PATHOLOGY_TABLES,renderTables} from './reference-tables.mjs?v=20261116a';
+import {practiceLayout} from './practice-layout.mjs?v=20261116a';
 
 const e=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=id=>document.getElementById(id);
