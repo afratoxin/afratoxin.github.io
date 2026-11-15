@@ -66,16 +66,21 @@ function patternRun(r=Math.random){
  const maps=[shuffle(Array.from({length:25},(_,i)=>i),r),shuffle(Array.from({length:25},(_,i)=>i),r)];
  return{maps,questions:maps.flatMap(map=>Array.from({length:3},(_,i)=>blockQuestion(map,r,i===0)))};
 }
-// Separate, mixed visual vocabulary for Hidden Mission; Pattern Block keeps its fixed line map.
+// A board uses exactly one vocabulary, with deliberately similar symbols within it.
+const HIDDEN_THEMES={hanja:{label:'한자판',hint:'비슷한 한자의 획과 위치를 구분하세요.'},letters:{label:'글자판',hint:'닮은 자음과 쌍자음을 구분하세요.'},picture:{label:'그림판',hint:'같은 도형의 회전 방향과 작은 점의 위치를 구분하세요.'}};
 const HIDDEN_SYMBOLS=[
- ...['M50 8L92 88H8Z','M12 12H88V88H12Z','M50 5L95 50 50 95 5 50Z','M50 6L61 37 94 38 68 58 77 91 50 72 23 91 32 58 6 38 39 37Z','M30 8H70L92 50 70 92H30L8 50Z','M50 8L90 37 75 86H25L10 37Z','M10 25H90V75H10Z','M15 15V60A35 35 0 0 0 85 60V15','M30 8H70L92 30V70L70 92H30L8 70V30Z','M15 15H85V85H15ZM30 30H70V70H30Z','M50 10A40 40 0 1 0 50 90A40 40 0 1 0 50 10','M15 15H85L15 85H85Z'].map(d=>({group:'shape',d})),
- ...Array.from('山水火木金土日月田王中大').map(glyph=>({group:'hanja',glyph})),
- ...['＋','−','×','÷','＝','≠','∞','∑','√','π','％','∴'].map(glyph=>({group:'symbol',glyph})),
- ...Array.from({length:12},(_,line)=>({group:'line',line}))
+ ...Array.from('日曰目自白百田由甲申旦早旧旭月用甩冊皿且具直真首').map(glyph=>({group:'hanja',family:'hanja',glyph})),
+ ...Array.from('ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ').map(glyph=>({group:'letters',family:'consonants',glyph})),
+ ...['frame','ring','arrow'].flatMap(family=>Array.from({length:6},(_,variant)=>Array.from({length:4},(_,rotation)=>({group:'picture',family,variant,rotation}))).flat())
 ];
 function hiddenSymbolSVG(id,label='그림'){
- const p=HIDDEN_SYMBOLS[id];if(!p)throw Error('Unknown hidden symbol');if(p.group==='line')return patternSVG(p.line,label);
- return '<svg class="line-pattern" viewBox="0 0 100 100" role="img" aria-label="'+label+'">'+(p.glyph?'<text x="50" y="53" dominant-baseline="central" text-anchor="middle" fill="currentColor" font-family="Noto Sans CJK KR, Malgun Gothic, sans-serif" font-size="65" font-weight="650">'+p.glyph+'</text>':'<path d="'+p.d+'" fill="none" stroke="currentColor" stroke-width="7" stroke-linejoin="round"/>')+'</svg>';
+ const p=HIDDEN_SYMBOLS[id];if(!p)throw Error('Unknown hidden symbol');
+ let body;if(p.glyph)body='<text x="50" y="53" dominant-baseline="central" text-anchor="middle" fill="currentColor" font-family="Noto Sans CJK KR, Malgun Gothic, sans-serif" font-size="65" font-weight="650">'+p.glyph+'</text>';
+ else{
+  const paths={frame:'M38 15H15V85H85V15H57',ring:'M38 17A35 35 0 1 0 62 17',arrow:'M50 12L84 46H64V86H36V46H16Z'},points=p.family==='arrow'?[[43,48],[57,48],[43,62],[57,62],[43,76],[57,76]]:[[30,32],[50,32],[70,32],[30,64],[50,64],[70,64]],[x,y]=points[p.variant];
+  body='<g transform="rotate('+p.rotation*90+' 50 50)"><path d="'+paths[p.family]+'" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="miter"/><circle cx="'+x+'" cy="'+y+'" r="4" fill="currentColor"/></g>';
+ }
+ return '<svg class="line-pattern" viewBox="0 0 100 100" role="img" aria-label="'+label+'">'+body+'</svg>';
 }
 const MISSIONS=[
  [
@@ -354,12 +359,15 @@ const MISSIONS=[
  ]
 ].map(([question,answers],id)=>({id,question,answers}));
 const normalize=value=>String(value).normalize('NFKC').toLowerCase().replace(/[\s.,?!·:;，。？！]/g,'');
-function missionRound(mission,r=Math.random){
+function missionRound(mission,r=Math.random,theme=shuffle(Object.keys(HIDDEN_THEMES),r)[0]){
  if([...mission.question].length!==36||mission.question!==mission.question.trim())throw Error('Mission text must fill all 36 cells');
- const symbols=['shape','hanja','symbol','line'].flatMap((group,k)=>shuffle(HIDDEN_SYMBOLS.map((p,i)=>p.group===group?i:null).filter(i=>i!==null),r).slice(0,k<2?5:4)),faces=shuffle([...symbols,...symbols],r),letters=Array.from(mission.question);return{mission,faces,letters};
+ if(!HIDDEN_THEMES[theme])throw Error('Unknown hidden board theme');
+ const family=theme==='picture'?shuffle(['frame','ring','arrow'],r)[0]:theme==='letters'?'consonants':'hanja';
+ const pool=HIDDEN_SYMBOLS.map((p,i)=>p.group===theme&&p.family===family?i:null).filter(i=>i!==null),symbols=shuffle(pool,r).slice(0,18),faces=shuffle([...symbols,...symbols],r),letters=Array.from(mission.question);
+ return{mission,faces,letters,theme,family};
 }
-function hiddenRun(r=Math.random){return shuffle(MISSIONS,r).slice(0,3).map(m=>missionRound(m,r));}
+function hiddenRun(r=Math.random){const themes=shuffle(Object.keys(HIDDEN_THEMES),r);return shuffle(MISSIONS,r).slice(0,3).map((m,i)=>missionRound(m,r,themes[i]));}
 const correctMission=(p,value)=>p.mission.answers.some(a=>normalize(a)===normalize(value));
 const isPair=(p,indices,removed=[])=>indices.length===2&&indices.every(i=>Number.isInteger(i)&&i>=0&&i<36&&!removed.includes(i))&&indices[0]!==indices[1]&&p.faces[indices[0]]===p.faces[indices[1]];
-const api={int,shuffle,DIRS,PATTERNS,patternSVG,footprint,blockQuestion,validCells,editCells,patternRun,HIDDEN_SYMBOLS,hiddenSymbolSVG,MISSIONS,normalize,missionRound,hiddenRun,correctMission,isPair};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.BloodyMemory=api;
+const api={int,shuffle,DIRS,PATTERNS,patternSVG,footprint,blockQuestion,validCells,editCells,patternRun,HIDDEN_THEMES,HIDDEN_SYMBOLS,hiddenSymbolSVG,MISSIONS,normalize,missionRound,hiddenRun,correctMission,isPair};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.BloodyMemory=api;
 })(typeof window!=='undefined'?window:globalThis);
