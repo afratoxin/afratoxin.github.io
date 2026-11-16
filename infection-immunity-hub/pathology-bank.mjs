@@ -1,12 +1,13 @@
-import {PATHEDU_QUESTIONS,PATHEDU_PHOTOS} from './pathedu-bank.mjs?v=20261116b';
-import {revisedPathologySet} from './pathology-statements.mjs?v=20261116b';
-import {PHOTOS as ALL_PHOTOS} from './photo-data.mjs?v=20261116b';
+import {curateQuestions} from './question-curation.mjs?v=20261116c';
+import {PATHEDU_QUESTIONS,PATHEDU_PHOTOS} from './pathedu-bank.mjs?v=20261116c';
+import {revisedPathologySet} from './pathology-statements.mjs?v=20261116c';
+import {PHOTOS as ALL_PHOTOS} from './photo-data.mjs?v=20261116c';
 export const PATH_TOPICS={
  'path-image':{title:'사진 → 원인균',short:'사진형',sub:'짧은 증례와 강의 사진으로 판단'},
  'path-traits':{title:'원인균 특성 판별',short:'특성형',sub:'서로 다른 병원체의 특징을 구별'},
- 'path-general':{title:'총론 · 옳고 그름',short:'총론형',sub:'조직반응·방어기전·진단법 연결'}
+ 'path-general':{title:'총론 · 핵심 대응',short:'총론형',sub:'조직반응·방어기전·진단법 연결'}
 };
-export const PATH_DOCUMENTS={path1:'병리 1',path2:'병리 2',lab:'병리 통합실습',pathedu:'서울대학교 병리교육 라이브러리'};
+export const PATH_DOCUMENTS={path1:'병리 1',path2:'병리 2',lab:'병리 통합실습',pathedu:'서울대학교 병리교육 라이브러리','261116_05':'진균감염·칸디다·폐포자충','261116_06':'아스페르길루스·크립토코쿠스·털곰팡이·피부진균'};
 export const EXAM_REVIEW={pages:[10,11,12,13,14,15],count:20,years:[{year:2025,numbers:[30,72,85,100]},{year:2023,numbers:[69,79,88]},{year:2022,numbers:[12,36,38,41,75,77]},{year:2021,numbers:[13,14,15,16,18]},{year:2020,numbers:[16,17]}],note:'기출의 발문과 감별 구조를 참고한 새 문제입니다. 2025 답안표의 문항 번호는 본문과 불일치하여 자동 정답 매핑에 사용하지 않았습니다.'};
 const src=(doc,...pages)=>({doc,pages});
 const organisms={
@@ -339,7 +340,7 @@ function scopedPathologyQuestion(original){
  return Object.freeze(q);
 }
 const lecturePathologyQuestions=bank.filter(q=>!outsidePathologyScope.has(q.id)).map(q=>Object.freeze({...scopedPathologyQuestion(q),sourceScope:'lecture'}));
-export const PATH_QUESTIONS=Object.freeze([...lecturePathologyQuestions,...PATHEDU_QUESTIONS.map(q=>Object.freeze({...q,sourceScope:'library'}))]);
+export const PATH_QUESTIONS=Object.freeze(curateQuestions([...lecturePathologyQuestions,...PATHEDU_QUESTIONS.map(q=>Object.freeze({...q,sourceScope:'library'}))]));
 const activePathologyPhotoIds=new Set(PATH_QUESTIONS.flatMap(q=>q.photos));
 export const PHOTOS=Object.freeze(Object.fromEntries(Object.entries({...ALL_PHOTOS,...PATHEDU_PHOTOS}).filter(([id])=>activePathologyPhotoIds.has(id))));
 export function pathSource(q){return q.sourceRefs.map(s=>`${PATH_DOCUMENTS[s.doc]} PDF ${s.pages.join('·')}쪽`).join(' / ');}

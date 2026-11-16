@@ -1,6 +1,6 @@
-import {QUESTIONS as FIRST} from './cbl-past1-bank.mjs?v=20261116b';
-import {QUESTIONS as REST,EMPTY_SECTIONS} from './cbl-past2356-bank.mjs?v=20261116b';
-import * as FOURTH from './cbl-past4-bank.mjs?v=20261116b';
+import {QUESTIONS as FIRST} from './cbl-past1-bank.mjs?v=20261116c';
+import {QUESTIONS as REST,EMPTY_SECTIONS} from './cbl-past2356-bank.mjs?v=20261116c';
+import * as FOURTH from './cbl-past4-bank.mjs?v=20261116c';
 
 export const CBL_PAST_QUESTIONS=[...FIRST,...REST,...FOURTH.QUESTIONS].map(q=>q.id==='lecture-cbl-past-1-2023-99'?{...q,original:{...q.original,figureNote:'제공된 족보에는 지문이 언급한 그람염색 사진이 누락되어 있습니다. 원문 그대로 표시합니다.'}}:q).sort((a,b)=>a.topic.localeCompare(b.topic)||b.year-a.year||a.number-b.number);
 export const CBL_PAST_EMPTY=EMPTY_SECTIONS||[];

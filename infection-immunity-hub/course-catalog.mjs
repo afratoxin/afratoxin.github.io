@@ -24,8 +24,9 @@ export const CBL_LECTURES={
  '261111_03':{title:'CBL 2 · Mpox·수막구균',short:'CBL 2',teacher:'이찬미·이현주',pages:6,group:'cbl'},
  '261113_03':{title:'CBL 3 · 대상포진·PPGSS',short:'CBL 3',teacher:'윤기옥·이찬미',pages:9,group:'cbl'}
 };
+export const NOV16_LECTURES={"261116_01":{"title":"신종·재출현 바이러스","teacher":"조남혁","pages":53,"group":"virus"},"261116_02":{"title":"토가바이러스·플라비바이러스","teacher":"염진기","pages":46,"group":"virus"},"261116_03":{"title":"필로바이러스·분야바이러스","teacher":"염진기","pages":38,"group":"virus"},"261116_05":{"title":"진균감염·칸디다·폐포자충","teacher":"김남중","pages":45,"group":"bacteria"},"261116_06":{"title":"아스페르길루스·크립토코쿠스·털곰팡이·피부진균","short":"아스페르길루스·크립토코쿠스 등","teacher":"김남중","pages":44,"group":"bacteria"}};
 const pathology=new Set(['261104_02','261104_03','261104_05']);
-export const groupForLecture=code=>CBL_LECTURES[code]?.group||EXTRA_LECTURES[code]?.group||(pathology.has(code)?'general':'bacteria');
+export const groupForLecture=code=>NOV16_LECTURES[code]?.group||CBL_LECTURES[code]?.group||EXTRA_LECTURES[code]?.group||(pathology.has(code)?'general':'bacteria');
 export function orderedLectures(existing){
- return Object.fromEntries(Object.entries({...existing,...EXTRA_LECTURES,...CBL_LECTURES}).sort(([a],[b])=>a.localeCompare(b)).map(([code,t],i)=>[code,{...t,short:t.short||t.title,order:i+1,group:groupForLecture(code)}]));
+ return Object.fromEntries(Object.entries({...existing,...EXTRA_LECTURES,...CBL_LECTURES,...NOV16_LECTURES}).sort(([a],[b])=>a.localeCompare(b)).map(([code,t],i)=>[code,{...t,short:t.short||t.title,order:i+1,group:groupForLecture(code)}]));
 }

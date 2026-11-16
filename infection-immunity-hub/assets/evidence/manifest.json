@@ -1,12 +1,12 @@
 {
-  "description": "Selected cited lecture pages, including exam-review pages embedded in the supplied CBL handouts. Original PDF files and standalone examination PDFs are excluded.",
+  "description": "Selected physical pages cited from supplied lectures and CBL handouts; includes embedded teaching exam examples. Original PDF files, full exam collections, HWP and Anki files are not distributed.",
   "pageNumbering": "1-based physical PDF page numbers; printed slide numbers may differ.",
   "render": {
     "width": 900,
     "format": "WebP",
     "quality": 70
   },
-  "count": 661,
+  "count": 801,
   "pages": [
     {
       "doc": "261102_02",
@@ -50,6 +50,36 @@
     },
     {
       "doc": "261102_02",
+      "page": 17,
+      "title": "감염병의 병인론",
+      "src": "assets/evidence/261102_02-017.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 10728,
+      "sha256": "de9d4d59a14960e2cd76e08966853e8a071e35cd23daca003d4cba0a3b52a88a"
+    },
+    {
+      "doc": "261102_02",
+      "page": 18,
+      "title": "감염병의 병인론",
+      "src": "assets/evidence/261102_02-018.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 36760,
+      "sha256": "9aae12acef9d71c6bf54ba4ebe65e501ebacc2d1ea8dcf48092a2fd41fa49b9c"
+    },
+    {
+      "doc": "261102_02",
+      "page": 19,
+      "title": "감염병의 병인론",
+      "src": "assets/evidence/261102_02-019.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 18732,
+      "sha256": "fda1ae90c994ebdda58f934ec8c03e5bb22426fc3fbdfcce5120873bdf9f98c7"
+    },
+    {
+      "doc": "261102_02",
       "page": 24,
       "title": "감염병의 병인론",
       "src": "assets/evidence/261102_02-024.webp",
@@ -57,6 +87,46 @@
       "height": 637,
       "bytes": 36954,
       "sha256": "5d13d716768140be6c7b57eadc2e3dffa38ae3821a412828c6419f2c71e0b7f8"
+    },
+    {
+      "doc": "261102_02",
+      "page": 26,
+      "title": "감염병의 병인론",
+      "src": "assets/evidence/261102_02-026.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 34064,
+      "sha256": "ffa33f5d95d3834ce1f4c68d5c7a4384685eec71bc2c219fca1eefe5574850f7"
+    },
+    {
+      "doc": "261102_02",
+      "page": 27,
+      "title": "감염병의 병인론",
+      "src": "assets/evidence/261102_02-027.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 41734,
+      "sha256": "1b3fef7aad8a9f62324ceef97defa3975678630c9cb51e9609c254a17b938a69"
+    },
+    {
+      "doc": "261102_02",
+      "page": 28,
+      "title": "감염병의 병인론",
+      "src": "assets/evidence/261102_02-028.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 34902,
+      "sha256": "5d48ad15dcb3c3b17d686445685090581a8966c39ec4bcb20b81f5f1a527203d"
+    },
+    {
+      "doc": "261102_02",
+      "page": 29,
+      "title": "감염병의 병인론",
+      "src": "assets/evidence/261102_02-029.webp",
+      "width": 900,
+      "height": 637,
+      "bytes": 31382,
+      "sha256": "79f1f1f147c297e30920cb31105fca2882a416cc0cbe7d81bb7001a175f06cee"
     },
     {
       "doc": "261102_02",
@@ -5710,6 +5780,16 @@
     },
     {
       "doc": "261112_02",
+      "page": 35,
+      "title": "파라믹소·풍진바이러스",
+      "src": "assets/evidence/261112_02-035.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 58948,
+      "sha256": "caa0358440b5383e8a2f803ed6db668592d523fac39808c6c10e54d39ca3de84"
+    },
+    {
+      "doc": "261112_02",
       "page": 38,
       "title": "파라믹소·풍진바이러스",
       "src": "assets/evidence/261112_02-038.webp",
@@ -5717,6 +5797,16 @@
       "height": 675,
       "bytes": 46384,
       "sha256": "b2cb3a15317dd371013e2742a7a53fd9ad9a0591d35de0bad00019a0a748f97f"
+    },
+    {
+      "doc": "261112_02",
+      "page": 41,
+      "title": "파라믹소·풍진바이러스",
+      "src": "assets/evidence/261112_02-041.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 64756,
+      "sha256": "3353eeaa5c6752ca3ab244c77c2450d2da3b98795a924d31d7567f4be49c64e7"
     },
     {
       "doc": "261112_02",
@@ -5747,6 +5837,16 @@
       "height": 675,
       "bytes": 39260,
       "sha256": "3539e4a001978f0b58d4e171499f31dc1b8e6976c17a9ed59816231a6d826270"
+    },
+    {
+      "doc": "261112_02",
+      "page": 47,
+      "title": "파라믹소·풍진바이러스",
+      "src": "assets/evidence/261112_02-047.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 44846,
+      "sha256": "2dc268cbbd6f8204a6e49d2e877c2c9382aac0ed7341e5f309411ccc3f2ade16"
     },
     {
       "doc": "261112_03",
@@ -6317,6 +6417,1306 @@
       "height": 637,
       "bytes": 30454,
       "sha256": "f0917c61b31abc1cd2344f38874d8784764f6e8f426c0e04ad056378f23668d5"
+    },
+    {
+      "doc": "261116_01",
+      "page": 4,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-004.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 65102,
+      "sha256": "247c2ac30ca4eb43ee016d9d5b332ce5009381a5ee33a2cf646f4974a6e2cbf2"
+    },
+    {
+      "doc": "261116_01",
+      "page": 7,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-007.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 48930,
+      "sha256": "1fbbf43d18317a3fc9556aaca981c0730e9776fc46d97549b935ee8dbe7699a9"
+    },
+    {
+      "doc": "261116_01",
+      "page": 16,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-016.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 53838,
+      "sha256": "cd75a717d174654a72dccdee3299ce879116ca0093d84cfce718bc9f2593e2c3"
+    },
+    {
+      "doc": "261116_01",
+      "page": 18,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-018.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 71220,
+      "sha256": "ec13bc28374e4f610a1bb84c587e414b5f575176e13b12bf3ef12266208929c3"
+    },
+    {
+      "doc": "261116_01",
+      "page": 19,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-019.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 42210,
+      "sha256": "dc4446ced3aa7d25a79e3b3bf2d8b0cc093c2212f537b5752335b21c84c22f5f"
+    },
+    {
+      "doc": "261116_01",
+      "page": 20,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-020.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 33916,
+      "sha256": "5124272e81dc0a02cf5387579c2838b6fd77f5a10ee1f8bd65acfcde72f57f19"
+    },
+    {
+      "doc": "261116_01",
+      "page": 22,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-022.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 77264,
+      "sha256": "1afbf0e130698f879d1aa0e9e2298459019d05f1299b1745d05ae76bb79f9b93"
+    },
+    {
+      "doc": "261116_01",
+      "page": 23,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-023.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 21638,
+      "sha256": "f7f11ca466b01d4be2ba056ed33d11c00ab2a4ffc9b9451fd3789fb123138a60"
+    },
+    {
+      "doc": "261116_01",
+      "page": 24,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-024.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 36028,
+      "sha256": "c45f297e9fccd7ead7dd01b64807c2e63632785639791e23fc4d8d5f4579cbdf"
+    },
+    {
+      "doc": "261116_01",
+      "page": 25,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-025.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 49128,
+      "sha256": "d303000ab4380ddd078f2b3b584b481f83831e3d7fe631e71d37fa767a5d0782"
+    },
+    {
+      "doc": "261116_01",
+      "page": 26,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-026.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 42596,
+      "sha256": "240d50a512514aed05c7f40848132a48d66ec96f30b68a01b3856436920bf6e8"
+    },
+    {
+      "doc": "261116_01",
+      "page": 27,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-027.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 50044,
+      "sha256": "de2f39aeefb2e1509742df72aaa927ec5f1a738c9f2f1066f4ba8d4f9f6843c2"
+    },
+    {
+      "doc": "261116_01",
+      "page": 28,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-028.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 39368,
+      "sha256": "2b1b41b419206875f1bd5488aa3bbdf631bf9506a4d12f3ad5b417f906f581fb"
+    },
+    {
+      "doc": "261116_01",
+      "page": 29,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-029.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 28470,
+      "sha256": "801ffb23fb9e1416eb4a33ec4dac31cededee9bda8dc01fc83eefe523fd65bc9"
+    },
+    {
+      "doc": "261116_01",
+      "page": 31,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-031.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 48822,
+      "sha256": "97754dc0e216379a2d829abeadbfa758caa061fb059420770f965341d869345f"
+    },
+    {
+      "doc": "261116_01",
+      "page": 32,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-032.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 42682,
+      "sha256": "d9efa07487269f4e06d398930e9fb982989a87ef5b60a416feab4329ae4dc15f"
+    },
+    {
+      "doc": "261116_01",
+      "page": 33,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-033.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 56754,
+      "sha256": "70a6d4191c6a574bd7845d2efddfcb2a130e4b19b03dface515ef404a52a04fb"
+    },
+    {
+      "doc": "261116_01",
+      "page": 34,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-034.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 71032,
+      "sha256": "ab0241ea9ee966d42ca8b373c5991deba3a56346d266bd43117464d108d34572"
+    },
+    {
+      "doc": "261116_01",
+      "page": 35,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-035.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 62314,
+      "sha256": "63b9da877831f6f8567aa6c07516f69bf98571ad820763912de01ee7b3a1c407"
+    },
+    {
+      "doc": "261116_01",
+      "page": 36,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-036.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 62798,
+      "sha256": "7a2739c41a6c948fa03e95a11c1aa43a0914d09707ad57a24af5b8e98009c270"
+    },
+    {
+      "doc": "261116_01",
+      "page": 37,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-037.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 55742,
+      "sha256": "73dfd44981116087b94052155271c763ecb2227c352511bd2969ae094b5cded2"
+    },
+    {
+      "doc": "261116_01",
+      "page": 38,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-038.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 32964,
+      "sha256": "274530d01fc3ec08e28297a610dec3a5608412d9d95d79bc91fb488486810ede"
+    },
+    {
+      "doc": "261116_01",
+      "page": 39,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-039.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 50624,
+      "sha256": "8aa12118bb4f491eb5972a008c29847be53fa5432cc4c5c8921853815dc150e8"
+    },
+    {
+      "doc": "261116_01",
+      "page": 40,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-040.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 53050,
+      "sha256": "e1cdd9d86c255f234882a37c659a82b64e2401f818fd3ed640dbad32cfdaf3f5"
+    },
+    {
+      "doc": "261116_01",
+      "page": 41,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-041.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 64522,
+      "sha256": "401c99173b4b56a261326125694292ceca6f7df4e38f13a1bfe430f98de6494f"
+    },
+    {
+      "doc": "261116_01",
+      "page": 42,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-042.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 51056,
+      "sha256": "2f9f85caf5d75aff3d07b655ca4511717bd3f2198be9a98f7467fe6729d250ee"
+    },
+    {
+      "doc": "261116_01",
+      "page": 44,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-044.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 51936,
+      "sha256": "07cf88b7018513debd35d72ad1b35eb50aa627d260f6e9f4bc8f0d5c2275a964"
+    },
+    {
+      "doc": "261116_01",
+      "page": 45,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-045.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 29136,
+      "sha256": "384f571d2c3c123bfea5a94d5972c7a3d01508fadd02d003ffb36c6601888307"
+    },
+    {
+      "doc": "261116_01",
+      "page": 46,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-046.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 58900,
+      "sha256": "bf8c3e65c4b6dc23baa6489bae81552de1767f064d36e37670e33d0433696b87"
+    },
+    {
+      "doc": "261116_01",
+      "page": 47,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-047.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 56664,
+      "sha256": "05f064bd03ae6a976d2b82d62d3b4b98039b97149d91e07f9fb0be7ed75e35a9"
+    },
+    {
+      "doc": "261116_01",
+      "page": 49,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-049.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 35872,
+      "sha256": "3693c74350707f5c819b4fbafe041b095ebb37b93a2672e350b604abad404d4c"
+    },
+    {
+      "doc": "261116_01",
+      "page": 50,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-050.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 40290,
+      "sha256": "55139c1780e96cc0d095c20ad93daeb0cdca9b143315634b52d14ab50d47b029"
+    },
+    {
+      "doc": "261116_02",
+      "page": 5,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-005.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 40362,
+      "sha256": "a71f3cc25fff0a9eaf43cbb6bfe5673e61d5eae521c2a53c73c52cd600ce3f57"
+    },
+    {
+      "doc": "261116_02",
+      "page": 7,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-007.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 41436,
+      "sha256": "66de334f432a43877f1eea98e87027a5a9ded3c3db65beeb1ca9d941e42670a8"
+    },
+    {
+      "doc": "261116_02",
+      "page": 9,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-009.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 29470,
+      "sha256": "90e1509809ab38f8c2fde05f3f64dda0b35eb048277d33b462583cc6c2385acf"
+    },
+    {
+      "doc": "261116_02",
+      "page": 10,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-010.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 40658,
+      "sha256": "90771ceff173f4bcbf9e1add1614635b9e372c8cfed3506831e3e6b3cba7e414"
+    },
+    {
+      "doc": "261116_02",
+      "page": 11,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-011.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 35970,
+      "sha256": "8deb530b458b1e2f21ebd36371ae94c057d83b7cd3fb998538f14ae22251602e"
+    },
+    {
+      "doc": "261116_02",
+      "page": 12,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-012.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 64162,
+      "sha256": "c54a00eb98eae86b5bb6a2efaef36a25d75e89ba4ec5418d6e2ad8783dc9ce33"
+    },
+    {
+      "doc": "261116_02",
+      "page": 13,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-013.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 42542,
+      "sha256": "da023da1eb46a81e40a74dae4d3795b495e9549e22bf3ee4712cc00bfdfcdd6f"
+    },
+    {
+      "doc": "261116_02",
+      "page": 14,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-014.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 54554,
+      "sha256": "4ea1bf94fd6cc7c9f597f988224183e1de34af139e37392c4026842635c5cb49"
+    },
+    {
+      "doc": "261116_02",
+      "page": 15,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-015.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 27526,
+      "sha256": "e8f31d51271635973c388c6f9bf06df5b0a0376c1d27233474c944b8f6b23744"
+    },
+    {
+      "doc": "261116_02",
+      "page": 16,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-016.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 37550,
+      "sha256": "3dd9fbc897c70bb15959593ab490e72f16eea210a9c9b27a9f0f1213fde2a205"
+    },
+    {
+      "doc": "261116_02",
+      "page": 18,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-018.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 46198,
+      "sha256": "b5bb2c2afaf9a7997e0271dd09acf67f41806ca0e9bb50a2b7de3890937edb16"
+    },
+    {
+      "doc": "261116_02",
+      "page": 19,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-019.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 41062,
+      "sha256": "1783eaa2700577991c1efa1a188d9d83fe0ea66d30770f3f6e39d8a5504b1058"
+    },
+    {
+      "doc": "261116_02",
+      "page": 20,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-020.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 38488,
+      "sha256": "6f5310d74d7da812092219c822b418b597d0ddf7214f44552c332087a207372d"
+    },
+    {
+      "doc": "261116_02",
+      "page": 23,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-023.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 45100,
+      "sha256": "0b8bb88f1f982561793d01b055bf63e52e179372193d1e8b3e1ca911aa6d6dec"
+    },
+    {
+      "doc": "261116_02",
+      "page": 24,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-024.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 14144,
+      "sha256": "27cdd8b07fa1251f5d5e3ca4af15b54a2756a32c058e2dd44b842c7e64c537c0"
+    },
+    {
+      "doc": "261116_02",
+      "page": 29,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-029.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 45834,
+      "sha256": "391ae7487007e761f0b2946f6b3045c09b13903b29ef43cd9851563586bdaf94"
+    },
+    {
+      "doc": "261116_02",
+      "page": 30,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-030.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 33320,
+      "sha256": "060b4e62d74e13039a94fe0504e41bc1aea04c04b780229f37485f415773f5b5"
+    },
+    {
+      "doc": "261116_02",
+      "page": 31,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-031.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 49208,
+      "sha256": "e386bbce4db78fa2415f08a560698eee931217dc05e07a818da2350ac3d60c26"
+    },
+    {
+      "doc": "261116_02",
+      "page": 32,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-032.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 33732,
+      "sha256": "022f77af224f82e461e395870b414390b14bec0189047bba987df5f0fb3ee506"
+    },
+    {
+      "doc": "261116_02",
+      "page": 33,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-033.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 31802,
+      "sha256": "f9951e8847bde46f26a73b700d717e079aec6ad53b109bb7318a4eed58d1a469"
+    },
+    {
+      "doc": "261116_02",
+      "page": 34,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-034.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 55056,
+      "sha256": "4becf65f36c14a2e415cd1428d56fa5ed7a1c7d732e860335bc0c3c5da390053"
+    },
+    {
+      "doc": "261116_02",
+      "page": 36,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-036.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 56420,
+      "sha256": "4d30b833aeb35b0c625736c0d6ac07061b70db248509a88e11fbee74915b6c65"
+    },
+    {
+      "doc": "261116_02",
+      "page": 37,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-037.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 48914,
+      "sha256": "06284b6faa72b97951a21a17a6fc62c88cff2154d42a54b084f969a6530a588b"
+    },
+    {
+      "doc": "261116_02",
+      "page": 38,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-038.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 35182,
+      "sha256": "ecbceeda1ca532cf18dd18001c3885d009d5ae26ed45ed141b15c7c59b1f0ac3"
+    },
+    {
+      "doc": "261116_02",
+      "page": 39,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-039.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 50586,
+      "sha256": "cb038f7bd7808a5573388fb38d00429f5d9bfca488e0b6fb0fe2486a68225689"
+    },
+    {
+      "doc": "261116_02",
+      "page": 41,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-041.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 52018,
+      "sha256": "ff8548d7081217302de01885b5bdea728d4e8f4184a0b4dc181f49b269d0c537"
+    },
+    {
+      "doc": "261116_02",
+      "page": 42,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-042.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 28904,
+      "sha256": "7956fd689cd1ba9a18e71b9f5514772763bf1eae3c60d46028aa40030c96868b"
+    },
+    {
+      "doc": "261116_02",
+      "page": 43,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-043.webp",
+      "width": 900,
+      "height": 630,
+      "bytes": 50410,
+      "sha256": "4788646b630cf3d91302c57e345b304784c519f8a82b8cb0bc2b6cfc3a74cec0"
+    },
+    {
+      "doc": "261116_03",
+      "page": 5,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-005.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 67074,
+      "sha256": "6a8ae4a7cf52a6200d43ac2b36543f526fb53921ec7d90f3690b1b6582e0f215"
+    },
+    {
+      "doc": "261116_03",
+      "page": 8,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-008.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 77766,
+      "sha256": "6923edcbc673765240c0c23fdface91e3dfad8804f63aa4a0a20fd243629fb19"
+    },
+    {
+      "doc": "261116_03",
+      "page": 9,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-009.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57976,
+      "sha256": "2e35fc3bd05ffa490bf53790cc21597a39d3063bce735ec2cf2505286a0e0972"
+    },
+    {
+      "doc": "261116_03",
+      "page": 12,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-012.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 63338,
+      "sha256": "bd402dc89635bdbd7d1ced20752c5396cffcc72bd93e8921a14ce8629fc7c135"
+    },
+    {
+      "doc": "261116_03",
+      "page": 13,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-013.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 63780,
+      "sha256": "11f0d42c67fa738463239aac1d628acd2ee483c3dfbdddd6d0dcb4968e7ddcfb"
+    },
+    {
+      "doc": "261116_03",
+      "page": 14,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-014.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 31846,
+      "sha256": "28b09aaad3ea9c2279409516fabf1940cd946afa36e1db8fe64550ec4899879e"
+    },
+    {
+      "doc": "261116_03",
+      "page": 15,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-015.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57810,
+      "sha256": "5b60e375862a307f66df19eb9bf9d8dc5d57eef7e4c3f21a0be4348faebfdffc"
+    },
+    {
+      "doc": "261116_03",
+      "page": 16,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-016.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 69142,
+      "sha256": "a462baebee0c8af70719f7a1ec4cc808100047dbfef191ca42e8c5a36fed57b5"
+    },
+    {
+      "doc": "261116_03",
+      "page": 17,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-017.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 47310,
+      "sha256": "0fdcb68e1b17729c43240f7dfa11ebfd3acf49e0c236581d1995ddfe06052849"
+    },
+    {
+      "doc": "261116_03",
+      "page": 19,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-019.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 62316,
+      "sha256": "fac0122daa7753640317865bfe3b35d66513b70b2a685f5d1e76fa3000d26e4d"
+    },
+    {
+      "doc": "261116_03",
+      "page": 21,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-021.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 45958,
+      "sha256": "cf22c8e51828e7556c8f1574a08ace836b21c8735a028061d47d48a8f2235556"
+    },
+    {
+      "doc": "261116_03",
+      "page": 22,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-022.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 56348,
+      "sha256": "d37fd45c226d242081b870d0fa9eaad6939c93a33740d5887a4d4bdc1c0e1435"
+    },
+    {
+      "doc": "261116_03",
+      "page": 24,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-024.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 59092,
+      "sha256": "42072f7f6a3db34974d43c503a00f867a8e42e3aea6ec19cd4c2c188589ce76a"
+    },
+    {
+      "doc": "261116_03",
+      "page": 25,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-025.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 47780,
+      "sha256": "808cb02119b8fc1fdeb1becac102486a00e789d4548e962a78c783e6916fdba3"
+    },
+    {
+      "doc": "261116_03",
+      "page": 28,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-028.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 55468,
+      "sha256": "0c5c331f0861940f6e7e9c0616ee80d0945d4174e83db9bd95fd31a390d08584"
+    },
+    {
+      "doc": "261116_03",
+      "page": 30,
+      "title": "필로바이러스·분야바이러스",
+      "src": "assets/evidence/261116_03-030.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 56580,
+      "sha256": "95ca14cab6bab5163f97660f7ea595a996523ade647c726e98832c46e8c93b11"
+    },
+    {
+      "doc": "261116_05",
+      "page": 4,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-004.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 27688,
+      "sha256": "a58e6f38d61f531df85a7cc6a88ea0c891313981cdc4104ae8a572512a34e90e"
+    },
+    {
+      "doc": "261116_05",
+      "page": 9,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-009.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 76804,
+      "sha256": "ce0b5e94ca04ce896dca0cfa414c98a7fe46191da23608455c17a654f64daf28"
+    },
+    {
+      "doc": "261116_05",
+      "page": 10,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-010.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 49944,
+      "sha256": "44a8940090ba59011c1fe855bd70b71894ff95d339057f5008d9442e290c20cf"
+    },
+    {
+      "doc": "261116_05",
+      "page": 12,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-012.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 58396,
+      "sha256": "a918cbd51b399487e89cbc0d4650f99b56d4d662a33d42cac50d68b2915d920c"
+    },
+    {
+      "doc": "261116_05",
+      "page": 13,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-013.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 27532,
+      "sha256": "c59fc667023724e3b5a297ce6ebcd8ffd1f8cd95e976040a021a2602aa8afb82"
+    },
+    {
+      "doc": "261116_05",
+      "page": 14,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-014.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 38198,
+      "sha256": "78f2d78bbce969422924fb519d19bf3515d27770b48e01a746510738aecb567a"
+    },
+    {
+      "doc": "261116_05",
+      "page": 15,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-015.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 40180,
+      "sha256": "31758c25861b0e079f55472f08d6b345cfada94b10259eb4eeab329b75f909f3"
+    },
+    {
+      "doc": "261116_05",
+      "page": 16,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-016.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 23774,
+      "sha256": "db123c6edb9bee4de194cf58f63195d4a27d5cb3c80683af701ef501a4ba9377"
+    },
+    {
+      "doc": "261116_05",
+      "page": 17,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-017.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 58338,
+      "sha256": "8bc3f335c2ed1674a2f7ed131e60a8552fbc5087095f3ab30343ee1be07f1523"
+    },
+    {
+      "doc": "261116_05",
+      "page": 18,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-018.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 43284,
+      "sha256": "22c6b22600aff1b4c9d56849c505090fc6e7a12d7191f6f20a2b333480d5663c"
+    },
+    {
+      "doc": "261116_05",
+      "page": 19,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-019.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 22366,
+      "sha256": "88deb569f5ce6ecbf51e9979d3a09d12baee00efd9b2338836e565ff8d12a038"
+    },
+    {
+      "doc": "261116_05",
+      "page": 20,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-020.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 47048,
+      "sha256": "c703bb9f5b1efadf0a7e8142a32627db57d131d185b9bea9be6f63cab02e0516"
+    },
+    {
+      "doc": "261116_05",
+      "page": 21,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-021.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57960,
+      "sha256": "17f5c67aace7677a4a8b950b3f3a2ad5ab8a3b80eecf02e0f995c7eebd07b266"
+    },
+    {
+      "doc": "261116_05",
+      "page": 23,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-023.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 50866,
+      "sha256": "61a636c5b5bc7006773e8ea4bedcd8e0183e5224f58e14c5fe25d992d34909dd"
+    },
+    {
+      "doc": "261116_05",
+      "page": 24,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-024.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 43140,
+      "sha256": "cf1c7373adcccec663f1698e85297ec9a915be81db1eff8638f61e4c1ff9bdaf"
+    },
+    {
+      "doc": "261116_05",
+      "page": 25,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-025.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 26122,
+      "sha256": "6d858d766cc8513aa9bb2eb6a275e4534c7858b9ff7c305de2279168a4fac43a"
+    },
+    {
+      "doc": "261116_05",
+      "page": 26,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-026.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 38584,
+      "sha256": "48aef455893fd2d52ec4ce3b65aa3e1bd12b62759087fdfd0c893e847dbcdc5d"
+    },
+    {
+      "doc": "261116_05",
+      "page": 27,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-027.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 70850,
+      "sha256": "0d64f9588ac199e50a8429a5e007590eb15795d100936c476f2120e67c105c73"
+    },
+    {
+      "doc": "261116_05",
+      "page": 28,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-028.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 47092,
+      "sha256": "a485c14a0cbebb2b4495ec3d69252f3dac81b9e501aea9c736267e56abf0c7fc"
+    },
+    {
+      "doc": "261116_05",
+      "page": 30,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-030.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 51044,
+      "sha256": "59e068fca48526daea8c044234055e9fedf62a68648ca37ecd49019c6bf435df"
+    },
+    {
+      "doc": "261116_05",
+      "page": 31,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-031.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 33740,
+      "sha256": "9eb7b86204851958ba4a89d4bbb8fe3b5828f24a1964f9a61ab940a915d6b130"
+    },
+    {
+      "doc": "261116_05",
+      "page": 32,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-032.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 27838,
+      "sha256": "fd2a60bd1141e46ee00e306cceda3f7807906f3c31e3259598c26f4deb0b7290"
+    },
+    {
+      "doc": "261116_05",
+      "page": 34,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-034.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 48240,
+      "sha256": "bc0754863c66e6e5a0559c34b1af798e5b6e5e55bd71fbdc1ead0934c0ae015d"
+    },
+    {
+      "doc": "261116_05",
+      "page": 35,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-035.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 31642,
+      "sha256": "b4a98a3416caaab26677aaf306c38968416fb3e8fd4535282fe12105b0510e1c"
+    },
+    {
+      "doc": "261116_05",
+      "page": 36,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-036.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 33792,
+      "sha256": "d41ce0868b2e1fbc5f5eccba03b0ba5ff4450850cbc5d64a96ef992c2e794f21"
+    },
+    {
+      "doc": "261116_05",
+      "page": 37,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-037.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 23332,
+      "sha256": "8fe058ba6ad9ec9828b9da60ad002b946b6bb656a5eb33662ad13334fa6dc0fe"
+    },
+    {
+      "doc": "261116_05",
+      "page": 38,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-038.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 28520,
+      "sha256": "55d25af9f40cb891583c78ac4f07f63ee5877fac68866a3bf9c37158f0cda4c2"
+    },
+    {
+      "doc": "261116_05",
+      "page": 39,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-039.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 37002,
+      "sha256": "cb59497c28e8500861c4258edb97a7d0ab7f3b947236a1aaf56026acfbb52fda"
+    },
+    {
+      "doc": "261116_05",
+      "page": 43,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-043.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 50232,
+      "sha256": "bfdb48cdb6be2248ceb01784aec86962a2a56380c571206f4eb921205901023e"
+    },
+    {
+      "doc": "261116_06",
+      "page": 5,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-005.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 44202,
+      "sha256": "3633c5437c54ea892b8ba948c64f2a6efc8de774e342a3b5f148c8f43b312d5c"
+    },
+    {
+      "doc": "261116_06",
+      "page": 6,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-006.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 52390,
+      "sha256": "0913499c48a906656dd709669f27a41e596432364f6f5ff713c0fdddfc1820dd"
+    },
+    {
+      "doc": "261116_06",
+      "page": 7,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-007.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 25714,
+      "sha256": "c5d6dc908a230d19e1200234de9643990f82ee00cc37b7294b8ef96a27db9869"
+    },
+    {
+      "doc": "261116_06",
+      "page": 8,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-008.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 47352,
+      "sha256": "65fef571a5563a8eed3a878fe317f8dd2410858ca9c6718f763d7ddcdb80baca"
+    },
+    {
+      "doc": "261116_06",
+      "page": 9,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-009.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 63016,
+      "sha256": "797a824b668015db4364f9eca9a10ad128949782e38f79ff76a7e36119dab722"
+    },
+    {
+      "doc": "261116_06",
+      "page": 10,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-010.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 65738,
+      "sha256": "a37d5667ec882ff284072d05e02482eb1954dbff140c6085b92b95ac3741c380"
+    },
+    {
+      "doc": "261116_06",
+      "page": 12,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-012.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 56054,
+      "sha256": "ec23b9acee257a69a6fb16b2498b600537fc4aaa0dfe1abcbd1b2a1824d5c0e5"
+    },
+    {
+      "doc": "261116_06",
+      "page": 13,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-013.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 29366,
+      "sha256": "432407b7505e54c37b10606e58f8bd27915120002114cb3e97d089213379c55c"
+    },
+    {
+      "doc": "261116_06",
+      "page": 14,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-014.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 50304,
+      "sha256": "1df62801e65b983f477d23afa533a6dbd91f7df834e851dbb352e81d425d1259"
+    },
+    {
+      "doc": "261116_06",
+      "page": 15,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-015.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57468,
+      "sha256": "09c88e4f1a81e9e77f55c000ddf4117ed81b41334b38e907a4f8127e22361a8d"
+    },
+    {
+      "doc": "261116_06",
+      "page": 17,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-017.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 25902,
+      "sha256": "5627a20ced18983b9db1b6ae71bed837d42ee137bba4f036bd158b4ab38ec19f"
+    },
+    {
+      "doc": "261116_06",
+      "page": 18,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-018.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 40584,
+      "sha256": "9cccbdc9f1b2d328b504149c880e8f50fa52af456fd73f85330a2eaa2791c7af"
+    },
+    {
+      "doc": "261116_06",
+      "page": 19,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-019.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 55438,
+      "sha256": "0b6d45af8217a9877b7c4dcba4423fe932ff6d085f58bf263cdfbdf3f919ea24"
+    },
+    {
+      "doc": "261116_06",
+      "page": 21,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-021.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 39990,
+      "sha256": "b9c633d41023858fd6cf35152d932f7b7119e0f5284e545db2a49c56697a5289"
+    },
+    {
+      "doc": "261116_06",
+      "page": 23,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-023.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 37476,
+      "sha256": "7bbb74963d3b784678b4b638d119c4c4068a1970af3f09df8e3d418d235ab89c"
+    },
+    {
+      "doc": "261116_06",
+      "page": 24,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-024.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 43258,
+      "sha256": "86d8c51b8ede5bd9c5c231126d3fc67edc5869530566a610e8947f9b3b751a70"
+    },
+    {
+      "doc": "261116_06",
+      "page": 25,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-025.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 37940,
+      "sha256": "734784633fe8681a0250bd5ae65d824645b1d2d2512616a4fa53ff8ac4e77328"
+    },
+    {
+      "doc": "261116_06",
+      "page": 26,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-026.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 50418,
+      "sha256": "ac588b03aea87101c3a423dad0b5328683de15ba51a4466f24047e74309ed3a6"
+    },
+    {
+      "doc": "261116_06",
+      "page": 27,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-027.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 65476,
+      "sha256": "095ca7e43e690c520e11cbb44ef5800223ea2bd0bd8791c8884e001df251947d"
+    },
+    {
+      "doc": "261116_06",
+      "page": 28,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-028.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 59824,
+      "sha256": "09c351bf49fca7ac47a60e452dcc76ab5e353cb89b4bc7970c747dc2ff1305bc"
+    },
+    {
+      "doc": "261116_06",
+      "page": 29,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-029.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 26044,
+      "sha256": "cec12c6903f5950c727ef3fb14983fb08a081b839c67ad33890906f47aecba38"
+    },
+    {
+      "doc": "261116_06",
+      "page": 32,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-032.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 17966,
+      "sha256": "0b446a289c886173a9f5df85f7edba750d5819c8afbcd2f33405bccd5e06d7bd"
+    },
+    {
+      "doc": "261116_06",
+      "page": 34,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-034.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 30310,
+      "sha256": "0535f9e707ddeb065f08712f533e4541efb69a53d10506adf8343782f3063fc2"
+    },
+    {
+      "doc": "261116_06",
+      "page": 37,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-037.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 31432,
+      "sha256": "2e843413b7ae978eccb00fd25f31c39d5230c83167722489c3fa096e85e92b84"
+    },
+    {
+      "doc": "261116_06",
+      "page": 39,
+      "title": "아스페르길루스·크립토코쿠스·털곰팡이·피부진균",
+      "src": "assets/evidence/261116_06-039.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 36014,
+      "sha256": "0035bb614310a3a0db22ac821be0c6e476be72d0780a26752fcc385350ac09dd"
     },
     {
       "doc": "antibiotics",

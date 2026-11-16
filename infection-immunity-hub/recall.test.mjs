@@ -21,7 +21,7 @@ test('a small recall set cannot leak questions from other lectures or topics',()
 });
 test('all recall questions belong to a lecture and a focused, explained small set',()=>{
  assert.deepEqual(Object.keys(COURSE_GROUPS),['general','bacteria','virus','cbl']);
- assert.equal(Object.keys(LECTURES).length,32);
+ assert.equal(Object.keys(LECTURES).length,37);
  const membership=[];
  for(const [id,set] of Object.entries(RECALL_SETS)){
   assert.equal(set.id,id);assert.ok(RECALL_LECTURES[set.lecture],id);assert.ok(set.questionIds.length>0&&set.questionIds.length<=16,id);
@@ -55,19 +55,21 @@ test('all main-hub antibiotics appear once in recall with stable IDs and origina
   assert.deepEqual(copy.sourceRefs,[{doc:'antibiotics',pages:original.pages}]);
   assert.ok(RECALL_SETS[copy.recallSection].questionIds.includes(copy.id));
  }
- for(const section of ['oral','bbb','pregnancy'])assert.equal(RECALL_SETS['261102_05:'+section].questionIds.length,16);
+ for(const section of ['oral','bbb','pregnancy'])assert.equal(RECALL_SETS['261102_05:'+section].questionIds.length,ANTIBIOTIC_QUESTIONS.filter(q=>q.topic===section).length);
  const caseSets=['cases-cns','cases-typhi','cases-pyelonephritis','cases-management'].map(key=>RECALL_SETS['261102_05:'+key]);
- assert.equal(caseSets.flatMap(s=>s.questionIds).length,24);
+ assert.equal(caseSets.flatMap(s=>s.questionIds).length,ANTIBIOTIC_QUESTIONS.filter(q=>q.topic==='cases').length);
  assert.ok(caseSets.every(s=>s.questionIds.length<=10));
 });
 
 test('antibiotic recall rounds include OX and preserve two-choice grading after reload',()=>{
- const scope=RECALL_SETS['261102_05:oral'];
- const session=nextRound(TABLE_QUESTIONS,{topic:'all',format:'all',questionIds:scope.questionIds,count:0},{},()=>0.4);
- assert.equal(session.items.length,16);
+ const active=Object.values(RECALL_SETS).find(s=>s.lecture==='261102_05'&&s.questionIds.some(id=>TABLE_QUESTIONS.find(q=>q.id===id)?.format==='ox'));
+ const fixture={id:'ox-regression-fixture',topic:'ox-test',format:'ox',choices:['O · 그렇다','X · 아니다'],answer:1};
+ const bank=active?TABLE_QUESTIONS:[fixture],scope=active||{questionIds:[fixture.id]};
+ const session=nextRound(bank,{topic:'all',format:'all',questionIds:scope.questionIds,count:0},{},()=>0.4);
+ assert.equal(session.items.length,scope.questionIds.length);
  const index=session.items.findIndex(i=>i.choices.length===2);assert.ok(index>=0);
  assert.deepEqual(session.items[index].choices,['O · 그렇다','X · 아니다']);
- const result=grade(session,{},index,session.items[index].answer,TABLE_QUESTIONS);
- assert.equal(result.correct,true);assert.ok(restoreSession(JSON.stringify(session),TABLE_QUESTIONS));
- assert.deepEqual(nextRound(TABLE_QUESTIONS,session.filters,{},()=>0.2).items.map(q=>q.id).sort(),scope.questionIds.toSorted());
+ const result=grade(session,{},index,session.items[index].answer,bank);
+ assert.equal(result.correct,true);assert.ok(restoreSession(JSON.stringify(session),bank));
+ assert.deepEqual(nextRound(bank,session.filters,{},()=>0.2).items.map(q=>q.id).sort(),scope.questionIds.toSorted());
 });

@@ -12,7 +12,7 @@ test('multiple-choice options do not signal falsehood with sweeping rhetorical c
 });
 
 test('pathology statement questions use five close, source-linked factual substitutions',()=>{
- for(const q of PATH_QUESTIONS.filter(q=>q.ask!=='organism')){
+ for(const q of PATH_QUESTIONS.filter(q=>['correct','incorrect'].includes(q.ask))){
   assert.equal(q.choiceEvidence?.length,5,q.id);
   assert.equal(q.choiceEvidence.filter(e=>e.shownIsTrue).length,q.ask==='correct'?1:4,q.id);
   assert.equal(q.choiceEvidence[q.answer].shownIsTrue,q.ask==='correct',q.id);

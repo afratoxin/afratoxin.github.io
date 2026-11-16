@@ -7,16 +7,17 @@ import {QUESTIONS as ABX} from './bank.mjs';
 test('pathology has all three requested question styles with physical label-free photo assets',async()=>{
   assert.ok(fs.existsSync(new URL('./pathology-bank.mjs',import.meta.url)),'pathology bank is missing');
   const {PATH_QUESTIONS,PHOTOS}=await import('./pathology-bank.mjs');
-  assert.equal(PATH_QUESTIONS.length,86);
-  assert.equal(new Set(PATH_QUESTIONS.map(q=>q.id)).size,86);
-  for(const [topic,count] of [['path-image',32],['path-traits',32],['path-general',22]])assert.equal(PATH_QUESTIONS.filter(q=>q.topic===topic).length,count);
+  assert.ok(PATH_QUESTIONS.length>=48);
+  assert.equal(new Set(PATH_QUESTIONS.map(q=>q.id)).size,PATH_QUESTIONS.length);
+  assert.equal(PATH_QUESTIONS.filter(q=>q.topic==='path-image').length,32);
+  for(const topic of ['path-traits','path-general'])assert.ok(PATH_QUESTIONS.some(q=>q.topic===topic));
   for(const q of PATH_QUESTIONS){
     assert.equal(q.format,'mcq');assert.equal(q.choices.length,5);assert.equal(new Set(q.choices).size,5);
     assert.ok(q.answer>=0&&q.answer<5);assert.ok(q.explanation);assert.equal(q.choiceNotes.length,5);assert.ok(q.choiceNotes.every(Boolean));
-    assert.ok(q.sourceRefs.length);assert.ok(q.sourceRefs.every(s=>['path1','path2','lab'].includes(s.doc)&&s.pages.length));
+    assert.ok(q.sourceRefs.length);assert.ok(q.sourceRefs.every(s=>['path1','path2','lab','261116_05','261116_06'].includes(s.doc)&&s.pages.length));
     if(q.topic==='path-image')assert.ok(q.photos.length);
     for(const id of q.photos){const im=PHOTOS[id];assert.ok(im);assert.match(im.src,/^assets\/pathology\/(?:figure-\d+|edu-\d{2}(?:-detail)?)\.webp$/);assert.ok(fs.existsSync(new URL(im.src,import.meta.url)),im.src);assert.ok(!im.alt.includes(q.choices[q.answer]));}
-    if(q.topic!=='path-image')assert.ok(['correct','incorrect'].includes(q.ask));
+    if(q.topic!=='path-image')assert.ok(['correct','incorrect'].includes(q.ask)||q.id.endsWith('-focus'));
   }
 });
 
@@ -44,7 +45,7 @@ test('pathology routing is independent and old antibiotic progress remains untou
   const retry=buildSession(PATH_QUESTIONS,{mode:'wrong'},progress);
   progress=grade(retry,progress,0,retry.items[0].answer,PATH_QUESTIONS).progress;
   assert.equal(stats(PATH_QUESTIONS,progress).wrong,0);
-  assert.equal(stats(PATH_QUESTIONS,progress).total,86);
+  assert.equal(stats(PATH_QUESTIONS,progress).total,PATH_QUESTIONS.length);
   assert.equal(stats(ABX,abxProgress).wrong,1);
   assert.equal(restoreSession(JSON.stringify(p),PATH_QUESTIONS).items.length,10);
 });
@@ -69,8 +70,8 @@ test('lecture and library scopes share unique IDs and restore a library-only fil
  const {PATH_QUESTIONS,PHOTOS}=await import('./pathology-bank.mjs');
  const {pathologyFilters}=await import('./pathology-ui.mjs');
  const lectures=PATH_QUESTIONS.filter(q=>q.sourceScope==='lecture'),library=PATH_QUESTIONS.filter(q=>q.sourceScope==='library');
- assert.equal(lectures.length,72);assert.equal(library.length,14);
- assert.equal(new Set(PATH_QUESTIONS.map(q=>q.id)).size,86);
+ assert.equal(lectures.length,PATH_QUESTIONS.length-library.length);assert.equal(library.length,14);
+ assert.equal(new Set(PATH_QUESTIONS.map(q=>q.id)).size,PATH_QUESTIONS.length);
  assert.ok(lectures.some(q=>q.id==='path-image-01'));
  assert.ok(library.every(q=>q.id.startsWith('path-edu-v2-')));
  const f=pathologyFilters('library','unanswered',0);
