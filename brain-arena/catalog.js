@@ -44,7 +44,7 @@ window.BrainArenaCatalog = {
       "title": "기억 포커",
       "description": "16장을 20초 동안 기억하고 두 장을 선택하세요. 공유 카드와 만든 패가 120가지 선택 중 몇 위인지 확인합니다.",
       "tag": "혼자 플레이 · 기억과 포커",
-      "href": "../memory-poker/?v=20261114-unified"
+      "href": "../memory-poker/?v=20261117-studio"
     },
     {
       "id": "expression-archery",
@@ -52,7 +52,7 @@ window.BrainArenaCatalog = {
       "title": "수식 양궁",
       "description": "실제 방송의 35개 표적으로 시작하세요. 새 과녁에서는 숫자가 달라지고, 네 카드로 25점에 도전합니다.",
       "tag": "혼자 플레이 · 3분 도전 / 자유 연습",
-      "href": "../expression-archery/?v=20261114-unified"
+      "href": "../expression-archery/?v=20261117-studio"
     },
     {
       "id": "rectangle-count",
@@ -60,7 +60,7 @@ window.BrainArenaCatalog = {
       "title": "네모 세기",
       "description": "방송에서 나온 판과 새로운 구성을 무작위로 만나세요. 타깃 합을 만드는 네모를 세고, 오답 후 10초 뒤 다시 도전합니다.",
       "tag": "1인 연습 · 방송 문제 포함 / 무작위 출제",
-      "href": "../rectangle-count/?v=20261114-unified"
+      "href": "../rectangle-count/?v=20261117-studio"
     },
     {
       "id": "formula-death-note",
@@ -68,7 +68,7 @@ window.BrainArenaCatalog = {
       "title": "수식 데스노트",
       "description": "열두 장의 숫자 카드로 목표값을 만든 뒤, 남은 카드와 단서로 세 자리 암호를 찾아내세요.",
       "tag": "혼자 플레이 · 5라운드 / 코드 추리",
-      "href": "../formula-death-note/?v=20261114-unified"
+      "href": "../formula-death-note/?v=20261117-studio"
     },
     {
       "id": "rotation-pattern",
@@ -76,7 +76,7 @@ window.BrainArenaCatalog = {
       "title": "회전 패턴",
       "description": "불빛의 위치를 기억하고, 회전·뒤집힌 판에서 패턴을 복원하세요. 5×5에서 시작해 연속 정답으로 6×6·7×7로 넓어지는 20단계 공간 기억 도전.",
       "tag": "오리지널 · 공간 기억 / 단계 도전 · 자유 연습",
-      "href": "../rotation-pattern/?v=20261117-small-boards"
+      "href": "../rotation-pattern/?v=20261117-studio"
     },
     {
       "id": "echo-maze",
@@ -84,7 +84,7 @@ window.BrainArenaCatalog = {
       "title": "잔향 미로",
       "description": "크기에 따라 10~30초 뒤 사라지는 미로의 벽. 기억과 잔향 탐지로 세 조각을 모으고, 에너지가 꺼지기 전에 탈출하세요.",
       "tag": "혼자 플레이 · 오리지널 / 난이도 3단계",
-      "href": "../echo-maze/?v=20261114-unified"
+      "href": "../echo-maze/?v=20261117-studio"
     },
     {
       "id": "mix-and-match",
@@ -92,7 +92,7 @@ window.BrainArenaCatalog = {
       "title": "믹스 앤 매치",
       "description": "번갈아 나타나는 노란 선 조각을 머릿속으로 겹치세요. 두 자리 숫자 A와 B를 완성하고 합을 맞힙니다.",
       "tag": "혼자 플레이 · 피의 게임 3 / 5라운드",
-      "href": "../mix-and-match/?v=20261114-unified"
+      "href": "../mix-and-match/?v=20261117-studio"
     },
     {
       "id": "mix-and-match-2",
@@ -100,7 +100,7 @@ window.BrainArenaCatalog = {
       "title": "믹스 앤 매치 II",
       "description": "글자당 7×11칸의 검정 격자 조각을 겹쳐 단어를 찾으세요. 2글자 4단계, 3글자 5단계, 4글자 3단계.",
       "tag": "혼자 플레이 · 피의 게임 X / 12단계",
-      "href": "../mix-and-match-2/?v=20261115-grid711"
+      "href": "../mix-and-match-2/?v=20261117-studio"
     },
     {
       "id": "memory-30",
@@ -108,7 +108,7 @@ window.BrainArenaCatalog = {
       "title": "메모리30",
       "description": "30개 명제를 기억하고 숨겨진 연결을 찾으세요. 두세 개의 사실을 조합해 4지선다 퀴즈를 풉니다.",
       "tag": "혼자 플레이 · 피의 게임 3 / 2라운드",
-      "href": "../memory-30/?v=20261114-unified"
+      "href": "../memory-30/?v=20261117-studio"
     },
     {
       "id": "formula-maze",
@@ -116,7 +116,7 @@ window.BrainArenaCatalog = {
       "title": "수식미로",
       "description": "16개의 숫자를 기억한 뒤, 알파벳판에서 길을 이으세요. 출발부터 도착까지 모든 숫자의 합을 목표값과 맞춥니다.",
       "tag": "혼자 플레이 · 피의 게임 3 / 3라운드 5문제",
-      "href": "../formula-maze/?v=20261114-unified"
+      "href": "../formula-maze/?v=20261117-studio"
     },
     {
       "id": "maze-code",
@@ -124,7 +124,7 @@ window.BrainArenaCatalog = {
       "title": "미로코드",
       "description": "3D 미로 속 물음표는 지도 위의 어디일까요? 벽과 갈림길을 비교해 현재 위치의 좌표를 찾아내세요.",
       "tag": "혼자 플레이 · 피의 게임 2 / 2개 지도 · 6문제",
-      "href": "../maze-code/?v=20261114-unified"
+      "href": "../maze-code/?v=20261117-studio"
     },
     {
       "id": "same-picture",
@@ -132,7 +132,7 @@ window.BrainArenaCatalog = {
       "description": "방송식 기하 문양과 색상 변형을 구별해 위치를 기억하세요. 컨베이어에서 같은 그림을 찾고 끝까지 전진합니다.",
       "tag": "1인 연습 · 그림 기억 / 컨베이어",
       "category": "genius",
-      "href": "../same-picture/?v=20261114-unified"
+      "href": "../same-picture/?v=20261117-studio"
     },
     {
       "id": "same-number",
@@ -140,7 +140,7 @@ window.BrainArenaCatalog = {
       "description": "1~12와 사칙연산의 위치를 5초 동안 기억하세요. 버저 후 알파벳 세 개로 타깃 수식을 만듭니다.",
       "tag": "1인 연습 · 5초 암기 / 10문제",
       "category": "genius",
-      "href": "../same-number/?v=20261114-unified"
+      "href": "../same-number/?v=20261117-studio"
     },
     {
       "id": "gyul-hap",
@@ -148,7 +148,7 @@ window.BrainArenaCatalog = {
       "description": "모양·배경색·도형색이 각각 모두 같거나 모두 다른 세 장을 찾으세요. 남은 합이 없다면 결!",
       "tag": "1인 연습 · 속성 추론 / 10라운드",
       "category": "genius",
-      "href": "../gyul-hap/?v=20261114-unified"
+      "href": "../gyul-hap/?v=20261117-studio"
     },
     {
       "id": "hexagon",
@@ -156,7 +156,7 @@ window.BrainArenaCatalog = {
       "title": "헥사곤",
       "description": "19칸의 숫자를 30초 동안 기억하세요. 일렬로 이어진 세 칸의 합을 타깃과 맞추고 이전 답까지 기억합니다.",
       "tag": "1인 연습 · 데블스플랜 1 / 10라운드",
-      "href": "../hexagon/?v=20261114-unified"
+      "href": "../hexagon/?v=20261117-studio"
     },
     {
       "id": "equation-pyramid",
@@ -164,7 +164,7 @@ window.BrainArenaCatalog = {
       "title": "수식 피라미드",
       "description": "10칸에서 세 칸을 골라 수식을 완성하세요. 첫 기호는 무시하고, 곱셈과 나눗셈부터 계산합니다.",
       "tag": "1인 연습 · 데블스플랜 2 / 10라운드",
-      "href": "../equation-pyramid/?v=20261114-unified"
+      "href": "../equation-pyramid/?v=20261117-studio"
     },
     {
       "id": "match-and-mix",
@@ -172,7 +172,7 @@ window.BrainArenaCatalog = {
       "title": "매치 앤 믹스",
       "description": "움직이는 8개 숫자판에서 같은 숫자 두 개를 찾으세요. 빈칸으로 판을 옮긴 뒤의 위치까지 기억합니다.",
       "tag": "1인 연습 · 시즌 1 · 40칩 / 판 이동",
-      "href": "../match-and-mix/?v=20261114-unified"
+      "href": "../match-and-mix/?v=20261117-studio"
     },
     {
       "id": "pixel-number",
@@ -180,7 +180,7 @@ window.BrainArenaCatalog = {
       "title": "픽셀 넘버 1",
       "description": "3×5 픽셀 카드 15장을 머릿속에서 겹치세요. 타깃 세 개와 마지막 라운드의 숨은 숫자를 찾습니다.",
       "tag": "1인 연습 · 시즌 1 · 겹치기 / 숨은 타깃",
-      "href": "../pixel-number/?v=20261114-unified"
+      "href": "../pixel-number/?v=20261117-studio"
     },
     {
       "id": "pixel-number-2",
@@ -188,7 +188,7 @@ window.BrainArenaCatalog = {
       "title": "픽셀 넘버 2",
       "description": "배경색별로 빨강을 합치고 파랑을 빼세요. 회색은 십의 자리, 흰색은 일의 자리가 됩니다.",
       "tag": "에이스 4종 · 정답마다 제한시간 10초 감소",
-      "href": "../pixel-number-2/?v=20261114-unified",
+      "href": "../pixel-number-2/?v=20261117-studio",
       "group": "ace-four"
     },
     {
@@ -197,7 +197,7 @@ window.BrainArenaCatalog = {
       "title": "면적 순위",
       "description": "격자 없는 정사각형의 네 색 영역. 서로 비슷한 넓이를 비교해 큰 순서대로 맞히세요.",
       "tag": "에이스 4종 · 정답마다 제한시간 10초 감소",
-      "href": "../area-ranking/?v=20261114-unified",
+      "href": "../area-ranking/?v=20261117-studio",
       "group": "ace-four"
     },
     {
@@ -206,7 +206,7 @@ window.BrainArenaCatalog = {
       "title": "양자택일",
       "description": "가로셈 두 개의 합을 비교하세요. 양쪽 숫자는 모두 다르지만 규모와 합은 비슷하게 제시됩니다.",
       "tag": "에이스 4종 · 정답마다 제한시간 10초 감소",
-      "href": "../either-or/?v=20261114-unified",
+      "href": "../either-or/?v=20261117-studio",
       "group": "ace-four"
     },
     {
@@ -215,7 +215,7 @@ window.BrainArenaCatalog = {
       "title": "합체 사다리",
       "description": "9개 가지의 5줄 사다리부터 기울어진 6줄 사다리까지. 보이는 하단 ?의 값을 왼쪽부터 맞히세요.",
       "tag": "5단계 · 재조립 / 경로 추적",
-      "href": "../merge-ladder/?v=20261114-relay8",
+      "href": "../merge-ladder/?v=20261117-studio",
       "group": "pyramid-game"
     },
     {
@@ -224,7 +224,7 @@ window.BrainArenaCatalog = {
       "title": "3분할",
       "description": "초성 카드를 드래그해 나누고, 남김없이 써서 세 수를 만드세요. 한자어 숫자의 초성과 타깃 합을 동시에 맞힙니다.",
       "tag": "1인 연습 · 시즌 3 · 초성 / 숫자 조합",
-      "href": "../trisection/?v=20261114-unified"
+      "href": "../trisection/?v=20261117-studio"
     },
     {
       "id": "hidden-algorithm",
@@ -232,7 +232,7 @@ window.BrainArenaCatalog = {
       "title": "히든 알고리즘",
       "description": "눈에 잘 들어오는 5×5 판에서 8×8 판까지. 숫자의 이동 우선순위를 찾아 목표에 정확히 멈추세요.",
       "tag": "5단계 · 우선순위 / 경로 추론",
-      "href": "../hidden-algorithm/?v=20261114-relay8",
+      "href": "../hidden-algorithm/?v=20261117-studio",
       "group": "pyramid-game"
     },
     {
@@ -241,7 +241,7 @@ window.BrainArenaCatalog = {
       "title": "요일 수식",
       "description": "실제 달력의 날짜로 제곱·지수·팩토리얼·나눗셈 수식을 완성하세요. 작은 목표값으로 연산의 조합을 익힙니다.",
       "tag": "5단계 · 달력 / 다양한 연산",
-      "href": "../weekday-equation/?v=20261114-relay8",
+      "href": "../weekday-equation/?v=20261117-studio",
       "group": "pyramid-game"
     },
     {
@@ -250,7 +250,7 @@ window.BrainArenaCatalog = {
       "title": "삼중미로",
       "description": "5단계로 점점 길어지는 목적지 경로. 세 색의 벽 지도를 기억하고 서로 다른 목적지 두 곳을 찾으세요.",
       "tag": "5단계 · 평균 경로 / 공간 기억",
-      "href": "../triple-maze/?v=20261114-unified"
+      "href": "../triple-maze/?v=20261117-studio"
     },
     {
       "id": "exit-strategy-2",
@@ -258,7 +258,7 @@ window.BrainArenaCatalog = {
       "title": "출구 전략 2",
       "description": "끝까지 미끄러지는 말을 중앙 출구에 정확히 멈추세요. 컴퓨터보다 먼저 두 말을 탈출시킵니다.",
       "tag": "강화 AI 대결 · 시즌 2 · 이동 / 봉쇄",
-      "href": "../exit-strategy-2/?v=20261115-smart"
+      "href": "../exit-strategy-2/?v=20261117-studio"
     },
     {
       "id": "sum-difference-gomoku",
@@ -266,7 +266,7 @@ window.BrainArenaCatalog = {
       "title": "합차 오목",
       "description": "이어진 줄 전체에서 내 돌은 더하고 상대 돌은 빼세요. 정확히 16을 만드는 수로 컴퓨터와 겨룹니다.",
       "tag": "강화 AI 대결 · 시즌 2 · 수 계산 / 전략",
-      "href": "../sum-difference-gomoku/?v=20261115-smart"
+      "href": "../sum-difference-gomoku/?v=20261117-studio"
     },
     {
       "id": "rainbow-sequence",
@@ -274,7 +274,7 @@ window.BrainArenaCatalog = {
       "title": "레인보우 수열",
       "description": "방송 수준에서 시작해 심화·최상급으로 올라가는 3단계. 일곱 색의 복합 수열을 추론하고 숫자와 위치를 기억하세요.",
       "tag": "3단계 · 방송 수준 → 심화 → 최상급",
-      "href": "../rainbow-sequence/?v=20261115-rainbow3"
+      "href": "../rainbow-sequence/?v=20261117-studio"
     },
     {
       "id": "rotating-rps",
@@ -282,7 +282,7 @@ window.BrainArenaCatalog = {
       "title": "회전! 가위바위보",
       "description": "현재 위치에 표시되는 주사위 윗면의 색과 그림 방향을 읽으세요. 아랫면과 바닥의 승부를 예측해 컴퓨터와 겨룹니다.",
       "tag": "컴퓨터 대결 · 회전 / 공간 추론",
-      "href": "../rotating-rps/?v=20261114-unified"
+      "href": "../rotating-rps/?v=20261117-studio"
     },
     {
       "id": "formula-territory",
@@ -290,7 +290,7 @@ window.BrainArenaCatalog = {
       "title": "수식 땅따먹기",
       "description": "방송 결승의 13×13 판에서 수식으로 땅을 넓히세요. 새로운 변형 판과 컴퓨터 대결도 준비했습니다.",
       "tag": "방송 판 / 변형 판 · 컴퓨터 대결",
-      "href": "../formula-territory/?v=20261114-unified"
+      "href": "../formula-territory/?v=20261117-studio"
     },
     {
       "id": "zero-sum",
@@ -298,7 +298,7 @@ window.BrainArenaCatalog = {
       "title": "제로섬 게임",
       "description": "양수·음수 18개의 위치를 기억하세요. 가린 뒤 제시되는 두 수와 합이 0이 되는 위치를 순서대로 찾습니다.",
       "tag": "에이스 4종 · 정답마다 관찰시간 10초 감소",
-      "href": "../zero-sum/?v=20261114-relay8",
+      "href": "../zero-sum/?v=20261117-studio",
       "group": "ace-four"
     },
     {
@@ -307,7 +307,7 @@ window.BrainArenaCatalog = {
       "title": "에이스 4종 순환",
       "description": "양자택일 → 면적 순위 → 픽셀넘버2 → 제로섬. 정답마다 120초에서 10초까지 줄어드는 12문제에 도전합니다.",
       "tag": "순환 도전 · 12연속 정답 / 자유 연습",
-      "href": "../ace-circuit/?v=20261114-relay8",
+      "href": "../ace-circuit/?v=20261117-studio",
       "group": "ace-four"
     },
     {
@@ -316,7 +316,7 @@ window.BrainArenaCatalog = {
       "title": "저울",
       "description": "협동 홀덤의 저울 미니게임. 칸마다 다른 숫자를 읽고, 정해진 개수의 추를 모두 배치해 균형을 맞추세요.",
       "tag": "1인 연습 · 협동 홀덤 / 5단계",
-      "href": "../scale-balance/?v=20261114-unified"
+      "href": "../scale-balance/?v=20261117-studio"
     },
     {
       "id": "same-pattern",
@@ -324,7 +324,7 @@ window.BrainArenaCatalog = {
       "title": "같은 패턴 찾기",
       "description": "10×8 화살표판에서 목표 2×2 패턴을 찾으세요. 회전은 인정, 반전은 제외. 모두 찾았다면 끝을 선언하세요.",
       "tag": "1인 연습 · 숨은 패턴 찾기 / 6라운드",
-      "href": "../same-pattern/?v=20261115-thick"
+      "href": "../same-pattern/?v=20261117-studio"
     },
     {
       "id": "time-shift",
@@ -332,7 +332,7 @@ window.BrainArenaCatalog = {
       "title": "시간이동",
       "description": "1~6 또는 1~7을 한 번씩 배치해 시간 문장을 완성하세요. 자정 통과와 연속 이동까지 총 8단계.",
       "tag": "시즌 3 릴레이 · 숫자 배치 / 8단계",
-      "href": "../time-shift/?v=20261114-relay8",
+      "href": "../time-shift/?v=20261117-studio",
       "group": "relay-match"
     },
     {
@@ -341,7 +341,7 @@ window.BrainArenaCatalog = {
       "title": "픽셀아트",
       "description": "9장의 픽셀 카드 중 타깃을 완성할 세 장을 고르세요. 머릿속 회전과 색의 혼합, 총 8단계.",
       "tag": "시즌 3 릴레이 · 색 혼합 / 8단계",
-      "href": "../pixel-art/?v=20261114-relay8",
+      "href": "../pixel-art/?v=20261117-studio",
       "group": "relay-match"
     },
     {
@@ -350,7 +350,7 @@ window.BrainArenaCatalog = {
       "title": "블록 개수 세기",
       "description": "기둥·탑·피라미드·빈 구조·문·다리까지 다양한 입체를 네 방향에서 살펴보고, 실제 블록 수를 세세요.",
       "tag": "시즌 1 릴레이 · 입체 관찰 / 8단계",
-      "href": "../block-count/?v=20261114-variety",
+      "href": "../block-count/?v=20261117-studio",
       "group": "relay-match"
     },
     {
@@ -359,7 +359,7 @@ window.BrainArenaCatalog = {
       "title": "미스터리 사인",
       "description": "계산부터 숫자 모양·소수·간격·한글 변환까지. 여섯 예시에서 숨은 규칙을 찾아 마지막 식의 답을 맞히세요.",
       "tag": "1인 연습 · 다양한 규칙 / 11문제",
-      "href": "../mystery-sign/?v=20261114-variety"
+      "href": "../mystery-sign/?v=20261117-studio"
     },
     {
       "id": "pattern-block",
@@ -367,7 +367,7 @@ window.BrainArenaCatalog = {
       "title": "패턴블록",
       "description": "25개 선 패턴의 번호를 기억하고, 한 칸짜리 숫자 블록을 자유롭게 배치해 목표 그림을 재현하세요.",
       "tag": "시즌 2 · 암기 / 블록 배치 · 6문제",
-      "href": "../pattern-block/?v=20261115-flex"
+      "href": "../pattern-block/?v=20261117-studio"
     },
     {
       "id": "hidden-mission",
@@ -375,7 +375,7 @@ window.BrainArenaCatalog = {
       "title": "히든미션",
       "description": "6×6 판의 같은 그림 18쌍을 찾아 글자를 열고, 숨겨진 문제의 답을 먼저 추리하세요. 더블·오픈 아이템도 활용합니다.",
       "tag": "시즌 2 · 기억 / 문장 추리 · 3라운드",
-      "href": "../hidden-mission/?v=20261115-clear-shapes"
+      "href": "../hidden-mission/?v=20261117-studio"
     }
   ],
   "groups": [

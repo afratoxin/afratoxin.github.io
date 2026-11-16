@@ -13,6 +13,9 @@ for (const game of catalog.games) {
   const styles = [...html.matchAll(/<link[^>]*rel="stylesheet"[^>]*>/g)];
   A(styles.at(-1)[0].includes('theme.css'), game.id + ': shared styles load last');
   A(html.lastIndexOf('</style>') < theme[0].index, game.id + ': inline styles cannot override theme');
+  const interfaceScripts = [...html.matchAll(/<script[^>]*src="[^"\n]*brain-arena\/interface\.js[^"\n]*"[^>]*>/g)];
+  A.equal(interfaceScripts.length, 1, game.id + ': one shared presentation controller');
+  A(interfaceScripts[0][0].includes('defer'), game.id + ': visual feedback waits for the page');
   const header = html.match(/<header class="arena-header">([\s\S]*?)<\/header>/)?.[1];
   A(header, game.id + ': consistent header');
   A(header.includes('class="brand"'), game.id + ': brand');
