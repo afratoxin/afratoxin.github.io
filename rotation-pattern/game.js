@@ -2,7 +2,7 @@
   'use strict';
   const E = window.RotationPattern, $ = id => document.getElementById(id);
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const RECORD_KEY = 'rotation-pattern-record-v1', SOUND_KEY = 'rotation-pattern-sound';
+  const RECORD_KEY = 'rotation-pattern-record-v2-small', SOUND_KEY = 'rotation-pattern-sound';
   let phase = 'idle', mode = 'challenge', runMode = 'challenge', round = 1, passed = 0;
   let puzzle = null, selected = new Set(), runId = 0, deadline = 0, duration = 0;
   let answerStarted = 0, answerTotal = 0, practiceOptions = null, marker = 0;
@@ -73,7 +73,7 @@
     $('boardHint').textContent = '불빛 ' + puzzle.count + '개 · 암기 ' + puzzle.memory + '초 · 변형 ' + puzzle.transforms + '회';
     $('selectedCount').textContent = '0 / ' + puzzle.count;
     for (const step of document.querySelectorAll('.journey-step')) {
-      const from = Number(step.dataset.from), to = from === 1 ? 3 : from === 4 ? 6 : from === 7 ? 12 : 20;
+      const from = Number(step.dataset.from), to = Number(step.dataset.to);
       step.classList.toggle('active', runMode === 'challenge' && round >= from && round <= to);
     }
   }
@@ -231,13 +231,15 @@
     setPhase('success', '정확합니다!'); paintResult(result, true);
     $('clockLabel').textContent = '이번 정답 시간'; $('clock').textContent = timeText(now() - answerStarted);
     $('totalTime').textContent = timeText(answerTotal); specs(); $('selectedCount').textContent = puzzle.count + ' / ' + puzzle.count;
-    $('successText').textContent = runMode === 'challenge' && round < 20 ? '다음은 불빛 ' + (puzzle.count + 1) + '개' : '패턴을 완벽히 기억했습니다';
+    const nextConfig = runMode === 'challenge' && round < 20 ? E.config(round + 1) : null;
+    const expands = nextConfig && nextConfig.size > puzzle.size;
+    $('successText').textContent = expands ? '6연속 성공 · 다음은 ' + nextConfig.size + '×' + nextConfig.size : nextConfig ? '다음은 불빛 ' + nextConfig.count + '개' : '패턴을 완벽히 기억했습니다';
     $('successBurst').hidden = false; sound([523, 659, 784, 1047], .09);
-    say(runMode === 'challenge' && round < 20 ? '정답! 다음 단계는 불빛이 하나 늘어납니다.' : '모든 위치가 정확히 일치합니다.', 'good');
+    say(expands ? puzzle.size + '×' + puzzle.size + '판 6연속 성공! 다음은 ' + nextConfig.size + '×' + nextConfig.size + '판입니다. 암기는 10초로 늘리고 변형 횟수는 유지합니다.' : nextConfig ? '정답! 다음 단계는 불빛이 하나 늘어납니다.' : '모든 위치가 정확히 일치합니다.', 'good');
     const id = runId;
     if (!await wait(1800, id)) return;
     if (runMode === 'challenge' && round === 20) { finish(true, '20단계 완주!'); return; }
-    round++; playRound(null, false);
+    round++; playRound(null, !!expands);
   }
   function saveRecord() {
     if (runMode !== 'challenge' || !passed) return false;
@@ -275,7 +277,7 @@
     $('challengeMode').classList.toggle('active', value === 'challenge'); $('challengeMode').setAttribute('aria-pressed', String(value === 'challenge'));
     $('practiceMode').classList.toggle('active', value === 'practice'); $('practiceMode').setAttribute('aria-pressed', String(value === 'practice'));
     $('practiceSettings').hidden = value !== 'practice';
-    $('modeDescription').innerHTML = value === 'challenge' ? '5개에서 시작해 정답마다 불빛 +1.<br>회전과 뒤집기도 점점 복잡해집니다.' : '판 크기와 시간을 직접 정하세요.<br>같은 설정으로 새 패턴이 이어집니다.';
+    $('modeDescription').innerHTML = value === 'challenge' ? '5×5에서 시작해 정답마다 불빛 +1.<br>6연속 성공하면 6×6, 다시 6번 성공하면 7×7.' : '판 크기와 시간을 직접 정하세요.<br>같은 설정으로 새 패턴이 이어집니다.';
     $('start').textContent = value === 'challenge' ? '도전 시작' : '연습 시작';
     $('boardStart').textContent = $('start').textContent;
   }
@@ -293,7 +295,7 @@
     cancel(); setPhase('idle', '빛을 기억하고, 방향을 바꾸세요'); puzzle = null;
     $('setup').hidden = false; $('endActions').hidden = true; $('playingInfo').hidden = true; $('readyOverlay').hidden = false;
     $('resultPanel').hidden = true; $('reviewLegend').hidden = true; $('roundLabel').textContent = 'SPATIAL MEMORY';
-    buildBoard(7); $('boardSize').textContent = '7 × 7'; $('boardHint').textContent = '불빛 5개 · 암기 8초 · 변형 1회';
+    buildBoard(5); $('boardSize').textContent = '5 × 5'; $('boardHint').textContent = '불빛 5개 · 암기 10초 · 변형 1회';
     $('selectedCount').textContent = '0 / 5'; $('transformStrip').innerHTML = '<span class="strip-placeholder">기억 → 회전·뒤집기 → 패턴 복원</span>';
     $('clockLabel').textContent = '다음 단계'; $('clock').textContent = '준비'; chooseMode(mode);
     say('플레이 방식을 정하고 시작하세요.');
@@ -315,5 +317,5 @@
     clearPause(); if (animation) animation.play(); tick();
   };
   $('sound').setAttribute('aria-pressed', String(soundOn)); $('sound').textContent = '효과음 ' + (soundOn ? '켜짐' : '꺼짐');
-  buildBoard(7); bestText(); setInterval(tick, 50);
+  buildBoard(5); bestText(); setInterval(tick, 50);
 })();

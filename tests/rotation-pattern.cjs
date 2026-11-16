@@ -20,6 +20,13 @@ for (let n = 3; n <= 11; n++) for (let i = 0; i < n * n; i++) {
 }
 for (let stage = 1; stage <= 20; stage++) {
   const cfg = E.config(stage); A.equal(cfg.count, stage + 4); A(cfg.memory >= 5 && cfg.memory <= 10);
+  A.equal(cfg.size, stage <= 6 ? 5 : stage <= 12 ? 6 : 7);
+  A.equal(cfg.transforms, stage <= 3 ? 1 : stage <= 9 ? 2 : stage <= 16 ? 3 : 4);
+  if ([7, 13].includes(stage)) {
+    A.equal(cfg.memory, 10); A.equal(cfg.transforms, E.config(stage - 1).transforms);
+    A(cfg.answer > E.config(stage - 1).answer);
+  }
+  if ([4, 10, 17].includes(stage)) A.equal(cfg.memory, E.config(stage - 1).memory, 'new transformation gets a full observation window');
   if (stage > 1) A.equal(cfg.count, E.config(stage - 1).count + 1);
   for (let seed = 1; seed <= 100; seed++) {
     const p = E.make(cfg, rng(seed * 31 + stage));
@@ -57,7 +64,7 @@ function runtime({ reduced = true, storage = {} } = {}) {
   }
   const get = id => { if (!nodes.has(id)) nodes.set(id, new Node(id)); return nodes.get(id); };
   for (const [, id] of fs.readFileSync('rotation-pattern/index.html', 'utf8').matchAll(/id="([^"]+)"/g)) get(id);
-  Object.assign(get('practiceSize'), { value: '7' }); get('practiceCount').value = '5'; get('practiceMemory').value = '7'; get('practiceTransforms').value = '1'; get('practiceAnswer').value = '0';
+  Object.assign(get('practiceSize'), { value: '5' }); get('practiceCount').value = '5'; get('practiceMemory').value = '7'; get('practiceTransforms').value = '1'; get('practiceAnswer').value = '0';
   for (const id of ['answerActions', 'reviewLegend', 'resultPanel', 'countdownOverlay', 'privacyCover', 'successBurst', 'playingInfo', 'endActions']) get(id).hidden = true;
   function timer(fn, delay, interval = 0) { const id = nextTimer++; queue.set(id, { fn, at: ms + delay, interval }); return id; }
   const document = { activeElement: null, hidden: false, getElementById: get, createElement: () => { const n = new Node(); n.tagName = 'BUTTON'; return n; }, createDocumentFragment: () => ({ fragment: true, children: [], appendChild(n) { this.children.push(n); } }), querySelectorAll: () => [], addEventListener(k, fn) { handlers[k] = fn; } };
@@ -83,7 +90,7 @@ function runtime({ reduced = true, storage = {} } = {}) {
   };
 }
 (async () => {
-  const r = runtime(); A.equal(r.get('grid').children.length, 49); r.click('start');
+  const r = runtime(); A.equal(r.get('grid').children.length, 25); r.click('start');
   await r.until('memory'); A.equal(r.get('grid').children.filter(c => c.classList.contains('lit')).length, 5);
   r.cell(0); A.equal(r.get('selectedCount').textContent, '0 / 5');
   r.visibility(true); const savedClock = r.get('clock').textContent; await r.advance(60000);
@@ -97,15 +104,15 @@ function runtime({ reduced = true, storage = {} } = {}) {
   A(prevented); A.equal(r.phase(), 'success'); A(!r.get('successBurst').hidden); A.equal(r.get('selectedCount').textContent, '5 / 5');
   // A duplicate submission cannot grant a second stage or start a competing loop.
   r.click('submit'); await r.until('memory'); A.equal(r.latest().count, 6); A.equal(r.made(), 2);
-  await r.until('answer'); const p2 = r.latest(), blank = Array.from({ length: 49 }, (_, i) => i).find(i => !p2.target.includes(i));
+  await r.until('answer'); const p2 = r.latest(), blank = Array.from({ length: 25 }, (_, i) => i).find(i => !p2.target.includes(i));
   r.cell(blank); p2.target.slice(1).forEach(i => r.cell(i)); r.click('submit');
   A.equal(r.phase(), 'ended'); A(!r.get('reviewLegend').hidden);
   A(r.get('grid').children[blank].classList.contains('extra')); A(r.get('grid').children[p2.target[0]].classList.contains('miss'));
-  const record = JSON.parse(r.storage['rotation-pattern-record-v1']); A.equal(record.passed, 1); A(record.time >= 1000);
+  const record = JSON.parse(r.storage['rotation-pattern-record-v2-small']); A.equal(record.passed, 1); A(record.time >= 1000);
   r.click('replay'); await r.until('answer'); A.equal(r.get('clock').textContent, '제한 없음'); A.deepEqual(r.latest().target, p2.target);
-  await r.advance(200000); A.equal(r.phase(), 'answer'); r.click('endRun'); A.equal(r.storage['rotation-pattern-record-v1'], JSON.stringify(record));
+  await r.advance(200000); A.equal(r.phase(), 'answer'); r.click('endRun'); A.equal(r.storage['rotation-pattern-record-v2-small'], JSON.stringify(record));
   r.click('settings'); A(!r.get('setup').hidden); r.click('challengeMode'); r.click('start'); await r.until('answer');
-  await r.advance(25050); A.equal(r.phase(), 'ended'); A.match(r.get('resultTitle').textContent, /시간/);
+  await r.advance(30050); A.equal(r.phase(), 'ended'); A.match(r.get('resultTitle').textContent, /시간/);
   r.click('again'); await r.advance(700); r.click('endRun'); const count = r.made(); await r.advance(30000); A.equal(r.made(), count); A.equal(r.phase(), 'ended');
   console.log('PASS: memory blocks input; privacy pause; full hide before answer; exact selection; Enter from focused cell; success advances +1; duplicate guard; wrong/missing review; timeout; record isolation; same-pattern practice; interrupted-loop cancellation.');
 
@@ -114,11 +121,22 @@ function runtime({ reduced = true, storage = {} } = {}) {
     await full.until('answer', 40000); A.equal(full.latest().count, stage + 4);
     A.equal(full.get('grid').children.length, E.config(stage).size ** 2);
     await full.advance(200); full.latest().target.forEach(i => full.cell(i)); full.click('submit');
-    A.equal(full.phase(), 'success'); if (stage < 20) await full.until('countdown');
+    A.equal(full.phase(), 'success');
+    if ([6, 12].includes(stage)) A.match(full.get('status').textContent, /6연속 성공.*암기는 10초/);
+    if (stage < 20) {
+      await full.until('countdown');
+      A.equal(full.get('countdownOverlay').hidden, ![6, 12].includes(stage), 'board expansion includes a fresh countdown');
+    }
   }
   await full.until('ended'); A.match(full.get('resultTitle').textContent, /20단계 완주/);
-  A.equal(JSON.parse(full.storage['rotation-pattern-record-v1']).passed, 20); A(full.animationsMade() > 40);
+  A.equal(JSON.parse(full.storage['rotation-pattern-record-v2-small']).passed, 20); A(full.animationsMade() > 40);
   console.log('PASS: full 20-stage challenge using the animated path; board expands at stages 7 and 13; all stage counts and final completion record verified.');
+
+  const oldRecord = JSON.stringify({ passed: 20, time: 1 });
+  const migrated = runtime({ storage: { 'rotation-pattern-record-v1': oldRecord } });
+  A(!migrated.get('best').textContent.includes('20단계')); A.equal(migrated.storage['rotation-pattern-record-v1'], oldRecord);
+  A.equal(migrated.get('grid').children.length, 25);
+  console.log('PASS: 5×5 → 6×6 → 7×7 progression; expansion preserves transformation count and restores time; legacy records preserved separately.');
 
   const hub = fs.readFileSync('brain-arena/catalog.js', 'utf8'); A(!hub.includes('tile-connect')); A(hub.includes('rotation-pattern'));
   A(!fs.existsSync('tile-connect')); A(!fs.existsSync('tests/tile-connect.cjs'));

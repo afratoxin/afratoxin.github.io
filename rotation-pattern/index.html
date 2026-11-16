@@ -5,28 +5,28 @@
   <meta name="theme-color" content="#0c1422">
   <title>회전 패턴 · BRAIN ARENA</title>
   <meta name="description" content="불빛의 위치를 기억하세요. 판이 회전하고 뒤집힌 뒤, 기억한 패턴을 다시 켜는 공간 기억 게임.">
-  <link rel="stylesheet" href="style.css?v=20261117-rotation">
+  <link rel="stylesheet" href="style.css?v=20261117-small-boards">
   <link rel="stylesheet" href="../brain-arena/theme.css?v=20261115-mobile">
 </head>
 <body><div class="shell">
-  <header class="arena-header"><a class="brand" href="/brain-arena/?v=20261117-rotation">BRAIN ARENA</a><nav class="arena-nav" aria-label="게임 탐색"><a href="/brain-arena/?v=20261117-rotation">게임 보관함</a><a href="/brain-arena/?v=20261117-rotation#original">자체제작 폴더 ↗</a></nav></header>
+  <header class="arena-header"><a class="brand" href="/brain-arena/?v=20261117-small-boards">BRAIN ARENA</a><nav class="arena-nav" aria-label="게임 탐색"><a href="/brain-arena/?v=20261117-small-boards">게임 보관함</a><a href="/brain-arena/?v=20261117-small-boards#original">자체제작 폴더 ↗</a></nav></header>
   <main>
     <div class="intro"><div class="eyebrow">ROTATION PATTERN · ORIGINAL</div><h1>회전 패턴</h1><p class="lead">불빛은 사라져도, 패턴은 남아 있습니다.</p></div>
     <div class="layout">
       <section class="board-shell" aria-label="회전 패턴 게임판">
-        <div class="board-meta"><span id="roundLabel">SPATIAL MEMORY</span><span id="boardSize">7 × 7</span></div>
+        <div class="board-meta"><span id="roundLabel">SPATIAL MEMORY</span><span id="boardSize">5 × 5</span></div>
         <div class="phase-heading"><span class="phase-dot" id="phaseDot"></span><h2 id="phaseTitle">빛을 기억하고, 방향을 바꾸세요</h2><span class="phase-count" id="phaseCount"></span></div>
         <div class="time-track" aria-hidden="true"><div id="timeBar"></div></div>
         <div class="scene" id="scene">
           <div class="orbit orbit-one" aria-hidden="true"></div><div class="orbit orbit-two" aria-hidden="true"></div>
-          <div class="board-position"><div class="motion-board" id="motionBoard"><div class="grid-board" id="grid" role="group" aria-label="7행 7열 게임판"></div><i class="board-marker" id="boardMarker" aria-hidden="true"></i></div></div>
+          <div class="board-position"><div class="motion-board" id="motionBoard"><div class="grid-board" id="grid" role="group" aria-label="5행 5열 게임판"></div><i class="board-marker" id="boardMarker" aria-hidden="true"></i></div></div>
           <div class="scene-overlay ready-overlay" id="readyOverlay"><div class="overlay-icon" aria-hidden="true">↻</div><strong>기억은 그대로.<br>방향은 다르게.</strong><p>불빛을 기억한 뒤<br>바뀐 위치를 모두 골라 주세요.</p><button class="primary" id="boardStart">도전 시작</button></div>
           <div class="scene-overlay countdown-overlay" id="countdownOverlay" hidden><span>눈을 준비하세요</span><b id="countdown">3</b></div>
           <div class="success-burst" id="successBurst" hidden aria-hidden="true"><div class="success-ring"></div><svg viewBox="0 0 48 48"><path d="m12 24 8 8 17-18"/></svg><b>PERFECT</b><span id="successText">패턴 일치</span></div>
           <div class="scene-overlay privacy-cover" id="privacyCover" hidden><strong>잠시 멈췄습니다</strong><p>준비되면 이어서 플레이하세요.</p><button class="primary" id="resume">계속하기</button></div>
         </div>
         <div class="transform-strip" id="transformStrip" aria-label="판의 변형"><span class="strip-placeholder">기억 → 회전·뒤집기 → 패턴 복원</span></div>
-        <div class="board-bottom"><span id="boardHint">불빛 5개 · 암기 8초 · 변형 1회</span><span id="selectedCount">0 / 5</span></div>
+        <div class="board-bottom"><span id="boardHint">불빛 5개 · 암기 10초 · 변형 1회</span><span id="selectedCount">0 / 5</span></div>
         <div class="answer-actions" id="answerActions" hidden><button class="secondary" id="clear">선택 지우기</button><button class="primary" id="submit" disabled>선택 완료</button></div>
         <div class="review-legend" id="reviewLegend" hidden><span><i class="legend-hit"></i>맞힌 위치</span><span><i class="legend-miss"></i>놓친 위치</span><span><i class="legend-extra"></i>잘못 고른 위치</span></div>
       </section>
@@ -34,9 +34,9 @@
         <section class="panel score-panel"><div class="stats"><div><span class="label">통과한 단계</span><strong id="passed">0<span> / 20</span></strong></div><div><span class="label" id="clockLabel">다음 단계</span><strong id="clock">준비</strong></div></div><div class="score-line"><span>답을 고른 시간</span><b id="totalTime">0.0초</b></div><div class="best-line" id="best">첫 기록에 도전해 보세요.</div></section>
         <section class="panel controls-panel">
           <div id="setup"><h2>플레이 방식</h2><div class="mode-switch" role="group" aria-label="플레이 방식"><button id="challengeMode" class="mode-option active" aria-pressed="true">단계 도전</button><button id="practiceMode" class="mode-option" aria-pressed="false">자유 연습</button></div>
-            <p class="mode-description" id="modeDescription">5개에서 시작해 정답마다 불빛 +1.<br>회전과 뒤집기도 점점 복잡해집니다.</p>
+            <p class="mode-description" id="modeDescription">5×5에서 시작해 정답마다 불빛 +1.<br>6연속 성공하면 6×6, 다시 6번 성공하면 7×7.</p>
             <div class="practice-settings" id="practiceSettings" hidden>
-              <label>게임판<select id="practiceSize"><option value="7">7 × 7</option><option value="8">8 × 8</option><option value="9">9 × 9</option></select></label>
+              <label>게임판<select id="practiceSize"><option value="5">5 × 5</option><option value="6">6 × 6</option><option value="7">7 × 7</option></select></label>
               <label>불빛 개수<select id="practiceCount"><option>5</option><option>7</option><option>9</option><option>12</option><option>16</option><option>20</option></select></label>
               <label>암기 시간<select id="practiceMemory"><option value="5">5초</option><option value="7" selected>7초</option><option value="10">10초</option></select></label>
               <label>변형 횟수<select id="practiceTransforms"><option value="1">1회</option><option value="2">2회</option><option value="3">3회</option><option value="4">4회</option></select></label>
@@ -44,15 +44,15 @@
             </div>
             <button class="primary wide" id="start">도전 시작</button>
           </div>
-          <div id="playingInfo" hidden><div class="section-eyebrow">THIS ROUND</div><h2 id="roundInfo">1단계</h2><div class="round-specs"><span>불빛<b id="specLights">5개</b></span><span>암기<b id="specMemory">8초</b></span><span>변형<b id="specTransforms">1회</b></span><span>정답 시간<b id="specAnswer">25초</b></span></div><p class="play-tip">빛의 덩어리와 빈칸의 모양을 함께 기억해 보세요.</p><button class="secondary wide" id="endRun">여기서 마치기</button></div>
+          <div id="playingInfo" hidden><div class="section-eyebrow">THIS ROUND</div><h2 id="roundInfo">1단계</h2><div class="round-specs"><span>불빛<b id="specLights">5개</b></span><span>암기<b id="specMemory">10초</b></span><span>변형<b id="specTransforms">1회</b></span><span>정답 시간<b id="specAnswer">30초</b></span></div><p class="play-tip">빛의 덩어리와 빈칸의 모양을 함께 기억해 보세요.</p><button class="secondary wide" id="endRun">여기서 마치기</button></div>
           <div id="endActions" hidden><button class="primary wide" id="again">처음부터 재도전</button><button class="secondary wide" id="replay">같은 패턴 복습</button><button class="secondary wide" id="settings">설정으로</button></div>
           <p id="status" class="message" role="status" aria-live="polite">암기 중에는 선택할 수 없습니다. 판이 멈추면 답을 고르세요.</p>
         </section>
-        <section class="panel journey-panel"><div class="section-eyebrow">THE CHALLENGE</div><div class="journey-step" data-from="1"><i></i><div><b>01 — 03</b><span>7×7 · 한 번의 변형</span></div></div><div class="journey-step" data-from="4"><i></i><div><b>04 — 06</b><span>7×7 · 두 번의 변형</span></div></div><div class="journey-step" data-from="7"><i></i><div><b>07 — 12</b><span>8×8 · 세 번의 변형</span></div></div><div class="journey-step" data-from="13"><i></i><div><b>13 — 20</b><span>9×9 · 네 번의 변형</span></div></div></section>
+        <section class="panel journey-panel"><div class="section-eyebrow">THE CHALLENGE</div><div class="journey-step" data-from="1" data-to="6"><i></i><div><b>01 — 06</b><span>5×5 · 회전과 뒤집기에 적응</span></div></div><div class="journey-step" data-from="7" data-to="12"><i></i><div><b>07 — 12</b><span>6×6 · 익숙해지면 한 칸 더</span></div></div><div class="journey-step" data-from="13" data-to="20"><i></i><div><b>13 — 20</b><span>7×7 · 공간 기억 심화</span></div></div></section>
       </aside>
     </div>
     <section class="review result-panel" id="resultPanel" hidden><div class="section-eyebrow" id="resultEyebrow">CHALLENGE COMPLETE</div><h2 id="resultTitle"></h2><p id="resultText"></p></section>
-    <details><summary>게임 방법 · 난이도</summary><div class="instructions"><ol><li><strong>기억하기.</strong> 불빛이 켜진 칸을 기억하세요. 도전은 7×7판, 불빛 5개, 암기 8초로 시작합니다.</li><li><strong>방향 따라가기.</strong> 불빛이 완전히 꺼지면 판이 90°·180° 회전하거나 상하·좌우로 뒤집힙니다. 왼쪽·오른쪽 뒤집기는 모두 좌우 반전이고, 위·아래 뒤집기는 모두 상하 반전입니다. 여러 변형은 <strong>현재 보이는 판을 기준으로</strong> 차례대로 적용됩니다.</li><li><strong>패턴 복원하기.</strong> 움직임이 끝난 판에서 불빛의 최종 위치를 모두 선택하고 ‘선택 완료’를 누르세요. 다시 누르면 선택이 취소됩니다. 필요한 개수를 모두 골랐을 때 Enter 키로도 제출할 수 있습니다.</li><li><strong>다음 단계.</strong> 정답이면 불빛이 하나 늘어납니다. 4단계부터 변형 2회, 7단계부터 8×8·3회, 13단계부터 9×9·4회입니다. 암기 시간은 8초에서 5초까지, 정답 시간은 25초에서 18초까지 줄어듭니다. 오답 또는 시간 초과 시 도전이 끝나며 정답과 내 선택을 함께 확인할 수 있습니다. 총 20단계입니다.</li></ol><p>기록은 <strong>통과 단계 수</strong>가 우선이며, 같으면 <strong>정답을 고른 총시간</strong>이 짧을수록 높습니다. 암기·애니메이션 시간은 이 기록에서 제외합니다. 자유 연습과 같은 패턴 복습은 도전 기록에 포함하지 않습니다.</p><p>소리를 켜면 불빛과 정답에 맞춰 짧은 효과음이 재생됩니다. 다른 창으로 전환하면 화면을 가리고 일시 정지합니다. 움직임 줄이기를 사용하는 환경에서는 3D 뒤집기 대신 짧은 전환을 보여줍니다.</p></div></details>
+    <details><summary>게임 방법 · 난이도</summary><div class="instructions"><ol><li><strong>기억하기.</strong> 불빛이 켜진 칸을 기억하세요. 도전은 5×5판, 불빛 5개, 암기 10초로 시작합니다.</li><li><strong>방향 따라가기.</strong> 불빛이 완전히 꺼지면 판이 90°·180° 회전하거나 상하·좌우로 뒤집힙니다. 왼쪽·오른쪽 뒤집기는 모두 좌우 반전이고, 위·아래 뒤집기는 모두 상하 반전입니다. 여러 변형은 <strong>현재 보이는 판을 기준으로</strong> 차례대로 적용됩니다.</li><li><strong>패턴 복원하기.</strong> 움직임이 끝난 판에서 불빛의 최종 위치를 모두 선택하고 ‘선택 완료’를 누르세요. 다시 누르면 선택이 취소됩니다. 필요한 개수를 모두 골랐을 때 Enter 키로도 제출할 수 있습니다.</li><li><strong>다음 단계.</strong> 정답이면 불빛이 하나 늘어납니다. 5×5에서 6문제를 연속으로 맞히면 6×6(7단계), 다시 6문제를 연속으로 맞히면 7×7(13단계)로 넓어집니다. 변형은 1회에서 시작해 4·10·17단계에 각각 2·3·4회가 됩니다. 판이 커질 때는 변형 횟수를 유지하고 암기를 10초로 늘려 적응할 시간을 줍니다. 같은 크기의 판 안에서는 암기를 10초에서 9초로, 마지막 두 단계는 8초로 줄입니다. 정답 제한시간은 5×5 30초, 6×6 35초, 7×7 40초입니다. 오답 또는 시간 초과 시 도전이 끝나며 정답과 내 선택을 함께 확인할 수 있습니다. 총 20단계입니다.</li></ol><p>기록은 <strong>통과 단계 수</strong>가 우선이며, 같으면 <strong>정답을 고른 총시간</strong>이 짧을수록 높습니다. 암기·애니메이션 시간은 이 기록에서 제외합니다. 자유 연습과 같은 패턴 복습은 도전 기록에 포함하지 않습니다.</p><p>소리를 켜면 불빛과 정답에 맞춰 짧은 효과음이 재생됩니다. 다른 창으로 전환하면 화면을 가리고 일시 정지합니다. 움직임 줄이기를 사용하는 환경에서는 3D 뒤집기 대신 짧은 전환을 보여줍니다.</p></div></details>
     <div class="preferences"><button class="preference-button" id="sound" aria-pressed="false">효과음 꺼짐</button><span>Enter 제출 · 방향키로 칸 이동</span></div>
   </main><footer>BRAIN ARENA · REMEMBER / ROTATE / RESTORE</footer>
-</div><script src="engine.js?v=20261117-rotation"></script><script src="game.js?v=20261117-rotation"></script></body></html>
+</div><script src="engine.js?v=20261117-small-boards"></script><script src="game.js?v=20261117-small-boards"></script></body></html>

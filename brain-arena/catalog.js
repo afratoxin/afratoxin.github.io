@@ -74,9 +74,9 @@ window.BrainArenaCatalog = {
       "id": "rotation-pattern",
       "category": "original",
       "title": "회전 패턴",
-      "description": "불빛의 위치를 기억하고, 회전·뒤집힌 판에서 패턴을 복원하세요. 정답마다 불빛이 하나 늘어나는 20단계 공간 기억 도전.",
+      "description": "불빛의 위치를 기억하고, 회전·뒤집힌 판에서 패턴을 복원하세요. 5×5에서 시작해 연속 정답으로 6×6·7×7로 넓어지는 20단계 공간 기억 도전.",
       "tag": "오리지널 · 공간 기억 / 단계 도전 · 자유 연습",
-      "href": "../rotation-pattern/?v=20261117-rotation"
+      "href": "../rotation-pattern/?v=20261117-small-boards"
     },
     {
       "id": "echo-maze",

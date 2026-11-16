@@ -32,11 +32,14 @@
   }
   function config(round) {
     const stage = Math.max(1, Math.min(20, Math.floor(Number(round) || 1)));
+    const size = stage < 7 ? 5 : stage < 13 ? 6 : 7;
+    // Six consecutive clears establish familiarity before the board grows.
+    // On an expansion, restore observation time and keep the transformation count.
+    const memory = stage <= 4 || stage >= 7 && stage <= 10 || stage >= 13 && stage <= 17 ? 10 : stage >= 19 ? 8 : 9;
     return {
-      round: stage, size: stage < 7 ? 7 : stage < 13 ? 8 : 9,
-      count: stage + 4, memory: Math.max(5, 8 - Math.floor((stage - 1) / 3)),
-      transforms: stage < 4 ? 1 : stage < 7 ? 2 : stage < 13 ? 3 : 4,
-      answer: stage < 7 ? 25 : stage < 13 ? 22 : 18
+      round: stage, size, count: stage + 4, memory,
+      transforms: stage < 4 ? 1 : stage < 10 ? 2 : stage < 17 ? 3 : 4,
+      answer: size === 5 ? 30 : size === 6 ? 35 : 40
     };
   }
   function make(options, random = Math.random) {
