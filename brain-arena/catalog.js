@@ -71,6 +71,14 @@ window.BrainArenaCatalog = {
       "href": "../formula-death-note/?v=20261114-unified"
     },
     {
+      "id": "tile-connect",
+      "category": "original",
+      "title": "타일 커넥트",
+      "description": "회전·반전 규칙을 따라 타일의 모든 연결을 완성하세요. 역추론과 연속 변형, 90초 도전과 실물 인쇄를 지원합니다.",
+      "tag": "오리지널 · 3단계 / 90초 도전 · 인쇄",
+      "href": "../tile-connect/?v=20261116-connect"
+    },
+    {
       "id": "echo-maze",
       "category": "original",
       "title": "잔향 미로",
