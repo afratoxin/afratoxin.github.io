@@ -71,12 +71,12 @@ window.BrainArenaCatalog = {
       "href": "../formula-death-note/?v=20261114-unified"
     },
     {
-      "id": "tile-connect",
+      "id": "rotation-pattern",
       "category": "original",
-      "title": "타일 커넥트",
-      "description": "회전·반전 규칙을 따라 타일의 모든 연결을 완성하세요. 역추론과 연속 변형, 90초 도전과 실물 인쇄를 지원합니다.",
-      "tag": "오리지널 · 3단계 / 90초 도전 · 인쇄",
-      "href": "../tile-connect/?v=20261116-connect"
+      "title": "회전 패턴",
+      "description": "불빛의 위치를 기억하고, 회전·뒤집힌 판에서 패턴을 복원하세요. 정답마다 불빛이 하나 늘어나는 20단계 공간 기억 도전.",
+      "tag": "오리지널 · 공간 기억 / 단계 도전 · 자유 연습",
+      "href": "../rotation-pattern/?v=20261117-rotation"
     },
     {
       "id": "echo-maze",
