@@ -1,11 +1,11 @@
-import {originalPrompt,originalFeedback,originalEmpty,originalLabel,originalChoiceImage} from './cbl-original.mjs?v=20261116c';
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261116c';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261116c';
-import {practiceLayout} from './practice-layout.mjs?v=20261116c';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261116c';
-import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,isCorrectChoice} from './logic.mjs?v=20261116c';
-import {sourceText,topicProgress} from './study-core.mjs?v=20261116c';
-import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261116c';
+import {originalPrompt,originalFeedback,originalEmpty,originalLabel,originalChoiceImage} from './cbl-original.mjs?v=20261118a';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261118a';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261118a';
+import {practiceLayout} from './practice-layout.mjs?v=20261118a';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261118a';
+import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,isCorrectChoice} from './logic.mjs?v=20261118a';
+import {sourceText,topicProgress} from './study-core.mjs?v=20261118a';
+import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261118a';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const externalLinks=q=>(q.externalRefs||[]).filter(r=>/^https:\/\//.test(r.url||'')).map(r=>`<a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.title||'보충 근거')} ↗</a>`).join(' · ');
 
@@ -24,7 +24,7 @@ export function createStudyUI({id,tab,title,subtitle,bank,topics,read,save,openT
  const selectionTopics=scopes||topics;
  const selectedOptions=Object.entries(selectionTopics).sort((a,b)=>(a[1].order||0)-(b[1].order||0));
  const unitCard=([code,t])=>`<button type="button" data-study-topic="${e(code)}" data-lecture-group-card="${e(t.group)}" ${t.group!==unitGroup?'hidden':''}><span>${String(t.order).padStart(2,'0')}</span><b>${e(t.title)}</b><small>${bank.filter(q=>q.topic===code).length}문항${t.teacher?' · '+e(t.teacher):''}</small>${t.emptyEvidence?'<span class="original-library-note">출제 없음 기록 보기 →</span>':`<span class="unit-progress" data-unit-progress="${e(code)}"></span>`}</button>`;
- root.innerHTML=`${onExit?'<button type="button" class="text-button recall-back" data-study-exit>← 암기 범위 고르기</button>':''}<div class="section-heading page-heading"><div><p class="eyebrow green">${drill?'TABLE RECALL · REPEAT':'LECTURE PRACTICE · DIFFERENTIAL'}</p><h1>${e(title)}</h1><p class="muted">${e(subtitle)}</p></div><span id="${id}-stats" class="tiny-chip"></span></div>
+ root.innerHTML=`${onExit?'<button type="button" class="text-button recall-back" data-study-exit>← 암기 범위 고르기</button>':''}<div class="section-heading page-heading"><div><p class="eyebrow green">${drill?'TABLE RECALL · REPEAT':'LECTURE PRACTICE · DIFFERENTIAL'}</p><h1 id="${id}-title">${e(title)}</h1><p id="${id}-subtitle" class="muted">${e(subtitle)}</p></div><span id="${id}-stats" class="tiny-chip"></span></div>
   <div class="study-intro">${originals?'족보의 <b>원문 캡처·OCR·선지 번호</b>를 보존했습니다. 답을 고르면 상세 해설과 강의 근거가 열립니다.':drill?'선택한 범위의 <b>미풀이 전체 → 오답 복습</b> 순서로 이어갑니다.':'증례의 <b>결정적 감별 단서</b>를 찾고, 비슷한 균명·독소명·검사명 중 하나를 고르세요. 족보 유형을 참고한 예상문제입니다.'}</div>
   ${drill?`<details class="study-scope"><summary>${drill?'표 주제 골라 풀기':'강의 순서대로 골라 풀기'}</summary><div class="lecture-grid">${ordered.map(([code,t])=>`<button type="button" data-study-topic="${e(code)}"><span>${t.order?String(t.order).padStart(2,'0'):'표'}</span><b>${e(t.title)}</b><small>${bank.filter(q=>q.topic===code).length}문항${t.teacher?' · '+e(t.teacher):''}</small></button>`).join('')}</div></details>`:`<section id="${id}-units" class="study-unit-menu" hidden><div class="study-view-bar"><button type="button" class="text-button" data-tab="home">← 학습 허브</button><h2>단원별 학습 · 강의 선택</h2></div>${libraryIntro}<div class="lecture-group-controls">${Object.entries(courseGroups).map(([group,g])=>`<button type="button" data-lecture-group="${group}" aria-pressed="${group===unitGroup}">${e(g.title)} <small>${ordered.filter(([,t])=>t.group===group).length}강</small></button>`).join('')}</div><div class="lecture-grid">${ordered.filter(([,t])=>t.order>0).map(unitCard).join('')}</div></section><div id="${id}-viewbar" class="study-practice-menu" hidden><button type="button" class="text-button" data-tab="home">← 학습 허브</button><p id="${id}-mixed-intro" class="study-mixed-intro" hidden>${originals?'CBL 1~6 기출 원문 전체를 섞어서 풉니다.':Object.keys(LECTURES).length+'개 강의와 단원 통합 문제를 섞어서 풉니다.'} 미풀이 전체를 먼저 풀고 오답으로 이어집니다.</p></div>`}
   <details id="${id}-settings" class="study-settings" ${session?'':'open'}><summary>학습 범위</summary><form id="${id}-setup" class="setup-card"><div class="filter-grid study-filter-grid"><label for="${id}-topic">${drill?'암기표':'강의'}<select id="${id}-topic"><option value="all">전체 종합</option>${selectedOptions.map(([code,t])=>`<option value="${e(code)}">${t.order?String(t.order).padStart(2,'0')+' ':''}${e(t.title)}</option>`).join('')}</select></label><label for="${id}-mode">풀 문제<select id="${id}-mode"><option value="all">미풀이 → 오답</option><option value="wrong">오답 복습</option><option value="bookmarks">별표 문항</option></select></label></div><div class="setup-bottom"><p id="${id}-eligible" class="muted" aria-live="polite"></p><button type="submit" class="button primary">이 범위 이어 풀기 →</button></div>${drill?`<label class="study-auto"><input type="checkbox" id="${id}-auto"> 정답이면 자동으로 다음 문제</label>`:''}</form></details>
@@ -39,7 +39,7 @@ export function createStudyUI({id,tab,title,subtitle,bank,topics,read,save,openT
  function setFilters(f){scopeIds=Array.isArray(f.questionIds)?[...f.questionIds]:null;$('topic').value=scopes?(scopes[f.scope]?f.scope:'all'):(topics[f.topic]?f.topic:'all');$('mode').value=['wrong','bookmarks'].includes(f.mode)?f.mode:'all';}
  function scopeBank(f=filters()){return bank.filter(q=>(!Array.isArray(f.questionIds)||f.questionIds.includes(q.id))&&(!f.topic||f.topic==='all'||q.topic===f.topic)&&(!f.format||f.format==='all'||q.format===f.format)&&(f.mode!=='bookmarks'||bookmarks.includes(q.id)));}
  const phaseLabel=()=>session?.phase==='wrong'?'오답 복습':session?.phase==='review'?'직접 복습':'미풀이 학습';
- function update(){const s=stats(bank,progress),selected=stats(scopeBank(),progress);$('stats').textContent=`정답 ${s.correct} · 오답 ${s.wrong} · 미풀이 ${s.unanswered}`;$('eligible').textContent=selected.total?`선택 범위 ${selected.total}문항 · 미풀이 ${selected.unanswered} → 오답 ${selected.wrong}`:'선택 조건에 해당하는 문제가 없습니다.';if(drill)renderTable();
+ function update(){const meta=learningView==='practice'?topics[filters().topic]:null;$('title').textContent=meta?.practiceTitle||title;$('subtitle').textContent=meta?.practiceSubtitle||subtitle;const s=stats(meta?.practiceTitle?scopeBank():bank,progress),selected=stats(scopeBank(),progress);$('stats').textContent=`정답 ${s.correct} · 오답 ${s.wrong} · 미풀이 ${s.unanswered}`;$('eligible').textContent=selected.total?`선택 범위 ${selected.total}문항 · 미풀이 ${selected.unanswered} → 오답 ${selected.wrong}`:'선택 조건에 해당하는 문제가 없습니다.';if(drill)renderTable();
   for(const card of root.querySelectorAll('[data-unit-progress]')){
    const value=topicProgress(bank,progress,card.dataset.unitProgress);
    card.innerHTML=`<span class="unit-progress-label"><b>${value.attempted}<small> / ${value.total} 풀이</small></b><span>${value.percent}%</span></span><span class="unit-progress-track" role="progressbar" aria-label="${e(topics[card.dataset.unitProgress]?.title)} 풀이 진행도" aria-valuemin="0" aria-valuemax="${value.total}" aria-valuenow="${value.attempted}"><span class="unit-correct" style="width:${value.total?value.correct/value.total*100:0}%"></span><span class="unit-wrong" style="width:${value.total?value.wrong/value.total*100:0}%"></span></span><span class="unit-progress-results"><span>정답 <b>${value.correct}</b></span><span>오답 <b>${value.wrong}</b></span><span>미풀이 ${value.unanswered}</span></span>`;
@@ -49,7 +49,7 @@ export function createStudyUI({id,tab,title,subtitle,bank,topics,read,save,openT
  function focus(){requestAnimationFrame(()=>{const target=$('question')||$('summary');target?.focus({preventScroll:true});target?.scrollIntoView({block:'nearest',behavior:'auto'});});}
  function start(f=filters(),force=false,single=null){
   clearTimeout(timer);openTab(tab);if(!drill){learningView='practice';applyView();}
-  f={...f,count:0,...(single?{questionIds:[single],mode:'review'}:{})};setFilters(f);
+  f={...f,count:0,...(topics[f.topic]?.shuffle?{shuffle:true}:{}),...(single?{questionIds:[single],mode:'review'}:{})};setFilters(f);
   session=startContinuousSession(bank,f,progress,Math.random,bookmarks,f.mode==='review'?null:session);
   session.tally={total:0,correct:0};sync();render();focus();
  }

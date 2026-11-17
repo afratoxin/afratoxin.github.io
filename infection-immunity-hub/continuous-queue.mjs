@@ -1,4 +1,4 @@
-import {buildSession,VERSION} from './logic.mjs?v=20261116c';
+import {buildSession,VERSION} from './logic.mjs?v=20261118a';
 
 const attempted=record=>typeof record?.correct==='boolean';
 const unanswered=(q,progress)=>!attempted(progress[q.id]);
@@ -63,7 +63,7 @@ export function startContinuousSession(bank,filters={},progress={},rng=Math.rand
  if(!candidates.length)return complete(f,scope,progress,prior);
  const generated=buildSession(candidates,{count:0},progress,rng),fresh=new Map(generated.items.map(item=>[item.id,item]));
  const oldItems=new Map((prior?.items||[]).map(item=>[item.id,item])),questions=new Map(candidates.map(q=>[q.id,q]));
- const order=f.topic==='all'?generated.items.map(item=>questions.get(item.id)):candidates;
+ const order=f.topic==='all'||f.shuffle===true?generated.items.map(item=>questions.get(item.id)):candidates;
  const items=orderedCandidates(order,prior).map(id=>{
   const old=oldItems.get(id),q=questions.get(id);
   return reusableItem(old,q)?{id,choices:[...old.choices],answer:old.answer,selected:null}:fresh.get(id);

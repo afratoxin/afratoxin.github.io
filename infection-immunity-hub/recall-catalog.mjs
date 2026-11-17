@@ -1,10 +1,10 @@
-import {PARTS as NOV_VP} from './nov16-virus-bank.mjs?v=20261116c';
-import {PARTS as NOV_FP} from './nov16-fungi-bank.mjs?v=20261116c';
-import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261116c';
-import {CBL_PARTS} from './cbl-bank.mjs?v=20261116c';
-import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261116c';
-import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261116c';
-import {stats} from './logic.mjs?v=20261116c';
+import {PARTS as NOV_VP} from './nov16-virus-bank.mjs?v=20261118a';
+import {PARTS as NOV_FP} from './nov16-fungi-bank.mjs?v=20261118a';
+import {ENTERIC_MEDIA_PARTS} from './enteric-media-bank.mjs?v=20261118a';
+import {CBL_PARTS} from './cbl-bank.mjs?v=20261118a';
+import {TABLE_QUESTIONS,LECTURES} from './study-bank.mjs?v=20261118a';
+import {EXTENSION_PARTS} from './extension-bank.mjs?v=20261118a';
+import {stats} from './logic.mjs?v=20261118a';
 
 const parts={...NOV_VP,...NOV_FP,...EXTENSION_PARTS,...ENTERIC_MEDIA_PARTS,...CBL_PARTS};
 function p(doc,key,title,what,how,why){parts[`${doc}:${key}`]={id:`${doc}:${key}`,lecture:doc,title,what,how,why};}
