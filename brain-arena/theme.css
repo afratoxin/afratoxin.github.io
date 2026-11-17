@@ -329,34 +329,20 @@ html[data-arena-feedback="error"] :is(.board-shell,.board-panel,.stage,.arena,.m
 @keyframes arena-error { 0% { box-shadow: 0 0 0 1px #d391a177,inset 0 0 30px #b96b8713; } 100% { box-shadow: inset 0 1px 0 #d6efff07,0 12px 35px #020a141c; } }
 @keyframes arena-arrive { from { opacity: 0; } to { opacity: 1; } }
 
-/* Illustrated collection and game covers. */
-html[data-arena] .arena-art { display: block; width: 100%; height: 100%; overflow: visible; }
-html[data-arena="hub"] .hero { display: grid; grid-template-columns: 1fr 1fr; align-items: end; padding: 24px 0 36px; }
-html[data-arena="hub"] .hero .eyebrow { grid-column: 1 / -1; font-size: 9px; }
-html[data-arena="hub"] .hero h1 { font-size: clamp(36px,4vw,52px); font-weight: 650; letter-spacing: -.065em; margin: 14px 0 0; }
-html[data-arena="hub"] .hero p { color: #9eb5ca; font-size: 13px; justify-self: end; margin: 0 0 4px; }
-html[data-arena="hub"] .folders { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 15px; }
-html[data-arena="hub"] :is(.folder,.game-tile) { background: #132338; border-color: #36516880; box-shadow: 0 8px 28px #02091426; overflow: hidden; transition: transform .3s var(--arena-ease),border-color .3s,box-shadow .3s; }
-html[data-arena="hub"] :is(.folder,.game-tile):hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 16px 30px #02091455; }
-html[data-arena="hub"] .folder { padding: 17px; min-height: 370px; border-radius: 14px; }
-html[data-arena="hub"] .folder::before { display: none; }
-html[data-arena="hub"] .folder-top { position: relative; z-index: 1; font-size: 9px; }
-html[data-arena="hub"] .collection-cover { height: 175px; margin: -2px -15px 9px; background: radial-gradient(ellipse at 50% 55%,color-mix(in srgb,var(--accent),transparent 89%),transparent 68%); }
-html[data-arena="hub"] .folder-en { font-size: 8px; letter-spacing: .1em; min-height: 13px; }
-html[data-arena="hub"] .folder h2 { font-weight: 650; font-size: 23px; margin: 7px 0 9px; }
-html[data-arena="hub"] .folder p { font-size: 11px; min-height: 39px; }
-html[data-arena="hub"] .folder-bottom { margin-top: auto; padding-top: 14px; font-size: 10px; }
-html[data-arena="hub"] .grid { gap: 22px; }
-html[data-arena="hub"] .game-tile { min-height: 450px; padding: 0 24px 24px; border-radius: 15px; }
-html[data-arena="hub"] .game-cover { height: 205px; margin: 0 -24px 23px; padding: 6px 20px; background: radial-gradient(ellipse at 50% 75%,#2c616b47,transparent 70%),#0d1c2c; border-bottom: 1px solid #314d6266; }
-html[data-arena="hub"] .game-tile .number { font-size: 9px; font-weight: 600; letter-spacing: .12em; }
-html[data-arena="hub"] .game-tile h2 { font-size: 25px; font-weight: 650; margin: 10px 0 12px; }
-html[data-arena="hub"] .game-tile p { font-size: 12px; color: #a0b6c9; }
-html[data-arena="hub"] .game-tile .tag { color: #7898af; font-size: 10px; margin-bottom: 20px; }
-html[data-arena="hub"] .game-tile .cta { margin-top: auto; padding: 10px 15px; font-size: 11px; background: #89e3cd; color: #102e31; border-radius: 8px; }
+/* Collection cards use the same quiet surfaces and hierarchy as the games. */
+html[data-arena="hub"] .hero h1 { font-size: clamp(36px,4.3vw,54px); font-weight: 650; letter-spacing: -.065em; }
+html[data-arena="hub"] .hero p { color: #9eb5ca; font-size: 13px; }
+html[data-arena="hub"] .folders { gap: 24px; }
+html[data-arena="hub"] :is(.folder,.game-tile) { background: radial-gradient(ellipse at 20% 0,#294c5d25,transparent 70%),linear-gradient(145deg,#182c41,#112136); border-color: #36516880; box-shadow: inset 0 1px 0 #e6ffff07,0 7px 25px #0209141c; transition: transform .25s var(--arena-ease),border-color .25s,box-shadow .25s; }
+html[data-arena="hub"] .folder:hover,html[data-arena="hub"] .game-tile:hover { transform: translateY(-3px); box-shadow: 0 12px 25px #0209143b; }
+html[data-arena="hub"] .folder-icon { margin: 22px 0 16px; }
+html[data-arena="hub"] .folder h2 { font-weight: 650; font-size: 24px; }
+html[data-arena="hub"] .game-tile { min-height: 295px; padding: 25px; }
+html[data-arena="hub"] .game-tile h2 { font-size: 24px; font-weight: 650; margin: 21px 0 12px; }
+html[data-arena="hub"] .game-tile .tag { color: #88a7bd; font-size: 10px; margin-bottom: 17px; }
+html[data-arena="hub"] .game-tile .cta { margin-top: auto; padding: 9px 14px; font-size: 11px; background: #89e3cd; color: #102e31; border-radius: 8px; }
 html[data-arena="hub"] .library-meta { border-color: #334d626e; color: #88a5bb; }
-html[data-arena="hub"] a:hover .visual-object { transform: translateY(-5px); }
-html[data-arena] .visual-object { transition: transform .5s var(--arena-ease); }
+
 
 /* The original metric nodes become a horizontal scoreboard above the play area. */
 html[data-arena="game"] .arena-play-layout { grid-template-columns: minmax(0,1fr) 290px; gap: 18px; }
@@ -379,15 +365,9 @@ html[data-arena="game"] .arena-score-ribbon > .stat { flex: 1; background: trans
 html[data-arena="game"] .arena-native-ribbon .stat { background: transparent; border: 0; flex: 1; }
 html[data-arena="game"] .arena-native-ribbon { margin-bottom: 18px; }
 
-/* Decorative artwork is confined to the waiting screen, never the live puzzle. */
-html[data-arena="game"] .ready[data-arena-preview] { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); align-content: center; align-items: center; justify-items: start; column-gap: 20px; row-gap: 12px; min-height: 360px; padding: 28px; text-align: left; background: radial-gradient(ellipse at 25% 50%,#32636a3b,transparent 65%),#0c1c2d; }
-html[data-arena="game"] .ready[data-arena-preview]::before { display: none; }
-html[data-arena="game"] .ready[data-arena-preview] > * { grid-column: 2; margin: 0; }
-html[data-arena="game"] .ready[data-arena-preview] > .arena-ready-art { grid-column: 1; grid-row: 1 / span 8; width: 100%; height: 260px; }
-html[data-arena="game"] .ready[data-arena-preview] > span { font-size: 8px; letter-spacing: .16em; align-self: end; }
-html[data-arena="game"] .ready[data-arena-preview] strong { font-size: clamp(24px,2.5vw,34px); font-weight: 600; }
-html[data-arena="game"] .ready[data-arena-preview] p { font-size: 11px; color: #91adbf; }
-html[data-arena="game"] .ready[data-arena-preview] .arena-launch { margin-top: 9px; min-width: 140px; padding: 12px 20px; }
+/* Text-only waiting screens retain the original game controls. */
+html[data-arena="game"] .ready[data-arena-ready] { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+html[data-arena="game"] .ready[data-arena-ready] .arena-launch { margin-top: 9px; min-width: 140px; padding: 12px 20px; }
 html[data-arena="game"] .board:has(> .arena-created-ready) { position: relative; min-height: 360px; }
 html[data-arena="game"] .arena-created-ready { position: absolute; inset: 0; z-index: 1; }
 html[data-arena-id="memory-poker"] #grid:has(.ready) { width: 100%; }
@@ -397,25 +377,13 @@ html[data-arena-id="memory-poker"] .arena-score-ribbon #shared:empty { display: 
 html[data-arena-id="memory-poker"] .arena-score-ribbon #shared .card { width: 38px; min-height: 50px; }
 html[data-arena-id="memory-poker"] .arena-score-ribbon:has(#shared:not(:empty)) > .note { display: none; }
 
-@media(max-width: 1100px) {
-  html[data-arena="hub"] .folders { grid-template-columns: repeat(3,minmax(0,1fr)); }
-  html[data-arena="hub"] .folder { min-height: 360px; }
-}
 @media(max-width: 900px) {
   html[data-arena="game"] .arena-play-layout { grid-template-columns: minmax(0,1fr); }
   html[data-arena="game"] .arena-score-ribbon { gap: 15px 20px; }
   html[data-arena="game"] .arena-score-ribbon .arena-hud-note { display: none; }
 }
 @media(max-width: 650px) {
-  html[data-arena="hub"] .hero { display: block; padding: 24px 0 30px; }
-  html[data-arena="hub"] .hero h1 { font-size: 38px; }
-  html[data-arena="hub"] .hero p { font-size: 12px; margin-top: 17px; }
-  html[data-arena="hub"] .folders { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
-  html[data-arena="hub"] .folder { padding: 14px; min-height: 320px; }
-  html[data-arena="hub"] .collection-cover { height: 140px; margin: 0 -12px 7px; }
   html[data-arena="hub"] .folder h2 { font-size: 22px; }
-  html[data-arena="hub"] .folder p { font-size: 10px; }
-  html[data-arena="hub"] .game-tile { min-height: 440px; }
   html[data-arena="game"] .arena-play-layout > :is(.board-shell,.board-panel,.stage,.arena) { padding: 15px; }
   html[data-arena="game"] .arena-score-ribbon { padding: 15px; gap: 14px; }
   html[data-arena="game"] .arena-session-identity { width: 100%; border: 0; border-bottom: 1px solid #629a9b30; padding: 0 0 10px; }
@@ -424,10 +392,6 @@ html[data-arena-id="memory-poker"] .arena-score-ribbon:has(#shared:not(:empty)) 
   html[data-arena="game"] .arena-score-ribbon .stats { gap: 15px; justify-content: space-between; }
   html[data-arena="game"] .arena-score-ribbon .arena-metric { gap: 4px; flex-direction: column; }
   html[data-arena="game"] .arena-score-ribbon :is(.value,.time-value,#clock,.stats b,.stats strong) { font-size: 24px; }
-  html[data-arena="game"] .ready[data-arena-preview] { grid-template-columns: minmax(0,1fr); text-align: center; justify-items: center; padding: 20px; gap: 10px; min-height: 395px; }
-  html[data-arena="game"] .ready[data-arena-preview] > * { grid-column: 1; }
-  html[data-arena="game"] .ready[data-arena-preview] > .arena-ready-art { grid-row: auto; height: 170px; max-width: 260px; }
-  html[data-arena="game"] .ready[data-arena-preview] strong { font-size: 26px; }
   html[data-arena="game"] .board:has(> .arena-created-ready) { min-height: 400px; }
 }
 

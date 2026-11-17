@@ -3,9 +3,8 @@
   'use strict';
   const root = document.documentElement;
   if (root.dataset.arena !== 'game') return;
-  const visuals = typeof window === 'object' && window.ArenaVisuals;
-  if (visuals) {
-    root.dataset.arenaSkin = 'gallery';
+  if (typeof window === 'object') {
+    root.dataset.arenaSkin = 'studio';
     const id = root.dataset.arenaId;
     const layout = document.querySelector('.layout,.arithmetic-layout,.death-layout') || (id === 'formula-maze' ? document.querySelector('.shell > main') : null);
     if (layout && id !== 'rotation-pattern') {
@@ -44,10 +43,8 @@
         ready.append(heading,description); board.append(ready);
       }
       for (const ready of document.querySelectorAll('.ready')) {
-        if (ready.dataset.arenaPreview) continue;
-        ready.dataset.arenaPreview = id;
-        const art = document.createElement('div'); art.className = 'arena-ready-art'; art.setAttribute('aria-hidden','true'); art.innerHTML = visuals.game(id);
-        ready.prepend(art);
+        if (ready.dataset.arenaReady) continue;
+        ready.dataset.arenaReady = id;
         if (start && !ready.contains(start) && !ready.querySelector('button')) {
           const launch = document.createElement('button'); launch.type = 'button'; launch.className = 'primary arena-launch';
           launch.textContent = start.textContent.trim(); launch.disabled = start.disabled;

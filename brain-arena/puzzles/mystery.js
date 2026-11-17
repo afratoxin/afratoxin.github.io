@@ -2,6 +2,8 @@
 (function(root){
 const groups={arithmetic:'계산',digits:'숫자와 모양',properties:'수의 성질',interval:'비교와 간격',korean:'한글 변환',decimal:'소수 표현'};
 const digits=n=>[...String(Math.abs(n))].map(Number),sum=a=>a.reduce((s,n)=>s+n,0),gcd=(a,b)=>b?gcd(b,a%b):a;
+const digitSum=n=>sum(digits(n)),digitProduct=n=>digits(n).reduce((p,d)=>p*d,1),tens=n=>Math.floor(n/10),ones=n=>n%10;
+const productText=n=>digits(n).join(' × '),sumText=n=>digits(n).join(' + ');
 const primeCache=new Map();function prime(n){if(primeCache.has(n))return primeCache.get(n);let ok=n>=2;for(let d=2;d*d<=n&&ok;d++)if(n%d===0)ok=false;primeCache.set(n,ok);return ok;}
 const primeList=Array.from({length:1000},(_,i)=>i).filter(prime),between=(a,b,p,closed=true)=>{let count=0;for(let n=Math.min(a,b)+(closed?0:1);n<=Math.max(a,b)-(closed?0:1);n++)if(p(n))count++;return count;};
 const reverse=n=>Number(String(n).split('').reverse().join(''));
@@ -14,16 +16,9 @@ const common=(a,b)=>{const bag=[...b];let n=0;for(const v of a){const i=bag.inde
 function places(a,b){b/=gcd(a,b);let twos=0,fives=0;while(b%2===0){twos++;b/=2;}while(b%5===0){fives++;b/=5;}return b===1?Math.max(twos,fives):null;}
 function period(a,b){let rest=a%b,step=0;const seen=new Map();while(rest&&!seen.has(rest)){seen.set(rest,step++);rest=rest*10%b;}return rest?step-seen.get(rest):0;}
 const R=[];function rule(id,group,name,difficulty,calc,description,limit=99){R.push({id,group,name,difficulty,calc,description,limit});}
-rule('sum','arithmetic','두 수의 합',1,(a,b)=>a+b,'두 수를 더합니다.');
-rule('subtract','arithmetic','앞 수에서 뒤 수 빼기',1,(a,b)=>a-b,'앞 수에서 뒤 수를 뺍니다. 순서가 바뀌면 부호도 바뀝니다.');
-rule('multiply','arithmetic','두 수의 곱',1,(a,b)=>a*b,'두 수를 곱합니다.',30);
-rule('gap','arithmetic','큰 수와 작은 수의 차',1,(a,b)=>Math.abs(a-b),'큰 수에서 작은 수를 뺍니다.');
-rule('quotient','arithmetic','나눗셈의 몫',2,(a,b)=>Math.floor(a/b),'앞 수를 뒤 수로 나눈 정수 몫입니다.');
-rule('remainder','arithmetic','나눗셈의 나머지',2,(a,b)=>a%b,'앞 수를 뒤 수로 나눈 나머지입니다.');
 rule('product-plus-front','arithmetic','곱에 앞 수 더하기',3,(a,b)=>a*b+a,'두 수의 곱에 앞 수를 더합니다.',30);
 rule('square-plus','arithmetic','앞 수의 제곱과 뒤 수의 합',3,(a,b)=>a*a+b,'앞 수를 제곱한 뒤 뒤 수를 더합니다.',30);
 rule('square-gap','arithmetic','제곱수의 차',4,(a,b)=>a*a-b*b,'앞 수의 제곱에서 뒤 수의 제곱을 뺍니다.',30);
-rule('digit-count','digits','두 수의 자릿수 합',1,(a,b)=>digits(a).length+digits(b).length,'두 수를 십진수로 적었을 때 숫자가 몇 개 쓰였는지 셉니다.',999);
 rule('digit-sum','digits','모든 자리 숫자의 합',1,(a,b)=>sum(digits(a))+sum(digits(b)),'두 수의 각 자리 숫자를 전부 더합니다.',999);
 rule('digit-product','digits','자리 숫자의 곱끼리 더하기',3,(a,b)=>digits(a).reduce((x,y)=>x*y,1)+digits(b).reduce((x,y)=>x*y,1),'각 수의 자리 숫자들을 곱한 뒤 두 결과를 더합니다. 0이 있으면 그 수의 자리 곱은 0입니다.',999);
 rule('distinct-digits','digits','서로 다른 숫자의 종류',2,(a,b)=>new Set([...digits(a),...digits(b)]).size,'두 수 전체에서 서로 다른 숫자가 몇 종류인지 셉니다. 중복은 한 번만 셉니다.',999);
@@ -43,9 +38,6 @@ rule('common-divisors','properties','공약수의 개수',4,(a,b)=>divisorCount(
 rule('prime-factors','properties','소인수 개수의 합',4,(a,b)=>factors(a).length+factors(b).length,'두 수를 소인수분해하고, 중복을 포함한 소인수 개수를 더합니다. 예: 12는 2·2·3으로 세 개입니다.');
 rule('distinct-prime-factors','properties','서로 다른 소인수의 종류',4,(a,b)=>new Set([...factors(a),...factors(b)]).size,'두 수의 소인수들을 모아 서로 다른 소수가 몇 종류인지 셉니다.');
 rule('next-primes','properties','바로 다음 소수의 합',4,(a,b)=>primeList.find(p=>p>a)+primeList.find(p=>p>b),'각 수보다 큰 소수 중 가장 가까운 것을 하나씩 찾아 더합니다.');
-rule('max','interval','큰 수 고르기',1,(a,b)=>Math.max(a,b),'두 수 중 더 큰 수를 그대로 씁니다.');
-rule('min','interval','작은 수 고르기',1,(a,b)=>Math.min(a,b),'두 수 중 더 작은 수를 그대로 씁니다.');
-rule('comparison','interval','두 수의 대소 비교',2,(a,b)=>a>b?1:a===b?0:-1,'앞 수가 더 크면 1, 같으면 0, 더 작으면 −1입니다.');
 rule('between-integers','interval','사이의 정수 개수',2,(a,b)=>Math.max(0,Math.abs(a-b)-1),'두 수 사이의 정수를 셉니다. 양 끝의 수는 제외합니다.');
 rule('between-primes','interval','사이의 소수 개수',3,(a,b)=>between(a,b,prime,false),'두 수 사이에서 1과 자기 자신만을 약수로 갖는 소수를 셉니다. 양 끝은 제외하고, 1은 소수가 아닙니다.',70);
 rule('closed-primes','interval','양 끝을 포함한 소수 개수',3,(a,b)=>between(a,b,prime),'작은 수부터 큰 수까지의 소수를 셉니다. 양 끝의 수도 소수이면 포함합니다.',70);
@@ -63,15 +55,41 @@ rule('korean-ones','korean','한글 숫자의 일 개수',3,(a,b)=>occurrences(k
 rule('decimal-length','decimal','유한소수의 소수 자릿수',4,places,'앞 수를 뒤 수로 나눈 값을 가장 짧은 유한소수로 적었을 때 소수점 아래 자릿수입니다. 정수는 0자리, 끝의 0은 생략합니다.');
 rule('decimal-first','decimal','소수 첫째 자리',3,(a,b)=>Math.floor((a%b)*10/b),'앞 수를 뒤 수로 나눈 소수의 소수점 바로 뒤 첫 숫자입니다. 소수 첫째 자리의 0도 숫자로 셉니다.');
 rule('decimal-cycle','decimal','순환마디의 길이',4,period,'앞 수를 뒤 수로 나누었을 때 반복되는 가장 짧은 순환마디의 길이입니다. 유한소수는 0입니다.',40);
+// Compound rules stay within deliberate input ranges so digit rules cannot
+// collapse into ordinary subtraction/multiplication on one-digit examples.
+function compound(id,group,name,difficulty,calc,description,working,range){
+ rule(id,group,name,difficulty,calc,description,Math.max(range[1],range[3]));
+ Object.assign(R[R.length-1],{compound:true,working,range,valid:(a,b)=>a>=range[0]&&a<=range[1]&&b>=range[2]&&b<=range[3]});
+}
+const small=[2,25,2,25],frontDigits=[12,399,2,39],bothDigits=[12,99,12,99];
+compound('product-minus-both','arithmetic','곱에서 두 수 빼기',2,(a,b)=>a*b-a-b,'두 수를 곱한 뒤 앞 수와 뒤 수를 각각 뺍니다.',(a,b)=>`${a} × ${b} − ${a} − ${b}`,small);
+compound('product-plus-difference','arithmetic','곱에 두 수의 차 더하기',2,(a,b)=>a*b+a-b,'두 수의 곱에 앞 수를 더하고 뒤 수를 뺍니다.',(a,b)=>`${a} × ${b} + ${a} − ${b}`,small);
+compound('square-sum','arithmetic','각각 제곱해서 더하기',3,(a,b)=>a*a+b*b,'앞 수와 뒤 수를 각각 제곱한 뒤 더합니다.',(a,b)=>`${a}² + ${b}²`,small);
+compound('sum-times-adjusted-gap','arithmetic','합과 차를 한 번 더 조합하기',3,(a,b)=>(a+b)*(Math.abs(a-b)+1),'두 수의 합에, 두 수의 차의 절댓값보다 1 큰 수를 곱합니다.',(a,b)=>`(${a} + ${b}) × (|${a} − ${b}| + 1)`,small);
+compound('quotient-plus-remainder','arithmetic','몫과 나머지 더하기',3,(a,b)=>Math.floor(a/b)+a%b,'앞 수를 뒤 수로 나눈 정수 몫과 나머지를 더합니다.',(a,b)=>`${a} ÷ ${b}의 몫 ${Math.floor(a/b)} + 나머지 ${a%b}`,[12,99,2,12]);
+compound('front-digit-product-minus-back','digits','앞 수의 자리 곱에서 뒤 수 빼기',2,(a,b)=>digitProduct(a)-b,'앞 수의 각 자리 숫자를 모두 곱한 뒤 뒤 수를 뺍니다. 예: 234 ◇ 17 = 2 × 3 × 4 − 17 = 7.',(a,b)=>`${productText(a)} − ${b}`,frontDigits);
+compound('front-digit-product-plus-back','digits','앞 수의 자리 곱에 뒤 수 더하기',2,(a,b)=>digitProduct(a)+b,'앞 수의 각 자리 숫자를 모두 곱한 뒤 뒤 수를 더합니다.',(a,b)=>`${productText(a)} + ${b}`,frontDigits);
+compound('front-digit-sum-times-back','digits','앞 수의 자리 합에 뒤 수 곱하기',2,(a,b)=>digitSum(a)*b,'앞 수의 자리 숫자를 더한 결과에 뒤 수를 곱합니다.',(a,b)=>`(${sumText(a)}) × ${b}`,frontDigits);
+compound('digit-product-gap','digits','자리 곱끼리 차 구하기',3,(a,b)=>Math.abs(digitProduct(a)-digitProduct(b)),'각 수의 자리 숫자를 곱한 뒤 두 결과의 차의 절댓값을 구합니다.',(a,b)=>`|(${productText(a)}) − (${productText(b)})|`,bothDigits);
+compound('digit-product-times-sum','digits','앞은 자리 곱, 뒤는 자리 합',3,(a,b)=>digitProduct(a)*digitSum(b),'앞 수의 자리 곱과 뒤 수의 자리 합을 구한 뒤 두 결과를 곱합니다.',(a,b)=>`(${productText(a)}) × (${sumText(b)})`,bothDigits);
+compound('reversed-front-gap','digits','앞 수를 뒤집은 뒤 차 구하기',3,(a,b)=>Math.abs(reverse(a)-b),'앞 수의 자리 순서를 뒤집은 뒤 뒤 수와의 차의 절댓값을 구합니다.',(a,b)=>`|${reverse(a)} − ${b}| (앞 수 ${a}를 뒤집기)`,bothDigits);
+compound('reverse-added','digits','더한 결과를 거꾸로 읽기',3,(a,b)=>reverse(a+b),'두 수를 먼저 더하고 그 결과의 자리 순서를 뒤집습니다. 맨 앞이 된 0은 생략합니다.',(a,b)=>`${a} + ${b} = ${a+b} → 거꾸로 읽기`,bothDigits);
+compound('digit-sum-gap-square','digits','자리 합의 차를 제곱하기',3,(a,b)=>(digitSum(a)-digitSum(b))**2,'각 수의 자리 합을 구하고, 그 차를 제곱합니다.',(a,b)=>`[(${sumText(a)}) − (${sumText(b)})]²`,bothDigits);
+compound('cross-digit-products','digits','엇갈린 자리끼리 곱해서 더하기',3,(a,b)=>tens(a)*ones(b)+ones(a)*tens(b),'앞 수의 십의 자리와 뒤 수의 일의 자리를 곱하고, 반대쪽 두 자리의 곱을 더합니다.',(a,b)=>`${tens(a)} × ${ones(b)} + ${ones(a)} × ${tens(b)}`,bothDigits);
+compound('cross-digit-gap','digits','엇갈린 자리 곱의 차',3,(a,b)=>Math.abs(tens(a)*ones(b)-ones(a)*tens(b)),'십의 자리와 반대 수의 일의 자리를 엇갈려 곱한 두 결과의 차의 절댓값입니다.',(a,b)=>`|${tens(a)} × ${ones(b)} − ${ones(a)} × ${tens(b)}|`,bothDigits);
+compound('digit-axis-product','digits','십의 자리 합과 일의 자리 합 곱하기',3,(a,b)=>(tens(a)+tens(b))*(ones(a)+ones(b)),'두 수의 십의 자리끼리 더하고 일의 자리끼리 더한 뒤, 두 합을 곱합니다.',(a,b)=>`(${tens(a)} + ${tens(b)}) × (${ones(a)} + ${ones(b)})`,bothDigits);
+compound('swapped-units-product','digits','일의 자리를 바꾼 두 수의 곱',4,(a,b)=>(tens(a)*10+ones(b))*(tens(b)*10+ones(a)),'두 수의 일의 자리 숫자를 서로 바꾼 뒤 새로 생긴 두 수를 곱합니다.',(a,b)=>`${a}, ${b} → ${tens(a)*10+ones(b)}, ${tens(b)*10+ones(a)} → 곱하기`,bothDigits);
+compound('square-digit-sums','digits','각 자리 합을 제곱해서 더하기',4,(a,b)=>digitSum(a)**2+digitSum(b)**2,'각 수의 자리 합을 구해 각각 제곱한 뒤 더합니다.',(a,b)=>`(${sumText(a)})² + (${sumText(b)})²`,bothDigits);
 const shuffle=(a,r)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-const output=(rule,a,b)=>{const n=rule.calc(a,b);return Number.isInteger(n)&&Math.abs(n)<=100000?n:null;};
+const output=(rule,a,b)=>{if(rule.valid&&!rule.valid(a,b))return null;const n=rule.calc(a,b);return Number.isInteger(n)&&Math.abs(n)<=100000?n:null;};
 function make(level=1,r=Math.random,options={}){
  const pool=options.pool||'all',eligible=R.filter(q=>(pool==='easy'?q.difficulty<=2:pool==='hard'?q.difficulty>=3:groups[pool]?q.group===pool:true));
  let choices=eligible.filter(q=>!(options.exclude||[]).includes(q.id));if(!choices.length)choices=eligible;
+ if(pool==='all'&&level===1&&!(options.exclude||[]).length){const opening=choices.filter(q=>q.compound);if(opening.length)choices=opening;}
  if(pool==='all'){const frequency=Object.fromEntries(Object.keys(groups).map(g=>[g,(options.exclude||[]).filter(id=>R.find(q=>q.id===id)?.group===g).length]));const min=Math.min(...choices.map(q=>frequency[q.group]));choices=choices.filter(q=>frequency[q.group]===min);}
  const chosen=choices[Math.floor(r()*choices.length)];
  const pairs=[[1,1],[1,2],[2,1],[2,3],[3,2],[7,7],[8,16],[12,24],[21,12],[20,10],[11,13],[10,20],[6,9],[88,100],[101,110],[123,321],[37,74]];
- for(let i=0;i<160;i++)pairs.push([1+Math.floor(r()*chosen.limit),1+Math.floor(r()*chosen.limit)]);
+ for(let i=0;i<160;i++){const range=chosen.range||[1,chosen.limit,1,chosen.limit];pairs.push([range[0]+Math.floor(r()*(range[1]-range[0]+1)),range[2]+Math.floor(r()*(range[3]-range[2]+1))]);}
  if(chosen.group==='decimal')for(let i=0;i<40;i++)pairs.push([1+Math.floor(r()*50),[2,4,5,8,10,16,20,25,40,50,64,80,100][Math.floor(r()*13)]]);
  const chosenIndex=R.indexOf(chosen),usable=shuffle([...new Map(pairs.map(a=>[a.join(),a])).values()],r).map(pair=>({pair,values:R.map(q=>output(q,...pair))})).filter(row=>row.values[chosenIndex]!==null);
  let candidates=R.map((_,i)=>i),examples=[],used=new Set();
@@ -88,6 +106,6 @@ function make(level=1,r=Math.random,options={}){
 
  return{level,ruleId:chosen.id,examples,question,answer,description:chosen.description,name:chosen.name,group:chosen.group,candidateIds:candidates.map(index=>R[index].id)};
 }
-function explain(p){const pairs=[...p.examples,{pair:p.question,value:p.answer}];return{description:p.description,rows:pairs.map(({pair:[a,b],value})=>({a,b,value,words:korean(a)+' / '+korean(b)}))};}
+function explain(p){const q=R.find(q=>q.id===p.ruleId),pairs=[...p.examples,{pair:p.question,value:p.answer}];return{description:p.description,rows:pairs.map(({pair:[a,b],value})=>({a,b,value,words:korean(a)+' / '+korean(b),working:q?.working?q.working(a,b)+' = '+value:''}))};}
 const api={rules:R,groups,make,explain,korean,prime,factors,divisorCount,places,period,output};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.MysterySign=api;
 })(typeof window!=='undefined'?window:globalThis);
