@@ -1,8 +1,70 @@
-/* Visual feedback only. Game rules, answers, clocks and storage remain game-owned. */
+/* Presentation only: keep the original controls, clocks, answers and storage game-owned. */
 (() => {
   'use strict';
   const root = document.documentElement;
-  if (root.dataset.arena !== 'game' || root.dataset.arenaId === 'rotation-pattern') return;
+  if (root.dataset.arena !== 'game') return;
+  const visuals = typeof window === 'object' && window.ArenaVisuals;
+  if (visuals) {
+    root.dataset.arenaSkin = 'gallery';
+    const id = root.dataset.arenaId;
+    const layout = document.querySelector('.layout,.arithmetic-layout,.death-layout') || (id === 'formula-maze' ? document.querySelector('.shell > main') : null);
+    if (layout && id !== 'rotation-pattern') {
+      layout.classList.add('arena-play-layout');
+      const side = layout.querySelector(':scope > aside');
+      const score = side && ([...side.children].find(panel => panel.matches('.panel,.card,.stats-bar') && panel.querySelector('.stats,#clock,#timer,.stat') && !panel.querySelector('button,input,select,form')) || side.querySelector(':scope > div > .stats-bar'));
+      if (score) {
+        score.classList.add('arena-score-ribbon');
+        for (const label of [...score.children].filter(node => node.matches('.label'))) {
+          const value = label.nextElementSibling;
+          if (!value || !value.matches('.value,.time-value,#clock,#timer')) continue;
+          const metric = document.createElement('div'); metric.className = 'arena-metric';
+          score.insertBefore(metric, label); metric.append(label, value);
+        }
+        for (const metric of score.querySelectorAll('.stats > div')) metric.classList.add('arena-metric');
+        for (const child of [...score.children]) {
+          if (!child.matches('.stats,.arena-metric,.stat')) child.classList.add('arena-hud-note');
+        }
+        const identity = document.createElement('div'); identity.className = 'arena-session-identity';
+        identity.innerHTML = '<span>YOUR SESSION</span><strong>플레이 현황</strong>';
+        score.prepend(identity); layout.prepend(score);
+      }
+      if (side) side.classList.add('arena-control-stack');
+    }
+    for (const bar of document.querySelectorAll('.shell > .stats-bar,.shell > .status')) bar.classList.add('arena-score-ribbon','arena-native-ribbon');
+
+    const start = document.getElementById('start');
+    function decorateReady() {
+      if (id === 'rotation-pattern') return;
+      for (const board of document.querySelectorAll('div.board:empty')) {
+        if (!start || start.disabled) continue;
+        const ready = document.createElement('div'); ready.className = 'ready arena-created-ready';
+        const title = document.querySelector('h1')?.textContent || '새로운 도전';
+        const heading = document.createElement('strong'); heading.textContent = title;
+        const description = document.createElement('p'); description.textContent = '준비되면 새로운 문제에 도전하세요.';
+        ready.append(heading,description); board.append(ready);
+      }
+      for (const ready of document.querySelectorAll('.ready')) {
+        if (ready.dataset.arenaPreview) continue;
+        ready.dataset.arenaPreview = id;
+        const art = document.createElement('div'); art.className = 'arena-ready-art'; art.setAttribute('aria-hidden','true'); art.innerHTML = visuals.game(id);
+        ready.prepend(art);
+        if (start && !ready.contains(start) && !ready.querySelector('button')) {
+          const launch = document.createElement('button'); launch.type = 'button'; launch.className = 'primary arena-launch';
+          launch.textContent = start.textContent.trim(); launch.disabled = start.disabled;
+          launch.addEventListener('click', () => { if (!start.disabled) start.click(); });
+          ready.append(launch);
+        }
+      }
+    }
+    decorateReady();
+    let queued = false;
+    const refresh = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; decorateReady(); }); };
+    for (const board of document.querySelectorAll('#board,#display')) new MutationObserver(refresh).observe(board,{childList:true,subtree:true});
+    if (start) new MutationObserver(() => {
+      for (const launch of document.querySelectorAll('.arena-launch')) { launch.textContent = start.textContent.trim(); launch.disabled = start.disabled; }
+    }).observe(start,{attributes:true,attributeFilter:['disabled'],childList:true,subtree:true});
+  }
+  if (root.dataset.arenaId === 'rotation-pattern') return;
   const previous = new WeakMap();
   let reset;
   function update(element) {

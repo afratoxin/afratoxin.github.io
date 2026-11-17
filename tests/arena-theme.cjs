@@ -16,6 +16,10 @@ for (const game of catalog.games) {
   const interfaceScripts = [...html.matchAll(/<script[^>]*src="[^"\n]*brain-arena\/interface\.js[^"\n]*"[^>]*>/g)];
   A.equal(interfaceScripts.length, 1, game.id + ': one shared presentation controller');
   A(interfaceScripts[0][0].includes('defer'), game.id + ': visual feedback waits for the page');
+  const visualScripts = [...html.matchAll(/<script[^>]*src="[^"\n]*brain-arena\/visuals\.js[^"\n]*"[^>]*>/g)];
+  A.equal(visualScripts.length, 1, game.id + ': one decorative artwork source');
+  A(visualScripts[0][0].includes('defer'), game.id + ': artwork waits for the page');
+  A(visualScripts[0].index < interfaceScripts[0].index, game.id + ': artwork available before presentation');
   const header = html.match(/<header class="arena-header">([\s\S]*?)<\/header>/)?.[1];
   A(header, game.id + ': consistent header');
   A(header.includes('class="brand"'), game.id + ': brand');
@@ -26,5 +30,14 @@ for (const game of catalog.games) {
 const hub = fs.readFileSync('brain-arena/index.html', 'utf8');
 A(hub.includes('data-arena="hub"'));
 A(hub.includes('./theme.css?'));
+vm.runInContext(fs.readFileSync('brain-arena/visuals.js', 'utf8'), context);
+for (const game of catalog.games) {
+  A(context.window.ArenaVisuals.families[game.id], game.id + ': registered decorative cover');
+  const svg = context.window.ArenaVisuals.game(game.id);
+  A(svg.includes('aria-hidden="true"'), game.id + ': decorative only');
+  A(!/<(?:script|foreignObject)|(?:href|src)=/i.test(svg), game.id + ': self-contained artwork');
+}
+A.equal((hub.match(/class="collection-cover"/g)||[]).length, 5, 'all static folders have illustrated fallback covers');
+A(hub.indexOf('./visuals.js?') < hub.indexOf('./hub.js?'), 'artwork available before hub render');
 A(fs.readFileSync('AGENTS.md', 'utf8').includes('including future additions'));
 console.log('PASS: hub and all ' + catalog.games.length + ' games share the final stylesheet, theme identity, consistent navigation and correct folder links; future-game requirements documented.');
