@@ -80,18 +80,50 @@ compound('cross-digit-gap','digits','엇갈린 자리 곱의 차',3,(a,b)=>Math.
 compound('digit-axis-product','digits','십의 자리 합과 일의 자리 합 곱하기',3,(a,b)=>(tens(a)+tens(b))*(ones(a)+ones(b)),'두 수의 십의 자리끼리 더하고 일의 자리끼리 더한 뒤, 두 합을 곱합니다.',(a,b)=>`(${tens(a)} + ${tens(b)}) × (${ones(a)} + ${ones(b)})`,bothDigits);
 compound('swapped-units-product','digits','일의 자리를 바꾼 두 수의 곱',4,(a,b)=>(tens(a)*10+ones(b))*(tens(b)*10+ones(a)),'두 수의 일의 자리 숫자를 서로 바꾼 뒤 새로 생긴 두 수를 곱합니다.',(a,b)=>`${a}, ${b} → ${tens(a)*10+ones(b)}, ${tens(b)*10+ones(a)} → 곱하기`,bothDigits);
 compound('square-digit-sums','digits','각 자리 합을 제곱해서 더하기',4,(a,b)=>digitSum(a)**2+digitSum(b)**2,'각 수의 자리 합을 구해 각각 제곱한 뒤 더합니다.',(a,b)=>`(${sumText(a)})² + (${sumText(b)})²`,bothDigits);
+// Broadcast-style rules: a short calculation after a single observation.
+// Reference: Grand Final episode 12, rounds 1–4, 7 and 9.
+compound('larger-plus-gap','arithmetic','큰 수에 두 수의 차 더하기',2,(a,b)=>Math.max(a,b)+Math.abs(a-b),'두 수 중 큰 수에 두 수의 차를 더합니다.',(a,b)=>`${Math.max(a,b)} + |${a} − ${b}|`,[1,99,1,99]);
+compound('sum-gap-concat','arithmetic','합과 차를 이어 쓰기',3,(a,b)=>Number(String(a+b)+String(Math.abs(a-b))),'두 수의 합을 앞에, 두 수의 차의 절댓값을 뒤에 이어 씁니다. 예: 16 ◇ 9 → 합 25, 차 7 → 257.',(a,b)=>`합 ${a+b}, 차 ${Math.abs(a-b)} → 이어 쓰기`,[1,99,1,99]);
+rule('larger-remainder','arithmetic','큰 수를 작은 수로 나눈 나머지',2,(a,b)=>Math.max(a,b)%Math.min(a,b),'큰 수를 작은 수로 나누었을 때 남는 나머지입니다. 예: 4 ◇ 19 → 19 ÷ 4의 나머지 3입니다.');
+compound('digit-sums-product','digits','두 자리 합끼리 곱하기',3,(a,b)=>digitSum(a)*digitSum(b),'각 수의 자리 숫자를 더한 뒤, 두 합을 곱합니다.',(a,b)=>`(${sumText(a)}) × (${sumText(b)})`,[10,99,10,99]);
+compound('sum-mod-twelve','arithmetic','합을 시계의 12로 나눈 나머지',2,(a,b)=>(a+b)%12,'두 수를 더한 뒤 12로 나눈 나머지를 구합니다. 12·24·36처럼 나누어떨어지면 0입니다.',(a,b)=>`(${a} + ${b}) ÷ 12의 나머지`,[1,99,1,99]);
+compound('sum-times-back','arithmetic','합에 뒤 수 곱하기',3,(a,b)=>(a+b)*b,'두 수를 더한 결과에 뒤 수를 곱합니다.',(a,b)=>`(${a} + ${b}) × ${b}`,[1,30,1,30]);
+// Deliberate rule and number limits are separate from the advanced library.
+// Six examples and the target must all respect these limits.
+const standard={
+ 'larger-plus-gap':{band:1,range:[2,30,2,30]},
+ 'larger-remainder':{band:1,range:[2,40,2,12]},
+ 'digit-sum':{band:1,range:[12,89,12,89]},
+ 'holes':{band:1,range:[10,99,10,99]},
+ 'square-sum':{band:1,range:[2,9,2,9]},
+ 'sum-mod-twelve':{band:1,range:[2,35,2,35]},
+ 'sum-digit-sum':{band:1,range:[12,59,12,59]},
+ 'square-gap':{band:2,range:[2,9,2,9]},
+ 'sum-gap-concat':{band:2,range:[2,25,2,25]},
+ 'digit-sums-product':{band:2,range:[12,59,12,59]},
+ 'sum-times-back':{band:2,range:[2,15,2,9]},
+ 'product-plus-front':{band:2,range:[2,12,2,9]},
+ 'square-plus':{band:2,range:[2,9,2,15]},
+ 'reverse-sum':{band:2,range:[12,49,12,49]},
+ 'digit-product':{band:2,range:[12,49,12,49]},
+ 'gcd':{band:3,range:[4,36,4,36]},
+ 'between-primes':{band:3,range:[2,25,2,25]},
+ 'front-digit-product-minus-back':{band:3,range:[12,69,2,9]}
+};
 const shuffle=(a,r)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const output=(rule,a,b)=>{if(rule.valid&&!rule.valid(a,b))return null;const n=rule.calc(a,b);return Number.isInteger(n)&&Math.abs(n)<=100000?n:null;};
 function make(level=1,r=Math.random,options={}){
- const pool=options.pool||'all',eligible=R.filter(q=>(pool==='easy'?q.difficulty<=2:pool==='hard'?q.difficulty>=3:groups[pool]?q.group===pool:true));
+ const pool=options.pool||'standard',band=level<=3?1:level<=7?2:3;
+ const eligible=R.filter(q=>(pool==='standard'?standard[q.id]?.band<=band:pool==='easy'?q.difficulty<=2:pool==='hard'?q.difficulty>=3:groups[pool]?q.group===pool:true));
  let choices=eligible.filter(q=>!(options.exclude||[]).includes(q.id));if(!choices.length)choices=eligible;
- if(pool==='all'&&level===1&&!(options.exclude||[]).length){const opening=choices.filter(q=>q.compound);if(opening.length)choices=opening;}
- if(pool==='all'){const frequency=Object.fromEntries(Object.keys(groups).map(g=>[g,(options.exclude||[]).filter(id=>R.find(q=>q.id===id)?.group===g).length]));const min=Math.min(...choices.map(q=>frequency[q.group]));choices=choices.filter(q=>frequency[q.group]===min);}
+ if(pool==='all'||pool==='standard'){const frequency=Object.fromEntries(Object.keys(groups).map(g=>[g,(options.exclude||[]).filter(id=>R.find(q=>q.id===id)?.group===g).length]));const min=Math.min(...choices.map(q=>frequency[q.group]));choices=choices.filter(q=>frequency[q.group]===min);}
  const chosen=choices[Math.floor(r()*choices.length)];
+ const range=(pool==='standard'?standard[chosen.id].range:chosen.range)||[1,chosen.limit,1,chosen.limit];
+ const inRange=([a,b])=>a>=range[0]&&a<=range[1]&&b>=range[2]&&b<=range[3];
  const pairs=[[1,1],[1,2],[2,1],[2,3],[3,2],[7,7],[8,16],[12,24],[21,12],[20,10],[11,13],[10,20],[6,9],[88,100],[101,110],[123,321],[37,74]];
- for(let i=0;i<160;i++){const range=chosen.range||[1,chosen.limit,1,chosen.limit];pairs.push([range[0]+Math.floor(r()*(range[1]-range[0]+1)),range[2]+Math.floor(r()*(range[3]-range[2]+1))]);}
+ for(let i=0;i<160;i++)pairs.push([range[0]+Math.floor(r()*(range[1]-range[0]+1)),range[2]+Math.floor(r()*(range[3]-range[2]+1))]);
  if(chosen.group==='decimal')for(let i=0;i<40;i++)pairs.push([1+Math.floor(r()*50),[2,4,5,8,10,16,20,25,40,50,64,80,100][Math.floor(r()*13)]]);
- const chosenIndex=R.indexOf(chosen),usable=shuffle([...new Map(pairs.map(a=>[a.join(),a])).values()],r).map(pair=>({pair,values:R.map(q=>output(q,...pair))})).filter(row=>row.values[chosenIndex]!==null);
+ const chosenIndex=R.indexOf(chosen),usable=shuffle([...new Map(pairs.map(a=>[a.join(),a])).values()],r).filter(pair=>pool!=='standard'||inRange(pair)).map(pair=>({pair,values:R.map(q=>output(q,...pair))})).filter(row=>row.values[chosenIndex]!==null);
  let candidates=R.map((_,i)=>i),examples=[],used=new Set();
  for(let i=0;i<6;i++){
   let best=null,rank=Infinity;
@@ -104,8 +136,8 @@ function make(level=1,r=Math.random,options={}){
  if(!targets.length)throw Error('Could not disambiguate Mystery Sign');
  const target=targets[Math.floor(r()*targets.length)],question=target.pair,answer=target.values[chosenIndex];
 
- return{level,ruleId:chosen.id,examples,question,answer,description:chosen.description,name:chosen.name,group:chosen.group,candidateIds:candidates.map(index=>R[index].id)};
+ return{level,pool,ruleId:chosen.id,examples,question,answer,description:chosen.description,name:chosen.name,group:chosen.group,candidateIds:candidates.map(index=>R[index].id)};
 }
 function explain(p){const q=R.find(q=>q.id===p.ruleId),pairs=[...p.examples,{pair:p.question,value:p.answer}];return{description:p.description,rows:pairs.map(({pair:[a,b],value})=>({a,b,value,words:korean(a)+' / '+korean(b),working:q?.working?q.working(a,b)+' = '+value:''}))};}
-const api={rules:R,groups,make,explain,korean,prime,factors,divisorCount,places,period,output};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.MysterySign=api;
+const api={rules:R,groups,standard,make,explain,korean,prime,factors,divisorCount,places,period,output};if(typeof module!=='undefined'&&module.exports)module.exports=api;root.MysterySign=api;
 })(typeof window!=='undefined'?window:globalThis);

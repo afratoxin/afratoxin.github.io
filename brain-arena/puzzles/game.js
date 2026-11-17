@@ -16,7 +16,7 @@ function clearInputs(){counts=puzzle.values?Array(puzzle.values.length).fill(0):
 function draw(){
  cleared=false;stopped=0;retryAt=0;phase='play';started=Date.now();deadline=practice?Infinity:started+120000;
  blockTurn=0;
- if(isPattern)puzzle=patternRun[round-1];else{for(let i=0;i<100;i++){if(kind==='block-count'){let available=E.blockFamilies(level).filter(n=>!blockFamiliesSeen.includes(n));if(!available.length){blockFamiliesSeen=[];available=E.blockFamilies(level);}const family=E.shuffle(available)[0];blockFamiliesSeen.push(family);puzzle=E.blocks(level,Math.random,family);}else if(isMystery){puzzle=MysterySign.make(level,Math.random,{pool:$('mysteryPool').value||'all',exclude:mysterySeen});mysterySeen.push(puzzle.ruleId);}else puzzle=generators[kind](level);const key=JSON.stringify(puzzle);if(!seen.has(key)){seen.add(key);break;}}}
+ if(isPattern)puzzle=patternRun[round-1];else{for(let i=0;i<100;i++){if(kind==='block-count'){let available=E.blockFamilies(level).filter(n=>!blockFamiliesSeen.includes(n));if(!available.length){blockFamiliesSeen=[];available=E.blockFamilies(level);}const family=E.shuffle(available)[0];blockFamiliesSeen.push(family);puzzle=E.blocks(level,Math.random,family);}else if(isMystery){puzzle=MysterySign.make(level,Math.random,{pool:$('mysteryPool').value||'standard',exclude:mysterySeen});mysterySeen.push(puzzle.ruleId);}else puzzle=generators[kind](level);const key=JSON.stringify(puzzle);if(!seen.has(key)){seen.add(key);break;}}}
  clearInputs();$('review').hidden=true;message(isPattern?'같은 2×2 패턴의 왼쪽 위 칸을 고르세요. 모두 찾았다고 생각하면 끝을 선언하세요.':'문제를 풀고 정답을 제출하세요.');render();
 }
 function start(){practice=$('mode').value==='practice';score=0;level=1;round=1;seen=new Set();blockFamiliesSeen=[];mysterySeen=[];if(isPattern)patternRun=[...E.patternSet(),...E.patternSet()];draw();}
@@ -69,7 +69,7 @@ function renderBlocks(){
 }
 function mysteryEquation(a,b,value,cls=''){return '<div class="mystery-equation '+cls+'"><span>'+a+'</span><b class="mystery-symbol">◇</b><span>'+b+'</span><b>＝</b><strong>'+value+'</strong></div>';}
 function renderMystery(){
- const examples=document.createElement('div');examples.className='mystery-examples';examples.innerHTML='<div class="eyebrow">규칙이 같은 예시</div>'+puzzle.examples.map(e=>mysteryEquation(...e.pair,e.value)).join('');$('board').append(examples);
+ const examples=document.createElement('div');examples.className='mystery-examples';examples.innerHTML='<div class="eyebrow">'+(puzzle.pool==='standard'?'방송형 · 추천 / ':'')+'규칙이 같은 예시</div>'+puzzle.examples.map(e=>mysteryEquation(...e.pair,e.value)).join('');$('board').append(examples);
  const question=document.createElement('div');question.className='mystery-question';question.innerHTML='<div class="eyebrow">이번 문제의 답은?</div>'+mysteryEquation(...puzzle.question,'?','target');$('board').append(question);
  numericInput('미스터리 사인의 결과',blockAnswer,v=>blockAnswer=v,'정수 입력');
  const help=document.createElement('p');help.className='puzzle-note';help.textContent='◇의 규칙은 문제마다 바뀝니다. 이번 예시를 모두 만족하는 규칙을 찾으세요.';$('answerArea').append(help);

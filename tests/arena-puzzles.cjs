@@ -53,6 +53,6 @@ console.log('PASS: card-only submission checks all mental rotations; same-color 
 
 {
  const r=runtime('block-count'),family=r.puzzle().family;r.input(42);r.get('block-turn-right').onclick();A.equal(r.get('answer').value,'42');r.get('block-turn-left').onclick();A.equal(r.get('answer').value,'42');let families=new Set([family]);for(let i=0;i<4;i++){r.get('giveup').onclick();r.get('next').onclick();families.add(r.puzzle().family);}A.equal(families.size,5);
- const m=runtime('mystery-sign');m.get('mysteryPool').value='all';for(let round=1;round<=11;round++){const p=m.puzzle();m.input(p.answer);m.submit();A.equal(+m.get('score').textContent,round);A.equal(m.get('review').hidden,false);A.equal(m.get('next').hidden,round===11);if(round<11)m.get('next').onclick();}A.match(m.get('resultTitle').textContent,/11문제 완료/);
+ const m=runtime('mystery-sign');for(let round=1;round<=11;round++){const p=m.puzzle();A.equal(p.pool,'standard');m.input(p.answer);m.submit();A.equal(+m.get('score').textContent,round);A.equal(m.get('review').hidden,false);A.equal(m.get('next').hidden,round===11);if(round<11)m.get('next').onclick();}A.match(m.get('resultTitle').textContent,/11문제 완료/);
 }
 console.log('PASS: block view changes preserve answers, all five introductory forms appear before repeating; Mystery Sign completes all eleven rounds.');

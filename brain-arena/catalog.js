@@ -357,9 +357,9 @@ window.BrainArenaCatalog = {
       "id": "mystery-sign",
       "category": "genius",
       "title": "미스터리 사인",
-      "description": "계산부터 숫자 모양·소수·간격·한글 변환까지. 여섯 예시에서 숨은 규칙을 찾아 마지막 식의 답을 맞히세요.",
-      "tag": "1인 연습 · 다양한 규칙 / 11문제",
-      "href": "../mystery-sign/?v=20261117-covers-restored"
+      "description": "방송형 난이도로 시작하세요. 작은 수로 된 여섯 예시에서 규칙을 눈치채고 마지막 식의 답을 맞히세요.",
+      "tag": "1인 연습 · 방송형 기본 / 11문제",
+      "href": "../mystery-sign/?v=20261118-broadcast"
     },
     {
       "id": "pattern-block",
