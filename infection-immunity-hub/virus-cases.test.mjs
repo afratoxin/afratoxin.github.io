@@ -98,7 +98,8 @@ test('viral hub entry launches shared practice and refreshes the changed module 
  assert.match(app,/homeViralCases.*lectureUI\.start\(\{topic:VIRAL_CASE_TOPIC,mode:'all'/);
  assert.match(app,/homeViralCasesWrong.*lectureUI\.start\(\{topic:VIRAL_CASE_TOPIC,mode:'wrong'/);
  assert.match(app,/\['viralCase',VIRAL_CASE_QUESTIONS,lectureUI\]/);
- assert.match(html,/app\.mjs\?v=20261119c/);
- for(const name of ['study-bank.mjs','study-ui.mjs','continuous-queue.mjs'])assert.ok(app.includes(name+'?v=20261119c'));
- assert.match(read('study-ui.mjs'),/continuous-queue\.mjs\?v=20261119c/);
+ assert.match(html,/app\.mjs\?v=20261119d/);
+ for(const name of ['quiz-bank.mjs','study-ui.mjs','continuous-queue.mjs'])assert.ok(app.includes(name+'?v=20261119d'));
+ assert.match(read('quiz-bank.mjs'),/study-bank\.mjs\?v=20261119d/);
+ assert.match(read('study-ui.mjs'),/continuous-queue\.mjs\?v=20261119d/);
 });

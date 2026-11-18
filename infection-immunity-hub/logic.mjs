@@ -1,6 +1,7 @@
 export const VERSION=1;
 export function tabFromHash(hash) {
   if(hash==='#mainContent')return null;
+  if(hash==='#drill')return 'lectures';
   const tab=hash.replace(/^#/,'');
   return ['home','quiz','pathology','lectures','drill','bookmarks','review','notes','cblpast'].includes(tab)?tab:'home';
 }

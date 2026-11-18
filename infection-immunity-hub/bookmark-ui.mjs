@@ -1,4 +1,4 @@
-import {readBookmarks} from './logic.mjs?v=20261119c';
+import {readBookmarks} from './logic.mjs?v=20261119d';
 const e=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function collectBookmarkedQuestions(groups,read){
  const items=[];
@@ -17,7 +17,7 @@ export function filterBookmarkQuestions(items,{group='all',search=''}={}){
 }
 export function createBookmarkUI({root,groups,read,save,onRetry,renderDetails,topicTitle=()=>'',formatPrompt=e,onChange=()=>{}}){
  let selectedGroup='all',search='';
- root.innerHTML=`<div class="section-heading page-heading"><div><p class="eyebrow green">STARRED QUESTIONS</p><h1>별표 문항</h1><p class="muted">항생제·병리·강의별·표 암기·CBL 기출에서 표시한 문제를 한곳에 모았습니다.</p></div><span class="tiny-chip" data-bookmark-total></span></div><div class="bookmark-toolbar"><label><span class="sr-only">별표 문항 분류</span><select data-bookmark-filter><option value="all">전체 문항</option>${groups.map(g=>`<option value="${e(g.id)}">${e(g.label)}</option>`).join('')}</select></label><label class="bookmark-search"><span class="sr-only">별표 문항 검색</span><input type="search" data-bookmark-search placeholder="문제·약물·미생물명 검색" autocomplete="off"></label><span data-bookmark-count class="muted" aria-live="polite"></span></div><div class="bookmark-list" data-bookmark-list></div>`;
+ root.innerHTML=`<div class="section-heading page-heading"><div><p class="eyebrow green">STARRED QUESTIONS</p><h1>별표 문항</h1><p class="muted">항생제·병리·강의별·CBL 기출에서 표시한 문제를 한곳에 모았습니다.</p></div><span class="tiny-chip" data-bookmark-total></span></div><div class="bookmark-toolbar"><label><span class="sr-only">별표 문항 분류</span><select data-bookmark-filter><option value="all">전체 문항</option>${groups.map(g=>`<option value="${e(g.id)}">${e(g.label)}</option>`).join('')}</select></label><label class="bookmark-search"><span class="sr-only">별표 문항 검색</span><input type="search" data-bookmark-search placeholder="문제·약물·미생물명 검색" autocomplete="off"></label><span data-bookmark-count class="muted" aria-live="polite"></span></div><div class="bookmark-list" data-bookmark-list></div>`;
  const list=root.querySelector('[data-bookmark-list]'),select=root.querySelector('[data-bookmark-filter]');
  function render(){
   const all=collectBookmarkedQuestions(groups,read),items=filterBookmarkQuestions(all,{group:selectedGroup,search});

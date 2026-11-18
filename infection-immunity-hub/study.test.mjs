@@ -23,7 +23,8 @@ test('new rounds avoid immediate repetition and terminate an empty wrong-only po
  assert.equal(nextRound(bank,{mode:'wrong'},{},Math.random,[]).items.length,0);
 });
 test('new routes preserve existing routes and skip anchor semantics',()=>{
- for(const tab of ['lectures','drill','home','quiz','pathology','review','notes'])assert.equal(tabFromHash('#'+tab),tab);
+ for(const tab of ['lectures','home','quiz','pathology','review','notes'])assert.equal(tabFromHash('#'+tab),tab);
+ assert.equal(tabFromHash('#drill'),'lectures');
  assert.equal(tabFromHash('#mainContent'),null);
 });
 
