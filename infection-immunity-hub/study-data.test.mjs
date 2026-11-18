@@ -10,7 +10,7 @@ test('lectures and integrated questions have short options and complete source m
  for(const q of LECTURE_QUESTIONS){
   assert.ok(!ids.has(q.id));ids.add(q.id);assert.ok(STUDY_TOPICS[q.lecture]);
   assert.equal(q.format,'mcq');assert.equal(q.choices.length,5);assert.equal(new Set(q.choices).size,5);
-  assert.ok(q.choices.every(s=>s.trim()===s&&s.length<=55),`long choice ${q.id}`);
+  assert.ok(q.choices.every(s=>s.trim()===s&&s.length<=(q.questionType==='incorrect'?140:55)),`long choice ${q.id}`);
   assert.ok(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<5);assert.ok(q.explanation&&q.keyClue);
   assert.equal(q.choiceNotes.length,5);assert.ok(q.choiceNotes.every(Boolean));
   assert.ok(q.sourceRefs.length);assert.ok(Array.isArray(q.examRefs));

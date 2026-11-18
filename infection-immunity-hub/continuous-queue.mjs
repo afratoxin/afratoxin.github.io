@@ -1,4 +1,4 @@
-import {buildSession,VERSION} from './logic.mjs?v=20261118a';
+import {buildSession,VERSION} from './logic.mjs?v=20261118c';
 
 const attempted=record=>typeof record?.correct==='boolean';
 const unanswered=(q,progress)=>!attempted(progress[q.id]);
@@ -10,7 +10,7 @@ function normalizedFilters(filters={}){
 }
 function selectedBank(bank,filters,bookmarks){
  const ids=Array.isArray(filters.questionIds)?new Set(filters.questionIds):null,stars=new Set(bookmarks||[]);
- return bank.filter(q=>(!ids||ids.has(q.id))&&(!filters.topic||filters.topic==='all'||q.topic===filters.topic)&&(!filters.format||filters.format==='all'||q.format===filters.format)&&(!filters.sourceScope||q.sourceScope===filters.sourceScope)&&(filters.mode!=='bookmarks'||stars.has(q.id)));
+ return bank.filter(q=>(!ids||ids.has(q.id))&&(!filters.topic||filters.topic==='all'||q.topic===filters.topic)&&(!filters.format||filters.format==='all'||q.format===filters.format)&&(!filters.questionType||filters.questionType==='all'||q.questionType===filters.questionType)&&(!filters.sourceScope||q.sourceScope===filters.sourceScope)&&(filters.mode!=='bookmarks'||stars.has(q.id)));
 }
 function counts(bank,progress){
  const correct=bank.filter(q=>progress[q.id]?.correct===true).length,missed=bank.filter(q=>wrong(q,progress)).length;
@@ -111,4 +111,3 @@ export function resumeContinuousSession(raw,bank,progress={},rng=Math.random,boo
  const saved=parseSaved(raw);
  return saved?startContinuousSession(bank,saved.filters||{},progress,rng,bookmarks,{...saved,resumingContinuous:true}):null;
 }
-

@@ -1,22 +1,22 @@
-import {VIRAL_CASE_QUESTIONS,VIRAL_CASE_TOPIC} from './virus-case-bank.mjs?v=20261118b';
-import {BACTERIAL_CASE_QUESTIONS,BACTERIAL_CASE_TOPIC} from './bacteria-case-bank.mjs?v=20261118a';
-import {CBL_PAST_QUESTIONS,CBL_PAST_TOPICS} from './cbl-past-bank.mjs?v=20261118a';
-import {originalPrompt,originalIndex,installOriginalViewer} from './cbl-original.mjs?v=20261118a';
-import {createBookmarkUI} from './bookmark-ui.mjs?v=20261118a';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261118a';
-import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261118a';
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261118b';
-import {createRecallUI} from './recall-ui.mjs?v=20261118a';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261118a';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261118a';
-import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash,isCorrectChoice} from './logic.mjs?v=20261118a';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261118a';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261118a';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261118a';
-import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261118b';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261118b';
-import {sourceText} from './study-core.mjs?v=20261118a';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261118a';
+import {VIRAL_CASE_QUESTIONS,VIRAL_CASE_TOPIC} from './virus-case-bank.mjs?v=20261118c';
+import {BACTERIAL_CASE_QUESTIONS,BACTERIAL_CASE_TOPIC} from './bacteria-case-bank.mjs?v=20261118c';
+import {CBL_PAST_QUESTIONS,CBL_PAST_TOPICS} from './cbl-past-bank.mjs?v=20261118c';
+import {originalPrompt,originalIndex,installOriginalViewer} from './cbl-original.mjs?v=20261118c';
+import {createBookmarkUI} from './bookmark-ui.mjs?v=20261118c';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261118c';
+import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261118c';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261118c';
+import {createRecallUI} from './recall-ui.mjs?v=20261118c';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261118c';
+import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261118c';
+import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash,isCorrectChoice} from './logic.mjs?v=20261118c';
+import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261118c';
+import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261118c';
+import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261118c';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261118c';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261118c';
+import {sourceText} from './study-core.mjs?v=20261118c';
+import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261118c';
 
 installEvidenceViewer();
 installOriginalViewer();
@@ -203,6 +203,7 @@ $('homePathTables').addEventListener('click',()=>{navigate('pathology');patholog
 $('pathResumeButton').addEventListener('click',()=>pathologyUI.resume());
 $('homeLectureUnits').addEventListener('click',()=>lectureUI.choose('units'));
 $('homeLectureStart').addEventListener('click',()=>lectureUI.choose('mixed'));
+$('homeLectureStatements').addEventListener('click',()=>lectureUI.choose('units','incorrect'));
 $('homeBacterialCases').addEventListener('click',()=>lectureUI.start({topic:BACTERIAL_CASE_TOPIC,mode:'all',count:0}));
 $('homeBacterialCasesWrong').addEventListener('click',()=>lectureUI.start({topic:BACTERIAL_CASE_TOPIC,mode:'wrong',count:0}));
 $('homeViralCases').addEventListener('click',()=>lectureUI.start({topic:VIRAL_CASE_TOPIC,mode:'all',count:0}));
@@ -253,4 +254,3 @@ originalUI=createStudyUI({id:'cblpast',tab:'cblpast',originals:true,title:'CBL �
 bookmarkUI=createBookmarkUI({root:$('bookmarkContent'),groups:BOOKMARK_GROUPS,read,save,onRetry:oneQuestion,topicTitle:q=>ALL_TOPICS[q.topic]?.title||'',formatPrompt:emphasizePrompt,renderDetails(q){return `${q.original?originalPrompt(q):isPath(q)?imageMarkup(q):''}${q.choices.map((choice,index)=>`<div class="review-choice${isCorrectChoice(q,choice)?' is-answer':''}"><span>${index+1}. ${escape(choice)}</span>${isCorrectChoice(q,choice)?'<small>정답</small>':''}</div>`).join('')}${explanation(q,false)}`;},onChange(){updateDashboard();announce('별표를 해제했습니다.');}});
 navigate(tabFromHash(location.hash)||'home');
 installQuizKeyboard();
-

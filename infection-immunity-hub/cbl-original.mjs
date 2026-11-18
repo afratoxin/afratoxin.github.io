@@ -1,5 +1,5 @@
-import {emphasizeFeedback} from './emphasis.mjs?v=20261118a';
-import {correctChoiceIndices} from './logic.mjs?v=20261118a';
+import {emphasizeFeedback} from './emphasis.mjs?v=20261118c';
+import {correctChoiceIndices} from './logic.mjs?v=20261118c';
 
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const safeCapture=src=>/^assets\/cbl-past\/[a-z0-9._-]+\.(?:webp|png)$/.test(src||'');

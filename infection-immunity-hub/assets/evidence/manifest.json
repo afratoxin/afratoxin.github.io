@@ -6,7 +6,7 @@
     "format": "WebP",
     "quality": 70
   },
-  "count": 816,
+  "count": 828,
   "pages": [
     {
       "doc": "261102_02",
@@ -387,6 +387,16 @@
       "height": 675,
       "bytes": 15306,
       "sha256": "5487b1a26069d21ce67a97df2a4549fef1d6b6e7ee2b849ba1bf77df6c16dccf"
+    },
+    {
+      "doc": "261102_03",
+      "page": 63,
+      "title": "감염병의 진단",
+      "src": "assets/evidence/261102_03-063.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 51830,
+      "sha256": "abd881e5fc884f7fe446726a5973f266be8550c0a7fcf21e873697de4c6d122f"
     },
     {
       "doc": "261104_01",
@@ -4040,6 +4050,26 @@
     },
     {
       "doc": "261109_01",
+      "page": 19,
+      "title": "헤모필루스·보르데텔라·나이세리아",
+      "src": "assets/evidence/261109_01-019.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 32172,
+      "sha256": "269df06953f254b573bfd740e0161195d655404b28b881ad8b8a691004f6296e"
+    },
+    {
+      "doc": "261109_01",
+      "page": 20,
+      "title": "헤모필루스·보르데텔라·나이세리아",
+      "src": "assets/evidence/261109_01-020.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 29092,
+      "sha256": "e60c8a8a0371bd9336ad4b4c5f52d163bc18f5994b48450deabe6e5234365c83"
+    },
+    {
+      "doc": "261109_01",
       "page": 21,
       "title": "헤모필루스·보르데텔라·나이세리아",
       "src": "assets/evidence/261109_01-021.webp",
@@ -4270,6 +4300,26 @@
     },
     {
       "doc": "261109_02",
+      "page": 36,
+      "title": "레지오넬라·리스테리아·바실루스",
+      "src": "assets/evidence/261109_02-036.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 54180,
+      "sha256": "ddd0df3b8d0d24f7b3809285f2dcf6d5fc07beffbd694d54393c7d83bee38f35"
+    },
+    {
+      "doc": "261109_02",
+      "page": 37,
+      "title": "레지오넬라·리스테리아·바실루스",
+      "src": "assets/evidence/261109_02-037.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 36840,
+      "sha256": "c25578248db93cc169ab413a2eba1e37e97659afd7d27c3d55e37ce858e0eec7"
+    },
+    {
+      "doc": "261109_02",
       "page": 38,
       "title": "레지오넬라·리스테리아·바실루스",
       "src": "assets/evidence/261109_02-038.webp",
@@ -4277,6 +4327,16 @@
       "height": 675,
       "bytes": 63016,
       "sha256": "49cb4d568b21a5e25b99a27f77fdd52bda9179ca40e481779fb53296e6a3d4a6"
+    },
+    {
+      "doc": "261109_02",
+      "page": 39,
+      "title": "레지오넬라·리스테리아·바실루스",
+      "src": "assets/evidence/261109_02-039.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 38356,
+      "sha256": "0501ed72b732ac93516b7096f11c3eccc2854ae9d0f4ab8ce3b7d138aaf1f712"
     },
     {
       "doc": "261109_02",
@@ -5660,6 +5720,16 @@
     },
     {
       "doc": "261112_01",
+      "page": 6,
+      "title": "오소믹소바이러스",
+      "src": "assets/evidence/261112_01-006.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 26108,
+      "sha256": "b01ea9364a0ad47134635a3b5c3255604262af58d60d725137a46725ea46e062"
+    },
+    {
+      "doc": "261112_01",
       "page": 9,
       "title": "오소믹소바이러스",
       "src": "assets/evidence/261112_01-009.webp",
@@ -5950,6 +6020,26 @@
     },
     {
       "doc": "261112_02",
+      "page": 39,
+      "title": "파라믹소·풍진바이러스",
+      "src": "assets/evidence/261112_02-039.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 33478,
+      "sha256": "8c7d049e2c39ae47e0016c8d2f0ead072b55b4309f51713629e89c2d38aadb13"
+    },
+    {
+      "doc": "261112_02",
+      "page": 40,
+      "title": "파라믹소·풍진바이러스",
+      "src": "assets/evidence/261112_02-040.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 48166,
+      "sha256": "5482b300ae09cc89a53e829e561df165863bb673189993443d99363f3dfb7adc"
+    },
+    {
+      "doc": "261112_02",
       "page": 41,
       "title": "파라믹소·풍진바이러스",
       "src": "assets/evidence/261112_02-041.webp",
@@ -6017,6 +6107,16 @@
       "height": 675,
       "bytes": 63146,
       "sha256": "fb70d90cf9a3a6743e186fe2723752c71f2af95d4185f23923e2ac45f2bfc4c7"
+    },
+    {
+      "doc": "261112_03",
+      "page": 13,
+      "title": "간염바이러스",
+      "src": "assets/evidence/261112_03-013.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 52574,
+      "sha256": "b5b7e3be9bcf320c60fb802cb45775597aca279531691bdb04492025ffb8529d"
     },
     {
       "doc": "261112_03",
@@ -6127,6 +6227,16 @@
       "height": 675,
       "bytes": 90266,
       "sha256": "7d010b1ddfbb433cbc8b32bd9f33519aea72a05d9ef9b80eed042d9431d9047f"
+    },
+    {
+      "doc": "261112_03",
+      "page": 32,
+      "title": "간염바이러스",
+      "src": "assets/evidence/261112_03-032.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 73180,
+      "sha256": "85277150d52ecb8fc47aada86dfc6bccbad0db7dc66ee1a3fb9ba2e5598b879f"
     },
     {
       "doc": "261112_03",
@@ -6887,6 +6997,16 @@
       "height": 675,
       "bytes": 40290,
       "sha256": "55139c1780e96cc0d095c20ad93daeb0cdca9b143315634b52d14ab50d47b029"
+    },
+    {
+      "doc": "261116_01",
+      "page": 51,
+      "title": "신종·재출현 바이러스",
+      "src": "assets/evidence/261116_01-051.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 41618,
+      "sha256": "a6b1b3846ad112d9628ac7a62bf64b548f722dfe5b0cdfcf8776c257742ce4ad"
     },
     {
       "doc": "261116_02",
