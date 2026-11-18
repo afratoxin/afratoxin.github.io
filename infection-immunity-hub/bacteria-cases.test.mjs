@@ -9,7 +9,7 @@ import {grade,readProgress,readBookmarks,toggleBookmark} from './logic.mjs';
 
 test('integrated bacterial vignettes have close five-option choices, real evidence and stable lecture IDs',()=>{
  assert.ok(CASES.length>=70);
- assert.equal(LECTURE_QUESTIONS.filter(q=>!q.id.startsWith('lecture-bcase-')).length,674);
+ assert.equal(LECTURE_QUESTIONS.filter(q=>!q.id.startsWith('lecture-bcase-')&&!q.id.startsWith('lecture-vcase-')).length,674);
  assert.ok(new Set(CASES.map(q=>q.sourceRefs.map(r=>r.doc)).flat()).size>=13);
  assert.equal(new Set(CASES.map(q=>q.id)).size,CASES.length);
  assert.ok(STUDY_TOPICS[BACTERIAL_CASE_TOPIC]);
@@ -70,3 +70,4 @@ test('bacterial case entry is in the hub and launches the common keyboard-enable
  assert.match(app,/topic:BACTERIAL_CASE_TOPIC/);
  assert.match(app,/installQuizKeyboard\(\)/);
 });
+

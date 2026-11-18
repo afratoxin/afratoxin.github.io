@@ -1,10 +1,11 @@
+import {VIRAL_CASE_QUESTIONS,VIRAL_CASE_TOPIC} from './virus-case-bank.mjs?v=20261118b';
 import {BACTERIAL_CASE_QUESTIONS,BACTERIAL_CASE_TOPIC} from './bacteria-case-bank.mjs?v=20261118a';
 import {CBL_PAST_QUESTIONS,CBL_PAST_TOPICS} from './cbl-past-bank.mjs?v=20261118a';
 import {originalPrompt,originalIndex,installOriginalViewer} from './cbl-original.mjs?v=20261118a';
 import {createBookmarkUI} from './bookmark-ui.mjs?v=20261118a';
 import {COURSE_GROUPS} from './course-catalog.mjs?v=20261118a';
 import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261118a';
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261118a';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261118b';
 import {createRecallUI} from './recall-ui.mjs?v=20261118a';
 import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261118a';
 import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261118a';
@@ -12,8 +13,8 @@ import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBook
 import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261118a';
 import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261118a';
 import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261118a';
-import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261118a';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261118a';
+import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_TOPICS} from './study-bank.mjs?v=20261118b';
+import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261118b';
 import {sourceText} from './study-core.mjs?v=20261118a';
 import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261118a';
 
@@ -79,7 +80,7 @@ function updateDashboard(){
   $('lectureResumeButton').hidden=!lectureUI?.hasSession();
   $('drillResumeButton').hidden=!drillUI?.hasSession();
   $('originalResumeButton').hidden=!originalUI?.hasSession();
-  for(const [prefix,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['bacterialCase',BACTERIAL_CASE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI],['original',CBL_PAST_QUESTIONS,originalUI]]){
+  for(const [prefix,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['bacterialCase',BACTERIAL_CASE_QUESTIONS,lectureUI],['viralCase',VIRAL_CASE_QUESTIONS,lectureUI],['drill',TABLE_QUESTIONS,drillUI],['original',CBL_PAST_QUESTIONS,originalUI]]){
     const value=stats(bank,ui?.getProgress()||{});
     $(`${prefix}CourseStats`).textContent=`정답 ${value.correct} · 오답 ${value.wrong} · 미풀이 ${value.unanswered}`;
     $(`${prefix}CourseCount`).textContent=`${bank.length}문항`;
@@ -204,6 +205,8 @@ $('homeLectureUnits').addEventListener('click',()=>lectureUI.choose('units'));
 $('homeLectureStart').addEventListener('click',()=>lectureUI.choose('mixed'));
 $('homeBacterialCases').addEventListener('click',()=>lectureUI.start({topic:BACTERIAL_CASE_TOPIC,mode:'all',count:0}));
 $('homeBacterialCasesWrong').addEventListener('click',()=>lectureUI.start({topic:BACTERIAL_CASE_TOPIC,mode:'wrong',count:0}));
+$('homeViralCases').addEventListener('click',()=>lectureUI.start({topic:VIRAL_CASE_TOPIC,mode:'all',count:0}));
+$('homeViralCasesWrong').addEventListener('click',()=>lectureUI.start({topic:VIRAL_CASE_TOPIC,mode:'wrong',count:0}));
 $('lectureResumeButton').addEventListener('click',()=>lectureUI.resume());
 $('homeOriginalUnits').addEventListener('click',()=>originalUI.choose('units'));
 $('homeOriginalMixed').addEventListener('click',()=>originalUI.choose('mixed'));
@@ -250,3 +253,4 @@ originalUI=createStudyUI({id:'cblpast',tab:'cblpast',originals:true,title:'CBL �
 bookmarkUI=createBookmarkUI({root:$('bookmarkContent'),groups:BOOKMARK_GROUPS,read,save,onRetry:oneQuestion,topicTitle:q=>ALL_TOPICS[q.topic]?.title||'',formatPrompt:emphasizePrompt,renderDetails(q){return `${q.original?originalPrompt(q):isPath(q)?imageMarkup(q):''}${q.choices.map((choice,index)=>`<div class="review-choice${isCorrectChoice(q,choice)?' is-answer':''}"><span>${index+1}. ${escape(choice)}</span>${isCorrectChoice(q,choice)?'<small>정답</small>':''}</div>`).join('')}${explanation(q,false)}`;},onChange(){updateDashboard();announce('별표를 해제했습니다.');}});
 navigate(tabFromHash(location.hash)||'home');
 installQuizKeyboard();
+

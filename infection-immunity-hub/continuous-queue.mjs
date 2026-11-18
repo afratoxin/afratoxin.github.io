@@ -43,6 +43,22 @@ function orderedCandidates(candidates,saved){
  for(const q of candidates)if(!seen.has(q.id)){ids.push(q.id);seen.add(q.id);}
  return ids;
 }
+
+// Opt in through question metadata; existing lecture queues retain their ordering contract.
+export function spreadQuestionSubjects(questions){
+ if(!questions.length||!questions.every(q=>q.subjectId&&q.rotationGroup))return questions;
+ const remaining=[...questions],ordered=[],recent=[];
+ let lastGroup=null;
+ while(remaining.length){
+  let index=remaining.findIndex(q=>!recent.includes(q.subjectId)&&q.rotationGroup!==lastGroup);
+  if(index<0)index=remaining.findIndex(q=>!recent.includes(q.subjectId));
+  if(index<0)index=remaining.findIndex(q=>q.subjectId!==recent.at(-1)&&q.rotationGroup!==lastGroup);
+  if(index<0)index=remaining.findIndex(q=>q.subjectId!==recent.at(-1));
+  const [next]=remaining.splice(index<0?0:index,1);
+  ordered.push(next);recent.push(next.subjectId);if(recent.length>3)recent.shift();lastGroup=next.rotationGroup;
+ }
+ return ordered;
+}
 function complete(filters,scope,progress,saved=null){
  const items=saved?.items||[];
  return {version:VERSION,queueVersion:1,filters,phase:'complete',scopeSize:scope.length,queueCounts:counts(scope,progress),position:items.length,items};
@@ -63,7 +79,7 @@ export function startContinuousSession(bank,filters={},progress={},rng=Math.rand
  if(!candidates.length)return complete(f,scope,progress,prior);
  const generated=buildSession(candidates,{count:0},progress,rng),fresh=new Map(generated.items.map(item=>[item.id,item]));
  const oldItems=new Map((prior?.items||[]).map(item=>[item.id,item])),questions=new Map(candidates.map(q=>[q.id,q]));
- const order=f.topic==='all'||f.shuffle===true?generated.items.map(item=>questions.get(item.id)):candidates;
+ const order=f.topic==='all'||f.shuffle===true?spreadQuestionSubjects(generated.items.map(item=>questions.get(item.id))):candidates;
  const items=orderedCandidates(order,prior).map(id=>{
   const old=oldItems.get(id),q=questions.get(id);
   return reusableItem(old,q)?{id,choices:[...old.choices],answer:old.answer,selected:null}:fresh.get(id);
@@ -95,3 +111,4 @@ export function resumeContinuousSession(raw,bank,progress={},rng=Math.random,boo
  const saved=parseSaved(raw);
  return saved?startContinuousSession(bank,saved.filters||{},progress,rng,bookmarks,{...saved,resumingContinuous:true}):null;
 }
+

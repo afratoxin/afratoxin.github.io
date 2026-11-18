@@ -1,11 +1,11 @@
 import {originalPrompt,originalFeedback,originalEmpty,originalLabel,originalChoiceImage} from './cbl-original.mjs?v=20261118a';
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261118a';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261118b';
 import {COURSE_GROUPS} from './course-catalog.mjs?v=20261118a';
 import {practiceLayout} from './practice-layout.mjs?v=20261118a';
 import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261118a';
 import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,isCorrectChoice} from './logic.mjs?v=20261118a';
 import {sourceText,topicProgress} from './study-core.mjs?v=20261118a';
-import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261118a';
+import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261118b';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const externalLinks=q=>(q.externalRefs||[]).filter(r=>/^https:\/\//.test(r.url||'')).map(r=>`<a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.title||'보충 근거')} ↗</a>`).join(' · ');
 
@@ -126,3 +126,4 @@ export function createStudyUI({id,tab,title,subtitle,bank,topics,read,save,openT
  if(session){setFilters(session.filters||{});save(keys.session,session);}update();render();
  return {suspend(){clearTimeout(timer);},open(){resumeCurrent();if(!drill)learningView=session&&session.phase!=='complete'?'practice':'units';update();render();},choose(view){clearTimeout(timer);if(view==='mixed'){start({topic:'all',mode:'all',count:0});return;}openTab(tab);learningView='units';update();render();},start,resume(){openTab(tab);resumeCurrent();if(!session){start({topic:'all',mode:'all',count:0});return;}if(!drill)learningView='practice';update();render();focus();},retry(qid){const q=bank.find(q=>q.id===qid);if(q)start({topic:q.topic,mode:'review',count:0,questionIds:[qid]},true,qid);},getProgress:()=>progress,hasSession:()=>Boolean(session&&session.phase!=='complete'&&session.position<session.items.length)};
 }
+

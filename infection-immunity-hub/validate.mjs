@@ -16,11 +16,18 @@ for(const m of html.matchAll(/(?:src|href)="([^"#][^"]+)"/g)) {
   if(/^(?:https?:|data:|\.\.\/)/.test(path))continue;
   assert.ok(fs.existsSync(new URL(path,import.meta.url)),`missing asset ${path}`);
 }
-const modules=['bacteria-case-bank.mjs','app.mjs','bank.mjs','logic.mjs','pathology-bank.mjs','pathology-ui.mjs','photo-data.mjs','reference-tables.mjs','study-bank.mjs','study-core.mjs','study-ui.mjs','emphasis.mjs','practice-layout.mjs','source-pages.mjs','antibiotic-revision.mjs','pathology-statements.mjs','supplemental-bank.mjs','course-catalog.mjs','extension-bank.mjs','extension-integrated.mjs','recall-catalog.mjs','recall-ui.mjs','quiz-keyboard.mjs','continuous-queue.mjs','bookmark-ui.mjs','enteric-media-bank.mjs','pathedu-bank.mjs','cbl-bank.mjs','cbl1-bank.mjs','cbl2-bank.mjs','cbl3-bank.mjs','cbl-original.mjs','cbl-past-bank.mjs','cbl-past1-bank.mjs','cbl-past2356-bank.mjs','cbl-past4-bank.mjs','question-curation.mjs','nov16-virus-bank.mjs','nov16-fungi-bank.mjs','nov16-integrated-fungi.mjs'];
+const modules=['virus-case-bank.mjs','bacteria-case-bank.mjs','app.mjs','bank.mjs','logic.mjs','pathology-bank.mjs','pathology-ui.mjs','photo-data.mjs','reference-tables.mjs','study-bank.mjs','study-core.mjs','study-ui.mjs','emphasis.mjs','practice-layout.mjs','source-pages.mjs','antibiotic-revision.mjs','pathology-statements.mjs','supplemental-bank.mjs','course-catalog.mjs','extension-bank.mjs','extension-integrated.mjs','recall-catalog.mjs','recall-ui.mjs','quiz-keyboard.mjs','continuous-queue.mjs','bookmark-ui.mjs','enteric-media-bank.mjs','pathedu-bank.mjs','cbl-bank.mjs','cbl1-bank.mjs','cbl2-bank.mjs','cbl3-bank.mjs','cbl-original.mjs','cbl-past-bank.mjs','cbl-past1-bank.mjs','cbl-past2356-bank.mjs','cbl-past4-bank.mjs','question-curation.mjs','nov16-virus-bank.mjs','nov16-fungi-bank.mjs','nov16-integrated-fungi.mjs'];
 for(const name of modules)for(const m of read(name).matchAll(/from '([^']+)'/g))assert.ok(fs.existsSync(new URL(m[1].split('?')[0],import.meta.url)),`missing module ${m[1]}`);
-const version='20261118a';
-assert.ok([...html.matchAll(/\?v=([^"']+)/g)].every(m=>m[1]===version),'HTML cache versions differ');
-for(const name of modules)assert.ok([...read(name).matchAll(/\?v=([^"']+)/g)].every(m=>m[1]===version),`module cache versions differ: ${name}`);
+const changedDependencies={
+ 'index.html':['app.mjs'],
+ 'app.mjs':['virus-case-bank.mjs','study-bank.mjs','study-ui.mjs','continuous-queue.mjs'],
+ 'study-bank.mjs':['virus-case-bank.mjs'],
+ 'study-ui.mjs':['study-bank.mjs','continuous-queue.mjs']
+};
+for(const name of ['index.html',...modules])for(const m of read(name).matchAll(/([a-z0-9-]+\.(?:mjs|css))\?v=([^"']+)/g)){
+ const expected=changedDependencies[name]?.includes(m[1])?'20261118b':'20261118a';
+ assert.equal(m[2],expected,`unexpected cache version: ${name} → ${m[1]}`);
+}
 for(const q of QUESTIONS)for(const ref of q.refs)assert.ok(SOURCES[ref],`unknown source ${ref}`);
 assert.ok(QUESTIONS.some(q=>q.format==='mcq'));
 assert.ok(QUESTIONS.every(q=>['mcq','ox'].includes(q.format)));
@@ -30,3 +37,4 @@ for(const q of PATH_QUESTIONS)for(const ref of q.sourceRefs)assert.ok(ref.pages.
 for(const q of CBL_PAST_QUESTIONS)for(const im of [...q.original.captures,...q.choiceImages||[]])assert.ok(fs.existsSync(new URL(im.src,import.meta.url)),`missing original ${im.src}`);
 for(const section of CBL_PAST_EMPTY)for(const im of section.captures)assert.ok(fs.existsSync(new URL(im.src,import.meta.url)),`missing absence proof ${im.src}`);
 console.log(`Validated ${ids.length} HTML IDs, ARIA/labels, ${modules.length} modules, ${Object.keys(PHOTOS).length} photos and all ${QUESTIONS.length+PATH_QUESTIONS.length+LECTURE_QUESTIONS.length+TABLE_QUESTIONS.length+CBL_PAST_QUESTIONS.length} questions, including ${CBL_PAST_QUESTIONS.length} original CBL exams.`);
+
