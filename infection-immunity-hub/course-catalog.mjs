@@ -25,8 +25,9 @@ export const CBL_LECTURES={
  '261113_03':{title:'CBL 3 · 대상포진·PPGSS',short:'CBL 3',teacher:'윤기옥·이찬미',pages:9,group:'cbl'}
 };
 export const NOV16_LECTURES={"261116_01":{"title":"신종·재출현 바이러스","teacher":"조남혁","pages":53,"group":"virus"},"261116_02":{"title":"토가바이러스·플라비바이러스","teacher":"염진기","pages":46,"group":"virus"},"261116_03":{"title":"필로바이러스·분야바이러스","teacher":"염진기","pages":38,"group":"virus"},"261116_05":{"title":"진균감염·칸디다·폐포자충","teacher":"김남중","pages":45,"group":"bacteria"},"261116_06":{"title":"아스페르길루스·크립토코쿠스·털곰팡이·피부진균","short":"아스페르길루스·크립토코쿠스 등","teacher":"김남중","pages":44,"group":"bacteria"}};
+export const NOV18_LECTURES={'261118_01':{title:'의료관련감염',teacher:'김의석',pages:49,group:'general'},'261118_02':{title:'방어기전손상환자의 감염',teacher:'최평균',pages:36,group:'general'},'261118_05':{title:'레오바이러스·코로나바이러스·노로바이러스',short:'레오·코로나·노로',teacher:'조남혁',pages:60,group:'virus'}};
 const pathology=new Set(['261104_02','261104_03','261104_05']);
-export const groupForLecture=code=>NOV16_LECTURES[code]?.group||CBL_LECTURES[code]?.group||EXTRA_LECTURES[code]?.group||(pathology.has(code)?'general':'bacteria');
+export const groupForLecture=code=>NOV18_LECTURES[code]?.group||NOV16_LECTURES[code]?.group||CBL_LECTURES[code]?.group||EXTRA_LECTURES[code]?.group||(pathology.has(code)?'general':'bacteria');
 export function orderedLectures(existing){
- return Object.fromEntries(Object.entries({...existing,...EXTRA_LECTURES,...CBL_LECTURES,...NOV16_LECTURES}).sort(([a],[b])=>a.localeCompare(b)).map(([code,t],i)=>[code,{...t,short:t.short||t.title,order:i+1,group:groupForLecture(code)}]));
+ return Object.fromEntries(Object.entries({...existing,...EXTRA_LECTURES,...CBL_LECTURES,...NOV16_LECTURES,...NOV18_LECTURES}).sort(([a],[b])=>a.localeCompare(b)).map(([code,t],i)=>[code,{...t,short:t.short||t.title,order:i+1,group:groupForLecture(code)}]));
 }

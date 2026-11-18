@@ -11,7 +11,7 @@ import {sourcePages} from './practice-layout.mjs';
 test('each current lecture receives distinct four-true/one-false statement questions with corrections and physical evidence',()=>{
  assert.ok(NEG.length>=300);
  assert.equal(new Set(NEG.map(q=>q.id)).size,NEG.length);
- assert.equal(LECTURE_QUESTIONS.filter(q=>q.questionType!=='incorrect'&&!q.id.startsWith('lecture-vcase-')).length,754);
+ assert.equal(LECTURE_QUESTIONS.filter(q=>q.questionType!=='incorrect'&&!q.lecture.startsWith('261118_')&&!q.id.startsWith('lecture-vcase-')).length,754);
  const sizes=[];
  for(const code of Object.keys(LECTURES)){
   const own=NEG.filter(q=>q.topic===code);assert.ok(own.length>=5,code);sizes.push(own.length);

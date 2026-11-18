@@ -4,7 +4,7 @@ import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS,TABLE_QUESTIONS,TABLE_
 import {QUESTIONS} from './bank.mjs';
 import {PATH_QUESTIONS} from './pathology-bank.mjs';
 test('lectures and integrated questions have short options and complete source metadata',()=>{
- assert.equal(Object.keys(LECTURES).length,37);assert.ok(LECTURE_QUESTIONS.length>=300);
+ assert.equal(Object.keys(LECTURES).length,40);assert.ok(LECTURE_QUESTIONS.length>=300);
  const ids=new Set();
  for(const code of Object.keys(LECTURES))assert.ok(LECTURE_QUESTIONS.filter(q=>q.lecture===code).length>0,code);
  for(const q of LECTURE_QUESTIONS){

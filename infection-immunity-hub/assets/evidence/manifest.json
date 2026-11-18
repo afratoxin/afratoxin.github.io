@@ -6,7 +6,7 @@
     "format": "WebP",
     "quality": 70
   },
-  "count": 828,
+  "count": 894,
   "pages": [
     {
       "doc": "261102_02",
@@ -7987,6 +7987,666 @@
       "height": 675,
       "bytes": 36014,
       "sha256": "0035bb614310a3a0db22ac821be0c6e476be72d0780a26752fcc385350ac09dd"
+    },
+    {
+      "doc": "261118_01",
+      "page": 4,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-004.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 83302,
+      "sha256": "495a9debfa35667af4524d4bba5d6bb45e500fc0aa844fcb59ccbbc3df31682a"
+    },
+    {
+      "doc": "261118_01",
+      "page": 5,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-005.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 48378,
+      "sha256": "543c5d5fdb65b3cb2de7e83a7c52c387e6b77045c0f92a9397114e117405715f"
+    },
+    {
+      "doc": "261118_01",
+      "page": 6,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-006.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57644,
+      "sha256": "03e86a4fa78970d9f12afc3b2a59d89b4b74fd78e4bfdcb7662f8bf816cb5196"
+    },
+    {
+      "doc": "261118_01",
+      "page": 7,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-007.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 62296,
+      "sha256": "3beb7fff4ae74eca41de58c33e99afbadbc5b72f63bcce0b77db338153a162d2"
+    },
+    {
+      "doc": "261118_01",
+      "page": 11,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-011.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 54248,
+      "sha256": "c66e095c696c6a9fcca2eda984457a341d6b25ef1fdd8343650273efa4a44a81"
+    },
+    {
+      "doc": "261118_01",
+      "page": 12,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-012.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 55674,
+      "sha256": "8f130e482ad47f371d63d5fe5247c19f73db043727d7da72ef9666fbf9bc0299"
+    },
+    {
+      "doc": "261118_01",
+      "page": 13,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-013.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 32976,
+      "sha256": "f77718fce30ee30a9ec6b84cae08630c239a29569103d9324c21cea333fc13fe"
+    },
+    {
+      "doc": "261118_01",
+      "page": 17,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-017.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 58290,
+      "sha256": "8153cfc8792ec9d1049b67847f4c55d012c4ef20eceec56a71dcda035457678e"
+    },
+    {
+      "doc": "261118_01",
+      "page": 19,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-019.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 67846,
+      "sha256": "27c31c99d1e05e46c854505bd5d299f980b9d4de362bace25590282e1266dbdd"
+    },
+    {
+      "doc": "261118_01",
+      "page": 21,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-021.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 35320,
+      "sha256": "4cf249ec53c8216941bd04b4d5b8381c37cdc17205d867d2a79f14b7ab73f478"
+    },
+    {
+      "doc": "261118_01",
+      "page": 23,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-023.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 27232,
+      "sha256": "e77a07f764d9f88d4faf3da64bc8aa0bb071fb910754be592249cac5f0e7fc16"
+    },
+    {
+      "doc": "261118_01",
+      "page": 24,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-024.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 49936,
+      "sha256": "4a49693e5ffeae0e50dc9b2053f209547cc15ad4d4c6d3d1eb4bf2517d83477c"
+    },
+    {
+      "doc": "261118_01",
+      "page": 25,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-025.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 43526,
+      "sha256": "59aac5de6abdbcd6d3b4efc5b39ab750ff4c95ba62c51c14265336873877236e"
+    },
+    {
+      "doc": "261118_01",
+      "page": 26,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-026.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 29404,
+      "sha256": "7f7f1596d0be8f5dc0c60a1eba2096975a5c0ebe598eaf5bbea9d3b252877118"
+    },
+    {
+      "doc": "261118_01",
+      "page": 27,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-027.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 30858,
+      "sha256": "e000e34d83e8cf8b93895bc839cff5d19232a9ae55085bbb2d14233a46c63c35"
+    },
+    {
+      "doc": "261118_01",
+      "page": 28,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-028.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 17178,
+      "sha256": "df3194dfae264787a575323852ffaf6c41d9c491ab8d71cc637762f31087f9db"
+    },
+    {
+      "doc": "261118_01",
+      "page": 32,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-032.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 33092,
+      "sha256": "b2dacde48ccf82de27044dd2bb165871628c1c3795c895073fc10d5a7348dacd"
+    },
+    {
+      "doc": "261118_01",
+      "page": 33,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-033.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 27444,
+      "sha256": "e3862607adcd477a9b45b6d6a4fb204fd7edeae3a626a48fca423dbf407bc34f"
+    },
+    {
+      "doc": "261118_01",
+      "page": 35,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-035.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 26300,
+      "sha256": "d1e9f0cb59e86f08b4cf26c97302270bb9499e0fa913531921bf1882a37ca744"
+    },
+    {
+      "doc": "261118_01",
+      "page": 36,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-036.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 39844,
+      "sha256": "1a44b1dcd724e638e95ba2f4497733f82ec40d7e16ea0b8f82d74ed4717ddeff"
+    },
+    {
+      "doc": "261118_01",
+      "page": 38,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-038.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 56658,
+      "sha256": "c0b75b16e8c197739daa1ae50af87c403286ae6bd3291f3caf4eff1a751f112b"
+    },
+    {
+      "doc": "261118_01",
+      "page": 39,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-039.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 60342,
+      "sha256": "b3931f48bfe1a2bf7a2e292053590a553450fcc90a6068e01808d0652a78b25c"
+    },
+    {
+      "doc": "261118_01",
+      "page": 40,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-040.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 41174,
+      "sha256": "992638347c6a8fe8d5ed89316338d05d2f4ea7d42b679ddd4c84a593ce05c3bf"
+    },
+    {
+      "doc": "261118_01",
+      "page": 41,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-041.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 30916,
+      "sha256": "59b23a681dfe477d0124fc8e602b6665d93c2214182001e19972ccee6a40a0a7"
+    },
+    {
+      "doc": "261118_01",
+      "page": 42,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-042.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 31498,
+      "sha256": "792960b4e35e81ccce12a25ca9906e440af87b5126b59068208a9fe816cc543c"
+    },
+    {
+      "doc": "261118_01",
+      "page": 43,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-043.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 39408,
+      "sha256": "58b5096365e44a445ad9767526d20621d49e43f6619152a2131d90902ad58395"
+    },
+    {
+      "doc": "261118_01",
+      "page": 44,
+      "title": "의료관련감염",
+      "src": "assets/evidence/261118_01-044.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 30478,
+      "sha256": "df4bf5f707bb6578cd044d509fba7661c651f65b91a33bea71839d8f0c8d83df"
+    },
+    {
+      "doc": "261118_02",
+      "page": 4,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-004.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 35134,
+      "sha256": "35f9ef2fa795ad72cb0a97187aad588b9fc38fdff079d30c56d285664b1447a6"
+    },
+    {
+      "doc": "261118_02",
+      "page": 8,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-008.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 42486,
+      "sha256": "2de636cdbedb125b3cebd55e50669b53e74a145b169ca6b40a9c62de42cffa14"
+    },
+    {
+      "doc": "261118_02",
+      "page": 11,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-011.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 49814,
+      "sha256": "e338f78c8df4b4b4a458b731e91bfa3eccafb41e6959cd507a99b08664328419"
+    },
+    {
+      "doc": "261118_02",
+      "page": 13,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-013.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57316,
+      "sha256": "5b636c89c8004d3ae437e36d2e746ee95ce85c7c62b930a0cac42f151993d7b0"
+    },
+    {
+      "doc": "261118_02",
+      "page": 14,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-014.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 48236,
+      "sha256": "ad6eb9bdfd45fd6b9d92096013bd5f195c4c7577eed5252b53d377915c75147e"
+    },
+    {
+      "doc": "261118_02",
+      "page": 15,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-015.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 33550,
+      "sha256": "f645b8f26c280d7819a713027f48d4296fb10c294f98e87d277f2bc50909e7ef"
+    },
+    {
+      "doc": "261118_02",
+      "page": 16,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-016.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 31222,
+      "sha256": "132f6d9e6d8887aa65557d2e2b607f1aa116b3a23f6366ce77faa5d96bbd0150"
+    },
+    {
+      "doc": "261118_02",
+      "page": 18,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-018.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 38144,
+      "sha256": "d9017b52b9911fa928e028b3381c7b3c22016c6e367d217f317801fec86b72a8"
+    },
+    {
+      "doc": "261118_02",
+      "page": 19,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-019.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 43394,
+      "sha256": "9dcc0e1fbb2d0cc0e5d2659ffab2a06d6048bfd550aeeb454a5999297477021e"
+    },
+    {
+      "doc": "261118_02",
+      "page": 20,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-020.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57112,
+      "sha256": "c46a77c10193046bf4dcdba4df16554394fb40c88082ad8d9342b73b6cdbd268"
+    },
+    {
+      "doc": "261118_02",
+      "page": 21,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-021.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 34062,
+      "sha256": "47954eeedeeae083887eff9d6779af29b12e9ea66d9db7e070d8a2490c2512ad"
+    },
+    {
+      "doc": "261118_02",
+      "page": 22,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-022.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 39950,
+      "sha256": "acfea214507d7195caac51a5a9527e6daeec2b1285ba583047d1cb119890245b"
+    },
+    {
+      "doc": "261118_02",
+      "page": 23,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-023.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 32494,
+      "sha256": "94c2190c255014874f92a0baced3f12d7abb939ecb98aa731dfff84820c9239c"
+    },
+    {
+      "doc": "261118_02",
+      "page": 24,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-024.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 33452,
+      "sha256": "da4085c74843011c044aaa5d2dff3c83ce562d26f8766ab1f999020252885ee8"
+    },
+    {
+      "doc": "261118_02",
+      "page": 25,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-025.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 34394,
+      "sha256": "f42fc955dc7be11f94fa4a428e340e1e0f2b1fe20c32c786bb1f2482294a8fb4"
+    },
+    {
+      "doc": "261118_02",
+      "page": 26,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-026.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 54710,
+      "sha256": "c99f7bd8670a53016d8757ad09773e8d84f6d9205ad386914c262ab77ae05b40"
+    },
+    {
+      "doc": "261118_02",
+      "page": 28,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-028.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 40476,
+      "sha256": "cfcf9a034bc7f7bf29e5de484141aad35f0ea30a4ee499e0a01ba3ff78c73ce4"
+    },
+    {
+      "doc": "261118_02",
+      "page": 29,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-029.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 78862,
+      "sha256": "b42f4c23639bd55eb467c9f0beb86783d3523367da2e15e76af0769c1cbfc3f2"
+    },
+    {
+      "doc": "261118_02",
+      "page": 30,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-030.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 28666,
+      "sha256": "b403f84881ea1f26e7328aa9dafaca760ff73a4e5d120efd86b277cc86982151"
+    },
+    {
+      "doc": "261118_02",
+      "page": 31,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-031.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 31072,
+      "sha256": "c67e0cbb1f76976f2b4f7cb6cad28d20399ce9842d76d7710f401824aad4e780"
+    },
+    {
+      "doc": "261118_02",
+      "page": 32,
+      "title": "방어기전손상환자의 감염",
+      "src": "assets/evidence/261118_02-032.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 53664,
+      "sha256": "57634056e7fd914a9b2c6e1934e2ccc88f21d245062632e69efa24f73990fcba"
+    },
+    {
+      "doc": "261118_05",
+      "page": 3,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-003.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 27968,
+      "sha256": "c447b3a90ba5275b039161a704535e046c98db32bac7e0186831e0e19c21fe8e"
+    },
+    {
+      "doc": "261118_05",
+      "page": 12,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-012.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 64166,
+      "sha256": "99dd864dabad673fedd893a2732a5bb3c65a1b9f6ab5ec4a2bdff2e9b3154936"
+    },
+    {
+      "doc": "261118_05",
+      "page": 13,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-013.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 49606,
+      "sha256": "16a4056ff1244b70e4772fa69474feefa78f425fb33ce0f1d818c0a9144feebf"
+    },
+    {
+      "doc": "261118_05",
+      "page": 15,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-015.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57590,
+      "sha256": "1c3e702a64b62132df8743136421ae70138cb4d2763af6414cccd07d7014211c"
+    },
+    {
+      "doc": "261118_05",
+      "page": 21,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-021.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 57156,
+      "sha256": "3decb6a1b3c04463a9778273d616bdd38faf5cf1c8b02841f2a4d5c5e0b630bd"
+    },
+    {
+      "doc": "261118_05",
+      "page": 23,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-023.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 44020,
+      "sha256": "b5d42b121f706c76e7f721215ef5d2630b8e380894ace8cf8176845c42abb006"
+    },
+    {
+      "doc": "261118_05",
+      "page": 24,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-024.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 60074,
+      "sha256": "c1ff00f2f9a52d8b9ae2e9b3922b33f41d7367eaf07638c0f34565df6a618f07"
+    },
+    {
+      "doc": "261118_05",
+      "page": 44,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-044.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 63614,
+      "sha256": "2d165cab94db7e808125b677de520155f515bf361bbea8e6deee96f7d6db364d"
+    },
+    {
+      "doc": "261118_05",
+      "page": 45,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-045.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 52138,
+      "sha256": "f52fcfcbfa3f3cfa2ec6a831d327843256ac995a9323a81b43101eaa74429595"
+    },
+    {
+      "doc": "261118_05",
+      "page": 46,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-046.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 75170,
+      "sha256": "7e8f45bfe9430cd1089fde2d24c15f1e5ffe4c47e9a6c985efab7e20a9c03832"
+    },
+    {
+      "doc": "261118_05",
+      "page": 47,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-047.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 41606,
+      "sha256": "6c5583e67a7c89753ff01abc8f44eb0acbb2400d2e87a10ac74a1686cacc7f4d"
+    },
+    {
+      "doc": "261118_05",
+      "page": 48,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-048.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 55688,
+      "sha256": "fdd25ed58af7d6cb511f1d4eda0f5ef11a0b16a7b5994e96c7c818ff9b3a7dff"
+    },
+    {
+      "doc": "261118_05",
+      "page": 49,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-049.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 56376,
+      "sha256": "3f90c49bf61561bfbf2db84fd0cc6af71953b4c35018096a457c3afbbcce2c1a"
+    },
+    {
+      "doc": "261118_05",
+      "page": 51,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-051.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 58454,
+      "sha256": "39fe10f1c08a0e57be4b7f330141ea1af490b35363fefd1a2a4d062253d9b6e5"
+    },
+    {
+      "doc": "261118_05",
+      "page": 53,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-053.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 64150,
+      "sha256": "e3773e4191059d9d44d0efeda0100937d3cacc571fb67ce121596f7b05762c42"
+    },
+    {
+      "doc": "261118_05",
+      "page": 55,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-055.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 52960,
+      "sha256": "cbc04886d848a0e4a7785abd4882f6515d82f242a287b9c7427219a1a66d0770"
+    },
+    {
+      "doc": "261118_05",
+      "page": 57,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-057.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 20000,
+      "sha256": "3da8ef408b0b9bbb8accac532bb0da32ced27189488890fdc23fcb06f701e0f3"
+    },
+    {
+      "doc": "261118_05",
+      "page": 58,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-058.webp",
+      "width": 900,
+      "height": 675,
+      "bytes": 51692,
+      "sha256": "e2df60f1f34e3ccfcdae75606bcf3571217177e6354107bb891896deaa1c1836"
     },
     {
       "doc": "antibiotics",

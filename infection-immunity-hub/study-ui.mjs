@@ -1,11 +1,11 @@
-import {originalPrompt,originalFeedback,originalEmpty,originalLabel,originalChoiceImage} from './cbl-original.mjs?v=20261118c';
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261118c';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261118c';
-import {practiceLayout,sourcePages} from './practice-layout.mjs?v=20261118c';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261118c';
-import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,isCorrectChoice} from './logic.mjs?v=20261118c';
-import {sourceText,topicProgress} from './study-core.mjs?v=20261118c';
-import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261118c';
+import {originalPrompt,originalFeedback,originalEmpty,originalLabel,originalChoiceImage} from './cbl-original.mjs?v=20261119c';
+import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261119c';
+import {COURSE_GROUPS} from './course-catalog.mjs?v=20261119c';
+import {practiceLayout,sourcePages} from './practice-layout.mjs?v=20261119c';
+import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261119c';
+import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,isCorrectChoice} from './logic.mjs?v=20261119c';
+import {sourceText,topicProgress} from './study-core.mjs?v=20261119c';
+import {DOCUMENTS,LECTURES} from './study-bank.mjs?v=20261119c';
 const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const externalLinks=q=>(q.externalRefs||[]).filter(r=>/^https:\/\//.test(r.url||'')).map(r=>`<a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.title||'보충 근거')} ↗</a>`).join(' · ');
 

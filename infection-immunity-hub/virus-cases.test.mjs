@@ -16,7 +16,7 @@ function random(seed){return()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)
 test('viral integrated cases cover all ten lectures with five close options and captured lecture evidence',()=>{
  assert.equal(CASES.length,60);
  assert.equal(new Set(CASES.map(q=>q.lecture)).size,10);
- assert.equal(LECTURE_QUESTIONS.filter(q=>!byId.has(q.id)&&q.questionType!=='incorrect').length,754);
+ assert.equal(LECTURE_QUESTIONS.filter(q=>!byId.has(q.id)&&q.questionType!=='incorrect'&&!q.lecture.startsWith('261118_')).length,754);
  assert.equal(new Set(LECTURE_QUESTIONS.map(q=>q.id)).size,LECTURE_QUESTIONS.length);
  assert.equal(STUDY_TOPICS[VIRAL_CASE_TOPIC].shuffle,true);
  for(const q of CASES){
@@ -98,7 +98,7 @@ test('viral hub entry launches shared practice and refreshes the changed module 
  assert.match(app,/homeViralCases.*lectureUI\.start\(\{topic:VIRAL_CASE_TOPIC,mode:'all'/);
  assert.match(app,/homeViralCasesWrong.*lectureUI\.start\(\{topic:VIRAL_CASE_TOPIC,mode:'wrong'/);
  assert.match(app,/\['viralCase',VIRAL_CASE_QUESTIONS,lectureUI\]/);
- assert.match(html,/app\.mjs\?v=20261118c/);
- for(const name of ['study-bank.mjs','study-ui.mjs','continuous-queue.mjs'])assert.ok(app.includes(name+'?v=20261118c'));
- assert.match(read('study-ui.mjs'),/continuous-queue\.mjs\?v=20261118c/);
+ assert.match(html,/app\.mjs\?v=20261119c/);
+ for(const name of ['study-bank.mjs','study-ui.mjs','continuous-queue.mjs'])assert.ok(app.includes(name+'?v=20261119c'));
+ assert.match(read('study-ui.mjs'),/continuous-queue\.mjs\?v=20261119c/);
 });
