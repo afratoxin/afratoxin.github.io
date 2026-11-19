@@ -1,5 +1,5 @@
 export const COURSE_GROUPS={
- general:{title:'일반',description:'병인·진단·치료·병리·약리·소아감염'},
+ general:{title:'일반',description:'병인·진단·치료·병리·약리·소아감염·역학·예방'},
  bacteria:{title:'세균·진균',description:'균 특성·독소·배양·감별'},
  virus:{title:'바이러스',description:'구조·질환·검사·항원과 항체'},
  cbl:{title:'CBL',description:'증례의 단서·감별진단·검사·치료 판단'}

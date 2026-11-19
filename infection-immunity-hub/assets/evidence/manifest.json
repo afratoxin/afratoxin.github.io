@@ -6,7 +6,7 @@
     "format": "WebP",
     "quality": 70
   },
-  "count": 894,
+  "count": 963,
   "pages": [
     {
       "doc": "261102_02",
@@ -8647,6 +8647,696 @@
       "height": 675,
       "bytes": 51692,
       "sha256": "e2df60f1f34e3ccfcdae75606bcf3571217177e6354107bb891896deaa1c1836"
+    },
+    {
+      "doc": "261119_01",
+      "page": 5,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-005.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 55164,
+      "sha256": "2f08fbdbf1f73174a1b2879c621a4d61c12093697ba99898b02281c2a4b64d90"
+    },
+    {
+      "doc": "261119_01",
+      "page": 6,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-006.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 26552,
+      "sha256": "80878e82c5b2a61f924f4e9d7717b69bdd3b0eacfd3346837337187a33fc9393"
+    },
+    {
+      "doc": "261119_01",
+      "page": 8,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-008.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 104680,
+      "sha256": "7bf5c1800fcbd80010ac55fb9b52d11c7a623fcf1a4c01f8151bb62d2617fb83"
+    },
+    {
+      "doc": "261119_01",
+      "page": 9,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-009.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 49926,
+      "sha256": "e1141f667b1ec94114b52ac10d8176cd07e933ea4a053a6d1505371508d6aae0"
+    },
+    {
+      "doc": "261119_01",
+      "page": 10,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-010.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 71538,
+      "sha256": "53f4c62119f366649fc9dc07a01a596e07d5dfa584af66eb6a1ab3825f435814"
+    },
+    {
+      "doc": "261119_01",
+      "page": 11,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-011.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 77156,
+      "sha256": "db080ded0c30570658768976897ac18580f991197ddc1cebe0425fd1e5a996e8"
+    },
+    {
+      "doc": "261119_01",
+      "page": 12,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-012.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 93396,
+      "sha256": "b940eeac7c3abba15daf1133898d1dd84d20aed15363823d3aa64cb1ddfaed3f"
+    },
+    {
+      "doc": "261119_01",
+      "page": 15,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-015.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 70928,
+      "sha256": "3750b4e38d77e527b72a986924981587cb3c8a20fb9f8aee9aa96bc2698de5ba"
+    },
+    {
+      "doc": "261119_01",
+      "page": 16,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-016.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 67782,
+      "sha256": "fd9a3874321f84252d67a661de968b1f01197eb695a2aaab7d0e30de49830da5"
+    },
+    {
+      "doc": "261119_01",
+      "page": 18,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-018.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 70440,
+      "sha256": "b6bfdcf903beb5ad9de608c76e17e3e750ac36e7389b95fd75d6aa6d440c64bf"
+    },
+    {
+      "doc": "261119_01",
+      "page": 19,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-019.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 45150,
+      "sha256": "389c4c98af768ddbdc630f385a50fb24e31175f6971657cf265e85e777c44229"
+    },
+    {
+      "doc": "261119_01",
+      "page": 20,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-020.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 37666,
+      "sha256": "06cbc584894338dfba73400f5d30b30e616aa514b2feda9abb28cedc848b540f"
+    },
+    {
+      "doc": "261119_01",
+      "page": 21,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-021.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 75946,
+      "sha256": "91c4bcd35032bef03bed3b04f9f974969cb537282d60de160180fee812bf149d"
+    },
+    {
+      "doc": "261119_01",
+      "page": 22,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-022.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 50736,
+      "sha256": "c94e6f9329f6643700401c058227a2bef4478e6bd58ac1a729783aa8334f9495"
+    },
+    {
+      "doc": "261119_01",
+      "page": 23,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-023.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 49800,
+      "sha256": "0abee6e6f6777aa41674f751f7a0bd2b0b81455d1e6231d93ae494b512127a83"
+    },
+    {
+      "doc": "261119_01",
+      "page": 24,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-024.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 106716,
+      "sha256": "d9674e86f32836172f4323455b175b36cec9655e98980188381372c27aa49b58"
+    },
+    {
+      "doc": "261119_01",
+      "page": 25,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-025.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 59960,
+      "sha256": "8034de164528812ab03893b0988e77b6d8a3b1b085a468cd64744e0d55b5b3e3"
+    },
+    {
+      "doc": "261119_01",
+      "page": 27,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-027.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 35426,
+      "sha256": "01546cde8bad2d1e8a055318dddbef66f5a5530678996f7d9663511e76fa1284"
+    },
+    {
+      "doc": "261119_01",
+      "page": 29,
+      "title": "감염병의 자연사와 감시·관리·예방",
+      "src": "assets/evidence/261119_01-029.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 70888,
+      "sha256": "deab4681209ce9546f8e34d07f75996f96724ab655d973e639469ddf9bb79cb6"
+    },
+    {
+      "doc": "261119_02",
+      "page": 3,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-003.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 83892,
+      "sha256": "a15e26c8d87d7e9888470a057760c859cef977e9bc6532a2c79a38fdd6ab5edc"
+    },
+    {
+      "doc": "261119_02",
+      "page": 4,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-004.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 38628,
+      "sha256": "5b1b883fdc5e23332e687ba9b5168a9fe12fc7bc1359dff334c4b7648e4b7428"
+    },
+    {
+      "doc": "261119_02",
+      "page": 7,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-007.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 80160,
+      "sha256": "a39a161f0e70de63c479d7a5db314b3fd249640e0e2b8419fd8ce1dadd4d0e77"
+    },
+    {
+      "doc": "261119_02",
+      "page": 8,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-008.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 50794,
+      "sha256": "b4ff9c5870cef05a412a74ca79ae1a6afd05d305eff9e9e6fafac98559d1cc95"
+    },
+    {
+      "doc": "261119_02",
+      "page": 9,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-009.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 50606,
+      "sha256": "655e8d9e10040cf2aa698de182bd6251adb49654e2a76f204bab4057631014fc"
+    },
+    {
+      "doc": "261119_02",
+      "page": 10,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-010.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 39778,
+      "sha256": "aea7a6ed9d220c0ccdc62c0db6475b1a664e42a6ce9fc0ac0bde9ce2363fb607"
+    },
+    {
+      "doc": "261119_02",
+      "page": 15,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-015.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 49706,
+      "sha256": "88710a56ceba6cfd645055779b6ad17b49ed44e44e28a4d4abfa505430a79116"
+    },
+    {
+      "doc": "261119_02",
+      "page": 16,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-016.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 36368,
+      "sha256": "d05d180426579323a8e9288da09b9b39a685109e408a487619246396141dd696"
+    },
+    {
+      "doc": "261119_02",
+      "page": 17,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-017.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 35092,
+      "sha256": "6e97ac12f53ad152d5316b32e2b5fd2397af61d2761d3bf99ac840b33b8d3e3a"
+    },
+    {
+      "doc": "261119_02",
+      "page": 18,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-018.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 55968,
+      "sha256": "8a52ee9c20a513734e133dd2919fb15a51263834e71cde37e0ba7a2258ef6e46"
+    },
+    {
+      "doc": "261119_02",
+      "page": 19,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-019.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 95768,
+      "sha256": "06014dacc68c29fa4d38ba85ba8a1e67c5edcd4317b809689310eb7a27f731da"
+    },
+    {
+      "doc": "261119_02",
+      "page": 20,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-020.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 33950,
+      "sha256": "14b61abdafec830fad2fe321b62fc77080ca17fd689dcf94812a61c8dfbf6c0d"
+    },
+    {
+      "doc": "261119_02",
+      "page": 21,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-021.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 36482,
+      "sha256": "67a0692366accc2f623cc4fce428047bf753d0a22279c1c7ed564ddc176747ee"
+    },
+    {
+      "doc": "261119_02",
+      "page": 22,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-022.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 32520,
+      "sha256": "9b042f30abb0bce3953324d2e0d23a49380bb5dc7c6258e04404e98032d4e7eb"
+    },
+    {
+      "doc": "261119_02",
+      "page": 23,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-023.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 36434,
+      "sha256": "e7f2e1d2abfa9d54dcbb6517a25ee6b0ac81b3076a065659a1cd668e846e8a56"
+    },
+    {
+      "doc": "261119_02",
+      "page": 24,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-024.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 39006,
+      "sha256": "68e96efaa048f13704908aed60d1fd150bba81328e437d236b3d7f3d9c5c93a1"
+    },
+    {
+      "doc": "261119_02",
+      "page": 25,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-025.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 47114,
+      "sha256": "bbedc63bb3fac572144f9298ee764307f87bd8e271ff47d6a192700ed23549b0"
+    },
+    {
+      "doc": "261119_02",
+      "page": 26,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-026.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 28746,
+      "sha256": "2feb15b9551c3319546a41b061a374449e6e791c1e046d1187840c086999db09"
+    },
+    {
+      "doc": "261119_02",
+      "page": 27,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-027.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 41816,
+      "sha256": "906ed95ff74cea421e93bf54967cc8d8b3a162cf737d9070ce3055fc6fe7b3ee"
+    },
+    {
+      "doc": "261119_02",
+      "page": 28,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-028.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 46560,
+      "sha256": "8c4a8d91651fe51bd3d951095c1c9b15625831d9538c277011486a76f0a3af18"
+    },
+    {
+      "doc": "261119_02",
+      "page": 29,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-029.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 43606,
+      "sha256": "7835cd4788b78bcc483faa79261a8c8409c2e92ac6cff823a304b632fd63e975"
+    },
+    {
+      "doc": "261119_02",
+      "page": 30,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-030.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 47732,
+      "sha256": "d827df1505a2f2a134ee778a7654475c5333cc353eff28a7fad17ffa0852f293"
+    },
+    {
+      "doc": "261119_02",
+      "page": 32,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-032.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 62518,
+      "sha256": "aaaa92431e9ddc85464f7a86cc03102f2955af3ebddcab339881b6dc78d48a90"
+    },
+    {
+      "doc": "261119_02",
+      "page": 33,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-033.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 55328,
+      "sha256": "4d568b0083f3dd4a42811a638700e49fdfb8e56a679f46192934f9732c00940b"
+    },
+    {
+      "doc": "261119_03",
+      "page": 4,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-004.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 39882,
+      "sha256": "1e59cab84336a2a6ec098a46225a98a0d233799095947af094f073a9ede35c16"
+    },
+    {
+      "doc": "261119_03",
+      "page": 5,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-005.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 53898,
+      "sha256": "237a77707e879965db95f9467d9727d5231fe30972d519f36836a5bdd8042652"
+    },
+    {
+      "doc": "261119_03",
+      "page": 7,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-007.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 30474,
+      "sha256": "0a99647d36ce28d736bc3dbcde2ec3a587d98625d9420e34786376da679cc08e"
+    },
+    {
+      "doc": "261119_03",
+      "page": 9,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-009.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 73280,
+      "sha256": "b677aa9f7e8cc12ef8b3876dc5ea665bb456e9d9c3f76341c740b829ddae679b"
+    },
+    {
+      "doc": "261119_03",
+      "page": 10,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-010.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 72778,
+      "sha256": "5d949d7ff7fd4ae39506431cb12f03a77923ec74ba5b23f360ffd41237307e00"
+    },
+    {
+      "doc": "261119_03",
+      "page": 12,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-012.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 63064,
+      "sha256": "eaaccb411dba95e7340c6b449498e75b2aa9d4fed2037c054f88c2081cf2a2f3"
+    },
+    {
+      "doc": "261119_03",
+      "page": 13,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-013.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 39214,
+      "sha256": "d48d30951c770b295a89c4107fe8ed6797a121eaa2c7559f6aadd6ab1b23c1b8"
+    },
+    {
+      "doc": "261119_03",
+      "page": 15,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-015.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 42392,
+      "sha256": "3761d9b8d8170a81e59d3685fbb1cf68163010f40704078c402cbf01ff9c6799"
+    },
+    {
+      "doc": "261119_03",
+      "page": 16,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-016.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 48076,
+      "sha256": "8ccb89311ac9fbc04b9cc7cf8cdc595b71af020aa7a386743023cad5530ad6e5"
+    },
+    {
+      "doc": "261119_03",
+      "page": 17,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-017.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 35444,
+      "sha256": "465e84735fb8f6cced4f1944623a5a21978642cd4f79620ce43de1e5c535b4a7"
+    },
+    {
+      "doc": "261119_03",
+      "page": 18,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-018.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 55598,
+      "sha256": "85743cf1690ed57d996a2f0613cdf8fce45327595c5676470fad97b0e264c82b"
+    },
+    {
+      "doc": "261119_03",
+      "page": 19,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-019.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 41968,
+      "sha256": "b94558077e30f8e7b1eea775b35bfd55664989fdf1dde94fd27f809e9ddadb79"
+    },
+    {
+      "doc": "261119_03",
+      "page": 21,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-021.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 18258,
+      "sha256": "128724801f5a8ca857011a54311eecb1346ff8a270a98fb38b821330b7ff236e"
+    },
+    {
+      "doc": "261119_03",
+      "page": 22,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-022.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 50234,
+      "sha256": "9b1ca5e188e229cd6de7a6416fd8591ddde82322c3a62bab8315ee29d63fd682"
+    },
+    {
+      "doc": "261119_03",
+      "page": 23,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-023.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 39882,
+      "sha256": "1e59cab84336a2a6ec098a46225a98a0d233799095947af094f073a9ede35c16"
+    },
+    {
+      "doc": "261119_03",
+      "page": 26,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-026.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 45202,
+      "sha256": "599bbe45a1de627b156fdac2bd07f0c153aa57de8b05789d2ce6218540998aab"
+    },
+    {
+      "doc": "261119_03",
+      "page": 27,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-027.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 52030,
+      "sha256": "5724f2caeb07bea958591f31690c9b1fef5d7477be0ac43e7a8a789422d51b1e"
+    },
+    {
+      "doc": "261119_03",
+      "page": 28,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-028.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 34380,
+      "sha256": "0ef0ba194ab5797459f298df5f5a61b24060c0330b7c4921e87d841a28e1cf3f"
+    },
+    {
+      "doc": "261119_03",
+      "page": 30,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-030.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 69348,
+      "sha256": "bd78101cee3eabc52dced7ae0639e4e2056310f60c4f46aeabbe48452a31bb8a"
+    },
+    {
+      "doc": "261119_03",
+      "page": 31,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-031.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 62258,
+      "sha256": "2f74c4532bba37faa40f47980efef2a56c92e2be916dd419910c7ee3a9dea6ec"
+    },
+    {
+      "doc": "261119_03",
+      "page": 32,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-032.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 37422,
+      "sha256": "c8b133e6f09be7e448a30828a2b1d4b4ba9a1cc0e0ab86ffacd2b9451aa6bce3"
+    },
+    {
+      "doc": "261119_03",
+      "page": 33,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-033.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 50008,
+      "sha256": "7a0b53e332f6900cd89be7eed2a23faa59e59564672d8f0acd7fe484d285ba4b"
+    },
+    {
+      "doc": "261119_03",
+      "page": 34,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-034.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 55854,
+      "sha256": "218078d4484895e8edcf9795f181108019903db04975421c6db4eeb6b40a9fcf"
+    },
+    {
+      "doc": "261119_03",
+      "page": 35,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-035.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 53392,
+      "sha256": "6df89e97be18668a38d3301590ab80f529d72ebb77ff77278fc27b26da03ad5e"
+    },
+    {
+      "doc": "261119_03",
+      "page": 36,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-036.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 76710,
+      "sha256": "83e9a5452d84516ec6d48b3a801bea195b67d4bb0cb1bd5301fab17031747f3f"
+    },
+    {
+      "doc": "261119_03",
+      "page": 37,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-037.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 60318,
+      "sha256": "053d87e3f05b884efb39f77a34c028445b0130d975cf7b7cb6fd2add476fd1be"
     },
     {
       "doc": "antibiotics",

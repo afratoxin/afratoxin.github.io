@@ -31,7 +31,7 @@ test('the hub, bookmarks and wrong-answer UI have no separate recall quiz',()=>{
 
 test('every historical recall item is reviewed and only nineteen unique items join active lectures',()=>{
  const active=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...CBL_PAST_QUESTIONS],ids=new Set(active.map(q=>q.id));
- assert.equal(LEGACY.length,540);assert.equal(Object.keys(PLAN).length,540);assert.equal(active.length,1461);
+ assert.equal(LEGACY.length,540);assert.equal(Object.keys(PLAN).length,540);assert.equal(active.filter(q=>!q.lecture?.startsWith('261119_')).length,1461);
  assert.equal(ids.size,active.length);assert.equal(PROMOTED_QUESTIONS.length,19);
  assert.equal(Object.values(PLAN).filter(p=>p.action==='duplicate').length,521);
  for(const q of BEFORE)assert.deepEqual(LECTURE_QUESTIONS.find(x=>x.id===q.id),q,'existing regular item changed: '+q.id);

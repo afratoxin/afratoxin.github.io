@@ -1,4 +1,4 @@
-import {RECALL_CONSOLIDATION} from './recall-consolidation.mjs?v=20261119d';
+import {RECALL_CONSOLIDATION} from './recall-consolidation.mjs?v=20261119e';
 
 export const RECALL_MIGRATION_KEY='infection-immunity.recall-consolidation.v1';
 const LEGACY_PROGRESS='infection-immunity.drill.progress.v1';

@@ -51,7 +51,7 @@ test('every question has its actual cited page assets and no local source paths 
  for(const page of Object.values(SOURCE_PAGES)){
   assert.match(page.src,/^assets\/evidence\/[a-z0-9_]+-\d{3}\.webp$/);
   assert.ok(fs.existsSync(new URL(page.src,import.meta.url)),page.src);
-  assert.equal(page.width,900);assert.ok(page.height>0);
+  assert.ok(Number.isInteger(page.width)&&page.width>=900,'evidence must retain readable resolution');assert.ok(page.height>0);
  }
  assert.doesNotMatch(JSON.stringify(SOURCE_PAGES),/[A-Z]:\\|Dropbox|math6/);
 });
