@@ -6,7 +6,7 @@
     "format": "WebP",
     "quality": 70
   },
-  "count": 963,
+  "count": 1137,
   "pages": [
     {
       "doc": "261102_02",
@@ -270,6 +270,16 @@
     },
     {
       "doc": "261102_03",
+      "page": 28,
+      "title": "감염병의 진단",
+      "src": "assets/evidence/261102_03-028.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 43162,
+      "sha256": "9eddf37a5635e7171cb81fe12fee3c2dc8f505fc85d82b38d0a3136742a7e741"
+    },
+    {
+      "doc": "261102_03",
       "page": 29,
       "title": "감염병의 진단",
       "src": "assets/evidence/261102_03-029.webp",
@@ -397,6 +407,106 @@
       "height": 675,
       "bytes": 51830,
       "sha256": "abd881e5fc884f7fe446726a5973f266be8550c0a7fcf21e873697de4c6d122f"
+    },
+    {
+      "doc": "261102_05",
+      "page": 26,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-026.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 73388,
+      "sha256": "f51caf28de906979344e7ab911e0400dbf47ef00e4dc499ac87e73b7698acfd2"
+    },
+    {
+      "doc": "261102_05",
+      "page": 27,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-027.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 44576,
+      "sha256": "71970ae70b2cd231a07dcedc3878eaeaeb8792a27853f8ce4fc1e47cca004fc5"
+    },
+    {
+      "doc": "261102_05",
+      "page": 30,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-030.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 30522,
+      "sha256": "34745cad72f81c4496585b5afbdaaf8d7dbd38437c46a004cfc2b7b8c90313c9"
+    },
+    {
+      "doc": "261102_05",
+      "page": 31,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-031.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 52564,
+      "sha256": "968b51440be37edca5396ef9eb0248fa927efab7d8e56a7a6ef2a2c348984afd"
+    },
+    {
+      "doc": "261102_05",
+      "page": 32,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-032.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 45194,
+      "sha256": "60336b1f6759bfeb1b71e93c128f7c466e69b3a30f0494773345eb4fdfd8ffa1"
+    },
+    {
+      "doc": "261102_05",
+      "page": 34,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-034.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 36376,
+      "sha256": "a84e3cbfa7c1c493a31443a4bd96d9780d56e8263c4a91c559f1632a84cfbf07"
+    },
+    {
+      "doc": "261102_05",
+      "page": 35,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-035.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 51720,
+      "sha256": "d3e767923f61deac65424d57f201ce5f7adaa09ec15869760bacf7e00a0a23c0"
+    },
+    {
+      "doc": "261102_05",
+      "page": 36,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-036.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 36080,
+      "sha256": "c697255202d618891f4df308d3cda60a99bb62f07a0bdb02373527aae33c7d83"
+    },
+    {
+      "doc": "261102_05",
+      "page": 39,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-039.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 32144,
+      "sha256": "35b6731d19fbc1449650e470205803078b63717da886f4c9c3d4a411e7d49e82"
+    },
+    {
+      "doc": "261102_05",
+      "page": 40,
+      "title": "감염병의 치료원칙",
+      "src": "assets/evidence/261102_05-040.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 43266,
+      "sha256": "ee35898d6a89ad8dd090b8c1e3c587c905b8f599a7f488440dd551d40bd68136"
     },
     {
       "doc": "261104_01",
@@ -4180,6 +4290,16 @@
     },
     {
       "doc": "261109_02",
+      "page": 10,
+      "title": "레지오넬라·리스테리아·바실루스",
+      "src": "assets/evidence/261109_02-010.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 69610,
+      "sha256": "44230bea71df1ee9c35f4bb4c0f93bc3c2df9aa736dfab5a47158fd83664a239"
+    },
+    {
+      "doc": "261109_02",
       "page": 11,
       "title": "레지오넬라·리스테리아·바실루스",
       "src": "assets/evidence/261109_02-011.webp",
@@ -4680,6 +4800,16 @@
     },
     {
       "doc": "261109_05",
+      "page": 48,
+      "title": "항생제 내성균의 진단과 치료",
+      "src": "assets/evidence/261109_05-048.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 85632,
+      "sha256": "f12fc436d5755d672090d7b9c517df46f21bf02cf6ba174468aa02f55edd0541"
+    },
+    {
+      "doc": "261109_05",
       "page": 50,
       "title": "항생제 내성균의 진단과 치료",
       "src": "assets/evidence/261109_05-050.webp",
@@ -5170,6 +5300,26 @@
     },
     {
       "doc": "261110_02",
+      "page": 8,
+      "title": "아데노바이러스·폭스바이러스",
+      "src": "assets/evidence/261110_02-008.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 41104,
+      "sha256": "7193c7f548ab762502ee100ce835bc2eb6703590f6e0e7b5a909bde34c899572"
+    },
+    {
+      "doc": "261110_02",
+      "page": 9,
+      "title": "아데노바이러스·폭스바이러스",
+      "src": "assets/evidence/261110_02-009.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 34514,
+      "sha256": "5153ccf5a03f06879e4148ef06c9187d2bcd184018d0de78e3a1bf229099d239"
+    },
+    {
+      "doc": "261110_02",
       "page": 10,
       "title": "아데노바이러스·폭스바이러스",
       "src": "assets/evidence/261110_02-010.webp",
@@ -5237,6 +5387,16 @@
       "height": 675,
       "bytes": 31050,
       "sha256": "f8f7ab43c1ce772975db6178879b5ff937ae85f692f53e5c3910ca4dba135bfe"
+    },
+    {
+      "doc": "261110_02",
+      "page": 26,
+      "title": "아데노바이러스·폭스바이러스",
+      "src": "assets/evidence/261110_02-026.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 54338,
+      "sha256": "4c98ed054e3146eb799e6fe7e774d931e366f68d30c3cd100720c3efdce077ab"
     },
     {
       "doc": "261110_02",
@@ -5550,6 +5710,16 @@
     },
     {
       "doc": "261111_02",
+      "page": 16,
+      "title": "피코르나바이러스",
+      "src": "assets/evidence/261111_02-016.webp",
+      "width": 1000,
+      "height": 786,
+      "bytes": 54602,
+      "sha256": "6bc6cc99d65202339875d6117b3937195230048231c7e18dde245317230ea88a"
+    },
+    {
+      "doc": "261111_02",
       "page": 17,
       "title": "피코르나바이러스",
       "src": "assets/evidence/261111_02-017.webp",
@@ -5777,6 +5947,16 @@
       "height": 675,
       "bytes": 82908,
       "sha256": "510c9142f215087a41402391ebb36f7366fa1aca71b3c1071825195c5c671f90"
+    },
+    {
+      "doc": "261112_01",
+      "page": 24,
+      "title": "오소믹소바이러스",
+      "src": "assets/evidence/261112_01-024.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 91524,
+      "sha256": "9b7c1df4c82c4b9a68372eca262a5e1dc17dd75dceafc76c37138a37db31f269"
     },
     {
       "doc": "261112_01",
@@ -6210,6 +6390,16 @@
     },
     {
       "doc": "261112_03",
+      "page": 29,
+      "title": "간염바이러스",
+      "src": "assets/evidence/261112_03-029.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 101424,
+      "sha256": "84914de99705b84e8d8930ca22ef2bc2075b43ebc6a8c0981d622674fa6892b9"
+    },
+    {
+      "doc": "261112_03",
       "page": 30,
       "title": "간염바이러스",
       "src": "assets/evidence/261112_03-030.webp",
@@ -6490,6 +6680,16 @@
     },
     {
       "doc": "261113_02",
+      "page": 16,
+      "title": "소아감염",
+      "src": "assets/evidence/261113_02-016.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 79230,
+      "sha256": "89210f4aed5f32e9f364e2a2f38173ff26cb1ebed0fc0adc2e397459588593f7"
+    },
+    {
+      "doc": "261113_02",
       "page": 17,
       "title": "소아감염",
       "src": "assets/evidence/261113_02-017.webp",
@@ -6497,6 +6697,16 @@
       "height": 675,
       "bytes": 31362,
       "sha256": "790a35cf112daea8aa4960c6bedcdba716a6ba3ba3fd9812ff48ee4f42b49861"
+    },
+    {
+      "doc": "261113_02",
+      "page": 18,
+      "title": "소아감염",
+      "src": "assets/evidence/261113_02-018.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 59658,
+      "sha256": "268517963217857af1d3256fc75da4b85bb065b016ea968b83edd88db2b84884"
     },
     {
       "doc": "261113_02",
@@ -6517,6 +6727,16 @@
       "height": 675,
       "bytes": 22866,
       "sha256": "7a32584c6164f2e069430c26ba6ee170d68adda22f5d0b7ec149c0d35ace6161"
+    },
+    {
+      "doc": "261113_02",
+      "page": 22,
+      "title": "소아감염",
+      "src": "assets/evidence/261113_02-022.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 49824,
+      "sha256": "121bcafd847b1a408a216b6c64d2625d95164afbd380a8da96f0d8b03e07f27c"
     },
     {
       "doc": "261113_02",
@@ -7160,6 +7380,16 @@
     },
     {
       "doc": "261116_02",
+      "page": 25,
+      "title": "토가바이러스·플라비바이러스",
+      "src": "assets/evidence/261116_02-025.webp",
+      "width": 1000,
+      "height": 701,
+      "bytes": 49690,
+      "sha256": "ff1b9ffb060f61ffe5848e26c52d407ad27a87eada35409473e27341dc475ffe"
+    },
+    {
+      "doc": "261116_02",
       "page": 29,
       "title": "토가바이러스·플라비바이러스",
       "src": "assets/evidence/261116_02-029.webp",
@@ -7670,6 +7900,16 @@
     },
     {
       "doc": "261116_05",
+      "page": 33,
+      "title": "진균감염·칸디다·폐포자충",
+      "src": "assets/evidence/261116_05-033.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 58000,
+      "sha256": "ffa57de3c97c0467ea9294ad4bc51feb694838d81d1e7d2cf4f170543da0712c"
+    },
+    {
+      "doc": "261116_05",
       "page": 34,
       "title": "진균감염·칸디다·폐포자충",
       "src": "assets/evidence/261116_05-034.webp",
@@ -7987,6 +8227,296 @@
       "height": 675,
       "bytes": 36014,
       "sha256": "0035bb614310a3a0db22ac821be0c6e476be72d0780a26752fcc385350ac09dd"
+    },
+    {
+      "doc": "261117_01",
+      "page": 8,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-008.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 84408,
+      "sha256": "2b5f04ab168cb3be8da2e886c47b04f6a66d8952987b1a58ca6a1d582d22dc6f"
+    },
+    {
+      "doc": "261117_01",
+      "page": 17,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-017.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 68530,
+      "sha256": "62922593b9c4fcab93d8bae32c1d07f7815e2d2c95a8f4a18fa714631bdb76ad"
+    },
+    {
+      "doc": "261117_01",
+      "page": 18,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-018.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 46790,
+      "sha256": "4aca98910e27f3e451580a151802349f8d455e87f68257ad880d21db8413cbb7"
+    },
+    {
+      "doc": "261117_01",
+      "page": 21,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-021.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 57000,
+      "sha256": "ecb819456cf6a09a78dc284f9c37fa111f271291b3c2445e12cf3c43818ab326"
+    },
+    {
+      "doc": "261117_01",
+      "page": 22,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-022.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 85218,
+      "sha256": "f7d4571d07b28569d943e23669fac025f580eeb2eb7a234220a0fb15e0d3c17a"
+    },
+    {
+      "doc": "261117_01",
+      "page": 25,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-025.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 74838,
+      "sha256": "4340f3be9438272e9d7e802ff8f1b404c1b1422828007ea5a5b8081683809892"
+    },
+    {
+      "doc": "261117_01",
+      "page": 26,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-026.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 32472,
+      "sha256": "85c83b3b1d3e3d7177f86c182743a4c6d8ff7559ce5c572b6b686f6dd90fc1c1"
+    },
+    {
+      "doc": "261117_01",
+      "page": 27,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-027.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 69472,
+      "sha256": "8b86309d408c29555eab33ad64890db2bf10e8e1a85b859380270dfdbd5619c0"
+    },
+    {
+      "doc": "261117_01",
+      "page": 29,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-029.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 91650,
+      "sha256": "07564d8d568c8aeaa3a83ddcd70dbe438fbdac34b2eaa5374be1f5a42cd42cc5"
+    },
+    {
+      "doc": "261117_01",
+      "page": 42,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-042.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 60056,
+      "sha256": "d38c6394d271f165a4856963efe8881081d2e8056542c145eb17250e2376869f"
+    },
+    {
+      "doc": "261117_01",
+      "page": 54,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-054.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 40500,
+      "sha256": "39ce64a0ca492c9cb521d427523a8eef3a2175c4437510b397d174f72deb7ca4"
+    },
+    {
+      "doc": "261117_01",
+      "page": 56,
+      "title": "랍도바이러스·지발감염",
+      "src": "assets/evidence/261117_01-056.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 38316,
+      "sha256": "3c4753650f1a022b35c0331425a1abc2a68f978bd5ad1cd9373f0e97249288c7"
+    },
+    {
+      "doc": "261117_02",
+      "page": 4,
+      "title": "파필로마바이러스·폴리오마바이러스",
+      "src": "assets/evidence/261117_02-004.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 64868,
+      "sha256": "7e1e1e559423fa4a4be0e69f488eb48266e59fe5d7bbd2360aca812455cf6863"
+    },
+    {
+      "doc": "261117_02",
+      "page": 5,
+      "title": "파필로마바이러스·폴리오마바이러스",
+      "src": "assets/evidence/261117_02-005.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 71046,
+      "sha256": "b5354e0762a2390a17af265184fba8d42b2a21658a6a4b4fb4581ad0e1e10741"
+    },
+    {
+      "doc": "261117_02",
+      "page": 8,
+      "title": "파필로마바이러스·폴리오마바이러스",
+      "src": "assets/evidence/261117_02-008.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 38218,
+      "sha256": "e56adc38c957b0ce6eb87f0d0118837c0e366e558084f39db0ed6f40dc21f610"
+    },
+    {
+      "doc": "261117_02",
+      "page": 10,
+      "title": "파필로마바이러스·폴리오마바이러스",
+      "src": "assets/evidence/261117_02-010.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 28752,
+      "sha256": "772db89f2ce8b5e0aa6226614c83d309b49ab1a106faadf8a6e527706cac5564"
+    },
+    {
+      "doc": "261117_02",
+      "page": 11,
+      "title": "파필로마바이러스·폴리오마바이러스",
+      "src": "assets/evidence/261117_02-011.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 52944,
+      "sha256": "4003721d03d8b1870ba36e2923e7fa4ce6efa8408fa96a4b2e9ddafc3e38eaec"
+    },
+    {
+      "doc": "261117_02",
+      "page": 13,
+      "title": "파필로마바이러스·폴리오마바이러스",
+      "src": "assets/evidence/261117_02-013.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 31976,
+      "sha256": "4aa341738a4efb53835c94870d27f22dc16f91ef3c7cb0e55b482b8e59d66b92"
+    },
+    {
+      "doc": "261117_02",
+      "page": 14,
+      "title": "파필로마바이러스·폴리오마바이러스",
+      "src": "assets/evidence/261117_02-014.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 51600,
+      "sha256": "2e266d41d69c5bb3cc44b1480404c60dad3cab1b50b2bf903c168427613bd463"
+    },
+    {
+      "doc": "261117_02",
+      "page": 16,
+      "title": "파필로마바이러스·폴리오마바이러스",
+      "src": "assets/evidence/261117_02-016.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 24672,
+      "sha256": "f96c6fdf96a6f562564dd71281ee12123301a7d10a59154e9d6b58c6ae62610b"
+    },
+    {
+      "doc": "261117_03",
+      "page": 4,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-004.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 36108,
+      "sha256": "a2260b838f6f4cfa339fe552254895c932723cae4d6e740248ec4ec2186c6bba"
+    },
+    {
+      "doc": "261117_03",
+      "page": 7,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-007.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 41692,
+      "sha256": "3144430e3fe9be3842f8e8d405e21280ec102a60e5f0e8b9f1dba229f0e5dfac"
+    },
+    {
+      "doc": "261117_03",
+      "page": 8,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-008.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 38130,
+      "sha256": "e758615876c10c37cc577822d1f2f254ee0721a9b5d17d6c909262ee87af9eb8"
+    },
+    {
+      "doc": "261117_03",
+      "page": 9,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-009.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 31992,
+      "sha256": "36aaad9aee60c7f4dd912351ab0d237d3e38eabae873b5a3d80ee179cd33fee7"
+    },
+    {
+      "doc": "261117_03",
+      "page": 10,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-010.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 51336,
+      "sha256": "8253260056df3051631917e76e2a917fa5f724996bed46892ec3e222a06b3cea"
+    },
+    {
+      "doc": "261117_03",
+      "page": 12,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-012.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 60532,
+      "sha256": "e3be86e011038587e92537ea9d25202f9471a12edfd4c8f5ed2c14b42ff6ed00"
+    },
+    {
+      "doc": "261117_03",
+      "page": 13,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-013.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 24250,
+      "sha256": "c19ef94825477e18b4920eb81b422e52946850a1df909583437dbf06af25c63f"
+    },
+    {
+      "doc": "261117_03",
+      "page": 16,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-016.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 41692,
+      "sha256": "d0273d267a14a5c5af7fb804df57f69b0359766e80876c768732308d49150d26"
+    },
+    {
+      "doc": "261117_03",
+      "page": 17,
+      "title": "레트로바이러스",
+      "src": "assets/evidence/261117_03-017.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 24454,
+      "sha256": "de2bf919aa4f84fe8ec24422e66716810b8243f16e3011c486178c44dac743cc"
     },
     {
       "doc": "261118_01",
@@ -8480,6 +9010,16 @@
     },
     {
       "doc": "261118_05",
+      "page": 7,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-007.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 54196,
+      "sha256": "82efd22b6a04f5811db895a76b2ab273127d4134eba2362adf7ac4a55c016223"
+    },
+    {
+      "doc": "261118_05",
       "page": 12,
       "title": "레오바이러스·코로나바이러스·노로바이러스",
       "src": "assets/evidence/261118_05-012.webp",
@@ -8607,6 +9147,16 @@
       "height": 675,
       "bytes": 58454,
       "sha256": "39fe10f1c08a0e57be4b7f330141ea1af490b35363fefd1a2a4d062253d9b6e5"
+    },
+    {
+      "doc": "261118_05",
+      "page": 52,
+      "title": "레오바이러스·코로나바이러스·노로바이러스",
+      "src": "assets/evidence/261118_05-052.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 72054,
+      "sha256": "d4eca8d2562e642be46e852285e6bba3a11a1ac1c89568445b52d4ec814feddc"
     },
     {
       "doc": "261118_05",
@@ -8857,6 +9407,16 @@
       "height": 708,
       "bytes": 38628,
       "sha256": "5b1b883fdc5e23332e687ba9b5168a9fe12fc7bc1359dff334c4b7648e4b7428"
+    },
+    {
+      "doc": "261119_02",
+      "page": 5,
+      "title": "감염병의 집단발병 역학조사",
+      "src": "assets/evidence/261119_02-005.webp",
+      "width": 1000,
+      "height": 708,
+      "bytes": 60710,
+      "sha256": "9efbf0dfb95c76d2aa2944e326e70b3dbcbd0f6ebc55533280e6589a7c367022"
     },
     {
       "doc": "261119_02",
@@ -9130,6 +9690,16 @@
     },
     {
       "doc": "261119_03",
+      "page": 11,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-011.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 34824,
+      "sha256": "8864cb38b56ae9c641ce2a3b715033360d1b4bb378a7578691d4c54c4da558ec"
+    },
+    {
+      "doc": "261119_03",
       "page": 12,
       "title": "감염병의 예방원칙",
       "src": "assets/evidence/261119_03-012.webp",
@@ -9197,6 +9767,16 @@
       "height": 750,
       "bytes": 41968,
       "sha256": "b94558077e30f8e7b1eea775b35bfd55664989fdf1dde94fd27f809e9ddadb79"
+    },
+    {
+      "doc": "261119_03",
+      "page": 20,
+      "title": "감염병의 예방원칙",
+      "src": "assets/evidence/261119_03-020.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 56690,
+      "sha256": "aba85a5f21106afe6984ad8c0f0eafb177534493acd255e9a433e94086b404d2"
     },
     {
       "doc": "261119_03",
@@ -9337,6 +9917,606 @@
       "height": 750,
       "bytes": 60318,
       "sha256": "053d87e3f05b884efb39f77a34c028445b0130d975cf7b7cb6fd2add476fd1be"
+    },
+    {
+      "doc": "261119_06",
+      "page": 4,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-004.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 48982,
+      "sha256": "5a6ae4a0e2e0225048cc68168da13ea7dad3524e5cc60983b4c513cefe5de301"
+    },
+    {
+      "doc": "261119_06",
+      "page": 6,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-006.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 60080,
+      "sha256": "a7deeb5318f52cb2cb63058a42069a24e370fd134e9e3f72e26bf8f26d2d88e1"
+    },
+    {
+      "doc": "261119_06",
+      "page": 12,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-012.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 49374,
+      "sha256": "b35bc0bc2a6abc4f86e6f3f738ab357988814aeca7c38645a87680aff15fd47b"
+    },
+    {
+      "doc": "261119_06",
+      "page": 13,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-013.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 44944,
+      "sha256": "24a5e471f84c67a0220afaccc694ee43bad19eca0dc7a85f0323f3126a789d9b"
+    },
+    {
+      "doc": "261119_06",
+      "page": 17,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-017.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 38770,
+      "sha256": "15bf40db5227b1d5d00a961357a4a912fbd28fd4440a4a7320899e92c6a7bc09"
+    },
+    {
+      "doc": "261119_06",
+      "page": 18,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-018.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 41304,
+      "sha256": "e9f92d0c7af16875d8b20c27923694441923ecc43edda941aabd607ab8eee49f"
+    },
+    {
+      "doc": "261119_06",
+      "page": 22,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-022.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 41192,
+      "sha256": "6999a0358b2d714d756f77b8ccc52556f7bfda4446e23dcfa31336db93acd530"
+    },
+    {
+      "doc": "261119_06",
+      "page": 23,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-023.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 54552,
+      "sha256": "d10624eff89cba57ba6acf23580cae1ee36b0d27e5116cb319cae4cf02818205"
+    },
+    {
+      "doc": "261119_06",
+      "page": 24,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-024.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 40774,
+      "sha256": "ab9c388cbe9ff082587faf4c296483ad5f2733979d5614685b31d92574ee03cc"
+    },
+    {
+      "doc": "261119_06",
+      "page": 27,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-027.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 27386,
+      "sha256": "f05d4daef7e768d01ddd8826f1f892bdf00c92ae89677a4ce2b2ec688e9c8964"
+    },
+    {
+      "doc": "261119_06",
+      "page": 29,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-029.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 20458,
+      "sha256": "6c77c4d046437f83d269bd4398126e2fddc56c20aa73d020fa75d0f06205aa19"
+    },
+    {
+      "doc": "261119_06",
+      "page": 30,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-030.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 51172,
+      "sha256": "82b6ce367e4480e01ea831a3d024f99f8f8baa1f45d45d30f1f95e7dabe79b37"
+    },
+    {
+      "doc": "261119_06",
+      "page": 31,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-031.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 43558,
+      "sha256": "827ef67976931edf66ad5cad434bf01913f26a7114e96b868b99090935dca19a"
+    },
+    {
+      "doc": "261119_06",
+      "page": 32,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-032.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 29038,
+      "sha256": "fa2c393b7cc491d7e21f6c0b652329a23dbc5135256d746e29c51dcc6fdd4461"
+    },
+    {
+      "doc": "261119_06",
+      "page": 33,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-033.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 40812,
+      "sha256": "056e47f29b6d879baf63d374b316bb76711a858f56919655e992b9e5284b345e"
+    },
+    {
+      "doc": "261119_06",
+      "page": 34,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-034.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 37958,
+      "sha256": "50d3acc70b6569e941d0484c8ccdb09de582a4fa6b74e57a7d40e7a18f5a96b4"
+    },
+    {
+      "doc": "261119_06",
+      "page": 35,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-035.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 57348,
+      "sha256": "7665253dbac450ed2db8bc50cae0792c636e7e3f24ef5e7f1eed730864359395"
+    },
+    {
+      "doc": "261119_06",
+      "page": 36,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-036.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 71944,
+      "sha256": "b3db7d27ad3e4486766341131386922996307f5658eca8f2ccf547fa663147d1"
+    },
+    {
+      "doc": "261119_06",
+      "page": 37,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-037.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 48616,
+      "sha256": "d98feea73fd492af7f0e07f0ac97e5faa890d81c3497cefcc117a73396d0deac"
+    },
+    {
+      "doc": "261119_06",
+      "page": 38,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-038.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 41420,
+      "sha256": "9403d8355f85c4aa09781111775da72ed693f42f7391d328e67c962de81d1b75"
+    },
+    {
+      "doc": "261119_06",
+      "page": 39,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-039.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 45620,
+      "sha256": "9c4403fe0f78f3be4b5ed7702bc75a1e52ac65118771d86b1a384cb89acfd4b0"
+    },
+    {
+      "doc": "261119_06",
+      "page": 40,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-040.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 29010,
+      "sha256": "d9a0f002358539bb3775739298156a5d03f9b5e81a91c37d7848106cd0a7e9f9"
+    },
+    {
+      "doc": "261119_06",
+      "page": 41,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-041.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 25292,
+      "sha256": "b6d2fa6c4d74aa37fbd2b8e15308721175a3252172f6748f273e676217bec7ef"
+    },
+    {
+      "doc": "261119_06",
+      "page": 42,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-042.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 35928,
+      "sha256": "298016acff7157b0ee3f88a6789a11ae7f950e4be50ae5a69484134bb74bb4fe"
+    },
+    {
+      "doc": "261119_06",
+      "page": 44,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-044.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 21132,
+      "sha256": "cb56519c3953ae427a6ad0432ff3d41a132f56ce769d31600551c0f2b92389b5"
+    },
+    {
+      "doc": "261119_06",
+      "page": 45,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-045.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 20708,
+      "sha256": "ccd6c86c8e5f083fe542d0258ce1605ae5c1c63f04188e8c09a51c8269be6e84"
+    },
+    {
+      "doc": "261119_06",
+      "page": 46,
+      "title": "신종감염병에 대한 대처와 전망",
+      "src": "assets/evidence/261119_06-046.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 16378,
+      "sha256": "62fa02f8a2c88a56494df353f0557ab8b386f9c0ed766e552b2dc37fa01c1c26"
+    },
+    {
+      "doc": "261119_07",
+      "page": 3,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-003.webp",
+      "width": 1000,
+      "height": 750,
+      "bytes": 57328,
+      "sha256": "1d5be182d66624b3e401e3aa01239e5e07d2edc868e7290d805920e342088e40"
+    },
+    {
+      "doc": "261119_07",
+      "page": 8,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-008.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 34778,
+      "sha256": "84726836f3618c40f87b4c4ff9f4a1cc4ee7bf5100c9fcb2e040f2d98728b079"
+    },
+    {
+      "doc": "261119_07",
+      "page": 9,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-009.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 24782,
+      "sha256": "2abc8881fb44f6cb0e944528dd3837ffa81ed37cc24d75846662759c633f9354"
+    },
+    {
+      "doc": "261119_07",
+      "page": 10,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-010.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 42826,
+      "sha256": "d78e85a70396e4c8f1edf859cef76d9ff2e64d1da5921a9c9c4c62e39e213b6f"
+    },
+    {
+      "doc": "261119_07",
+      "page": 12,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-012.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 53264,
+      "sha256": "5f6d453cea5c8c4ecb6fe9545166f4b03c336325927f35472096f6311a9e46f0"
+    },
+    {
+      "doc": "261119_07",
+      "page": 13,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-013.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 56758,
+      "sha256": "aa816f187f481dd260c4c81e23a666f0394005d641f484a924388c9bbc136692"
+    },
+    {
+      "doc": "261119_07",
+      "page": 14,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-014.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 55212,
+      "sha256": "cd29a9dbdddb0314c705aebafd1be9b158715086e16e6c58346b05d66e875b04"
+    },
+    {
+      "doc": "261119_07",
+      "page": 15,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-015.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 28980,
+      "sha256": "04574f2553d88a012b34ad4b01605860d63f0df0c74244c8cf6bf005e2f6c4c4"
+    },
+    {
+      "doc": "261119_07",
+      "page": 16,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-016.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 34400,
+      "sha256": "472bb9ff14b4d07265710161e2e55dcd7cf254f815df31e6e4b9c5d0daa552fd"
+    },
+    {
+      "doc": "261119_07",
+      "page": 18,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-018.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 39376,
+      "sha256": "f7af1a41649ea71940911827f0f5bf98324a1c7a4f908ad2b7c4a54be2a769d8"
+    },
+    {
+      "doc": "261119_07",
+      "page": 19,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-019.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 46990,
+      "sha256": "748dac8d29484de2aee98dad3d1474b6e18bf400edf0253494be01dfc775f15e"
+    },
+    {
+      "doc": "261119_07",
+      "page": 20,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-020.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 30036,
+      "sha256": "f1ab5b479af810b392fa13208d22fe86234f7810849e278105807735d82628a6"
+    },
+    {
+      "doc": "261119_07",
+      "page": 21,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-021.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 25494,
+      "sha256": "30be85901fd291d5f4435431b7edb96d0fffb4f60f3675704673dac4072760c0"
+    },
+    {
+      "doc": "261119_07",
+      "page": 22,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-022.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 44704,
+      "sha256": "ac82f1cb53a89d3e50be6946dfca5fc94e879c8e4c33191e2dd8f9d924f0868b"
+    },
+    {
+      "doc": "261119_07",
+      "page": 23,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-023.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 79712,
+      "sha256": "0ac57743026f46eda99e951ea8eba2bfd283b837fe2942b7b8d28030085f5e9b"
+    },
+    {
+      "doc": "261119_07",
+      "page": 24,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-024.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 21334,
+      "sha256": "b86064c7bed61f0589c7d8033308b981eb87900c00a07d96eba5502245ac1330"
+    },
+    {
+      "doc": "261119_07",
+      "page": 26,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-026.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 39038,
+      "sha256": "ca0c94c6fb230fa564ada600a43c7150723b26661d476ba71dbf117ebf4879cd"
+    },
+    {
+      "doc": "261119_07",
+      "page": 27,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-027.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 45362,
+      "sha256": "88fe609dbdf664cc6b4e7f5d4b3207d606473c92a7f6655832b13e0f9efb694c"
+    },
+    {
+      "doc": "261119_07",
+      "page": 28,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-028.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 39466,
+      "sha256": "3453a2575a4876056e2280e4c7693f0709a6b41bdff31ef6734f86a0c558933f"
+    },
+    {
+      "doc": "261119_07",
+      "page": 30,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-030.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 44668,
+      "sha256": "ddd5bab3ad71913eabd890f0d1d36d21301cf7630907e07bcaa6908bd6f5e52e"
+    },
+    {
+      "doc": "261119_07",
+      "page": 35,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-035.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 43118,
+      "sha256": "3add5af2f70090774e11f600eb3424e446668a44df95b6063db18760c791b137"
+    },
+    {
+      "doc": "261119_07",
+      "page": 36,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-036.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 33950,
+      "sha256": "0956c7e2d51054286cce2018e2d2e9352df8ce281e3f7e15d75e65d468c60885"
+    },
+    {
+      "doc": "261119_07",
+      "page": 38,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-038.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 38298,
+      "sha256": "5b33f39e63c02d26fdee5df6449bb8f875db748ab47ee7d6a9f7adf29acd782b"
+    },
+    {
+      "doc": "261119_07",
+      "page": 39,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-039.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 22806,
+      "sha256": "9f790da5fb56cc9663c3f686abd5fd952d43e4b294c6aea58bf9de9eae70f26d"
+    },
+    {
+      "doc": "261119_07",
+      "page": 40,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-040.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 26830,
+      "sha256": "bc6c2098bd7c4cf31b1d7b3042f485f526afd595c86038967437e1926f902bdd"
+    },
+    {
+      "doc": "261119_07",
+      "page": 41,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-041.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 57918,
+      "sha256": "da1a408a24c5a56f3fb70cc0076ac35987463efa3737e83eed9dcb84aad22d0e"
+    },
+    {
+      "doc": "261119_07",
+      "page": 42,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-042.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 20762,
+      "sha256": "38cf112c8b99e0a688be66d88a4b19b66183fbd7544f65d2af9d6e6f8f06244c"
+    },
+    {
+      "doc": "261119_07",
+      "page": 43,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-043.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 39770,
+      "sha256": "f977930596b6b4c9fe414cd8e3ef4c73f2939a6a0a2a6eb0803ec6f0b3297f7b"
+    },
+    {
+      "doc": "261119_07",
+      "page": 44,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-044.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 20648,
+      "sha256": "e983155e0f43d7db0c1fe39933e7dbccd9437e1e2e013798209ec53c62fa21f9"
+    },
+    {
+      "doc": "261119_07",
+      "page": 45,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-045.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 31042,
+      "sha256": "0f0f2b6b9607636aa8a3584b5fadcf697043b3c5195cd2cbe29c41bb5b060aa1"
+    },
+    {
+      "doc": "261119_07",
+      "page": 46,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-046.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 39236,
+      "sha256": "aceca9c405293f0e0e8a45ec7e4c7d45dfa3af41327c1c1f25c0e0a4f23edc4f"
+    },
+    {
+      "doc": "261119_07",
+      "page": 48,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-048.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 57918,
+      "sha256": "da1a408a24c5a56f3fb70cc0076ac35987463efa3737e83eed9dcb84aad22d0e"
+    },
+    {
+      "doc": "261119_07",
+      "page": 49,
+      "title": "감염병의 예방: 환경관리",
+      "src": "assets/evidence/261119_07-049.webp",
+      "width": 1000,
+      "height": 562,
+      "bytes": 34400,
+      "sha256": "472bb9ff14b4d07265710161e2e55dcd7cf254f815df31e6e4b9c5d0daa552fd"
     },
     {
       "doc": "antibiotics",
@@ -9637,6 +10817,566 @@
       "height": 675,
       "bytes": 49490,
       "sha256": "0b86a77579da0ff6c51ff36f4911994074aca165a1fda2ee42d1b2d1eaada792"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 3,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-003.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 124400,
+      "sha256": "a21ac15dd773a5fee9652a826e5fb9efc9ad10fc438093cb5c844546be8ba164"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 4,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-004.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 111726,
+      "sha256": "ae9ff30e5a4b151167a55c8d77d3b326cce41c789efff0d8bc43b295269126e0"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 5,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-005.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 107188,
+      "sha256": "87d69da139d1ea8a2bc816bb7ddc9d3c0da33706e98ebe54e2a0639bdef40961"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 7,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-007.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 112808,
+      "sha256": "cac4c361abd107f0397433dd5aff7eecbc1832a07812d634bda44b5748efa97a"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 8,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-008.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 74240,
+      "sha256": "31c1f8f44f1ae9eba10b47133abec524e1ce3ca247cfc3a83cddb7570ae305b2"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 9,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-009.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 93042,
+      "sha256": "641111571f925964f8959c25060e8fac89f83ef1a4a594fe7a8bc6a568a001b4"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 10,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-010.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 107744,
+      "sha256": "4781e8984c85bf6cc3ab605e9c1e2a2d42756948275f22eb2d8513b205b2c0fc"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 11,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-011.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 94982,
+      "sha256": "567245a2f02eebf986f053f415ee69a048659350f3e33a29997c9cf6a73eadee"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 12,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-012.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 142948,
+      "sha256": "0d2e5c6bea70926d3135312ec6550f86992727e541b0d63fae905236ccd3f159"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 13,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-013.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 124474,
+      "sha256": "91c48c9cd1ce44ce109d376bedf11f2a8ed8d666eae7c992c2c03d652d3d884f"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 14,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-014.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 138450,
+      "sha256": "9a16b1020f133dcd331df30af83d3009528b415d90519f0cbd3da87547452d36"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 15,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-015.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 96798,
+      "sha256": "aac8579ab20ca056f91bafedb8639faa4a69fd17933094ceef0aab9d04a4e913"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 16,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-016.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 127538,
+      "sha256": "551c7e3f654e70d93fe38695d507d12bb33765e55a9632eaeb6402dc26272480"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 17,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-017.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 90710,
+      "sha256": "d36c744b39cecf6ef118a897522ed83784566dcd563d7080bf76e8198411f42a"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 18,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-018.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 114590,
+      "sha256": "2731e194c3f4419d3017c54a4a2640c789cbdd8a5ec5b52540766bf613cbe25e"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 19,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-019.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 65878,
+      "sha256": "54ca6b26e970955baecd191c6f0773dc81d5bd6be03368f0789e74bdf69a0584"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 20,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-020.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 112600,
+      "sha256": "5afeea5d418329acb8b7af487b3488c506ea8315149ad0ac8c16b18dbd39b0aa"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 21,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-021.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 97738,
+      "sha256": "ccc74fd53a42e83d729763bb28a8fdeaf9875f56b78c1c2016ffa8a3a39b856f"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 22,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-022.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 134364,
+      "sha256": "614c9e7a9e3feddf5d77627d246eb2be21d8ba37054761b8f8586e77dd2f995b"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 23,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-023.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 110598,
+      "sha256": "d937fdbf831bb938457a8299976694bdb3daf96721527216dce10fd41208b22f"
+    },
+    {
+      "doc": "notes_bacteria",
+      "page": 24,
+      "title": "내 정리본: 세균·진균",
+      "src": "assets/evidence/notes_bacteria-024.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 84564,
+      "sha256": "15df1fd08b2261e05aec626a6a9bb9a3dfc33bda62c016e674583600d028bf97"
+    },
+    {
+      "doc": "notes_general",
+      "page": 1,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-001.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 128360,
+      "sha256": "2c99335001d2905a9f48119d5969aa6c6f5c776b0065c57f3746bf16e67c4e87"
+    },
+    {
+      "doc": "notes_general",
+      "page": 2,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-002.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 104916,
+      "sha256": "badc1990db02f84090a53e1a990dc2396991410293882bc7f435f1570d558c0f"
+    },
+    {
+      "doc": "notes_general",
+      "page": 3,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-003.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 81442,
+      "sha256": "cda240cf5b1a53011aca1d60323c5f8e69104443f6620b8b835c723b1e5ed903"
+    },
+    {
+      "doc": "notes_general",
+      "page": 4,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-004.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 131576,
+      "sha256": "dc7a587293b0cc5457c4376e1c206ce1fd0c6db1fc3ec37473735860a2d7c507"
+    },
+    {
+      "doc": "notes_general",
+      "page": 5,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-005.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 136472,
+      "sha256": "d4d8f18e06ab3f48b459881bea8047b920bfd2ab880e461a4cfe1c7d8b9d3c4a"
+    },
+    {
+      "doc": "notes_general",
+      "page": 6,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-006.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 190472,
+      "sha256": "9fc354d06efde8914d74345bbd56df8baac6964c999fae5c9bd285e52f3d20b8"
+    },
+    {
+      "doc": "notes_general",
+      "page": 8,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-008.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 152214,
+      "sha256": "30c9b241b1cf58c0ce322e344fccbb850bcb5f6233d660afb410fe0a924e64b7"
+    },
+    {
+      "doc": "notes_general",
+      "page": 9,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-009.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 108478,
+      "sha256": "113ba6446ec1968b63359a950548ee9273b9f50bd579b3f413aefab5b87d557b"
+    },
+    {
+      "doc": "notes_general",
+      "page": 10,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-010.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 70842,
+      "sha256": "ddf61dcbc1c8061f13c10ed479df3a0c1d5854d99e1d3c219ad388fffb283d24"
+    },
+    {
+      "doc": "notes_general",
+      "page": 11,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-011.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 115306,
+      "sha256": "0c95b38ad4c9cbcf1322a13bda5152faae9a841c778053c5045005bd26ac129c"
+    },
+    {
+      "doc": "notes_general",
+      "page": 12,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-012.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 105300,
+      "sha256": "21d96a8875e5a94c93446ca4ca9c54bacd07c76039388c7f1bcee1ca72b5e539"
+    },
+    {
+      "doc": "notes_general",
+      "page": 13,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-013.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 120286,
+      "sha256": "a924eeb175dbf0f23c4f0ccef32775a2a11fefef20a7e3143dedf479e37c777b"
+    },
+    {
+      "doc": "notes_general",
+      "page": 14,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-014.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 130178,
+      "sha256": "2177c103fc1f1b1dca23c4ad4c79492e3870242ef5fde8aa83919cecb8d80ef9"
+    },
+    {
+      "doc": "notes_general",
+      "page": 15,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-015.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 111278,
+      "sha256": "12c2a654bd28f44e018bb22cb442779e0024718c4235480f8f11aa102d4c823c"
+    },
+    {
+      "doc": "notes_general",
+      "page": 16,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-016.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 136174,
+      "sha256": "9c803bde375f605e9c8396987ae5c749fa59258d5366b165f33a4414c2467343"
+    },
+    {
+      "doc": "notes_general",
+      "page": 18,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-018.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 98466,
+      "sha256": "343e420f0dd2bf46fb44e1b3b03ce9d6c2b955b45b7b389331ae89d3984307aa"
+    },
+    {
+      "doc": "notes_general",
+      "page": 19,
+      "title": "내 정리본: 감염·약리·병리·예방",
+      "src": "assets/evidence/notes_general-019.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 33528,
+      "sha256": "a1f07443abb798f046df9f0673a3670a4c204fab78042e92c6a85e843cfda117"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 1,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-001.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 132970,
+      "sha256": "062eb95e407ba8f4418c0879bc5f269e3869c0266b8feb58902da41a11135cf9"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 2,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-002.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 130440,
+      "sha256": "570bd1f643ed59072bf26b10e99f999057f015da0af360e665c0b90ba6ba1c89"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 3,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-003.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 84966,
+      "sha256": "b9dbc27d136ae2eec1e52847e64fbec9f610ec94d08837993f904080ed91b38b"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 4,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-004.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 114450,
+      "sha256": "a9546361a7bff955b850e13b642ff493ff6deeec0cfc11e7e4a8315664ff0e90"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 5,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-005.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 114846,
+      "sha256": "7aaa9702eae6dcbbe785e4924bc192e89ca07f68c5a0b3ba7a1b5e3b0c4a11e9"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 6,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-006.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 84304,
+      "sha256": "69da6adf04fde60b15e84b483e9fc25d97917f83a48fe47df419a848db307c1b"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 7,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-007.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 103582,
+      "sha256": "80b151f0ad8658acd4bfd36a4e84161fbbf9a6a8335179183afe0588c52925a6"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 8,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-008.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 98044,
+      "sha256": "856163916fa8223bd08ae664d37db1a934eaaabd787182c55e0400079f99b6be"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 9,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-009.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 119456,
+      "sha256": "77efee0d87c7c7e2f81e034e061c9526e2f176950ce65c0b3c92f2ef1268f97f"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 10,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-010.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 123524,
+      "sha256": "294140f951d5517c3be100aef9e0272dda81eae95ad76687e499dfe1c3f1a34d"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 11,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-011.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 113988,
+      "sha256": "6fc2bed410f55779f031c1eb84228782d5126c440bca55012bc0ee7df10db0b5"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 12,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-012.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 82182,
+      "sha256": "900e9a283bc419b537e2f28c47bcf726497ef05ca6c0a0f74d9af1dc897ebc85"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 13,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-013.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 95444,
+      "sha256": "2f9d87404168b8c7f6ecbefc141643bccad309f83b4c1a7da406a2a4624f8bf3"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 16,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-016.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 94258,
+      "sha256": "a737afe750d22ffce4579629be947ff0cc453f98eaeb48613ef8fe31a7ea4c14"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 17,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-017.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 109278,
+      "sha256": "fe024cfa779757f9bca77c7dfc198dc403f7e8ef8af2b8ba1b6066450331ef67"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 18,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-018.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 94580,
+      "sha256": "d2979a0efe13611181e4a2bbeb23f9c9b22a1d998676814e7f5302cb82a301e8"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 19,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-019.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 85898,
+      "sha256": "4af7725028218f66dcdb0b6c285ae7c9ab7d6aae755048c468d91dcc953f88a3"
+    },
+    {
+      "doc": "notes_virus",
+      "page": 20,
+      "title": "내 정리본: 바이러스",
+      "src": "assets/evidence/notes_virus-020.webp",
+      "width": 1600,
+      "height": 1132,
+      "bytes": 70492,
+      "sha256": "87c79b5cf6dde2b7ed171cdda85f3d1f25a15554151c5820fd1698e37eb010d2"
     }
   ]
 }

@@ -1,4 +1,4 @@
-import {buildStatementQuestions} from './statement-bank.mjs?v=20261119e';
+import {buildStatementQuestions} from './statement-bank.mjs?v=20261120a';
 // Three supplied November19 lectures. Regular questions only; no separate recall bank.
 export const NOV19_LECTURES={
   "261119_01": {

@@ -13,10 +13,10 @@ import {grade,readBookmarks} from './logic.mjs';
 import {studyFeedback} from './study-ui.mjs';
 
 const codes=['261119_01','261119_02','261119_03'];
-const own=LECTURE_QUESTIONS.filter(q=>codes.includes(q.lecture));
+const own=LECTURE_QUESTIONS.filter(q=>codes.includes(q.lecture)&&q.addedBatch!=='20261120-final');
 
 test('three November19 lectures appear in general in lecture order with both comparison and negative questions',()=>{
- assert.equal(Object.keys(LECTURES).length,43);
+ assert.equal(Object.keys(LECTURES).length,45);
  for(let i=0;i<3;i++){
   const code=codes[i],bank=own.filter(q=>q.lecture===code),negative=bank.filter(q=>q.questionType==='incorrect');
   assert.equal(LECTURES[code].group,'general');assert.equal(LECTURES[code].order,41+i);
@@ -51,7 +51,7 @@ test('new questions have complete physical evidence and close five-option choice
 });
 
 test('the preceding1461 active questions retain every ID, choice, key, explanation and evidence',()=>{
- const before=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...CBL_PAST_QUESTIONS].filter(q=>!codes.includes(q.lecture)).sort((a,b)=>a.id.localeCompare(b.id));
+ const before=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...CBL_PAST_QUESTIONS].filter(q=>!codes.includes(q.lecture)&&q.addedBatch!=='20261120-final').sort((a,b)=>a.id.localeCompare(b.id));
  assert.equal(before.length,1461);
  assert.equal(crypto.createHash('sha256').update(JSON.stringify(before)).digest('hex'),'163b63dea90768d118887943ce83c4e92bba3dec718db54692500e895021dc30');
  assert.equal(new Set([...before,...own].map(q=>q.id)).size,before.length+own.length);
@@ -59,7 +59,7 @@ test('the preceding1461 active questions retain every ID, choice, key, explanati
 
 test('every new lecture resumes all pending questions before its wrong items and shares ordinary stars',()=>{
  for(const code of codes){
-  const filters={topic:code,mode:'all',count:0},expected=own.filter(q=>q.topic===code);
+  const filters={topic:code,mode:'all',count:0},expected=LECTURE_QUESTIONS.filter(q=>q.topic===code);
   let s=startContinuousSession(LECTURE_QUESTIONS,filters,{},()=>.3),p={};
   assert.ok(expected.length>0);assert.equal(s.items.length,expected.length);
   const wrong=s.items[0].id;
@@ -90,14 +90,15 @@ test('new statement feedback remains aligned after shuffling and retains any pri
 
 test('a saved whole-lecture session picks up new unanswered items without resetting its prior results',()=>{
  assert.ok(own.length>0);
- const before=LECTURE_QUESTIONS.filter(q=>!codes.includes(q.lecture)),filters={topic:'all',mode:'all',count:0};
+ const before=LECTURE_QUESTIONS.filter(q=>!codes.includes(q.lecture)&&q.addedBatch!=='20261120-final'),filters={topic:'all',mode:'all',count:0};
  let s=startContinuousSession(before,filters,{},()=>.3),p={};
  const completed=s.items[0].id;p=grade(s,p,0,s.items[0].answer,before).progress;
  s=advanceContinuousSession(s,p,before,()=>.3);
  const oldOrder=s.items.slice(s.position).map(i=>i.id),saved=JSON.stringify(s);
  const resumed=resumeContinuousSession(saved,LECTURE_QUESTIONS,p,()=>.7);
  assert.equal(resumed.items.length,LECTURE_QUESTIONS.length-1);
- assert.deepEqual(resumed.items.filter(i=>!own.some(q=>q.id===i.id)).map(i=>i.id),oldOrder);
+ const oldIds=new Set(before.map(q=>q.id));
+ assert.deepEqual(resumed.items.filter(i=>oldIds.has(i.id)).map(i=>i.id),oldOrder);
  assert.ok(own.every(q=>resumed.items.some(i=>i.id===q.id)));
  assert.equal(p[completed].correct,true);assert.ok(!resumed.items.some(i=>i.id===completed));
 });

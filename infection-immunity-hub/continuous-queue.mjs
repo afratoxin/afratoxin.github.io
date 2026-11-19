@@ -1,4 +1,4 @@
-import {buildSession,VERSION} from './logic.mjs?v=20261119e';
+import {buildSession,VERSION} from './logic.mjs?v=20261120a';
 
 const attempted=record=>typeof record?.correct==='boolean';
 const unanswered=(q,progress)=>!attempted(progress[q.id]);

@@ -1,7 +1,7 @@
-import {curateQuestions} from './question-curation.mjs?v=20261119e';
-import {PATHEDU_QUESTIONS,PATHEDU_PHOTOS} from './pathedu-bank.mjs?v=20261119e';
-import {revisedPathologySet} from './pathology-statements.mjs?v=20261119e';
-import {PHOTOS as ALL_PHOTOS} from './photo-data.mjs?v=20261119e';
+import {curateQuestions} from './question-curation.mjs?v=20261120a';
+import {PATHEDU_QUESTIONS,PATHEDU_PHOTOS} from './pathedu-bank.mjs?v=20261120a';
+import {revisedPathologySet} from './pathology-statements.mjs?v=20261120a';
+import {PHOTOS as ALL_PHOTOS} from './photo-data.mjs?v=20261120a';
 export const PATH_TOPICS={
  'path-image':{title:'사진 → 원인균',short:'사진형',sub:'짧은 증례와 강의 사진으로 판단'},
  'path-traits':{title:'원인균 특성 판별',short:'특성형',sub:'서로 다른 병원체의 특징을 구별'},
