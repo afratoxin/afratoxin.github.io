@@ -1,262 +1,95 @@
-import {SUMMARY_QUESTIONS} from './summary-bank.mjs?v=20261120a';
-import {summaryFilters} from './summary-scopes.mjs?v=20261120a';
-import {VIRAL_CASE_QUESTIONS,VIRAL_CASE_TOPIC} from './virus-case-bank.mjs?v=20261120a';
-import {BACTERIAL_CASE_QUESTIONS,BACTERIAL_CASE_TOPIC} from './bacteria-case-bank.mjs?v=20261120a';
-import {CBL_PAST_QUESTIONS,CBL_PAST_TOPICS} from './cbl-past-bank.mjs?v=20261120a';
-import {originalPrompt,originalIndex,installOriginalViewer} from './cbl-original.mjs?v=20261120a';
-import {createBookmarkUI} from './bookmark-ui.mjs?v=20261120a';
-import {COURSE_GROUPS} from './course-catalog.mjs?v=20261120a';
-import {installQuizKeyboard} from './quiz-keyboard.mjs?v=20261120a';
-import {startContinuousSession,advanceContinuousSession,resumeContinuousSession,continuousProgress} from './continuous-queue.mjs?v=20261120a';
-import {migrateRecallRecords,createRecallStorage} from './recall-migration.mjs?v=20261120a';
-import {RECALL_CONSOLIDATION} from './recall-consolidation.mjs?v=20261120a';
-import {emphasizeFeedback,emphasizePrompt} from './emphasis.mjs?v=20261120a';
-import {QUESTIONS,TOPICS,SOURCES} from './bank.mjs?v=20261120a';
-import {grade,stats,readProgress,readBookmarks,toggleBookmark as toggleSavedBookmark,tabFromHash,isCorrectChoice} from './logic.mjs?v=20261120a';
-import {PATH_QUESTIONS,PATH_TOPICS,pathSource} from './pathology-bank.mjs?v=20261120a';
-import {createPathologyUI,pathFeedback,imageMarkup} from './pathology-ui.mjs?v=20261120a';
-import {ANTIBIOTIC_TABLES,renderTables} from './reference-tables.mjs?v=20261120a';
-import {LECTURES,STUDY_TOPICS,DOCUMENTS,LECTURE_QUESTIONS} from './quiz-bank.mjs?v=20261120a';
-import {createStudyUI,studyFeedback} from './study-ui.mjs?v=20261120a';
-import {sourceText} from './study-core.mjs?v=20261120a';
-import {practiceLayout,installEvidenceViewer} from './practice-layout.mjs?v=20261120a';
-
-installEvidenceViewer();
-installOriginalViewer();
-const $=id=>document.getElementById(id);
-const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const KEYS={progress:'infection-immunity.progress.v1',session:'infection-immunity.session.v1',bookmarks:'infection-immunity.bookmarks.v1'};
-let memoryOnly=false;
-const volatileStorage=new Map();
-function storageNotice(){memoryOnly=true;$('saveStatus').textContent='이번 방문에서만 기록됩니다 · 브라우저 저장 불가';}
-function read(key){if(memoryOnly&&volatileStorage.has(key))return volatileStorage.get(key);try{const value=localStorage.getItem(key);if(value===null)volatileStorage.delete(key);else volatileStorage.set(key,value);return value;}catch{storageNotice();return volatileStorage.get(key)??null;}}
-function save(key,value){
-  if(key.includes('.progress.')){let previous={};try{previous=JSON.parse(read(key))||{};}catch{}value={...previous,...value};}
-  const encoded=JSON.stringify(value);volatileStorage.set(key,encoded);
-  let persisted=true;
-  try{localStorage.setItem(key,encoded);}catch{storageNotice();persisted=false;}
-  if(key.endsWith('.bookmarks.v1'))queueMicrotask(()=>window.dispatchEvent(new StorageEvent('storage',{key,newValue:encoded})));
-  return persisted;
+import {selectQuestions,makeSession,answerQuestion,sessionResult,stats,loadState,saveState,recordResponse,finishSession,normalizeState,mergeProgress,STORAGE_KEY} from './core.mjs?v=20261125a';
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let bank,questions,lectures,qById,lById,state,baseline,pendingStart=null,storage;
+let filters={lecture:'all',difficulty:'all',query:''},selected=null;
+const main=$('#main'),modal=$('#modal');
+try{storage=window.localStorage}catch{storage=null}
+const letters=['①','②','③','④','⑤'];
+const progress=s=>`<div class="progress" role="img" aria-label="정답 ${s.correct}, 오답 ${s.wrong}, 미풀이 ${s.unseen}"><span class="correct" style="width:${s.total?s.correct/s.total*100:0}%"></span><span class="wrong" style="width:${s.total?s.wrong/s.total*100:0}%"></span></div>`;
+const btn=(label,action,extra='',kind='')=>`<button type="button" class="button ${kind}" data-action="${action}" ${extra}>${label}</button>`;
+const starButton=q=>`<button type="button" class="star ${state.bookmarks.includes(q.id)?'on':''}" data-action="star" data-id="${q.id}" aria-label="${state.bookmarks.includes(q.id)?'별표 해제':'별표 저장'}" aria-pressed="${state.bookmarks.includes(q.id)}">${state.bookmarks.includes(q.id)?'★':'☆'}</button>`;
+function persist(){try{const remote=normalizeState(JSON.parse(storage.getItem(STORAGE_KEY)));state=mergeProgress(state,remote,baseline)}catch{}const ok=saveState(storage,state);if(ok)baseline=structuredClone(state);$('#saveStatus').textContent=ok?'이 브라우저에 기록 저장':'현재 방문에서만 기록 유지';$('#saveStatus').classList.toggle('warning',!ok);return ok}
+function announce(text){$('#announcement').textContent=text}
+function navigate(route){if(location.hash===`#${route}`)render();else location.hash=route;window.scrollTo({top:0,behavior:'instant'})}
+function currentView(){return location.hash.slice(1)||'home'}
+function updateHeader(){const s=stats(questions,state);$('#wrongCount').textContent=s.wrong;$('#starCount').textContent=s.starred;document.querySelectorAll('[data-nav]').forEach(a=>{const active=a.dataset.nav===currentView();a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')})}
+function toolbar(mode){return `<div class="toolbar"><div class="field"><label for="lectureFilter">강의</label><select id="lectureFilter"><option value="all">전체 강의</option>${lectures.map(l=>`<option value="${l.id}" ${filters.lecture===l.id?'selected':''}>${esc(l.title)}</option>`).join('')}</select></div><div class="field"><label for="difficultyFilter">난도</label><select id="difficultyFilter">${['all','기본','중상','고난도'].map(v=>`<option value="${v}" ${filters.difficulty===v?'selected':''}>${v==='all'?'모든 난도':v}</option>`).join('')}</select></div><div class="field search-field"><label class="sr-only" for="searchInput">문항 검색</label><input type="search" id="searchInput" value="${esc(filters.query)}" placeholder="문제·선지·주제 검색" autocomplete="off"></div></div>`}
+function questionRows(qs){return `<div class="list">${qs.map(q=>`<article class="list-row"><div class="row-body"><div class="card-meta"><span>${esc(lById[q.lecture].title)}</span><span>${esc(q.difficulty)}</span><span>${state.records[q.id]?(state.records[q.id].correct?'최근 정답':'최근 오답'):'미풀이'}</span></div><p>${esc(q.stem)}</p></div>${starButton(q)}${btn('풀기','single',`data-id="${q.id}"`,'secondary small')}</article>`).join('')}</div>`}
+function renderHome(){
+ const all=stats(questions,state),filtered=selectQuestions(questions,state,filters),fs=stats(filtered,state),session=state.session;
+ const shown=lectures.filter(l=>filtered.some(q=>q.lecture===l.id));
+ main.innerHTML=`<section class="hero"><div><p class="eyebrow">Rheumatology & Immunopharmacology</p><h1>강조점부터 증례까지,<br>족보의 흐름으로 풀어보기</h1><p>면역약리학과 류마티스 질환 9강. 반복 출제 주제와 올해 강의의 강조점을<br class="desktop-br"> 5지선다 문제로 연결했습니다.</p></div><div class="hero-count"><div><b>${lectures.length}</b><span>강의</span></div><div><b>${questions.length}</b><span>문항</span></div><div><b>25</b><span>강의당</span></div></div></section>
+ ${session&&!session.finished?`<div class="resume"><p><strong>진행 중인 ${session.exam?'실전 시험':'학습'}이 있습니다</strong>${esc(session.title)} · ${Object.keys(session.responses).length}/${session.items.length}문항 응답</p>${btn('이어서 풀기','resume','','secondary small')}</div>`:''}
+ <section class="overall" aria-label="전체 학습 진도"><div class="overall-main"><span class="eyebrow">My progress</span><b>${all.attempted}<small> / ${all.total}문항</small></b></div><div class="overall-progress">${progress(all)}<div class="legend"><span class="correct"><i></i>정답 ${all.correct}</span><span class="wrong"><i></i>오답 ${all.wrong}</span><span><i></i>미풀이 ${all.unseen}</span></div></div><div class="actions">${btn('전체 이어풀기','start','data-scope="all"')}${btn('실전 20문항','exam','data-scope="all"','secondary')}</div></section>
+ ${toolbar('all')}<div class="section-line"><h2>${filters.query?'검색한 문항':'강의별 문제은행'}</h2><span class="muted">선택 범위 ${filtered.length}문항 · ${fs.unseen}문항 미풀이</span></div>
+ <div class="actions" style="margin-bottom:18px">${btn('선택 범위 풀기','filtered',filtered.length?'':'disabled','secondary small')}${btn('선택 범위 실전 20','exam-filtered',filtered.length?'':'disabled','ghost small')}${btn('고난도 모아풀기','hard','','ghost small')}</div>
+ ${!filtered.length?empty('조건에 맞는 문항이 없습니다.','검색어나 강의·난도 선택을 바꿔 보세요.'):filters.query?questionRows(filtered):`<div class="lecture-grid">${shown.map(l=>{const qs=filtered.filter(q=>q.lecture===l.id),s=stats(qs,state),hard=qs.filter(q=>q.difficulty==='고난도').length;return `<article class="lecture-card"><div class="card-meta"><span>${esc(l.date.replaceAll('-','.'))}</span><span class="pill ${hard>=8?'hard':''}">${hard>=8?'증례·심화 중심':'핵심·응용'}</span></div><h3>${esc(l.title)}</h3><p class="professor">${esc(l.professor)} 교수 · ${qs.length}문항</p><p class="focus">${l.focus.slice(0,3).map(esc).join(' · ')}</p><div class="card-progress">${progress(s)}<p><span>정답 ${s.correct} · 오답 ${s.wrong}</span><span>미풀이 ${s.unseen}</span></p></div><div class="card-actions">${btn('이어서 풀기','lecture',`data-id="${l.id}"`,'small')}${btn('출제 포인트','lecture-info',`data-id="${l.id}"`,'secondary small')}</div></article>`}).join('')}</div>`}
+ <aside class="notice"><details><summary>문항과 학습 기록에 관하여</summary><p>모든 문항은 제공된 강의와 2019–2025 족보를 참고해 새로 구성한 예상문제입니다. 채점 뒤 보기별 해설, 강의 PDF의 실제 쪽수, 참고한 족보 문항을 확인할 수 있습니다.</p><p>현재 브라우저에 진도·오답·별표가 저장됩니다. 기기를 옮길 때는 아래의 기록 내보내기·가져오기를 사용하세요. 기존 1차 범위는 새 문제은행의 학습 기록에 합산하지 않습니다.</p></details></aside>`;
 }
-const recallStorage=createRecallStorage(key=>localStorage.getItem(key),(key,value)=>{localStorage.setItem(key,value);volatileStorage.set(key,value);},storageNotice);
-function importLegacyRecall(notify=false){
-  const result=migrateRecallRecords(recallStorage.read,recallStorage.write);
-  if(notify)for(const key of result.changedKeys)queueMicrotask(()=>window.dispatchEvent(new StorageEvent('storage',{key,newValue:read(key)})));
+function empty(title,description){return `<div class="empty"><h2>${esc(title)}</h2><p>${esc(description)}</p></div>`}
+function renderList(mode){const qs=selectQuestions(questions,state,{...filters,mode}),count=stats(questions,state)[mode==='wrong'?'wrong':'starred'];main.innerHTML=`<div class="page-title"><div><p class="eyebrow">${mode==='wrong'?'Revisit & remember':'Saved for later'}</p><h1>${mode==='wrong'?'오답 노트':'별표 문항'} <span class="muted">${count}</span></h1><p class="muted">${mode==='wrong'?'다시 맞히면 오답에서 빠집니다. 문항별 최신 결과를 보여줍니다.':'다시 볼 문항을 모았습니다. 별표는 풀이 결과와 별도로 유지됩니다.'}</p></div>${btn('선택 범위 다시 풀기','list-start',`data-mode="${mode}" ${qs.length?'':'disabled'}`)}</div>${toolbar(mode)}<div class="section-line"><span class="muted">현재 ${qs.length}문항</span></div>${qs.length?questionRows(qs):empty(mode==='wrong'?'남아 있는 오답이 없습니다.':'저장된 별표 문항이 없습니다.','강의별 학습을 시작하거나 선택 조건을 바꿔 보세요.')}`}
+function activeQuestion(){const s=state.session;return s&&qById[s.items[s.index]?.id]}
+function renderQuiz(){
+ const s=state.session;if(!s||!s.items.length){navigate('home');return}if(s.finished&&!s.review){navigate('result');return}
+ s.index=Math.max(0,Math.min(s.index,s.items.length-1));const item=s.items[s.index],q=qById[item.id],l=lById[q.lecture],response=s.responses[q.id];
+ const checked=!!response&&(!s.exam||s.finished),reveal=s.finished||checked,chosen=selected===null?response?.choice:item.order[selected];
+ main.innerHTML=`<div class="quiz-top"><button class="text-button" data-action="home">학습 허브</button><p>${esc(s.title)} · ${s.exam?'실전 시험':'학습 모드'}</p><span class="spacer"></span><p>${s.index+1} / ${s.items.length}</p>${s.exam&&!s.finished?btn('시험 제출','finish','','secondary small'):s.finished?btn('결과 보기','results','','secondary small'):''}</div>
+ <div class="progress" style="margin-bottom:24px"><span class="correct" style="width:${(s.index+1)/s.items.length*100}%"></span></div>
+ <div class="quiz-grid"><section class="question-card" aria-label="문제"><div class="question-heading"><span class="pill">${esc(l.title)}</span><span class="pill ${q.difficulty==='고난도'?'hard':''}">${esc(q.difficulty)}</span>${starButton(q)}</div><h1 class="question-title">${esc(q.stem)}</h1><div class="choices">${item.order.map((oi,di)=>{const correct=reveal&&oi===q.answer,wrong=checked&&!response.correct&&oi===response.choice,isSelected=chosen===oi;return `<button type="button" class="choice ${correct?'correct':wrong?'wrong':isSelected?'selected':''}" data-action="select" data-index="${di}" ${checked||s.finished?'disabled':''} aria-pressed="${isSelected}"><b>${di+1}</b><span>${esc(q.choices[oi])}</span>${correct?'<span class="verdict">정답</span>':wrong?'<span class="verdict">내 선택</span>':''}</button>`}).join('')}</div><div class="question-controls">${s.index>0?btn('이전','prev','','secondary'):''}${s.exam?btn(s.index===s.items.length-1?(s.finished?'결과 보기':'시험 제출'):'다음 문항',s.index===s.items.length-1?(s.finished?'results':'finish'):'next'):checked||s.finished?btn(s.index===s.items.length-1?(s.finished?'결과 보기':'학습 결과'):'다음 문항',s.index===s.items.length-1?(s.finished?'results':'finish'):'next'):btn('정답 확인','grade',selected===null?'disabled':'')}</div><p class="keyboard">숫자 1–5로 선택 · Enter로 ${s.exam?'다음 문항':'채점·다음 문항'}</p></section>
+ <aside aria-label="해설">${reveal?explanation(q,item,response):`<div class="explanation-placeholder"><div class="large" aria-hidden="true">✚</div><h3>${s.exam?'답안은 제출한 뒤 확인합니다':'생각을 정한 뒤 확인하세요'}</h3><p>${s.exam?'문항 번호를 눌러 이전 답안을 바꿀 수 있습니다. 시험 중에는 정답과 해설이 표시되지 않습니다.':'정답의 근거와 오답 선지의 차이, 강의 원본 페이지를 함께 확인할 수 있습니다.'}</p></div>`}</aside></div>
+ <section class="question-nav"><details><summary>문항 이동 · ${Object.keys(s.responses).length}/${s.items.length}문항 응답${s.exam&&!s.finished?' · 답안 수정 가능':''}</summary><div class="nav-grid">${s.items.map((it,i)=>`<button type="button" data-action="jump" data-index="${i}" class="${s.responses[it.id]?(reveal&&s.responses[it.id].correct===false?'bad':'answered'):''} ${i===s.index?'current':''}" aria-label="${i+1}번 ${s.responses[it.id]?'응답':'미응답'}" ${i===s.index?'aria-current="step"':''}>${i+1}</button>`).join('')}</div></details></section>`;
 }
-importLegacyRecall();
-let progress=readProgress(read(KEYS.progress),QUESTIONS);
-let session=null;
-let bookmarks=[];
-try{const b=JSON.parse(read(KEYS.bookmarks));if(Array.isArray(b))bookmarks=[...new Set(b.filter(id=>QUESTIONS.some(q=>q.id===id)))];}catch{}
-session=resumeContinuousSession(read(KEYS.session),QUESTIONS,progress,Math.random,bookmarks);
-if(session)save(KEYS.session,session);
-let activeTab='home';
-const phaseTitle=phase=>phase==='wrong'?'오답 복습':phase==='review'?'직접 복습':'미풀이 학습';
-let pathologyUI=null;
-let lectureUI=null,bookmarkUI=null,originalUI=null;
-const ALL_QUESTIONS=[...QUESTIONS,...PATH_QUESTIONS,...LECTURE_QUESTIONS,...CBL_PAST_QUESTIONS];
-const ALL_TOPICS={...TOPICS,...PATH_TOPICS,...STUDY_TOPICS,...CBL_PAST_TOPICS};
-const BOOKMARK_GROUPS=[
- {id:'antibiotics',label:'항생제',key:KEYS.bookmarks,questions:QUESTIONS},
- {id:'pathology',label:'병리',key:'infection-immunity.pathology.bookmarks.v1',questions:PATH_QUESTIONS},
- {id:'lectures',label:'강의별',key:'infection-immunity.lectures.bookmarks.v1',questions:LECTURE_QUESTIONS},
- {id:'cblpast',label:'CBL 기출',key:'infection-immunity.cblpast.bookmarks.v1',questions:CBL_PAST_QUESTIONS}
-];
-const isPath=q=>q.id.startsWith('path-');
-const isStudy=q=>q.id.startsWith('lecture-')||q.id.startsWith('table-');
-const allProgress=()=>({...progress,...pathologyUI?.getProgress(),...lectureUI?.getProgress(),...originalUI?.getProgress()});
-
-function track(s){return `<span class="segment-correct" style="width:${s.total?s.correct/s.total*100:0}%"></span><span class="segment-wrong" style="width:${s.total?s.wrong/s.total*100:0}%"></span>`;}
-function source(q){if(isStudy(q))return sourceText(q,DOCUMENTS);return isPath(q)?pathSource(q):`근거: 강의 PDF ${q.pages.join('·')}쪽${q.refs.length?' · 보충 근거 포함':''}`;}
-function links(q){return q.refs.map(ref=>`<a href="${escape(SOURCES[ref].url)}" target="_blank" rel="noopener noreferrer">${escape(SOURCES[ref].title)} ↗</a>`).join('');}
-function explanation(q,correct){if(isStudy(q))return studyFeedback(q,correct);if(isPath(q))return pathFeedback(q,correct);return `<div class="feedback${correct?'':' missed'}" tabindex="-1"><h3>${correct?'정답입니다.':'이 부분을 다시 기억해 두세요.'}</h3><p class="answer-line">정답 · ${escape(q.choices[q.answer])}</p><p>${emphasizeFeedback(q.explanation)}</p>${q.note?`<p class="supplement"><b>구분해서 기억하기</b><br>${emphasizeFeedback(q.note)}</p>`:''}<p class="source-line">${escape(source(q))}</p>${links(q)}</div>`;}
-function announce(message){$('announcement').textContent=message;}
-function updateDashboard(){
-  const s=stats(ALL_QUESTIONS,allProgress());
-  $('homeAttempted').textContent=s.attempted;$('homeCorrect').textContent=s.correct;$('homeWrong').textContent=s.wrong;$('homeUnanswered').textContent=s.unanswered;
-  $('homeTotal').textContent=s.total;
-  $('homeTrack').innerHTML=track(s);$('homeTrack').setAttribute('aria-label',`전체 ${s.total}문항 중 정답 ${s.correct}, 오답 ${s.wrong}, 미풀이 ${s.unanswered}`);
-  $('wrongBadge').textContent=s.wrong;
-  $('bookmarkBadge').textContent=bookmarkUI?.count()||0;
-  $('resumeButton').hidden=!session || session.position>=session.items.length;
-  if(session){const pending=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);$('resumeButton').textContent=`이어서 풀기 · 미풀이 ${pending.unanswered} · 오답 ${pending.wrong} →`;}
-  const a=stats(QUESTIONS,progress),p=stats(PATH_QUESTIONS,pathologyUI?.getProgress()||{});
-  $('abxCourseTrack').innerHTML=track(a);$('pathCourseTrack').innerHTML=track(p);
-  $('abxCourseStats').textContent=`정답 ${a.correct} · 오답 ${a.wrong} · 미풀이 ${a.unanswered}`;
-  $('pathCourseStats').textContent=`정답 ${p.correct} · 오답 ${p.wrong} · 미풀이 ${p.unanswered}`;
-  $('pathCourseCount').textContent=`${PATH_QUESTIONS.length}문항`;
-  for(const [id,topic,label] of [['pathImageCaption','path-image','조직 사진 감별'],['pathTraitsCaption','path-traits','옳은 것 / 옳지 않은 것'],['pathGeneralCaption','path-general','조직반응·방어·진단법']])$(''+id).textContent=`${label} · ${PATH_QUESTIONS.filter(q=>q.topic===topic).length}문항`;
-  $('pathResumeButton').hidden=!pathologyUI?.hasSession();
-  $('lectureResumeButton').hidden=!lectureUI?.hasSession();
-  $('originalResumeButton').hidden=!originalUI?.hasSession();
-  for(const [prefix,bank,ui] of [['summary',SUMMARY_QUESTIONS,lectureUI],['lecture',LECTURE_QUESTIONS,lectureUI],['bacterialCase',BACTERIAL_CASE_QUESTIONS,lectureUI],['viralCase',VIRAL_CASE_QUESTIONS,lectureUI],['original',CBL_PAST_QUESTIONS,originalUI]]){
-    const value=stats(bank,ui?.getProgress()||{});
-    $(`${prefix}CourseStats`).textContent=`정답 ${value.correct} · 오답 ${value.wrong} · 미풀이 ${value.unanswered}`;
-    $(`${prefix}CourseCount`).textContent=`${bank.length}문항`;
-    const courseTrack=$(`${prefix}CourseTrack`);
-    if(courseTrack){courseTrack.innerHTML=track(value);courseTrack.setAttribute('aria-label',`${value.total}문항 중 ${value.attempted}문항 풀이, 정답 ${value.correct}, 오답 ${value.wrong}`);}
-  }
-  $('libraryCount').innerHTML=`전체 <b>${ALL_QUESTIONS.length}문항</b>`;
-  $('lectureCourseKicker').textContent=`${Object.values(COURSE_GROUPS).map(g=>g.title).join(' · ')} ${Object.keys(LECTURES).length}강`;
-  if(!memoryOnly)$('saveStatus').innerHTML='<i aria-hidden="true"></i> 이 브라우저에 학습 기록 저장';
-}
-function navigate(tab,focus=false){
-  if(tab==='drill')tab='lectures';
-  if(!['home','quiz','pathology','lectures','bookmarks','review','notes','cblpast'].includes(tab))tab='home';
-  const changed=activeTab!==tab;
-  activeTab=tab;
-  for(const name of ['home','quiz','pathology','lectures','bookmarks','review','notes','cblpast']){
-    $(`panel-${name}`).hidden=name!==tab;
-  }
-  const mainTab=['bookmarks','review'].includes(tab)?tab:'home';
-  for(const name of ['home','bookmarks','review']){const button=$(`tab-${name}`);if(name===mainTab)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
-  if(location.hash!==`#${tab}`)history.pushState(null,'',`#${tab}`);
-  if(tab==='quiz'&&changed){progress=readProgress(read(KEYS.progress),QUESTIONS);session=resumeContinuousSession(read(KEYS.session),QUESTIONS,progress,Math.random,bookmarks);if(session){setFilters(session.filters);save(KEYS.session,session);}}
-  updateDashboard();
-  if(tab==='quiz'){updateEligible();renderSession();}
-  if(tab==='review')renderReview();
-  if(tab==='bookmarks')bookmarkUI?.render();
-  if(tab==='pathology')pathologyUI?.open();
-  if(tab==='lectures')lectureUI?.open();
-  if(tab==='cblpast')originalUI?.open();
-  if(changed)window.scrollTo({top:0,behavior:'auto'});
-  if(focus)$(`tab-${mainTab}`).focus();
-}
-function filters(){return {topic:$('topicFilter').value,format:$('formatFilter').value,mode:$('modeFilter').value,count:0};}
-function setFilters(f){$('topicFilter').value=f.topic||'all';$('formatFilter').value=f.format||'all';$('modeFilter').value=['all','unanswered','wrong','bookmarks'].includes(f.mode)?f.mode:'all';updateEligible();}
-function updateEligible(){
-  const f=filters(),s=continuousProgress(QUESTIONS,f,progress,bookmarks);
-  $('eligibleCount').textContent=s.total?`선택 범위 전체 ${s.total}문항 · 미풀이 ${s.unanswered} → 오답 ${s.wrong} · 정답 ${s.correct}`:'선택 조건에 해당하는 문제가 없습니다';
-}
-function startSession(f={}){
-  progress=readProgress(read(KEYS.progress),QUESTIONS);
-  session=startContinuousSession(QUESTIONS,{...f,count:0},progress,Math.random,bookmarks,f.mode==='review'?null:session);
-  setFilters(session.filters);save(KEYS.session,session);navigate('quiz');focusQuestion();
-}
-function focusQuestion(){requestAnimationFrame(()=>{const card=$('questionCard')||$('sessionSummary');if(card){card.focus({preventScroll:true});card.scrollIntoView({behavior:'auto',block:'nearest'});}});}
-function renderSession(){
-  const stage=$('quizStage');
-  $('quizSettings').open=!(session&&session.phase!=='complete'&&session.position<session.items.length);
-  if(!session){stage.innerHTML='<div class="empty-state"><span class="empty-icon" aria-hidden="true">✚</span><h2>미풀이부터 이어서 학습하세요.</h2><p>선택한 범위의 미풀이를 모두 푼 뒤 남은 오답을 복습합니다.<br>답을 고르면 해설과 강의 근거를 보여 드립니다.</p><button type="button" class="button primary" data-start="mixed">전체 문항 이어서 풀기 →</button></div>';return;}
-  if(session.phase==='complete'||session.position>=session.items.length){renderSummary();return;}
-  const item=session.items[session.position],q=QUESTIONS.find(q=>q.id===item.id),graded=item.selected!==null;
-  const total=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);session.queueCounts=total;
-  const question=`<article id="questionCard" class="question-card" tabindex="-1" aria-labelledby="questionStem">
-    <div class="q-top"><div class="q-tags"><span class="pill">${TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX 퀴즈'}</span></div><button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button></div>
-    <div class="session-line"><span>${phaseTitle(session.phase)} <b>${session.position+1}</b> / ${session.items.length}</span><span>전체 ${total.total} · 정답 ${total.correct} · 미풀이 ${total.unanswered} · 오답 ${total.wrong}</span></div><div class="session-track" aria-hidden="true"><span style="width:${total.total?total.correct/total.total*100:0}%"></span></div>
-    <h2 id="questionStem" class="question-stem">${emphasizePrompt(q.stem)}</h2><p class="question-instruction">${graded?'채점 완료 · Enter로 다음 문제':q.format==='mcq'?'키보드 1–5로 답 선택 · 채점 후 Enter로 다음 문제':'OX · 키보드 1(O) / 2(X) · 채점 후 Enter로 다음 문제'}</p>
-    <div class="choices${q.format==='ox'?' ox':''}" role="group" aria-labelledby="questionStem">${item.choices.map((c,i)=>{
-      let cls='',label='';
-      if(graded){if(i===item.answer){cls=' right';label='정답';}else if(i===item.selected){cls=' wrong';label='내 선택';}else cls=' dim';}
-      return `<button type="button" class="choice${cls}" data-answer="${i}" ${graded?'disabled':''}><span class="choice-num" aria-hidden="true">${i+1}</span><span class="choice-copy">${escape(c)}</span>${label?`<span class="choice-label">${label}</span>`:''}</button>`;
-    }).join('')}</div>
-    <div class="question-actions"><button type="button" class="text-button" data-action="${session.position?'previous':'menu'}">${session.position?'← 이전 문제':'← 학습 허브'}</button>${graded?'<button type="button" class="button primary" id="nextQuestion" data-action="next">다음 문제 →</button>':'<button type="button" class="text-button" data-action="skip">건너뛰기 →</button>'}</div></article>`;
-  stage.innerHTML=practiceLayout({question,feedback:graded?explanation(q,item.selected===item.answer):'',q,session,sourceLabel:source(q)});
-}
-function renderSummary(){
-  const total=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);session.queueCounts=total;
-  const heading=!total.total?'선택한 범위에 문항이 없습니다.':session.filters.mode==='review'?'문항 복습을 마쳤습니다.':total.unanswered?'현재 남아 있는 오답을 모두 복습했습니다.':'선택한 범위를 모두 맞혔습니다.';
-  $('quizStage').innerHTML=`<article id="sessionSummary" class="summary-card" tabindex="-1"><p class="eyebrow green">LEARNING COMPLETE</p><h2>${heading}</h2><p class="muted">선택 범위 전체 ${total.total}문항 · 정답 ${total.correct} · 미풀이 ${total.unanswered} · 오답 ${total.wrong}</p><div class="summary-score">${total.correct}<small> / ${total.total} 정답</small></div><div class="summary-actions">${total.unanswered||total.wrong?'<button type="button" class="button primary" data-start="again">미풀이 → 오답 이어서 학습 →</button>':''}${total.total?'<button type="button" class="button outline" data-start="review">선택 범위 직접 복습</button>':''}<button type="button" class="text-button" data-tab="home">학습 허브로</button></div><p class="muted" style="margin-top:20px">학습 기록은 문항별로 저장되며, 다시 돌아오면 남은 미풀이부터 이어집니다.</p></article>`;
-}
-function answer(selected){
-  if(activeTab!=='quiz'||!session||session.position>=session.items.length)return;
-  const result=grade(session,progress,session.position,selected,QUESTIONS);if(result.duplicate)return;
-  progress=result.progress;session.queueCounts=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);save(KEYS.progress,progress);save(KEYS.session,session);updateDashboard();updateEligible();renderSession();
-  announce(result.correct?'정답입니다.':'오답입니다. 해설을 확인하세요.');
-  requestAnimationFrame(()=>{const fb=document.querySelector('#quizStage .feedback');fb?.focus({preventScroll:true});});
-}
-function moveNext(){if(!session)return;session=advanceContinuousSession(session,progress,QUESTIONS,Math.random,bookmarks);save(KEYS.session,session);renderSession();updateDashboard();focusQuestion();}
-function toggleBookmark(id){
-  if(!QUESTIONS.some(q=>q.id===id))return;
-  const saved=toggleSavedBookmark(read(KEYS.bookmarks),id);bookmarks=readBookmarks(JSON.stringify(saved),QUESTIONS);save(KEYS.bookmarks,saved);
-  document.querySelectorAll('[data-bookmark]').forEach(b=>{if(b.dataset.bookmark===id){const on=bookmarks.includes(id);b.textContent=on?'★':'☆';b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',on?'북마크 해제':'이 문제 북마크');}});
-  updateEligible();announce(bookmarks.includes(id)?'북마크에 저장했습니다.':'북마크를 해제했습니다.');
-}
-function renderReview(){
-  const records=allProgress(),s=stats(ALL_QUESTIONS,records),a=stats(QUESTIONS,progress),p=stats(PATH_QUESTIONS,pathologyUI?.getProgress()||{});
-  $('retryAll').disabled=!a.wrong;$('retryAll').textContent=`항생제 오답 ${a.wrong} →`;
-  $('pathRetryAll').disabled=!p.wrong;$('pathRetryAll').textContent=`병리 오답 ${p.wrong} →`;
-  $('reviewSummary').innerHTML=`<span>전체 오답 <strong>${s.wrong}</strong></span><span>정답 <strong>${s.correct}</strong></span><span>미풀이 <strong>${s.unanswered}</strong></span><span class="muted">총 ${s.total}문항 · 단원별 최신 결과</span>`;
-  for(const [name,bank,ui] of [['lecture',LECTURE_QUESTIONS,lectureUI],['original',CBL_PAST_QUESTIONS,originalUI]]){
-    const count=stats(bank,ui?.getProgress()||{}).wrong;
-    $(`${name}RetryAll`).disabled=!count;$(`${name}RetryAll`).textContent=`${name==='lecture'?'강의별':'CBL 기출'} 오답 ${count} →`;
-  }
-  const topic=$('reviewTopic').value,search=$('reviewSearch').value.toLocaleLowerCase().trim();
-  const wrong=ALL_QUESTIONS.filter(q=>records[q.id]?.correct===false && (topic==='all'||q.topic===topic) && `${q.stem} ${q.choices.join(' ')} ${q.explanation}`.toLocaleLowerCase().includes(search));
-  $('reviewCount').textContent=`${wrong.length}문항`;
-  if(!wrong.length){$('reviewList').innerHTML=`<div class="empty-state"><span class="empty-icon" aria-hidden="true">${s.wrong?'⌕':'✓'}</span><h2>${s.wrong?'검색 조건에 맞는 오답이 없습니다.':'현재 남아 있는 오답이 없습니다.'}</h2><p>${s.wrong?'다른 주제를 고르거나 검색어를 바꾸어 보세요.':s.attempted?'아직 안 푼 문제나 북마크한 문제를 이어서 풀어 보세요.':'퀴즈를 풀면 틀린 문제가 이곳에 모입니다. 다시 맞히면 목록에서 빠집니다.'}</p><button type="button" class="button outline" data-tab="home">학습 단원 선택 →</button></div>`;return;}
-  $('reviewList').innerHTML=wrong.map(q=>`<details class="review-item"><summary><span class="review-tags"><span class="pill${isPath(q)?' blue':''}">${q.original?'CBL 기출':isStudy(q)?'강의별':isPath(q)?'병리':'항생제'} · ${ALL_TOPICS[q.topic].title}</span><span class="format-tag">${q.format==='mcq'?'5지선다':'OX'} · ${q.id}</span></span>${emphasizePrompt(q.stem)}</summary><div class="review-body">${q.original?originalPrompt(q):isPath(q)?imageMarkup(q):''}${q.choices.map((c,i)=>`<div class="review-choice${isCorrectChoice(q,c)?' is-answer':''}${i===records[q.id].selected?' is-selected':''}">${escape(c)}${isCorrectChoice(q,c)?'<small>정답</small>':''}${i===records[q.id].selected?'<small>내 선택</small>':''}</div>`).join('')}${explanation(q,false)}<div class="review-bottom"><button type="button" class="text-button" data-retry="${q.id}">이 문제 다시 풀기 →</button>${isPath(q)||isStudy(q)?'':`<button type="button" class="bookmark" data-bookmark="${q.id}" aria-pressed="${bookmarks.includes(q.id)}" aria-label="${bookmarks.includes(q.id)?'북마크 해제':'이 문제 북마크'}">${bookmarks.includes(q.id)?'★':'☆'}</button>`}</div></div></details>`).join('');
-}
-function oneQuestion(id){
-  id=RECALL_CONSOLIDATION[id]?.destination||id;
-  if(id.startsWith('lecture-cbl-past-')){originalUI.retry(id);return;}
-  if(LECTURE_QUESTIONS.some(q=>q.id===id)){lectureUI.retry(id);return;}
-  if(id.startsWith('path-')){pathologyUI.retry(id);return;}
-  const q=QUESTIONS.find(q=>q.id===id);if(!q)return;
-  startSession({topic:q.topic,format:q.format,mode:'review',questionIds:[id],count:0});
-}
-function beginAction(name){
-  if(name==='mixed')startSession({topic:'all',format:'all',mode:'all',count:0});
-  if(name==='wrong')startSession({topic:'all',format:'all',mode:'wrong',count:0});
-  if(name==='again'){const f=session?.filters||filters();startSession({...f,mode:f.mode==='bookmarks'?'bookmarks':'all',count:0});}
-  if(name==='review')startSession({...session?.filters||filters(),mode:'review',count:0});
-}
-
-$('sourceLinks').innerHTML=Object.values(SOURCES).map(s=>`<a href="${escape(s.url)}" target="_blank" rel="noopener noreferrer">${escape(s.title)} ↗</a>`).join('');
-$('quizSetup').addEventListener('submit',e=>{e.preventDefault();startSession(filters());});
-for(const id of ['topicFilter','formatFilter','modeFilter'])$(id).addEventListener('change',updateEligible);
-$('resumeButton').addEventListener('click',()=>{progress=readProgress(read(KEYS.progress),QUESTIONS);session=resumeContinuousSession(read(KEYS.session),QUESTIONS,progress,Math.random,bookmarks);if(session){setFilters(session.filters);save(KEYS.session,session);}navigate('quiz');focusQuestion();});
-$('retryAll').addEventListener('click',()=>beginAction('wrong'));
-$('pathRetryAll').addEventListener('click',()=>pathologyUI.start({topic:'all',mode:'wrong',count:0}));
-$('homePathTables').addEventListener('click',()=>{navigate('pathology');pathologyUI.show('tables');});
-$('pathResumeButton').addEventListener('click',()=>pathologyUI.resume());
-$('homeLectureUnits').addEventListener('click',()=>lectureUI.choose('units'));
-$('homeLectureStart').addEventListener('click',()=>lectureUI.choose('mixed'));
-$('homeLectureStatements').addEventListener('click',()=>lectureUI.choose('units','incorrect'));
-document.querySelectorAll('[data-summary-start]').forEach(button=>button.addEventListener('click',()=>lectureUI.start(summaryFilters(button.dataset.summaryStart))));
-$('homeBacterialCases').addEventListener('click',()=>lectureUI.start({topic:BACTERIAL_CASE_TOPIC,mode:'all',count:0}));
-$('homeBacterialCasesWrong').addEventListener('click',()=>lectureUI.start({topic:BACTERIAL_CASE_TOPIC,mode:'wrong',count:0}));
-$('homeViralCases').addEventListener('click',()=>lectureUI.start({topic:VIRAL_CASE_TOPIC,mode:'all',count:0}));
-$('homeViralCasesWrong').addEventListener('click',()=>lectureUI.start({topic:VIRAL_CASE_TOPIC,mode:'wrong',count:0}));
-$('lectureResumeButton').addEventListener('click',()=>lectureUI.resume());
-$('homeOriginalUnits').addEventListener('click',()=>originalUI.choose('units'));
-$('homeOriginalMixed').addEventListener('click',()=>originalUI.choose('mixed'));
-$('originalResumeButton').addEventListener('click',()=>originalUI.resume());
-$('originalRetryAll').addEventListener('click',()=>originalUI.start({topic:'all',mode:'wrong',count:0}));
-$('lectureRetryAll').addEventListener('click',()=>lectureUI.start({topic:'all',mode:'wrong',count:0}));
-$('reviewTopic').insertAdjacentHTML('beforeend',`<optgroup label="강의별 문제">${Object.entries(STUDY_TOPICS).map(([id,t])=>`<option value="${id}">${t.order?t.order+". ":""}${escape(t.title)}</option>`).join('')}</optgroup>`);
-$('reviewTopic').insertAdjacentHTML('beforeend',`<optgroup label="CBL 기출 원문">${Object.entries(CBL_PAST_TOPICS).map(([id,t])=>`<option value="${id}">${escape(t.title)}</option>`).join('')}</optgroup>`);
-$('reviewTopic').addEventListener('change',renderReview);$('reviewSearch').addEventListener('input',renderReview);
-document.addEventListener('click',e=>{
-  const b=e.target.closest('button');if(!b||b.disabled)return;
-  if(b.dataset.tab){navigate(b.dataset.tab);return;}
-  if(b.dataset.start){beginAction(b.dataset.start);return;}
-  if(b.dataset.topic){startSession({topic:b.dataset.topic,format:'all',mode:'all',count:0});return;}
-  if(b.dataset.answer!==undefined){answer(Number(b.dataset.answer));return;}
-  if(b.dataset.bookmark){toggleBookmark(b.dataset.bookmark);return;}
-  if(b.dataset.retry){oneQuestion(b.dataset.retry);return;}
-  if(b.dataset.jump!==undefined){session.position=Number(b.dataset.jump);save(KEYS.session,session);renderSession();focusQuestion();return;}
-  if(b.dataset.action==='menu'){navigate('home');return;}
-  if(b.dataset.action==='next'||b.dataset.action==='skip'){moveNext();return;}
-  if(b.dataset.action==='previous' && session){session.position=Math.max(0,session.position-1);save(KEYS.session,session);renderSession();focusQuestion();}
+function explanation(q,item,response){const answerNumber=item.order.indexOf(q.answer)+1;return `<section class="explanation-card"><p class="result-label ${response&&!response.correct?'wrong':''}">${response?(response.correct?'정답입니다':'다시 짚어보기'):'미응답 문항'} <small style="font-size:15px;font-weight:650">정답 ${answerNumber}번</small></p><p class="explanation-body">${esc(q.explanation)}</p><div class="choice-notes">${item.order.map((oi,di)=>`<p class="choice-note ${oi===q.answer?'correct':''}"><b>${letters[di]}</b><span>${esc(q.choiceNotes[oi])}</span></p>`).join('')}</div><div class="source-block"><h3>강의 근거</h3><div class="source-links">${q.sourcePages.map(p=>`<button type="button" data-action="source" data-doc="${q.lecture}" data-page="${p}">PDF ${p}쪽</button>`).join('')}</div>${q.examRefs.length?`<h3 style="margin-top:19px">참고한 족보 유형</h3><div class="source-links">${q.examRefs.map(r=>`<button type="button" data-action="source" data-doc="exam" data-page="${r.page}">${esc(r.year)}년 ${esc(r.number)}번 · ${r.page}쪽</button>`).join('')}</div>`:''}<p class="exam-ref">${esc(q.type)} · 강의와 족보를 바탕으로 재구성한 예상문제입니다.</p></div><div class="tag-row">${q.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div></section>`}
+function renderResult(){const s=state.session;if(!s){navigate('home');return}if(!s.finished){navigate('study');return}const r=sessionResult(s,questions);main.innerHTML=`<section class="summary-box"><p class="eyebrow">${s.exam?'Exam result':'Study complete'}</p><h1>${s.exam?'실전 시험':'이번 학습'} 결과</h1><p class="muted">${esc(s.title)} · ${s.items.length}문항</p><div class="score">${r.score}<small>점</small></div><div class="summary-grid"><div><b>${r.total}</b><span>전체 문항</span></div><div><b>${r.correct}</b><span>정답</span></div><div><b>${r.wrong}</b><span>오답</span></div><div><b>${r.unanswered}</b><span>미응답</span></div></div><p class="muted" style="font-size:14px">미응답은 점수 계산에 포함되며, 아직 풀지 않은 학습 문항으로 남습니다. 다시 푼 문항은 최신 결과로 갱신됩니다.</p><div class="actions">${btn('오답·미응답 다시 풀기','retry',r.wrong+r.unanswered?'':'disabled')}${btn('전체 해설 보기','review-session','','secondary')}${btn('학습 허브','home','','ghost')}</div><div class="summary-results">${s.items.map((it,i)=>{const q=qById[it.id],a=s.responses[it.id];return `<button type="button" class="summary-item" data-action="result-question" data-index="${i}"><span class="outcome ${!a||!a.correct?'bad':''}">${a?(a.correct?'정답':'오답'):'미응답'}</span><span>${i+1}. ${esc(q.stem)}</span></button>`}).join('')}</div></section>`}
+function render(){if(!bank)return;updateHeader();const view=currentView();if(view==='study')renderQuiz();else if(view==='result')renderResult();else if(view==='wrong'||view==='starred')renderList(view);else renderHome()}
+function showModal(title,content,actions='',source=false){modal.classList.toggle('source-dialog',source);$('#modalContent').innerHTML=`<div class="modal-top"><h2 id="modalTitle">${esc(title)}</h2><button type="button" data-action="close-modal" aria-label="창 닫기">✕</button></div>${content}${actions?`<div class="modal-actions">${actions}</div>`:''}`;if(!modal.open)modal.showModal()}
+function requestStart(qs,options){if(!qs.length&&!selectQuestions(questions,state,{...options.scope,mode:'all'}).length){pendingStart=null;showModal('조건에 맞는 문항이 없습니다','<p>검색어나 강의·난도 선택을 바꿔 보세요.</p>',btn('닫기','close-modal','','secondary'));return}if(!qs.length){showModal('선택 범위의 학습을 마쳤습니다','<p>남은 미풀이와 오답이 없습니다. 같은 범위 전체를 다시 풀 수 있습니다.</p>',btn('닫기','close-modal','','secondary')+btn('범위 전체 풀기','restart-scope'));pendingStart={qs:selectQuestions(questions,state,{...options.scope,mode:'all'}),options};return}const current=state.session;if(current&&!current.finished){pendingStart={qs,options};showModal('새 학습 시작','<p>진행 중인 세션을 새 문제로 바꿉니다. 이미 채점한 학습 기록과 별표는 유지됩니다. 실전 시험의 미제출 답안은 종료됩니다.</p>',btn('이어서 풀기','resume','','secondary')+btn('새로 시작','confirm-start'));return}begin(qs,options)}
+function begin(qs,options){if(!qs.length)return;modal.close();announce('');state.session=makeSession(qs,options);selected=null;persist();navigate('study')}
+function startRange(scope={},exam=false){const mode=exam?'all':scope.mode||'continue',qs=selectQuestions(questions,state,{...scope,mode}),title=scope.lecture&&scope.lecture!=='all'?lById[scope.lecture].title:scope.difficulty==='고난도'?'고난도 모음':scope.mode==='wrong'?'오답 복습':scope.mode==='starred'?'별표 복습':'전체 강의';requestStart(qs,{shuffle:true,random:exam,exam,limit:exam?20:undefined,title,scope})}
+function focusQuestion(){const title=main.querySelector('.question-title');if(title){title.setAttribute('tabindex','-1');title.focus({preventScroll:true})}}
+function nextQuestion(delta){const s=state.session;if(!s)return;s.index=Math.max(0,Math.min(s.items.length-1,s.index+delta));selected=null;persist();render();focusQuestion();window.scrollTo({top:0,behavior:'instant'})}
+function selectChoice(di){const s=state.session,q=activeQuestion();if(!s||!q||s.finished||(!s.exam&&s.responses[q.id]))return;selected=di;if(s.exam){state.session=answerQuestion(s,questions,q.id,di);persist();selected=null}renderQuiz();main.querySelector(`[data-action="select"][data-index="${di}"]`)?.focus({preventScroll:true})}
+function grade(){const s=state.session,q=activeQuestion();if(!q||selected===null||s.finished||s.responses[q.id])return;state.session=answerQuestion(s,questions,q.id,selected);state=recordResponse(state,q.id,state.session.responses[q.id]);selected=null;persist();updateHeader();renderQuiz();main.querySelector('[data-action="next"], [data-action="finish"]')?.focus({preventScroll:true});announce(state.session.responses[q.id].correct?'정답입니다.':'오답입니다. 해설을 확인하세요.')}
+function submit(){const s=state.session;if(!s)return;if(s.finished){navigate('result');return}const r=sessionResult(s,questions);if(s.exam){showModal('시험을 제출할까요?',`<p>${r.total}문항 중 ${r.answered}문항에 응답했습니다.${r.unanswered?` 미응답 ${r.unanswered}문항은 점수에서 정답으로 계산되지 않습니다.`:''}</p>`,btn('계속 풀기','close-modal','','secondary')+btn('제출하고 채점','confirm-finish'));return}complete()}
+function complete(){modal.close();state=finishSession(state);state.session.review=false;persist();navigate('result')}
+function source(doc,page){const d=bank.documents[doc];if(!d)return;const url=`assets/sources/${doc}/p${String(page).padStart(3,'0')}.webp`;showModal(`${doc==='exam'?'족보':lById[doc].title} · PDF ${page}쪽`,`<a class="source-full" href="${url}" target="_blank" rel="noopener">원본 크기로 열기</a><img class="source-image" src="${url}" alt="${esc(d.filename)} PDF ${page}쪽"><p class="source-caption">${esc(d.filename)} · 파일의 첫 장부터 센 실제 PDF 쪽수입니다.</p>`,'',true)}
+function about(){showModal('출제·근거 안내',`<div class="about-content"><p><strong>9개 강의 · ${questions.length}문항 · 모두 5지선다</strong><br>2026.11.23–24 강의와 2019–2025 족보를 대조했습니다. 모든 문항은 새로 구성한 예상문제이며 과거 문항 원문으로 표시하지 않습니다.</p><h3>난도와 선지</h3><p>반복 출제 개념, 교수 강조점, 증례의 단서와 검사·치료 판단을 반영합니다. 한 문항의 선지는 비슷한 범주와 길이로 구성하고, 학습 시작 때 보기 순서를 섞어 정답 위치가 단서가 되지 않게 했습니다.</p><h3>원자료 대조</h3><p>족보에는 학생 복원 및 답안 오류가 있습니다. 현재 강의와 충돌하거나 여러 답으로 해석될 수 있는 문항은 답안을 그대로 복제하지 않았습니다.</p>${(bank.auditNotes||[]).map(n=>`<p>· ${esc(n)}</p>`).join('')}<h3>학습 기록</h3><p>현재 브라우저에 저장되며 기기 사이에서 자동으로 연결되지는 않습니다. 기록 내보내기와 가져오기로 옮길 수 있습니다. 새 범위에는 별도 기록을 사용하고 기존 범위의 기록은 합산하지 않습니다.</p></div>`)}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-action]');if(!el||el.disabled||!bank)return;const a=el.dataset.action;
+ if(a==='select')selectChoice(Number(el.dataset.index));
+ else if(a==='grade')grade();
+ else if(a==='next')nextQuestion(1);
+ else if(a==='prev')nextQuestion(-1);
+ else if(a==='home')navigate('home');
+ else if(a==='start')startRange({});
+ else if(a==='exam')startRange({},true);
+ else if(a==='exam-filtered')startRange({...filters},true);
+ else if(a==='filtered')startRange({...filters,mode:'all'});
+ else if(a==='hard')startRange({difficulty:'고난도',mode:'all'});
+ else if(a==='lecture')startRange({...filters,lecture:el.dataset.id});
+ else if(a==='list-start')startRange({...filters,mode:el.dataset.mode});
+ else if(a==='single')requestStart([qById[el.dataset.id]],{shuffle:true,exam:false,title:lById[qById[el.dataset.id].lecture].title});
+ else if(a==='confirm-start'||a==='restart-scope'){if(pendingStart){const p=pendingStart;pendingStart=null;begin(p.qs,p.options)}}
+ else if(a==='resume'){modal.close();selected=null;navigate('study')}
+ else if(a==='star'){const id=el.dataset.id;state.bookmarks=state.bookmarks.includes(id)?state.bookmarks.filter(x=>x!==id):[...state.bookmarks,id];persist();const hadFocus=document.activeElement===el;render();if(hadFocus)document.querySelector(`[data-action="star"][data-id="${id}"]`)?.focus();announce(state.bookmarks.includes(id)?'별표에 저장했습니다.':'별표를 해제했습니다.')}
+ else if(a==='jump'||a==='result-question'){state.session.index=Number(el.dataset.index);state.session.review=state.session.finished;selected=null;persist();navigate('study');window.scrollTo({top:0,behavior:'instant'})}
+ else if(a==='finish')submit();
+ else if(a==='confirm-finish')complete();
+ else if(a==='results'){state.session.review=false;persist();navigate('result')}
+ else if(a==='review-session'){state.session.review=true;state.session.index=0;selected=null;persist();navigate('study')}
+ else if(a==='retry'){const s=state.session,qs=s.items.filter(it=>!s.responses[it.id]?.correct).map(it=>qById[it.id]);begin(qs,{shuffle:true,title:`${s.title} · 오답·미응답 복습`})}
+ else if(a==='source')source(el.dataset.doc,Number(el.dataset.page));
+ else if(a==='close-modal')modal.close();
+ else if(a==='about')about();
+ else if(a==='lecture-info'){const l=lById[el.dataset.id];showModal(`${l.title} · 출제 포인트`,`<div class="style-detail"><b>${esc(l.professor)} 교수</b><p>${esc(l.style)}</p></div><p>${l.focus.map(esc).join(' · ')}</p><p class="muted" style="font-size:14px">족보의 반복 주제와 올해 강의 범위를 함께 반영했습니다. 문항별 근거는 채점 후 확인합니다.</p>`,btn('닫기','close-modal','','secondary')+btn('강의 문제 풀기','lecture',`data-id="${l.id}"`))}
+ else if(a==='export'){const data={format:'infection-immune-exam2',version:1,exportedAt:new Date().toISOString(),state},url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`감염과면역2차_학습기록_${new Date().toISOString().slice(0,10)}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+ else if(a==='import')$('#importFile').click();
 });
-function followHash(){const tab=tabFromHash(location.hash);if(tab)navigate(tab);}
-window.addEventListener('hashchange',followHash);
-window.addEventListener('popstate',followHash);
-window.addEventListener('storage',e=>{
-  if(e.key===null||e.key?.startsWith('infection-immunity.drill.'))importLegacyRecall(true);
-  if(e.key===null)volatileStorage.clear();else if(e.newValue===null)volatileStorage.delete(e.key);else volatileStorage.set(e.key,e.newValue);
-  if(e.key===KEYS.progress||e.key===null){progress=readProgress(e.newValue,QUESTIONS);if(session)session.queueCounts=continuousProgress(QUESTIONS,session.filters,progress,bookmarks);updateDashboard();updateEligible();if(activeTab==='review')renderReview();if(activeTab==='quiz')renderSession();}
-  if(e.key===KEYS.bookmarks||e.key===null){bookmarks=readBookmarks(e.newValue,QUESTIONS);updateEligible();if(activeTab==='quiz')renderSession();}
-  if(e.key===null){for(const group of BOOKMARK_GROUPS)window.dispatchEvent(new StorageEvent('storage',{key:group.key,newValue:read(group.key)}));}
-  if(e.key===null||BOOKMARK_GROUPS.some(group=>group.key===e.key)){bookmarkUI?.render();updateDashboard();}
-});
-if(session)setFilters(session.filters||{});
-$('antibioticTables').innerHTML=renderTables(ANTIBIOTIC_TABLES);
-pathologyUI=createPathologyUI({read,save,openTab:navigate,announce,onChange(){updateDashboard();if(activeTab==='review')renderReview();}});
-const studyChange=()=>{updateDashboard();if(activeTab==='review')renderReview();};
-lectureUI=createStudyUI({id:'lectures',tab:'lectures',title:'강의별 문제',subtitle:Object.entries(COURSE_GROUPS).map(([group,g])=>`${g.title} ${Object.values(LECTURES).filter(t=>t.group===group).length}강`).join(' · ')+' · 단원 통합',bank:LECTURE_QUESTIONS,topics:STUDY_TOPICS,read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='lectures'});
-originalUI=createStudyUI({id:'cblpast',tab:'cblpast',originals:true,title:'CBL 기출 원문',subtitle:`CBL 1~6 · 원문 ${CBL_PAST_QUESTIONS.length}문항 · 캡처·OCR·선지별 해설`,bank:CBL_PAST_QUESTIONS,topics:CBL_PAST_TOPICS,courseGroups:{cbl:{title:'CBL 1~6'}},libraryIntro:originalIndex(CBL_PAST_QUESTIONS,CBL_PAST_TOPICS),read,save,openTab:navigate,onChange:studyChange,announce,isActive:()=>activeTab==='cblpast'});
-bookmarkUI=createBookmarkUI({root:$('bookmarkContent'),groups:BOOKMARK_GROUPS,read,save,onRetry:oneQuestion,topicTitle:q=>ALL_TOPICS[q.topic]?.title||'',formatPrompt:emphasizePrompt,renderDetails(q){return `${q.original?originalPrompt(q):isPath(q)?imageMarkup(q):''}${q.choices.map((choice,index)=>`<div class="review-choice${isCorrectChoice(q,choice)?' is-answer':''}"><span>${index+1}. ${escape(choice)}</span>${isCorrectChoice(q,choice)?'<small>정답</small>':''}</div>`).join('')}${explanation(q,false)}`;},onChange(){updateDashboard();announce('별표를 해제했습니다.');}});
-navigate(tabFromHash(location.hash)||'home');
-installQuizKeyboard();
+document.addEventListener('change',e=>{if(e.target.id==='lectureFilter')filters.lecture=e.target.value;else if(e.target.id==='difficultyFilter')filters.difficulty=e.target.value;else return;render()});
+let searchTimer;document.addEventListener('input',e=>{if(e.target.id!=='searchInput')return;filters.query=e.target.value;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{const pos=e.target.selectionStart;render();$('#searchInput')?.focus();try{$('#searchInput')?.setSelectionRange(pos,pos)}catch{}},180)});
+$('#importFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text());if(data.format!=='infection-immune-exam2'||data.version!==1)throw Error();const imported=normalizeState(data.state);const records={...state.records};for(const [id,r]of Object.entries(imported.records)){if(qById[id]&&(!records[id]||(r.at||0)>=(records[id].at||0)))records[id]=r}state={...state,records,bookmarks:[...new Set([...state.bookmarks,...imported.bookmarks.filter(id=>qById[id])])]};persist();render();showModal('학습 기록을 가져왔습니다','<p>문항별 최신 풀이 결과와 별표를 합쳤습니다. 현재 진행 중인 세션은 유지됩니다.</p>')}catch{showModal('기록을 가져오지 못했습니다','<p>이 허브에서 내보낸 2차 학습 기록 파일인지 확인하세요.</p>')}e.target.value=''});
+document.addEventListener('keydown',e=>{if(modal.open||currentView()!=='study'||e.ctrlKey||e.altKey||e.metaKey||e.repeat||e.target.isContentEditable||['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;if(/^[1-5]$/.test(e.key)){e.preventDefault();selectChoice(Number(e.key)-1)}else if(e.key==='Enter'){if(['BUTTON','A','SUMMARY'].includes(e.target.tagName)&&e.target.dataset.action!=='select')return;e.preventDefault();const s=state.session;if(!s)return;if(s.exam||s.finished||s.responses[activeQuestion()?.id]){if(s.index===s.items.length-1)submit();else nextQuestion(1)}else grade()}});
+modal.addEventListener('click',e=>{if(e.target===modal){const r=modal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)modal.close()}});
+window.addEventListener('hashchange',()=>{selected=null;render();if(currentView()==='study')focusQuestion()});
+window.addEventListener('storage',e=>{if(!state||e.key!==STORAGE_KEY)return;state=mergeProgress(state,loadState(storage),baseline);baseline=structuredClone(state);render()});
+async function init(){try{const r=await fetch('bank.json?v=20261125a');if(!r.ok)throw Error();bank=await r.json();questions=bank.questions;lectures=bank.lectures;qById=Object.fromEntries(questions.map(q=>[q.id,q]));lById=Object.fromEntries(lectures.map(l=>[l.id,l]));state=loadState(storage);state.bookmarks=state.bookmarks.filter(id=>qById[id]);state.records=Object.fromEntries(Object.entries(state.records).filter(([id])=>qById[id]));if(state.session){state.session.items=state.session.items.filter(it=>qById[it.id]);if(!state.session.items.length)state.session=null}persist();render()}catch(error){main.innerHTML=empty('문항을 불러오지 못했습니다.','인터넷 연결을 확인한 뒤 새로고침해 주세요.');console.error(error)}}
+init();
