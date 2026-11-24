@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {selectQuestions,makeSession,answerQuestion,sessionResult,saveState,loadState,stats,recordResponse,finishSession,mergeProgress} from './core.mjs';
+import {selectQuestions,makeSession,answerQuestion,sessionResult,saveState,loadState,stats,recordResponse,finishSession,mergeProgress,reconcileSession} from './core.mjs';
 const qs = [
  {id:'a',lecture:'A',difficulty:'고난도',stem:'보체 검사',tags:['루프스'],choices:['가','나','다','라','마'],answer:2},
  {id:'b',lecture:'A',difficulty:'기본',stem:'활막 소견',tags:['관절'],choices:['가','나','다','라','마'],answer:0},
@@ -79,4 +79,18 @@ test('a star removed in another tab is not resurrected by unrelated local progre
  const remote={...baseline,bookmarks:['b','d']};
  assert.deepEqual(mergeProgress(local,remote,baseline).bookmarks.sort(),['b','c','d']);
  assert.deepEqual(mergeProgress({...local,bookmarks:['b','c']},baseline,baseline).bookmarks.sort(),['b','c']);
+});
+test('retired questions invalidate the old session instead of silently shortening an exam',()=>{
+ const session=makeSession(qs,{exam:true});
+ assert.equal(reconcileSession(session,qs.filter(q=>q.id!=='b')),null);
+ assert.equal(reconcileSession(null,qs),null);
+});
+test('unchanged questions retain saved answers while stale response keys are removed',()=>{
+ let session=answerQuestion(makeSession(qs,{shuffle:false}),qs,'a',2);
+ session.responses.retired={choice:0,correct:true};session.index=99;
+ const result=reconcileSession(session,qs);
+ assert.equal(result.responses.a.correct,true);
+ assert.equal(result.responses.retired,undefined);
+ assert.equal(result.index,2);
+ assert.equal(session.responses.retired.correct,true);
 });

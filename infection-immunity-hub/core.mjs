@@ -66,3 +66,10 @@ export function mergeProgress(local,remote,baseline){
  for(const id of before)if(!current.has(id))marks.delete(id);
  return {...local,records,bookmarks:[...marks]};
 }
+export function reconcileSession(session,questions){
+ if(!session?.items?.length)return null;
+ const active=new Set(questions.map(q=>q.id));
+ if(session.items.some(item=>!active.has(item.id)))return null;
+ const inSession=new Set(session.items.map(item=>item.id));
+ return {...session,index:Math.min(Math.max(0,session.index||0),session.items.length-1),responses:Object.fromEntries(Object.entries(session.responses||{}).filter(([id])=>inSession.has(id)))};
+}

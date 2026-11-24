@@ -1,0 +1,3573 @@
+{
+  "version": "20261125b",
+  "previousVersion": "20261125a",
+  "criteria": [
+    "정답 판별에 필요한 사실이 제공 강의 슬라이드·수업 주석에 명시되어 있을 것",
+    "족보 및 강의파일에 재수록된 족보만으로 근거를 대신하지 않을 것",
+    "외부 지침·약물·기전·수치를 알아야 풀 수 있으면 제외 또는 강의 기반 새 문항으로 교체할 것",
+    "정답과 선지별 해설을 강의록 범위에 한정할 것"
+  ],
+  "previousQuestionCount": 225,
+  "questionCount": 225,
+  "actions": {
+    "revise": 78,
+    "keep": 102,
+    "replace": 45
+  },
+  "items": [
+    {
+      "id": "r26-pharm-001",
+      "oldId": "r26-pharm-001",
+      "action": "revise",
+      "reason": "강의에 명시된 관계만으로 해설과 선지의 범위를 정리했다.",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "즉시반응에 두드러기·기관지경련·저혈압을 열거하고 아나필락시스에는 근육주사 에피네프린을 우선한다고 명시한다. 호산구·Th2 유입은 후기반응으로 제시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-001"
+    },
+    {
+      "id": "r26b-pharm-002",
+      "oldId": "r26-pharm-002",
+      "action": "revise",
+      "reason": "원 선지의 호산구 조직 내 증식은 강의 명시가 없어, 8쪽의 후기 염증세포 유입으로 교체했다. 정답 기전은 7쪽에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 7,
+          "detail": "감작은 IL-4·IL-13에 의한 IgE 동형전환·FcεRI 결합이며, 재노출 유발 단계는 IgE–FcεRI 가교와 비만세포 탈과립이라고 구분한다."
+        },
+        {
+          "page": 8,
+          "detail": "즉시반응에 두드러기·기관지경련·저혈압을 열거하고 아나필락시스에는 근육주사 에피네프린을 우선한다고 명시한다. 호산구·Th2 유입은 후기반응으로 제시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26b-pharm-002"
+    },
+    {
+      "id": "r26-pharm-003",
+      "oldId": "r26-pharm-003",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 10,
+          "detail": "그레이브스병은 TSH 감소에도 작용하는 TSH 수용체 자극형 항체, AChR 중증근무력증은 수용체 차단·감소와 보체손상으로 설명한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-003"
+    },
+    {
+      "id": "r26b-pharm-004",
+      "oldId": "r26-pharm-004",
+      "action": "revise",
+      "reason": "강의에서 개별적으로 설명되지 않은 C3a 수용체 선지를 14쪽에 명시된 IFN-γ 경로로 바꾸어 강의 내 비교만 남겼다.",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "세포표면 IgG–Fcγ 수용체 포식을 면역성혈소판감소증과 연결하고, 기저막 결합 항체–보체·백혈구 염증을 항기저막병과 연결한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26b-pharm-004"
+    },
+    {
+      "id": "r26-pharm-005",
+      "oldId": "r26-pharm-005",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "세포표면 IgG–Fcγ 수용체 포식을 면역성혈소판감소증과 연결하고, 기저막 결합 항체–보체·백혈구 염증을 항기저막병과 연결한다."
+        },
+        {
+          "page": 11,
+          "detail": "항원표에 Goodpasture–IV형 콜라겐 α3–사구체신염·폐출혈을 명시하고, AChR 양성 중증근무력증에서 기능변화와 보체손상이 함께 관여한다고 설명한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-005"
+    },
+    {
+      "id": "r26-pharm-006",
+      "oldId": "r26-pharm-006",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 10,
+          "detail": "그레이브스병은 TSH 감소에도 작용하는 TSH 수용체 자극형 항체, AChR 중증근무력증은 수용체 차단·감소와 보체손상으로 설명한다."
+        },
+        {
+          "page": 11,
+          "detail": "항원표에 Goodpasture–IV형 콜라겐 α3–사구체신염·폐출혈을 명시하고, AChR 양성 중증근무력증에서 기능변화와 보체손상이 함께 관여한다고 설명한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-006"
+    },
+    {
+      "id": "r26-pharm-007",
+      "oldId": "r26-pharm-007",
+      "action": "revise",
+      "reason": "강의에 명시된 관계만으로 해설과 선지의 범위를 정리했다.",
+      "evidence": [
+        {
+          "page": 12,
+          "detail": "외래 말혈청 투여 1–2주 뒤 발열·발진·관절통·단백뇨가 발생하는 혈청병과 말단백질 면역복합체를 설명한다."
+        },
+        {
+          "page": 13,
+          "detail": "면역복합체 침착·보체 소모·혈관염·사구체신염을 연결하며 C1q·C2·C4 결핍이 세포잔해·복합체 제거를 저해해 루푸스 위험을 높인다고 명시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-007"
+    },
+    {
+      "id": "r26-pharm-008",
+      "oldId": "r26-pharm-008",
+      "action": "revise",
+      "reason": "강의에 명시된 관계만으로 해설과 선지의 범위를 정리했다.",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "면역복합체 침착·보체 소모·혈관염·사구체신염을 연결하며 C1q·C2·C4 결핍이 세포잔해·복합체 제거를 저해해 루푸스 위험을 높인다고 명시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-008"
+    },
+    {
+      "id": "r26-pharm-009",
+      "oldId": "r26-pharm-009",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "IGRA는 결핵항원 반응 T세포 IFN-γ 측정이며 BCG의 영향을 받지 않는다고 명시한다. TNF 차단은 육아종 방어 약화와 결핵 재활성화에 연결한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-009"
+    },
+    {
+      "id": "r26b-pharm-010",
+      "oldId": "r26-pharm-010",
+      "action": "revise",
+      "reason": "강의에 없는 결핵균 중화항체 세부 설정을 삭제하고, 23쪽에 실제 제시된 FcRn–항체수명 조절 비교로 한정했다.",
+      "evidence": [
+        {
+          "page": 4,
+          "detail": "TNF 억제제 투여 전 잠복결핵을 평가한다고 명시한다."
+        },
+        {
+          "page": 16,
+          "detail": "IGRA는 결핵항원 반응 T세포 IFN-γ 측정이며 BCG의 영향을 받지 않는다고 명시한다. TNF 차단은 육아종 방어 약화와 결핵 재활성화에 연결한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26b-pharm-010"
+    },
+    {
+      "id": "r26-pharm-011",
+      "oldId": "r26-pharm-011",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "Abacavir–HLA-B*57:01을 HLA 결합홈과 자기펩타이드 레퍼토리 변경 모형의 대표 예로 제시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-011"
+    },
+    {
+      "id": "r26-pharm-012",
+      "oldId": "r26-pharm-012",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 19,
+          "detail": "RF·ACPA 면역복합체를 III형 관련 기전, CD4 T세포·사이토카인 염증을 IV형 관련 기전으로 나누어 RA에서의 중첩을 설명한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-012"
+    },
+    {
+      "id": "r26-pharm-013",
+      "oldId": "r26-pharm-013",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "표에서 abatacept–CD80/86–CTLA-4-Ig–T세포 공동자극을 연결하고 TNF·IL-6R·JAK·CD20 표적과 구분한다."
+        },
+        {
+          "page": 33,
+          "detail": "자가면역 표적치료 표가 TNF·IL-6R·IL-17A·CD20·CD80/86·JAK와 각 약제의 관계를 직접 제시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-013"
+    },
+    {
+      "id": "r26-pharm-014",
+      "oldId": "r26-pharm-014",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "Belimumab–BAFF–B세포 생존신호 억제 및 anifrolumab–IFNAR1–제1형 IFN 신호 억제를 명시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-014"
+    },
+    {
+      "id": "r26-pharm-015",
+      "oldId": "r26-pharm-015",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "IBD 치료표에서 vedolizumab–α4β7 인테그린–장점막 세포 이동 억제를 연결한다. TNF·IL-12/23 p40·IL-23 p19 표적은 별도로 구분한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-015"
+    },
+    {
+      "id": "r26-pharm-016",
+      "oldId": "r26-pharm-016",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 25,
+          "detail": "GR의 세포내 결합·핵 이동, NF-κB/AP-1 조절, 항염증단백질 증가를 명시하고 염증세포 활성·이동 억제 중에도 혈중 호중구는 증가할 수 있다고 설명한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-016"
+    },
+    {
+      "id": "r26-pharm-017",
+      "oldId": "r26-pharm-017",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "다섯 치료전략 표에서 LTRA를 CysLT1R 차단에 연결한다."
+        },
+        {
+          "page": 27,
+          "detail": "AERD를 천식·비용종·NSAID 호흡기반응으로 설명하고 COX-1 억제에 따른 PGE2 감소·시스테이닐류코트리엔 증가를 명시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-017"
+    },
+    {
+      "id": "r26-pharm-018",
+      "oldId": "r26-pharm-018",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "Dupilumab은 공유 소단위 IL-4Rα 차단으로 IL-4·IL-13 신호를 억제하며 천식·아토피피부염 등에 작용한다. 직접 호산구 제거가 아니어서 초기 혈중 호산구 증가가 가능하다고 명시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-018"
+    },
+    {
+      "id": "r26-pharm-019",
+      "oldId": "r26-pharm-019",
+      "action": "revise",
+      "reason": "강의에 명시된 관계만으로 해설과 선지의 범위를 정리했다.",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "Omalizumab은 유리 IgE Cε3에 결합하며 FcεRI 결합 IgE에 접근하기 어려워 세포표면 IgE를 가교하지 않는다고 명시한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-019"
+    },
+    {
+      "id": "r26-pharm-020",
+      "oldId": "r26-pharm-020",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "Benralizumab은 IL-5Rα에 결합하고 탈푸코스화 Fc로 FcγRIIIa 결합·ADCC를 강화한다고 설명한다. IL-5 중화항체와 구별한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-020"
+    },
+    {
+      "id": "r26-pharm-021",
+      "oldId": "r26-pharm-021",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 32,
+          "detail": "Tezepelumab은 상피세포 유래 알라민 TSLP를 표적으로 하며 수지상세포·ILC2를 통한 상류 염증 작용을 설명한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-021"
+    },
+    {
+      "id": "r26-pharm-022",
+      "oldId": "r26-pharm-022",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 34,
+          "detail": "항체는 약 150 kDa, 주사, 주로 혈장·세포외액 분포, 단백질분해 제거, 신장배설 거의 없음, FcRn 재순환에 의한 수 주 반감기로 비교된다."
+        },
+        {
+          "page": 35,
+          "detail": "완전인간 adalimumab에도 ADA가 생길 수 있다고 명시하고 구조만으로 면역원성 순위를 단정하지 않도록 설명한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-022"
+    },
+    {
+      "id": "r26-pharm-023",
+      "oldId": "r26-pharm-023",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 36,
+          "detail": "Infliximab 최저농도 검출한계 미만·고역가 ADA 증례를 면역원성에 따른 노출 감소로 해석하며 ADA 제거 증가가 곧 혈청병은 아니라고 구분한다."
+        },
+        {
+          "page": 38,
+          "detail": "반응소실 표는 저농도·ADA 없음→노출부족/증량·간격단축, 저농도·고역가 ADA→면역원성 실패, 적정농도·ADA 없음→약력학적 실패 가능성으로 구분한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-023"
+    },
+    {
+      "id": "r26-pharm-024",
+      "oldId": "r26-pharm-024",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "반응소실 표는 저농도·ADA 없음→노출부족/증량·간격단축, 저농도·고역가 ADA→면역원성 실패, 적정농도·ADA 없음→약력학적 실패 가능성으로 구분한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-024"
+    },
+    {
+      "id": "r26-pharm-025",
+      "oldId": "r26-pharm-025",
+      "action": "keep",
+      "reason": "정답과 각 선지의 판별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "반응소실 표는 저농도·ADA 없음→노출부족/증량·간격단축, 저농도·고역가 ADA→면역원성 실패, 적정농도·ADA 없음→약력학적 실패 가능성으로 구분한다."
+        }
+      ],
+      "lecture": "261123_01",
+      "newId": "r26-pharm-025"
+    },
+    {
+      "id": "r26-gout-001",
+      "oldId": "r26-gout-001",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "관강쪽 URAT1은 관강→세포 재흡수, ABCG2·NPT1은 세포→관강 배출로 표시한다. GLUT9는 혈액쪽 막이며 URAT1 억제 시 배설 촉진이라는 필기가 있다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-001"
+    },
+    {
+      "id": "r26-gout-002",
+      "oldId": "r26-gout-002",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "관강쪽 URAT1은 관강→세포 재흡수, ABCG2·NPT1은 세포→관강 배출로 표시한다. GLUT9는 혈액쪽 막이며 URAT1 억제 시 배설 촉진이라는 필기가 있다."
+        },
+        {
+          "page": 16,
+          "detail": "장상피의 관강쪽 ABCG2에서 세포→장내 배출 화살표를 표시한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-002"
+    },
+    {
+      "id": "r26-gout-003",
+      "oldId": "r26-gout-003",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "새 분류표는 renal overload 아래 과잉생성과 신장외 배설저하를 두고 후자에 장 ABCG2 기능이상·장질환을 명시한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-003"
+    },
+    {
+      "id": "r26-gout-004",
+      "oldId": "r26-gout-004",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "관강쪽 URAT1은 관강→세포 재흡수, ABCG2·NPT1은 세포→관강 배출로 표시한다. GLUT9는 혈액쪽 막이며 URAT1 억제 시 배설 촉진이라는 필기가 있다."
+        },
+        {
+          "page": 16,
+          "detail": "장상피의 관강쪽 ABCG2에서 세포→장내 배출 화살표를 표시한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-004"
+    },
+    {
+      "id": "r26-gout-005",
+      "oldId": "r26-gout-005",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "여과량 100%에서 초기 재흡수 98–100%, 중간 0–2%·50–52%, 후기 재흡수 40–48%, 최종 소변 배출 8–12%로 도식화한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-005"
+    },
+    {
+      "id": "r26-gout-006",
+      "oldId": "r26-gout-006",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "전통적 분류표는 CKD·대사증후군·이뇨제·신장 수송체 변이를 배설저하, 세포회전 증가·퓨린 식이·Lesch–Nyhan을 과잉생성으로 나눈다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-006"
+    },
+    {
+      "id": "r26-gout-007",
+      "oldId": "r26-gout-007",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "퓨린 경로도는 hypoxanthine→xanthine과 xanthine→uric acid 두 화살표 모두 XO로 표시한다. Hypoxanthine→IMP 회수는 HGPRT로 구분한다."
+        },
+        {
+          "page": 12,
+          "detail": "도식은 조직 핵산 합성·대사를 퓨린 풀 및 요산 풀로 연결하고, 신장·장 배출과 구분한다."
+        },
+        {
+          "page": 15,
+          "detail": "전통적 분류표는 CKD·대사증후군·이뇨제·신장 수송체 변이를 배설저하, 세포회전 증가·퓨린 식이·Lesch–Nyhan을 과잉생성으로 나눈다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-007"
+    },
+    {
+      "id": "r26-gout-008",
+      "oldId": "r26-gout-008",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "퓨린 경로도는 hypoxanthine→xanthine과 xanthine→uric acid 두 화살표 모두 XO로 표시한다. Hypoxanthine→IMP 회수는 HGPRT로 구분한다."
+        },
+        {
+          "page": 33,
+          "detail": "Allopurinol·febuxostat는 두 XO 단계의 생성억제, probenecid·lesinurad·benzbromarone은 신장 배설 정상화/URAT1 억제, pegloticase는 urate→allantoin 대사촉진으로 구분한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-008"
+    },
+    {
+      "id": "r26-gout-009",
+      "oldId": "r26-gout-009",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "생리적 pH 7.4에서는 urate ion이 우세하며 통풍 결정의 흔한 형태는 monosodium urate라고 명시한다. 온도·pH·기계적 스트레스를 결정화 국소요인으로 열거한다."
+        },
+        {
+          "page": 10,
+          "detail": "결정화 도식과 필기는 낮은 온도에서 요산 용해도가 감소하여 과포화·결정 형성이 촉진된다고 설명한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-009"
+    },
+    {
+      "id": "r26-gout-010",
+      "oldId": "r26-gout-010",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 19,
+          "detail": "질환 진행도는 고요산혈증·MSU 침착에서도 무증상 상태가 있음을 표시하고, 반복 발작과 만성 관절염·통풍결절을 별도 단계로 구분한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-010"
+    },
+    {
+      "id": "r26-gout-011",
+      "oldId": "r26-gout-011",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "MSU→NLRP3 inflammasome→caspase-1 activation→pro-IL-1β 절단과 IL-1β를 그린다. NF-κB를 통한 구성요소 생성과 Nek7도 별도 위치에 표시한다."
+        },
+        {
+          "page": 25,
+          "detail": "TLR2·TLR4–MyD88을 상류, NLRP3–ASC–CARD–active caspase 1을 복합체 경로로 표시한다. AggNET는 IL-1β·IL-6·IL-8 불활성화에 연결하고 IL-1Ra·IL-37·IL-10·TGFβ1은 항염증 인자로 묶는다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-011"
+    },
+    {
+      "id": "r26b-gout-012",
+      "oldId": "r26-gout-012",
+      "action": "replace",
+      "reason": "원문항의 넓은 IL-1β 성숙 질문은 25쪽 호중구 serine proteinase 경로와 겹쳐 강의만으로 유일하게 한정하기 어려웠다. 23·25쪽에 직접 표시된 NLRP3 하류 효소로 새 문항을 작성했다.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "MSU→NLRP3 inflammasome→caspase-1 activation→pro-IL-1β 절단과 IL-1β를 그린다. NF-κB를 통한 구성요소 생성과 Nek7도 별도 위치에 표시한다."
+        },
+        {
+          "page": 25,
+          "detail": "TLR2·TLR4–MyD88을 상류, NLRP3–ASC–CARD–active caspase 1을 복합체 경로로 표시한다. AggNET는 IL-1β·IL-6·IL-8 불활성화에 연결하고 IL-1Ra·IL-37·IL-10·TGFβ1은 항염증 인자로 묶는다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26b-gout-012"
+    },
+    {
+      "id": "r26-gout-013",
+      "oldId": "r26-gout-013",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "MSU→NLRP3 inflammasome→caspase-1 activation→pro-IL-1β 절단과 IL-1β를 그린다. NF-κB를 통한 구성요소 생성과 Nek7도 별도 위치에 표시한다."
+        },
+        {
+          "page": 25,
+          "detail": "TLR2·TLR4–MyD88을 상류, NLRP3–ASC–CARD–active caspase 1을 복합체 경로로 표시한다. AggNET는 IL-1β·IL-6·IL-8 불활성화에 연결하고 IL-1Ra·IL-37·IL-10·TGFβ1은 항염증 인자로 묶는다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-013"
+    },
+    {
+      "id": "r26-gout-014",
+      "oldId": "r26-gout-014",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "MSU→NLRP3 inflammasome→caspase-1 activation→pro-IL-1β 절단과 IL-1β를 그린다. NF-κB를 통한 구성요소 생성과 Nek7도 별도 위치에 표시한다."
+        },
+        {
+          "page": 25,
+          "detail": "TLR2·TLR4–MyD88을 상류, NLRP3–ASC–CARD–active caspase 1을 복합체 경로로 표시한다. AggNET는 IL-1β·IL-6·IL-8 불활성화에 연결하고 IL-1Ra·IL-37·IL-10·TGFβ1은 항염증 인자로 묶는다."
+        },
+        {
+          "page": 37,
+          "detail": "요약은 NLRP3·IL-1β를 통풍 염증의 핵심으로, 호중구 NETosis를 후기 해소와 연결한다. 요산강하치료가 특히 필요한 경우는 반복 발작·CKD·통풍결절로 명시한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-014"
+    },
+    {
+      "id": "r26-gout-015",
+      "oldId": "r26-gout-015",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "해소 도식은 macrophage→TGF-β와 neutrophil→NETosis→proteases→염증매개체 degradation을 각각 화살표로 연결한다."
+        },
+        {
+          "page": 25,
+          "detail": "TLR2·TLR4–MyD88을 상류, NLRP3–ASC–CARD–active caspase 1을 복합체 경로로 표시한다. AggNET는 IL-1β·IL-6·IL-8 불활성화에 연결하고 IL-1Ra·IL-37·IL-10·TGFβ1은 항염증 인자로 묶는다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-015"
+    },
+    {
+      "id": "r26b-gout-016",
+      "oldId": "r26-gout-016",
+      "action": "revise",
+      "reason": "다른 세포의 TGF-β 생물학을 일반지식으로 판단하지 않도록 질문을 강의의 직접 화살표 관계로 한정했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "해소 도식은 macrophage→TGF-β와 neutrophil→NETosis→proteases→염증매개체 degradation을 각각 화살표로 연결한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26b-gout-016"
+    },
+    {
+      "id": "r26-gout-017",
+      "oldId": "r26-gout-017",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "생리적 pH 7.4에서는 urate ion이 우세하며 통풍 결정의 흔한 형태는 monosodium urate라고 명시한다. 온도·pH·기계적 스트레스를 결정화 국소요인으로 열거한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-017"
+    },
+    {
+      "id": "r26b-gout-018",
+      "oldId": "r26-gout-018",
+      "action": "replace",
+      "reason": "실제 강의 29–30쪽은 음성/양성 복굴절 용어의 대응을 명시하지 않아 원래 복굴절 부호 문항을 제외하고, 직접 명시된 색–방향 조합 문항으로 교체했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "편광현미경 필기는 MSU가 빛의 축과 평행 시 노랑, 수직 시 파랑이며 CPPD는 반대 색상 조합이라고 명시한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26b-gout-018"
+    },
+    {
+      "id": "r26-gout-019",
+      "oldId": "r26-gout-019",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "초음파 연골 표면의 이중 윤곽에 double contour sign·MSU 침착 주석을 붙이고, 통풍결절과 punched-out erosion을 별도 영상으로 표시한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-019"
+    },
+    {
+      "id": "r26b-gout-020",
+      "oldId": "r26-gout-020",
+      "action": "replace",
+      "reason": "원문항의 naproxen은 실제 치료 슬라이드에 약명이 없고 재수록 족보에만 있어, 32쪽에 명시된 NSAID 계열명으로 바꾸고 작용 목적의 구분만 남겼다.",
+      "evidence": [
+        {
+          "page": 32,
+          "detail": "급성 통풍 치료를 NSAID·colchicine·corticosteroid로 열거하고 NSAID를 treatment of choice로 제시한다. Steroid 경구·관절내 등의 경로와 colchicine 예방 용도를 명시한다."
+        },
+        {
+          "page": 33,
+          "detail": "Allopurinol·febuxostat는 두 XO 단계의 생성억제, probenecid·lesinurad·benzbromarone은 신장 배설 정상화/URAT1 억제, pegloticase는 urate→allantoin 대사촉진으로 구분한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26b-gout-020"
+    },
+    {
+      "id": "r26-gout-021",
+      "oldId": "r26-gout-021",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "Allopurinol·febuxostat는 두 XO 단계의 생성억제, probenecid·lesinurad·benzbromarone은 신장 배설 정상화/URAT1 억제, pegloticase는 urate→allantoin 대사촉진으로 구분한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-021"
+    },
+    {
+      "id": "r26-gout-022",
+      "oldId": "r26-gout-022",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "관강쪽 URAT1은 관강→세포 재흡수, ABCG2·NPT1은 세포→관강 배출로 표시한다. GLUT9는 혈액쪽 막이며 URAT1 억제 시 배설 촉진이라는 필기가 있다."
+        },
+        {
+          "page": 33,
+          "detail": "Allopurinol·febuxostat는 두 XO 단계의 생성억제, probenecid·lesinurad·benzbromarone은 신장 배설 정상화/URAT1 억제, pegloticase는 urate→allantoin 대사촉진으로 구분한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-022"
+    },
+    {
+      "id": "r26-gout-023",
+      "oldId": "r26-gout-023",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "Allopurinol·febuxostat는 두 XO 단계의 생성억제, probenecid·lesinurad·benzbromarone은 신장 배설 정상화/URAT1 억제, pegloticase는 urate→allantoin 대사촉진으로 구분한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-023"
+    },
+    {
+      "id": "r26-gout-024",
+      "oldId": "r26-gout-024",
+      "action": "keep",
+      "reason": "정답 판별을 실제 강의 본문·도표에서 직접 확인했다.",
+      "evidence": [
+        {
+          "page": 37,
+          "detail": "요약은 NLRP3·IL-1β를 통풍 염증의 핵심으로, 호중구 NETosis를 후기 해소와 연결한다. 요산강하치료가 특히 필요한 경우는 반복 발작·CKD·통풍결절로 명시한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-024"
+    },
+    {
+      "id": "r26-gout-025",
+      "oldId": "r26-gout-025",
+      "action": "revise",
+      "reason": "강의 도표에서 확인되는 사실만으로 설명을 정리했다.",
+      "evidence": [
+        {
+          "page": 35,
+          "detail": "식이 도표·필기는 맥주·쇠고기·액상과당·등푸른 생선을 증가 방향, 비타민 C를 감소 방향으로 표시한다."
+        }
+      ],
+      "lecture": "261123_02",
+      "newId": "r26-gout-025"
+    },
+    {
+      "id": "r26-spa-001",
+      "oldId": "r26-spa-001",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "염증성 요통·HLA-B27 양성·Modified Schober 3 cm 증례에서 pelvis X-ray를 시행하고 운동제한·영상 소견으로 AS를 진단하는 흐름이다."
+        },
+        {
+          "page": 38,
+          "detail": "X선은 골반·척추의 만성 변화 선택 검사이며 신생골에는 MRI보다 우수하다고 명시한다. 골반 MRI는 골수부종·골염에 연결한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-001"
+    },
+    {
+      "id": "r26-spa-002",
+      "oldId": "r26-spa-002",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "X선은 골반·척추의 만성 변화 선택 검사이며 신생골에는 MRI보다 우수하다고 명시한다. 골반 MRI는 골수부종·골염에 연결한다."
+        },
+        {
+          "page": 42,
+          "detail": "염증성 요통·말초관절염·발뒤꿈치 통증이 있지만 HLA-B27 음성인 임상 증례를 제시한다."
+        },
+        {
+          "page": 45,
+          "detail": "임상상은 AS가 충분히 의심되지만 방사선 근거가 불충분한 증례임을 명시한다."
+        },
+        {
+          "page": 46,
+          "detail": "X선 변화 이전의 pre-radiographic disease가 존재하고 기존 New York 기준의 한계 및 MRI의 역할을 설명한다."
+        },
+        {
+          "page": 67,
+          "detail": "요약은 HLA-B27 양성이 필수조건이 아님, X선 변화가 없는 초기 축성질환에서 MRI가 도움됨, IL-23·IL-17·IL-22·TNF가 중요한 병인 사이토카인임을 명시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-002"
+    },
+    {
+      "id": "r26-spa-003",
+      "oldId": "r26-spa-003",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 41,
+          "detail": "염증성 요통의 특징을 젊은 발병·서서히 발생·운동 호전·휴식 비호전·야간통 및 기상 시 호전으로 열거한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-003"
+    },
+    {
+      "id": "r26-spa-004",
+      "oldId": "r26-spa-004",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "강의 증례는 수개월간 수면 중 요통·오전 양측 둔부통과 오후 호전을 제시한다."
+        },
+        {
+          "page": 41,
+          "detail": "염증성 요통의 특징을 젊은 발병·서서히 발생·운동 호전·휴식 비호전·야간통 및 기상 시 호전으로 열거한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-004"
+    },
+    {
+      "id": "r26-spa-005",
+      "oldId": "r26-spa-005",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "Enthesis를 힘줄·관절낭·인대가 뼈에 붙는 부위로 정의한다."
+        },
+        {
+          "page": 33,
+          "detail": "SpA 말초관절염은 하지 무릎·발목 중심의 비대칭 소수관절형이며 발뒤꿈치 부착부염이 흔하다고 설명한다. Dactylitis는 전체 손발가락 종창과 굴곡건·건막·주변 연부조직 염증으로 정의한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-005"
+    },
+    {
+      "id": "r26-spa-006",
+      "oldId": "r26-spa-006",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "SpA 말초관절염은 하지 무릎·발목 중심의 비대칭 소수관절형이며 발뒤꿈치 부착부염이 흔하다고 설명한다. Dactylitis는 전체 손발가락 종창과 굴곡건·건막·주변 연부조직 염증으로 정의한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-006"
+    },
+    {
+      "id": "r26-spa-007",
+      "oldId": "r26-spa-007",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "HLA-B27 양성자 중 AS 발병은 2–6%라고 명시한다."
+        },
+        {
+          "page": 28,
+          "detail": "HLA-B27과 AS의 강한 연관성이 질병 중증도와는 독립적이라고 명시한다."
+        },
+        {
+          "page": 50,
+          "detail": "HLA-B27을 routine·diagnostic·confirmatory·screening 검사로 쓰는 것은 바람직하지 않으며 병력·진찰·영상으로 진단한다고 명시한다. AS·반응성관절염·다른 SpA를 구별하지 못한다고 설명한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-007"
+    },
+    {
+      "id": "r26-spa-008",
+      "oldId": "r26-spa-008",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 42,
+          "detail": "염증성 요통·말초관절염·발뒤꿈치 통증이 있지만 HLA-B27 음성인 임상 증례를 제시한다."
+        },
+        {
+          "page": 45,
+          "detail": "임상상은 AS가 충분히 의심되지만 방사선 근거가 불충분한 증례임을 명시한다."
+        },
+        {
+          "page": 46,
+          "detail": "X선 변화 이전의 pre-radiographic disease가 존재하고 기존 New York 기준의 한계 및 MRI의 역할을 설명한다."
+        },
+        {
+          "page": 67,
+          "detail": "요약은 HLA-B27 양성이 필수조건이 아님, X선 변화가 없는 초기 축성질환에서 MRI가 도움됨, IL-23·IL-17·IL-22·TNF가 중요한 병인 사이토카인임을 명시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-008"
+    },
+    {
+      "id": "r26-spa-009",
+      "oldId": "r26-spa-009",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "염증성 요통·HLA-B27 양성·Modified Schober 3 cm 증례에서 pelvis X-ray를 시행하고 운동제한·영상 소견으로 AS를 진단하는 흐름이다."
+        },
+        {
+          "page": 35,
+          "detail": "Modified Schober 증가량 ≥5 cm 정상, <5 cm 제한을 표시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-009"
+    },
+    {
+      "id": "r26b-spa-010",
+      "oldId": "r26-spa-010",
+      "action": "revise",
+      "reason": "말초 초음파 등 해당 강의 실제 슬라이드에서 성능이 설명되지 않은 오답 검사 지식을 제거하고, 38쪽의 X선–MRI 직접 비교 문항으로 바꾸었다.",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "X선은 골반·척추의 만성 변화 선택 검사이며 신생골에는 MRI보다 우수하다고 명시한다. 골반 MRI는 골수부종·골염에 연결한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26b-spa-010"
+    },
+    {
+      "id": "r26-spa-011",
+      "oldId": "r26-spa-011",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "Syndesmophytes→bamboo spine을 명시하고 골성 다리 그림 및 osteophyte 비교 그림을 제시한다."
+        },
+        {
+          "page": 38,
+          "detail": "X선은 골반·척추의 만성 변화 선택 검사이며 신생골에는 MRI보다 우수하다고 명시한다. 골반 MRI는 골수부종·골염에 연결한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-011"
+    },
+    {
+      "id": "r26-spa-012",
+      "oldId": "r26-spa-012",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 34,
+          "detail": "급성 앞포도막염을 가장 흔한 관절외 증상으로, 전형적 일측 발작으로 명시한다. 심장은 대동맥판 역류·3도 AV block, 폐는 상엽 섬유화로 연결한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-012"
+    },
+    {
+      "id": "r26-spa-013",
+      "oldId": "r26-spa-013",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 34,
+          "detail": "급성 앞포도막염을 가장 흔한 관절외 증상으로, 전형적 일측 발작으로 명시한다. 심장은 대동맥판 역류·3도 AV block, 폐는 상엽 섬유화로 연결한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-013"
+    },
+    {
+      "id": "r26-spa-014",
+      "oldId": "r26-spa-014",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "SpA 말초관절염은 하지 무릎·발목 중심의 비대칭 소수관절형이며 발뒤꿈치 부착부염이 흔하다고 설명한다. Dactylitis는 전체 손발가락 종창과 굴곡건·건막·주변 연부조직 염증으로 정의한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-014"
+    },
+    {
+      "id": "r26-spa-015",
+      "oldId": "r26-spa-015",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "X선은 골반·척추의 만성 변화 선택 검사이며 신생골에는 MRI보다 우수하다고 명시한다. 골반 MRI는 골수부종·골염에 연결한다."
+        },
+        {
+          "page": 67,
+          "detail": "요약은 HLA-B27 양성이 필수조건이 아님, X선 변화가 없는 초기 축성질환에서 MRI가 도움됨, IL-23·IL-17·IL-22·TNF가 중요한 병인 사이토카인임을 명시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-015"
+    },
+    {
+      "id": "r26-spa-016",
+      "oldId": "r26-spa-016",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 40,
+          "detail": "Modified New York 기준은 3개월 초과 염증성 요통과 양측 grade≥2/편측 grade3·4 천장관절염을 제시하고, 영상+임상기준 하나 이상이면 definite AS로 분류한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-016"
+    },
+    {
+      "id": "r26-spa-017",
+      "oldId": "r26-spa-017",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 53,
+          "detail": "치료 도표가 교육·운동·물리치료·재활과 NSAID를 기본에 둔다. 필기는 스트레칭·운동, NSAID 기본 사용, 전신 steroid 거의 미사용, 심한 변형 시 수술을 명시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-017"
+    },
+    {
+      "id": "r26b-spa-018",
+      "oldId": "r26-spa-018",
+      "action": "revise",
+      "reason": "다른 질환의 사이토카인 기능 설명을 제외하고 67쪽의 명시 목록만 묻도록 한정했다. 모든 선지를 네 사이토카인의 유사 길이 조합으로 통일하여 세포·항체·수용체 범주 차이로 정답이 드러나지 않게 했다.",
+      "evidence": [
+        {
+          "page": 67,
+          "detail": "요약은 HLA-B27 양성이 필수조건이 아님, X선 변화가 없는 초기 축성질환에서 MRI가 도움됨, IL-23·IL-17·IL-22·TNF가 중요한 병인 사이토카인임을 명시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26b-spa-018"
+    },
+    {
+      "id": "r26-spa-019",
+      "oldId": "r26-spa-019",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "HLA-B27 형질전환 동물에서 관절·관절외 염증이 발생하지만 무균 환경에서는 나타나지 않는다고 명시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-019"
+    },
+    {
+      "id": "r26-spa-020",
+      "oldId": "r26-spa-020",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 56,
+          "detail": "PsA의 dactylitis, 손톱변화 관련 DIP 침범, 비대칭 소수관절형 등을 명시한다."
+        },
+        {
+          "page": 57,
+          "detail": "PsA 임상진단에서 개인·가족 건선 병력을 확인하도록 설명하며 영상에 ankylosis·pencil-in-cup을 직접 표시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-020"
+    },
+    {
+      "id": "r26-spa-021",
+      "oldId": "r26-spa-021",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 55,
+          "detail": "CASPAR 표는 현재 건선2점·과거력/가족력1점·RF음성1점 등을 제시하며 3점 이상을 기준으로 한다. PsA는 건선 환자의 염증성관절염으로 설명한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-021"
+    },
+    {
+      "id": "r26-spa-022",
+      "oldId": "r26-spa-022",
+      "action": "revise",
+      "reason": "강의에 직접 명시된 임상·영상·검사 관계만 남기도록 표현과 해설을 정리했다.",
+      "evidence": [
+        {
+          "page": 60,
+          "detail": "반응성관절염은 다른 부위의 장·비뇨생식기 감염 뒤 비화농성 관절염이며 감염후 관절염·요도염·결막염 조합을 제시한다."
+        },
+        {
+          "page": 61,
+          "detail": "반응성관절염의 급성·하지·비대칭 관절염과 dactylitis를 제시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-022"
+    },
+    {
+      "id": "r26b-spa-023",
+      "oldId": "r26-spa-023",
+      "action": "revise",
+      "reason": "일반 배양의 검사성능이나 혈청 항체로 감염시점을 추론하는 범위밖 설명을 삭제하고, 63쪽이 직접 제시한 검체·검사 조합만 묻도록 수정했다.",
+      "evidence": [
+        {
+          "page": 63,
+          "detail": "최근 감염 조사로 배양·혈청검사를 열거하며 분자검사 예로 first-voided urine의 chlamydial DNA PCR을 명시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26b-spa-023"
+    },
+    {
+      "id": "r26-spa-024",
+      "oldId": "r26-spa-024",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 66,
+          "detail": "IBD 활동성과의 연관 표에서 소수관절형(+), 다발관절형(−), 축성형(−)을 표시한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-024"
+    },
+    {
+      "id": "r26-spa-025",
+      "oldId": "r26-spa-025",
+      "action": "keep",
+      "reason": "실제 강의의 명시 내용으로 정답과 타선지의 구별을 확인했다.",
+      "evidence": [
+        {
+          "page": 50,
+          "detail": "HLA-B27을 routine·diagnostic·confirmatory·screening 검사로 쓰는 것은 바람직하지 않으며 병력·진찰·영상으로 진단한다고 명시한다. AS·반응성관절염·다른 SpA를 구별하지 못한다고 설명한다."
+        },
+        {
+          "page": 55,
+          "detail": "CASPAR 표는 현재 건선2점·과거력/가족력1점·RF음성1점 등을 제시하며 3점 이상을 기준으로 한다. PsA는 건선 환자의 염증성관절염으로 설명한다."
+        },
+        {
+          "page": 60,
+          "detail": "반응성관절염은 다른 부위의 장·비뇨생식기 감염 뒤 비화농성 관절염이며 감염후 관절염·요도염·결막염 조합을 제시한다."
+        },
+        {
+          "page": 65,
+          "detail": "장병성관절염은 UC·Crohn 등 IBD와 연관된 염증성관절염이라고 정의한다."
+        }
+      ],
+      "lecture": "261123_03",
+      "newId": "r26-spa-025"
+    },
+    {
+      "id": "r26-ra-001",
+      "action": "revise",
+      "oldId": "r26-ra-001",
+      "reason": "정답 근거는 유지하고 Fab·CD28 관련 설명을 실제 도식의 표기 범위로 제한했다.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "RF: Antibodies against Fc portion of IgG; Mainly IgM > IgA, IgG."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-001"
+    },
+    {
+      "id": "r26-ra-002",
+      "action": "keep",
+      "oldId": "r26-ra-002",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "수업 주석: RF가 없다고 RA가 아닌 것은 아니며, RF·ACPA 양성만으로 RA라고 단정할 수도 없음."
+        },
+        {
+          "page": 26,
+          "detail": "관절수 최대 5점, 염증수치 1점, 6주 이상 1점, 총점 6점 이상 분류표를 실제 이미지에서 확인."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-002"
+    },
+    {
+      "id": "r26-ra-003",
+      "action": "keep",
+      "oldId": "r26-ra-003",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "Higher specificity for RA than RF; Present prior to RA diagnosis; Related with smoking & HLA-DR4; at risk of progressive joint damage."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-003"
+    },
+    {
+      "id": "r26-ra-004",
+      "action": "revise",
+      "oldId": "r26-ra-004",
+      "reason": "다른 생화학 반응의 명칭을 가르치는 강의 밖 오답 해설을 삭제했다.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "오른쪽 도식에서 Arginine → Citrulline 화살표에 PAD가 표시되어 있음."
+        },
+        {
+          "page": 23,
+          "detail": "PAD 활성화와 단백질의 번역후변형 도식 및 같은 전환 구조를 확인."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-004"
+    },
+    {
+      "id": "r26b-ra-005",
+      "action": "replace",
+      "oldId": "r26-ra-005",
+      "reason": "강의 표기에 없는 사슬 명칭 설명을 제거하고 실제 제시된 분자·위치로 보기를 통일했다.",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "HLA studies (shared epitope): Amino acids at position 70–74 of HLA-DRB1."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-005"
+    },
+    {
+      "id": "r26-ra-006",
+      "action": "revise",
+      "oldId": "r26-ra-006",
+      "reason": "족보 선지였다는 해설을 삭제하고 실제 강의의 아시아인·백인 목록만 근거로 남겼다.",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "Asians: HLA-DRB1*0405, *0901. Caucasian American 목록과 별도로 표시."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-006"
+    },
+    {
+      "id": "r26-ra-007",
+      "action": "revise",
+      "oldId": "r26-ra-007",
+      "reason": "요산 대사·한랭 혈관반응 등 이 강의 밖 오답 지식을 삭제했다.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "흡연·EBV·P. gingivalis 목록, PAD enzyme activation 화살표, 치주염을 일으키는 박테리아라는 수업 주석을 직접 확인."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-007"
+    },
+    {
+      "id": "r26b-ra-008",
+      "action": "replace",
+      "oldId": "r26-ra-008",
+      "reason": "실제 슬라이드는 CD4 T세포의 도식상 역할을 보여주지만 활막에서의 세포 우세도를 명시하지 않는다. 우세도 문항을 배제하고 명시된 APC–CD4 관계 문항으로 교체했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "실제 면역병인 도식의 APC–MHC/TCR–CD4+ T lymphocyte 연결과 항원제시→T세포 활성 주석을 확인."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-008"
+    },
+    {
+      "id": "r26b-ra-009",
+      "action": "replace",
+      "oldId": "r26-ra-009",
+      "reason": "CD20 등 RA 강의에 명시되지 않은 보기를 배제하고 실제 도식에 표시된 분자 쌍으로 교체했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "MHC–TCR 접점 아래 APC의 CD80/86과 T세포의 CD28이 나란히 연결되어 있음."
+        },
+        {
+          "page": 30,
+          "detail": "수업 주석에서 abatacept의 CD28–CD80/86 결합 억제를 공동자극 차단으로 명시."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-009"
+    },
+    {
+      "id": "r26b-ra-010",
+      "action": "replace",
+      "oldId": "r26-ra-010",
+      "reason": "MMP의 기질분해 기능은 해당 슬라이드에 명시되지 않아 기능 추론을 배제하고 도식의 위치 구별로 교체했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "도식 왼쪽의 항원제시·공동자극 접점 네 분자와 오른쪽 synovial fibroblast → MMPs/PGs의 위치를 직접 확인."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-010"
+    },
+    {
+      "id": "r26b-ra-011",
+      "action": "replace",
+      "oldId": "r26-ra-011",
+      "reason": "분화 촉진이라는 세부 작동 설명을 도식에 명시된 RANK–RANKL 대응으로 한정했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "Osteoclast에 RANK, 그 위 리간드 쪽에 RANKL이 표시된 도식을 직접 확인."
+        },
+        {
+          "page": 25,
+          "detail": "RA 변연부 미란은 파골세포에 의하며 pannus에 의해 활성화된다고 명시."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-011"
+    },
+    {
+      "id": "r26-ra-012",
+      "action": "keep",
+      "oldId": "r26-ra-012",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "Pannus: thickened cellular membrane with fibroblast-like synoviocytes and granulation-reactive fibrovascular tissue. 연골 얇아짐·국소 골미란도 명시."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-012"
+    },
+    {
+      "id": "r26-ra-013",
+      "action": "keep",
+      "oldId": "r26-ra-013",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "Periarticular osteopenia, Bony erosion, Joint space narrowing, Bony destruction 목록."
+        },
+        {
+          "page": 25,
+          "detail": "Marginal erosion by osteoclasts와 periarticular osteopenia를 구별해 설명."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-013"
+    },
+    {
+      "id": "r26-ra-014",
+      "action": "keep",
+      "oldId": "r26-ra-014",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "Commonly affected: hand PIP/MCP, wrists & MTP; Rarely: spine, hand DIP."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-014"
+    },
+    {
+      "id": "r26b-ra-015",
+      "action": "replace",
+      "oldId": "r26-ra-015",
+      "reason": "신경학적 위험이라는 강의 밖 부연을 빼고 제시된 경추 아탈구 위치만 묻도록 보기를 통일했다.",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "Articular deformities의 Neck 항목: C1/C2 (atlanto-axial) subluxation."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-015"
+    },
+    {
+      "id": "r26b-ra-016",
+      "action": "replace",
+      "oldId": "r26-ra-016",
+      "reason": "반복 감염이라는 추가 임상 연결을 빼고 강의에 명시된 Felty 구성요소만 묻는다.",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "Felty syndrome (neutropenia, splenomegaly, nodular RA)."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-016"
+    },
+    {
+      "id": "r26-ra-017",
+      "action": "revise",
+      "oldId": "r26-ra-017",
+      "reason": "강의에서 입증되지 않은 활막 CD4 우세와의 비교를 해설에서 삭제했다.",
+      "evidence": [
+        {
+          "page": 12,
+          "detail": "Lung involvement의 Pleurisy: neutrophil dominant."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-017"
+    },
+    {
+      "id": "r26-ra-018",
+      "action": "keep",
+      "oldId": "r26-ra-018",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "Cardiovascular disease: most common cause of death. Infection: most common cause of death in Korean patients."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-018"
+    },
+    {
+      "id": "r26-ra-019",
+      "action": "keep",
+      "oldId": "r26-ra-019",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 27,
+          "detail": "Early, aggressive therapy with DMARDs; frequent modification; 목표는 지속 관해 또는 낮은 질병활성도."
+        },
+        {
+          "page": 29,
+          "detail": "Need to take folic acid with MTX; Drug of choice in RA treatment. 주석에서도 1순위 선택 약제로 표시."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-019"
+    },
+    {
+      "id": "r26-ra-020",
+      "action": "revise",
+      "oldId": "r26-ra-020",
+      "reason": "Rituximab–CD20이라는 RA 강의 밖 세부 표적을 B림프구 표기로 한정했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "Abatacept가 APC–T세포 접점에 연결되고 주석에 CD28&CD80/86 결합 억제(costimulation block)라고 표시."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-020"
+    },
+    {
+      "id": "r26b-ra-021",
+      "action": "replace",
+      "oldId": "r26-ra-021",
+      "reason": "RA 슬라이드가 명시하지 않은 CD20 보기를 실제 도식의 IL-6로 교체하고 수용체와 구별하도록 했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "실제 도식의 Tocilizumab (anti-IL-6 receptor) 표기를 확인."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-021"
+    },
+    {
+      "id": "r26b-ra-022",
+      "action": "replace",
+      "oldId": "r26-ra-022",
+      "reason": "기존 CD20 직접 표적 문항은 실제 RA 강의에 해당 세부 표기가 없어 배제했다. 실제 도식에 명시된 B림프구 억제 문항으로 교체했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "Rituximab 표기가 B lymphocyte에 연결되고 주석에 Rituximab → B lymphocyte 억제라고 명시. CD20은 이 슬라이드에 제시되어 있지 않음."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-022"
+    },
+    {
+      "id": "r26-ra-023",
+      "action": "keep",
+      "oldId": "r26-ra-023",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 28,
+          "detail": "Anti-TNFα agent 목록과 non-anti-TNF biologics 목록을 별도로 제시."
+        },
+        {
+          "page": 30,
+          "detail": "Abatacept의 costimulation block 위치와 anti-TNFα 약제 목록을 실제 도식에서 확인."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-023"
+    },
+    {
+      "id": "r26-ra-024",
+      "action": "revise",
+      "oldId": "r26-ra-024",
+      "reason": "Rituximab의 CD20 표적이라는 강의 밖 세부 설명을 B림프구 억제로 수정했다.",
+      "evidence": [
+        {
+          "page": 28,
+          "detail": "표적합성 DMARD(JAK inhibitors): tofacitinib, baricitinib, upadacitinib."
+        },
+        {
+          "page": 31,
+          "detail": "JAK–STAT 도식과 Janus kinase inhibitors 목록에 upadacitinib을 제시."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26-ra-024"
+    },
+    {
+      "id": "r26b-ra-025",
+      "action": "replace",
+      "oldId": "r26-ra-025",
+      "reason": "강의에 없는 cyclophosphamide 독성·각막침착·청력장애 선지를 배제하고 실제 강의 표의 약제 독성 조합으로 교체했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "Adverse effects of TNF inhibitors: Infection, congestive heart failure, demyelination."
+        },
+        {
+          "page": 29,
+          "detail": "전통 DMARD 표에서 HCQ의 retinopathy/myopathy, MTX의 transaminitis/myelosuppression, sulfasalazine의 granulocytopenia/hemolytic anemia를 직접 확인."
+        }
+      ],
+      "lecture": "261123_05",
+      "newId": "r26b-ra-025"
+    },
+    {
+      "id": "r26-sle-001",
+      "action": "keep",
+      "oldId": "r26-sle-001",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "괴사·세포자멸사·NET 형성으로 세포에서 DNA가 방출된다고 명시."
+        },
+        {
+          "page": 10,
+          "detail": "Type I IFN(Interferon-α) 표기와 선천면역→자가반응성 T/B세포→자가항체→면역복합체 도식·수업 주석을 직접 확인."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-001"
+    },
+    {
+      "id": "r26-sle-002",
+      "action": "keep",
+      "oldId": "r26-sle-002",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 5,
+          "detail": "저보체혈증, 백혈구감소증, ESR 상승 대비 미미한 CRP 상승을 명시."
+        },
+        {
+          "page": 19,
+          "detail": "백혈구감소·림프구감소를 명시."
+        },
+        {
+          "page": 20,
+          "detail": "ESR에 비해 낮은 CRP를 명시."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-002"
+    },
+    {
+      "id": "r26b-sle-003",
+      "action": "replace",
+      "oldId": "r26-sle-003",
+      "reason": "Anti-Jo-1의 다른 질환 연관성 등 SLE 강의 밖 오답 해설을 삭제했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "ANA prevalence 98%; Best screening test; sensitive for SLE but not specific."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26b-sle-003"
+    },
+    {
+      "id": "r26-sle-004",
+      "action": "keep",
+      "oldId": "r26-sle-004",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "Anti-dsDNA: correlate with disease activity, nephritis, vasculitis. Anti-Sm: no definite clinical correlations."
+        },
+        {
+          "page": 31,
+          "detail": "질병활성도 판단에 도움되는 항체로 anti-dsDNA를 제시."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-004"
+    },
+    {
+      "id": "r26b-sle-005",
+      "action": "replace",
+      "oldId": "r26-sle-005",
+      "reason": "강의 표의 검출빈도와 임상적 의미를 정확히 반영하도록 불명확한 용어인 유병 민감도를 고쳤다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "Anti-Sm prevalence 30%; mostly specific for SLE; no definite clinical correlations."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26b-sle-005"
+    },
+    {
+      "id": "r26-sle-006",
+      "action": "keep",
+      "oldId": "r26-sle-006",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "Anti-Ro: neonatal lupus with congenital heart block."
+        },
+        {
+          "page": 41,
+          "detail": "산모 anti-Ro가 12주 이후 태반을 통과하며 선천심차단을 포함한 신생아루푸스와 연관됨을 명시."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-006"
+    },
+    {
+      "id": "r26-sle-007",
+      "action": "keep",
+      "oldId": "r26-sle-007",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 42,
+          "detail": "aPL의 세 항목에 anti-β2-glycoprotein 1을 나열하고 반복 혈전증 혹은 태아손실을 명시."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-007"
+    },
+    {
+      "id": "r26-sle-008",
+      "action": "keep",
+      "oldId": "r26-sle-008",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "약물 목록: procainamide, minocycline, hydralazine, anti-TNF 등."
+        },
+        {
+          "page": 30,
+          "detail": "Anti-histone: More frequent in drug-induced lupus than in SLE."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-008"
+    },
+    {
+      "id": "r26-sle-009",
+      "action": "revise",
+      "oldId": "r26-sle-009",
+      "reason": "문항과 정답은 실제 강의의 명시 내용으로 확인하고 실제 슬라이드 근거 쪽수를 정리했다.",
+      "evidence": [
+        {
+          "page": 19,
+          "detail": "AIHA에서 직접 Coombs 양성 및 RBC를 코팅한 항체/보체를 확인하는 Direct Antiglobulin Test를 명시."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-009"
+    },
+    {
+      "id": "r26-sle-010",
+      "action": "keep",
+      "oldId": "r26-sle-010",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "실제 표에서 leukopenia <4×10^9/L, thrombocytopenia <100×10^9/L, autoimmune hemolysis를 확인. 단백뇨·anti-Sm·저보체 영역도 함께 확인."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-010"
+    },
+    {
+      "id": "r26-sle-011",
+      "action": "keep",
+      "oldId": "r26-sle-011",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "ANA ≥1:80 진입조건, 10점 이상 분류, 적어도 한 임상기준 필요, class III/IV nephritis 10점을 실제 표에서 확인."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-011"
+    },
+    {
+      "id": "r26-sle-012",
+      "action": "keep",
+      "oldId": "r26-sle-012",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "Only the highest point value criterion from each domain is counted; heme 4, both low C3/C4 4, anti-dsDNA or anti-Sm 6점을 실제 표에서 확인."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-012"
+    },
+    {
+      "id": "r26-sle-013",
+      "action": "keep",
+      "oldId": "r26-sle-013",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "신생검: 500 mg/d 이상의 단백뇨 혹은 신기능 이상을 동반한 단백뇨/혈뇨에서 권고."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-013"
+    },
+    {
+      "id": "r26-sle-014",
+      "action": "keep",
+      "oldId": "r26-sle-014",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "Class III focal proliferative LN: <50% of glomeruli; endo/extracapillary lesions; subendothelial deposits."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-014"
+    },
+    {
+      "id": "r26-sle-015",
+      "action": "keep",
+      "oldId": "r26-sle-015",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "Class IV diffuse proliferative LN: ≥50% of glomeruli; endo/extracapillary lesions; subendothelial deposits. Class VI는 ≥90% 경화·잔여 활성 없음."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-015"
+    },
+    {
+      "id": "r26-sle-016",
+      "action": "keep",
+      "oldId": "r26-sle-016",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "Class V membranous LN의 병리 및 임상 소견 표를 확인."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-016"
+    },
+    {
+      "id": "r26-sle-017",
+      "action": "keep",
+      "oldId": "r26-sle-017",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "Class VI advanced sclerotic LN: glomerulosclerosis ≥90% of glomeruli, no residual activity."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-017"
+    },
+    {
+      "id": "r26-sle-018",
+      "action": "keep",
+      "oldId": "r26-sle-018",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "RA와 달리 골미란/관절 파괴 드묾; Jaccoud arthropathy 발생 가능."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-018"
+    },
+    {
+      "id": "r26-sle-019",
+      "action": "keep",
+      "oldId": "r26-sle-019",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "흉막염: 삼출액(exudate), glucose 농도는 정상; 심호흡/기침으로 흉막통 악화."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-019"
+    },
+    {
+      "id": "r26b-sle-020",
+      "action": "replace",
+      "oldId": "r26-sle-020",
+      "reason": "강의에 명시되지 않은 안과 금기 부연을 빼고 두 실제 치료도표의 공통 항목만 묻는다.",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "Non-renal SLE 도표: HCQ (all patients unless contraindicated)를 전 중증도에 걸쳐 표시."
+        },
+        {
+          "page": 39,
+          "detail": "Lupus nephritis 도표: HCQ (all patients unless contraindicated)를 initial/subsequent 양쪽에 걸쳐 표시."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26b-sle-020"
+    },
+    {
+      "id": "r26b-sle-021",
+      "action": "replace",
+      "oldId": "r26-sle-021",
+      "reason": "BAFF의 생존 신호 기능 및 tocilizumab의 표적이라는 이 강의 밖 부연을 삭제하고 명시된 약제–표적 대응만 묻는다.",
+      "evidence": [
+        {
+          "page": 36,
+          "detail": "Biologics targeting B cells or IFN 목록의 anti-CD20, belimumab: anti-BAFF, anifrolumab: anti-IFNAR1 표기."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26b-sle-021"
+    },
+    {
+      "id": "r26b-sle-022",
+      "action": "replace",
+      "oldId": "r26-sle-022",
+      "reason": "신염의 세부 병리형에 대한 치료 우선순위를 덧붙이지 않고 실제 신염도표의 초기 치료 포함 여부를 묻도록 교체했다. 강의에 없는 약제 조합도 삭제했다.",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "Initial–Subsequent 양쪽에 걸친 GC 행과 MMF 행, 공통 HCQ 행을 실제 도표에서 확인."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26b-sle-022"
+    },
+    {
+      "id": "r26-sle-023",
+      "action": "revise",
+      "oldId": "r26-sle-023",
+      "reason": "문항과 정답은 실제 강의의 명시 내용으로 확인하고 실제 슬라이드 근거 쪽수를 정리했다.",
+      "evidence": [
+        {
+          "page": 45,
+          "detail": "Thrombosis 발생 시 평생 항응고제, 경구 warfarin, INR 2.0–3.0."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-023"
+    },
+    {
+      "id": "r26-sle-024",
+      "action": "revise",
+      "oldId": "r26-sle-024",
+      "reason": "문항과 정답은 실제 강의의 명시 내용으로 확인하고 실제 슬라이드 근거 쪽수를 정리했다.",
+      "evidence": [
+        {
+          "page": 45,
+          "detail": "임신 중 warfarin 중단; 혈전증/태아손실 병력(+)에서 LMWH+LDA."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-024"
+    },
+    {
+      "id": "r26-sle-025",
+      "action": "keep",
+      "oldId": "r26-sle-025",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 41,
+          "detail": "최소한 6–12개월 동안 관해 상태일 때 임신하는 것이 예후가 좋음. 임신 첫 3개월/출산 6주 이내 악화 위험도 명시."
+        }
+      ],
+      "lecture": "261123_06",
+      "newId": "r26-sle-025"
+    },
+    {
+      "id": "r26-sjd-001",
+      "action": "revise",
+      "oldId": "r26-sjd-001",
+      "reason": "CD8 T세포의 세포독성 기능이라는 불필요한 강의 밖 부연을 삭제했다.",
+      "evidence": [
+        {
+          "page": 5,
+          "detail": "면역병리 B세포 과다활동 아래 감마글로불린 증가·자가항체·B세포 림프종 위험을 명시."
+        },
+        {
+          "page": 12,
+          "detail": "만성 B세포 활성과 클론 선택/확장 및 림프종 발생 도식을 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-001"
+    },
+    {
+      "id": "r26-sjd-002",
+      "action": "keep",
+      "oldId": "r26-sjd-002",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "IFN 신호 증가 → 상피세포 BAFF 생성 증가(BAFF는 IFN 지배를 받음) → B cell 생존 및 활성화 유도라는 실제 주석."
+        },
+        {
+          "page": 11,
+          "detail": "Interferon–BAFF–B cell 연결 표에서 제1형 IFN↑, BAFF↑, B세포 활성/생존↑를 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-002"
+    },
+    {
+      "id": "r26-sjd-003",
+      "action": "keep",
+      "oldId": "r26-sjd-003",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 7,
+          "detail": "경증/중증 T·B세포 염색, 원형 세포분포 도표와 T세포→B세포 우세 주석을 확인."
+        },
+        {
+          "page": 8,
+          "detail": "T세포 먼저 침투 → 진행 시 B세포 우세, ectopic germinal center 형성을 설명한 실제 주석."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-003"
+    },
+    {
+      "id": "r26-sjd-004",
+      "action": "keep",
+      "oldId": "r26-sjd-004",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "주요 세 증상을 0–10점으로 평가, 세 영역 평균으로 ESSPRI 계산이라고 명시."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-004"
+    },
+    {
+      "id": "r26b-sjd-005",
+      "action": "replace",
+      "oldId": "r26-sjd-005",
+      "reason": "기존 문항은 타액분비량이 ESSDAI에 없다는 배제 판단을 요구하지만 강의 표는 침샘 영역을 생략했다. 생략된 영역의 내용을 추정하지 않도록 실제 완결된 표의 영역–침범 대응 문제로 교체했다.",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "실제 ESSDAI 표에서 Renal–Tubular acidosis, Hematological–thrombocytopenia, CNS–optic neuritis 및 폐/피부 영역의 내용을 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26b-sjd-005"
+    },
+    {
+      "id": "r26-sjd-006",
+      "action": "keep",
+      "oldId": "r26-sjd-006",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "환자 증상과 전신 활성도 사이 poor correlation, 상관 0.07–0.29."
+        },
+        {
+          "page": 27,
+          "detail": "삶의 질은 ESSDAI보다는 ESSPRI와 상관한다고 명시."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-006"
+    },
+    {
+      "id": "r26-sjd-007",
+      "action": "revise",
+      "oldId": "r26-sjd-007",
+      "reason": "문항과 정답은 실제 강의의 명시 내용으로 확인하고 실제 슬라이드 근거 쪽수를 정리했다.",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "침샘기능검사 전 항콜린성 약제·탈수 등 가역 원인 확인."
+        },
+        {
+          "page": 19,
+          "detail": "실제 분류기준 표 아래 주석: 항콜린성 약물을 복용하는 환자는 적절한 간격 중단 후 검사 실시. 주석을 확대 이미지로 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-007"
+    },
+    {
+      "id": "r26-sjd-008",
+      "action": "revise",
+      "oldId": "r26-sjd-008",
+      "reason": "문항과 정답은 실제 강의의 명시 내용으로 확인하고 실제 슬라이드 근거 쪽수를 정리했다.",
+      "evidence": [
+        {
+          "page": 19,
+          "detail": "실제 표: anti-SSA/Ro 3점, Schirmer ≤5 mm/5분 1점, OSS ≥5 1점, 비자극 타액 ≤0.1 mL/min 1점, 총점 ≥4."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-008"
+    },
+    {
+      "id": "r26b-sjd-009",
+      "action": "replace",
+      "oldId": "r26-sjd-009",
+      "reason": "해당 강의에 없는 anti-CCP 보기를 실제 영상평가 슬라이드의 침샘초음파로 교체했다.",
+      "evidence": [
+        {
+          "page": 19,
+          "detail": "항Ro/국소림프구침샘염 focus score ≥1에 각 3점, 기능검사 세 항목에 각 1점, 분류 기준점 ≥4를 실제 표에서 확인."
+        },
+        {
+          "page": 22,
+          "detail": "50개 이상 림프구의 focus 및 4 mm²당 국소점수 계산을 실제 병리평가 슬라이드에서 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26b-sjd-009"
+    },
+    {
+      "id": "r26-sjd-010",
+      "action": "keep",
+      "oldId": "r26-sjd-010",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "Anti-SSA/Ro는 SLE·SjD에서 주로 관찰되나 질병 없는 사람도 가능; 다른 류마티스질환 표."
+        },
+        {
+          "page": 21,
+          "detail": "발병 전 anti-SSA/Ro 존재를 명시."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-010"
+    },
+    {
+      "id": "r26b-sjd-011",
+      "action": "replace",
+      "oldId": "r26-sjd-011",
+      "reason": "강의가 명시한 높은 특이도 조합의 포함 여부만 묻도록 한정하고, 다섯 보기를 모두 두 항체의 조합으로 맞췄다. 다른 쌍의 의학적 특이도를 외부 지식으로 비교하지 않는다.",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "해당 단독 항체와 세 조합 사이 특이도를 비교한 실제 문장을 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26b-sjd-011"
+    },
+    {
+      "id": "r26-sjd-012",
+      "action": "keep",
+      "oldId": "r26-sjd-012",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "focus 정의와 실제 계산 (8 foci /20.89 mm²)×4=1.53을 직접 확인. 4 mm²로 표준화하는 방식."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-012"
+    },
+    {
+      "id": "r26-sjd-013",
+      "action": "revise",
+      "oldId": "r26-sjd-013",
+      "reason": "문항과 정답은 실제 강의의 명시 내용으로 확인하고 실제 슬라이드 근거 쪽수를 정리했다.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "건강인에서 focal lymphocytic sialadenitis 관찰 가능, 흡연 시 감소라는 본문과 연령/흡연 도표."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-013"
+    },
+    {
+      "id": "r26-sjd-014",
+      "action": "keep",
+      "oldId": "r26-sjd-014",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "외분비샘외 침범은 건조증상보다 앞서 나타날 수 있음."
+        },
+        {
+          "page": 19,
+          "detail": "주관적 건조가 뚜렷하지 않아도 객관적 기능저하가 있을 수 있다는 실제 주석."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-014"
+    },
+    {
+      "id": "r26b-sjd-015",
+      "action": "replace",
+      "oldId": "r26-sjd-015",
+      "reason": "설사에서의 요음이온차·DKA 감별 규칙 등 강의에 없는 설명을 삭제했다. 실제 증례 주석과 RTA 비교 도식만으로 진단을 연결한다.",
+      "evidence": [
+        {
+          "page": 32,
+          "detail": "증례 수치와 소변 산배설 감소, bicarbonate 재흡수 작동, 소변 K 배설 증가라는 주석."
+        },
+        {
+          "page": 33,
+          "detail": "원위 RTA: impaired hydrogen secretion, urine pH>5.5, hypokalemia. 근위 RTA: impaired bicarbonate reabsorption; 제4형: hyperkalemia를 실제 도식에서 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26b-sjd-015"
+    },
+    {
+      "id": "r26-sjd-016",
+      "action": "keep",
+      "oldId": "r26-sjd-016",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "비자극 전체침분비 ≤0.1 mL/min."
+        },
+        {
+          "page": 15,
+          "detail": "Schirmer ≤5 mm/5분, ocular staining score ≥5."
+        },
+        {
+          "page": 19,
+          "detail": "세 기능검사 역치와 각 1점 가중치를 실제 표에서 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-016"
+    },
+    {
+      "id": "r26b-sjd-017",
+      "action": "replace",
+      "oldId": "r26-sjd-017",
+      "reason": "위험도 크기 비교를 강의가 제시한 위험인자 목록의 포함 여부로 한정했다.",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "위험 증가 검사소견 다섯 항목을 본문에서 확인."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26b-sjd-017"
+    },
+    {
+      "id": "r26-sjd-018",
+      "action": "keep",
+      "oldId": "r26-sjd-018",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "2개월 이상 지속 종창에서 림프종 감별."
+        },
+        {
+          "page": 29,
+          "detail": "침샘에 발생하는 MALToma가 대부분이라고 명시."
+        },
+        {
+          "page": 36,
+          "detail": "실제 증례의 extra-nodal marginal zone B-cell lymphoma 진단을 명시."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-018"
+    },
+    {
+      "id": "r26-sjd-019",
+      "action": "revise",
+      "oldId": "r26-sjd-019",
+      "reason": "다른 강의의 RA 유전자·ADAMTS13 기능 설명을 삭제하고 실제 SjD 돌연변이 목록만 근거로 남겼다.",
+      "evidence": [
+        {
+          "page": 12,
+          "detail": "돌연변이에 의한 관용 관문 회피 및 TNFAIP3, CD79A, BAFF-R 등의 돌연변이 누적을 명시."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-019"
+    },
+    {
+      "id": "r26-sjd-020",
+      "action": "keep",
+      "oldId": "r26-sjd-020",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 26,
+          "detail": "전체환자 생존율 일반인과 유사, 초과사망은 전신침범/림프종군에서 발생."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-020"
+    },
+    {
+      "id": "r26-sjd-021",
+      "action": "keep",
+      "oldId": "r26-sjd-021",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 28,
+          "detail": "평균 ESSDAI 감소 경향, 손상 증가, 처음 5년 안 외분비샘 손상 관찰 및 이후 증가를 명시. 침분비저하·치아소실 도표."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-021"
+    },
+    {
+      "id": "r26-sjd-022",
+      "action": "keep",
+      "oldId": "r26-sjd-022",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "Polyautoimmunity 정의, 하위계층질환 아님, 공유 병태생리 반영, primary/secondary 사이 임상차이 불분명을 명시."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-022"
+    },
+    {
+      "id": "r26b-sjd-023",
+      "action": "replace",
+      "oldId": "r26-sjd-023",
+      "reason": "강의에 없는 atropine의 약리 설명과 약제 보기를 배제하고 같은 강의 표의 MTX로 바꾸었다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "구강/안구건조증 칸의 콜린성 약제(pilocarpine)와 전신/내부장기 침범 칸의 MTX·MMF·RTX·CYC 등을 구분."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26b-sjd-023"
+    },
+    {
+      "id": "r26-sjd-024",
+      "action": "keep",
+      "oldId": "r26-sjd-024",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "전신침범은 중증도에 따라 면역억제/조절; 침범장기에 따른 치료와 중증도에 따른 부신피질호르몬·면역조절제."
+        },
+        {
+          "page": 13,
+          "detail": "ESSPRI는 증상 평균, ESSDAI는 장기별 객관적 침범이며 서로 상관이 낮음을 명시."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-024"
+    },
+    {
+      "id": "r26-sjd-025",
+      "action": "keep",
+      "oldId": "r26-sjd-025",
+      "reason": "정답과 오답 구별을 실제 강의의 명시 내용으로 확인했다.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "초음파의 실질/림프종 평가 가능, 시술자 의존성·focus score와 낮은 상관. 스캔/조영술 비권고 및 항Ro음성+정상초음파의 생검음성 예측도 명시."
+        }
+      ],
+      "lecture": "261123_07",
+      "newId": "r26-sjd-025"
+    },
+    {
+      "id": "r26-ssc-001",
+      "action": "revise",
+      "oldId": "r26-ssc-001",
+      "reason": "혈관확장·항증식 등 해설을 실제 병인 도표의 혈관확장/수축 표시로 한정.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "병인 도표와 수업주석은 내피세포 유래 endothelin-1 증가 및 강한 혈관수축을 명시하고, NO·prostacyclin 감소와 구별한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-001"
+    },
+    {
+      "id": "r26-ssc-002",
+      "action": "keep",
+      "oldId": "r26-ssc-002",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "병인 도표의 세 상자는 자가면역, 내피세포 미세혈관병증, 섬유아세포에 의한 조직섬유화이다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-002"
+    },
+    {
+      "id": "r26-ssc-003",
+      "action": "revise",
+      "oldId": "r26-ssc-003",
+      "reason": "도플러 검사 성능·심초음파의 PAH 선별 등 해당 강의에 명시되지 않은 오답설명을 제거.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "원발성·이차성 레이노 비교표는 손끝궤양·자가항체와 손톱주름모세혈관경 이상을 이차성 소견으로 제시한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-003"
+    },
+    {
+      "id": "r26-ssc-004",
+      "action": "keep",
+      "oldId": "r26-ssc-004",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "원발성 레이노는 모세혈관경 정상·손끝궤양 없음, 이차성은 이상 가능·궤양 있음으로 구별한다."
+        },
+        {
+          "page": 25,
+          "detail": "정상 고리 사진과 달리 초기 SSc의 거대고리, 진행 SSc의 모세혈관 소실을 직접 보여준다."
+        },
+        {
+          "page": 27,
+          "detail": "피부 소견에 sclerosis와 ulceration이 명시되어 있다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-004"
+    },
+    {
+      "id": "r26-ssc-005",
+      "action": "keep",
+      "oldId": "r26-ssc-005",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 10,
+          "detail": "미만형 비교표는 근위부까지 빠른 피부경화, 힘줄마찰음, 빈번하고 이르며 심한 폐섬유화를 묶는다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-005"
+    },
+    {
+      "id": "r26b-ssc-006",
+      "action": "replace",
+      "oldId": "r26-ssc-006",
+      "reason": "임상적 주의 우선순위를 덧붙이지 않고37쪽 항체표의 명시적 조기 ILD 연결만 묻도록 변경.",
+      "evidence": [
+        {
+          "page": 37,
+          "detail": "항체표의 topoisomerase I(Scl70) 행은 미만형(dcSSc)과 early ILD를 연결한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26b-ssc-006"
+    },
+    {
+      "id": "r26-ssc-007",
+      "action": "revise",
+      "oldId": "r26-ssc-007",
+      "reason": "다른 강의의 항합성효소·쇼그렌·RA 항체 지식이 포함된 오답해설을 삭제.",
+      "evidence": [
+        {
+          "page": 32,
+          "detail": "신장위기 위험군에 미만형과 anti-RNA polymerase III가, 증상에 고혈압·핍뇨성 신부전·혈소판감소·MAHA가 명시되어 있다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-007"
+    },
+    {
+      "id": "r26b-ssc-008",
+      "action": "replace",
+      "oldId": "r26-ssc-008",
+      "reason": "강의에 없는 비교 약물의 작용·보조치료 설명을 배제하고 강의 치료 도표의 실제 약물만 사용.",
+      "evidence": [
+        {
+          "page": 32,
+          "detail": "32쪽 신장위기 치료 상자는 ACE inhibitors(captopril)를 직접 명시한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26b-ssc-008"
+    },
+    {
+      "id": "r26b-ssc-009",
+      "action": "replace",
+      "oldId": "r26-ssc-009",
+      "reason": "레이노의 CCB 치료라는 미명시 관계를 선택지에서 삭제하고 실제 혈관치료 계열끼리 비교.",
+      "evidence": [
+        {
+          "page": 32,
+          "detail": "신장위기 위험군에 붙은 각주는 high-dose glucocorticoid를 명시한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26b-ssc-009"
+    },
+    {
+      "id": "r26-ssc-010",
+      "action": "keep",
+      "oldId": "r26-ssc-010",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 10,
+          "detail": "제한형 비교표의 PAH 행은 frequent, late, isolated이며 미만형의 폐섬유화 이차성 PAH와 구별된다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-010"
+    },
+    {
+      "id": "r26-ssc-011",
+      "action": "revise",
+      "oldId": "r26-ssc-011",
+      "reason": "오답해설의 공기포획 등 미명시 폐생리 설명을 삭제하고 강의의 FVC·DLCO 저하만으로 대조.",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "ILD 진단 항목은 HRCT와 폐기능검사의 low FVC·low DLCO를 명시한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-011"
+    },
+    {
+      "id": "r26-ssc-012",
+      "action": "keep",
+      "oldId": "r26-ssc-012",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "Gastric antral vascular ectasia(GAVE) 행은 anemia와 water-melon stomach를 연결한다."
+        },
+        {
+          "page": 37,
+          "detail": "RNA polymerase III 항체의 임상상 목록에 GAVE가 명시된다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-012"
+    },
+    {
+      "id": "r26b-ssc-013",
+      "action": "replace",
+      "oldId": "r26-ssc-013",
+      "reason": "운동저하에서 세균과증식이 발생한다는 미명시 인과 연결은 제거하고 표의 직접적인 병태–증상 대응만 사용.",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "31쪽 위장관 표는 bacterial overgrowth를 malabsorption·steatorrhea·nausea와 직접 연결한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26b-ssc-013"
+    },
+    {
+      "id": "r26-ssc-014",
+      "action": "revise",
+      "oldId": "r26-ssc-014",
+      "reason": "식도 증상 해설을 위장관 표의 원위부 운동저하·낮은 괄약근 압력에 한정.",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "위장관 표는 원위 2/3 식도 운동저하와 낮은 괄약근 압력에 연하곤란을, 역류성 식도염에 속쓰림을 연결한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-014"
+    },
+    {
+      "id": "r26-ssc-015",
+      "action": "revise",
+      "oldId": "r26-ssc-015",
+      "reason": "선지 밖 질환의 병리 지식과 루푸스 관련 설명을 제거하고 장기별 병리 표의 신장 소견에 한정.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "Kidneys 항목은 interlobular·arcuate arteries의 obliterative vasculopathy라고 명시한다."
+        },
+        {
+          "page": 32,
+          "detail": "Scleroderma renal crisis 슬라이드에 소혈관 폐쇄성 변화의 조직 사진과 고혈압·핍뇨성 신부전 등이 제시된다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-015"
+    },
+    {
+      "id": "r26-ssc-016",
+      "action": "keep",
+      "oldId": "r26-ssc-016",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 27,
+          "detail": "피부 소견의 sclerosis 항목은 Raynaud phenomenon → edematous phase → scleroderma 순서이다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-016"
+    },
+    {
+      "id": "r26-ssc-017",
+      "action": "revise",
+      "oldId": "r26-ssc-017",
+      "reason": "다른 강의의 항체–질환 연결을 오답해설에서 삭제.",
+      "evidence": [
+        {
+          "page": 10,
+          "detail": "제한형은 원위부·느린 피부경화, 선행 레이노, 두드러진 석회증과 anti-centromere를 연결한다."
+        },
+        {
+          "page": 37,
+          "detail": "Centromere proteins 행은 제한형·허혈성 손끝궤양·석회증·단독 PAH를 연결한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-017"
+    },
+    {
+      "id": "r26b-ssc-018",
+      "action": "replace",
+      "oldId": "r26-ssc-018",
+      "reason": "강의 분류표의 표현은 MCP joints까지이므로 외부 기준의 근위부 범위를 덧붙인 표현을 교체.",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "강의 분류표에서 손가락 피부비후가 MCP joints까지 이어진 항목은9점이며 전체 분류기준점수는9점 이상이다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26b-ssc-018"
+    },
+    {
+      "id": "r26-ssc-019",
+      "action": "keep",
+      "oldId": "r26-ssc-019",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "분류표는 puffy fingers 2점, 레이노현상 3점, SSc 관련 항체 3점으로 명시하므로 합은 8점이다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-019"
+    },
+    {
+      "id": "r26-ssc-020",
+      "action": "keep",
+      "oldId": "r26-ssc-020",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 41,
+          "detail": "수업주석은 자가면역 문제가 초반에 중요하고 이미 굳은 fibrosis에서는 면역억제제가 의미 없다고 설명한다."
+        },
+        {
+          "page": 42,
+          "detail": "Benefit 항목은 고도 섬유화 전의 active progressive ILD와 미만형의 active progressive skin sclerosis이다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-020"
+    },
+    {
+      "id": "r26b-ssc-021",
+      "action": "replace",
+      "oldId": "r26-ssc-021",
+      "reason": "STAT6·SMAD·MAC·CD40L 등 해당 강의에서 제시하지 않은 오답기전을 실제 도표의 경로로 교체.",
+      "evidence": [
+        {
+          "page": 43,
+          "detail": "PAH 치료 도표의 NO 경로는 NO → cGMP와 phosphodiesterase type-5 및 그 억제제를 한 경로로 연결한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26b-ssc-021"
+    },
+    {
+      "id": "r26-ssc-022",
+      "action": "keep",
+      "oldId": "r26-ssc-022",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 44,
+          "detail": "예후 슬라이드의 위험인자는 extensive skin involvement와 progressive internal organ involvement를 명시한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-022"
+    },
+    {
+      "id": "r26-ssc-023",
+      "action": "revise",
+      "oldId": "r26-ssc-023",
+      "reason": "다른 폐 병리의 외부 분류 설명을 제거하고18쪽의 NSIP 명시내용만으로 대조.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "장기별 병리 목록의 Lungs 항목은 nonspecific interstitial pneumonia(NSIP)이다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26-ssc-023"
+    },
+    {
+      "id": "r26b-ssc-024",
+      "action": "replace",
+      "oldId": "r26-ssc-024",
+      "reason": "흡연의 목록 부재만으로 부정적 의학명제를 학습시키는 위험을 피하고, 실제 장기별 병리의 명시적 긍정 연결로 교체.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "장기별 병리 목록의 Heart 항목은 contraction band necrosis이다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26b-ssc-024"
+    },
+    {
+      "id": "r26b-ssc-025",
+      "action": "replace",
+      "oldId": "r26-ssc-025",
+      "reason": "다른 강의 항체를 제거하고36~37쪽의 실제 전신경화증 항체로 통일. 긴 정답 항체명만 눈에 띄지 않도록 실제 전체 명칭을 비교.",
+      "evidence": [
+        {
+          "page": 37,
+          "detail": "RNA polymerase III 행은 빠른 피부 진행·힘줄마찰음·관절구축·GAVE·신장위기·동시기 암을 함께 나열한다."
+        }
+      ],
+      "lecture": "261124_01",
+      "newId": "r26b-ssc-025"
+    },
+    {
+      "id": "r26-myo-001",
+      "action": "keep",
+      "oldId": "r26-myo-001",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "목굽힘근·어깨/골반이음부 근위약과 팔들기·의자에서 일어나기·계단오르기 어려움을 제시한다."
+        },
+        {
+          "page": 9,
+          "detail": "Heliotrope는 눈꺼풀 자색발진/부종, Gottron은 관절 신전부의 인설성 홍반성 구진으로 제시된다."
+        },
+        {
+          "page": 25,
+          "detail": "근위약·heliotrope/Gottron 발진·효소 상승 및 병리/EMG가 제시된 증례를 definite DM으로 연결한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-001"
+    },
+    {
+      "id": "r26b-myo-002",
+      "action": "replace",
+      "oldId": "r26-myo-002",
+      "reason": "Perifascicular atrophy라는 외부 표현 대신 생검 슬라이드의 degeneration/regeneration을 그대로 사용.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "DM은 perimysial/perivascular inflammation과 complement mediated, PM은 endomysial CD8 cytotoxic inflammation으로 구별한다."
+        },
+        {
+          "page": 25,
+          "detail": "DM 증례 생검은 perivascular B/T세포 침윤과 perifascicular degeneration/regeneration을 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26b-myo-002"
+    },
+    {
+      "id": "r26-myo-003",
+      "action": "revise",
+      "oldId": "r26-myo-003",
+      "reason": "호산구성 근염·화농성감염 등 해당 슬라이드에 없는 오답 설명을 삭제.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "PM의 조직 특징으로 endomysial inflammation과 CD8+ cytotoxic T cells가 명시되어 있다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-003"
+    },
+    {
+      "id": "r26b-myo-004",
+      "action": "replace",
+      "oldId": "r26-myo-004",
+      "reason": "다른 질환 항체에 의존하는 선택지·해설을 근염 강의에 실제 제시된 항체로 교체.",
+      "evidence": [
+        {
+          "page": 10,
+          "detail": "Mechanic hands는 손가락 radial side의 cracking/fissuring으로 설명된다."
+        },
+        {
+          "page": 16,
+          "detail": "Anti-Jo-1은 histidyl-tRNA synthetase 항체이며 관절염·ILD·발열·레이노·mechanic hands와 연결된다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26b-myo-004"
+    },
+    {
+      "id": "r26b-myo-005",
+      "action": "replace",
+      "oldId": "r26-myo-005",
+      "reason": "전신경화증 관련 오답 조합을 이 강의의 스테로이드근병증 조합으로 교체.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "항체표의 anti-signal recognition particle 행은 cardiac involvement·necrotizing myopathy 및 poor prognosis를 제시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26b-myo-005"
+    },
+    {
+      "id": "r26b-myo-006",
+      "action": "replace",
+      "oldId": "r26-myo-006",
+      "reason": "전신경화증 항체 지식을 필요로 하는 오답을 근염 강의에서 실제 제시한 비특이 항체로 교체.",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "항체표의 anti-Mi-2 행은 classic DM rashes, shawl/V-neck sign 및 good prognosis를 제시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26b-myo-006"
+    },
+    {
+      "id": "r26b-myo-007",
+      "action": "replace",
+      "oldId": "r26-myo-007",
+      "reason": "스테로이드근병증의 CK 정상이라는 미명시 단서를 삭제하고, 급성세균근염 오답을 강의의 IBM으로 교체.",
+      "evidence": [
+        {
+          "page": 28,
+          "detail": "스테로이드 뒤 근력과 CK/LDH가 호전되었으나3~4개월에 하지 위약을 다시 호소하는 사례를 제시한다."
+        },
+        {
+          "page": 29,
+          "detail": "스테로이드근병증은 서서히 생기는 하지 우세 근위약·근통/압통 없음·고용량 위험을 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26b-myo-007"
+    },
+    {
+      "id": "r26-myo-008",
+      "action": "revise",
+      "oldId": "r26-myo-008",
+      "reason": "유도 면역억제 등 미명시 치료 용어를 제거하고29쪽의 명시적 대응에 한정.",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "스테로이드유발근병증의 치료로 reduction or cessation of steroids 및 appropriate rehabilitation이 명시된다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-008"
+    },
+    {
+      "id": "r26b-myo-009",
+      "action": "replace",
+      "oldId": "r26-myo-009",
+      "reason": "17쪽에서 지방위축 T1 고신호라는 본문과 저신호라는 필기주석이 상충하므로 T1 비교 문항을 제외하고 상충 없는 활동성 염증 신호로 교체.",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "근육 MRI의 활동성 염증 소견은 T2 또는 STIR 신호 증가라고 명시되어 있다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26b-myo-009"
+    },
+    {
+      "id": "r26-myo-010",
+      "action": "keep",
+      "oldId": "r26-myo-010",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "근효소 상승과 근병성 EMG는 근손상만 나타내며 면역공격에 의한 손상을 증명하지 못한다고 명시한다."
+        },
+        {
+          "page": 18,
+          "detail": "근생검에서 염증세포 침윤 및 근섬유 변성/괴사·재생·위축의 병리 양상을 직접 제시한다."
+        },
+        {
+          "page": 25,
+          "detail": "IIM 진단 확인을 위해 muscle biopsy와 EMG를 시행하고 실제 생검상 염증분포를 제시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-010"
+    },
+    {
+      "id": "r26-myo-011",
+      "action": "keep",
+      "oldId": "r26-myo-011",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "강의는 muscle enzyme elevation과 myopathic EMG pattern은 근손상만 나타내며 면역공격에 의한 손상임을 증명하지 못한다고 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-011"
+    },
+    {
+      "id": "r26-myo-012",
+      "action": "revise",
+      "oldId": "r26-myo-012",
+      "reason": "Anti-Jo-1 음성의 해석은16쪽의 실제 검출빈도20~30%를 근거로 명확히 하였다.",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "Muscle enzymes 목록에 CK·aldolase·AST/ALT·LDH가 포함되어 있어 AST/ALT 상승도 근손상 맥락에서 해석할 수 있다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-012"
+    },
+    {
+      "id": "r26-myo-013",
+      "action": "keep",
+      "oldId": "r26-myo-013",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "근효소 항목은 amyopathic dermatomyositis에서 normal muscle enzyme levels를 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-013"
+    },
+    {
+      "id": "r26-myo-014",
+      "action": "revise",
+      "oldId": "r26-myo-014",
+      "reason": "비교 오답의 PM·DM·약제성·대사성 설명이 실제로 실린 강의 쪽을 함께 명시.",
+      "evidence": [
+        {
+          "page": 19,
+          "detail": "IBM은 50세 초과·남성 우세·근위/원위부의 비대칭 하지 우세 위약·경도 CK 상승·적색테두리공포 및 면역억제 불량반응으로 제시된다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-014"
+    },
+    {
+      "id": "r26-myo-015",
+      "action": "revise",
+      "oldId": "r26-myo-015",
+      "reason": "오답 해설의 피부·근육·폐 소견이 명시된 실제 강의 쪽을 보강.",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "다른 근육병을 시사하는 소견으로 유사 가족력과 운동·식사·공복 관련 위약, 심한 근경련이 명시되어 있다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-015"
+    },
+    {
+      "id": "r26-myo-016",
+      "action": "keep",
+      "oldId": "r26-myo-016",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "근육 소견은 목굽힘근·어깨/골반이음부 근위약, 연하·발성곤란을 제시하며 ocular/facial muscles are spared라고 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-016"
+    },
+    {
+      "id": "r26-myo-017",
+      "action": "keep",
+      "oldId": "r26-myo-017",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "ILD는 조기 발현 중 하나이고 anti-tRNA synthetase 항체와 관련되며 major prognostic factor라고 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-017"
+    },
+    {
+      "id": "r26-myo-018",
+      "action": "keep",
+      "oldId": "r26-myo-018",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 7,
+          "detail": "Juvenile and cancer associated myositis는 DM >> PM이라고 명시한다."
+        },
+        {
+          "page": 14,
+          "detail": "악성종양 표는 DM의 높은 연관 및 폐·위·난소·췌장 등의 선암과 림프종을 제시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-018"
+    },
+    {
+      "id": "r26b-myo-019",
+      "action": "replace",
+      "oldId": "r26-myo-019",
+      "reason": "오답에 포함된 특정 생물학적제제의 미명시 용도를 삭제하고 23쪽 실제 치료약제끼리 비교.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "치료 슬라이드는 high-dose steroid 1 mg/kg/day를 제시하며 수업주석은 고용량 스테로이드가 일차 치료임을 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26b-myo-019"
+    },
+    {
+      "id": "r26-myo-020",
+      "action": "keep",
+      "oldId": "r26-myo-020",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "Immunomodulator 항목은 severely ill or infected patients에서 IV gamma-globulin을 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-020"
+    },
+    {
+      "id": "r26-myo-021",
+      "action": "keep",
+      "oldId": "r26-myo-021",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "Bohan–Peter 기준의 definite DM은 전형적 발진과 근위약·생검·근효소·EMG 네 항목 중 세 항목의 조합이다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-021"
+    },
+    {
+      "id": "r26-myo-022",
+      "action": "revise",
+      "oldId": "r26-myo-022",
+      "reason": "발진 위치는 직접 확인한 9~10쪽 사진과 본문만으로 근거를 한정.",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "Heliotrope의 눈꺼풀 분포와 Gottron의 knuckles·knees·elbows 분포가 명시된다."
+        },
+        {
+          "page": 10,
+          "detail": "V-neck·shawl·mechanic hands 사진과 손가락 가쪽 균열 설명을 직접 제시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-022"
+    },
+    {
+      "id": "r26b-myo-023",
+      "action": "replace",
+      "oldId": "r26-myo-023",
+      "reason": "원문항의 HRCT 우선순위·검사성능 일반화는 제외하고27쪽 증례의 CT–생검 명시 조합으로 교체. 문두의 정답 노출을 없애고 다섯 선지를 같은 영상분포–조직형 형식으로 통일.",
+      "evidence": [
+        {
+          "page": 27,
+          "detail": "27쪽 증례의 흉부 CT는 bilateral lower lung field GGO and reticular densities, 폐생검은 non-specific interstitial pneumonitis(NSIP)로 명시된다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26b-myo-023"
+    },
+    {
+      "id": "r26-myo-024",
+      "action": "keep",
+      "oldId": "r26-myo-024",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 12,
+          "detail": "근육 외 다기관 침범 그림에 ILD·암·전도장애·심근염·관절병변 등을 제시한다."
+        },
+        {
+          "page": 26,
+          "detail": "동반질환 평가의 목적에 침범 범위·겹침질환·ILD·암을 나열하고 병력과 진찰을 요구한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-024"
+    },
+    {
+      "id": "r26-myo-025",
+      "action": "revise",
+      "oldId": "r26-myo-025",
+      "reason": "강의에 명시되지 않은 비사용 근병증 등 원인 설명은 삭제하고 재활과 치료 중 약제성 위약 평가에 한정.",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "치료 목록은 Rehabilitation: very important라고 명시한다."
+        },
+        {
+          "page": 28,
+          "detail": "근력·CK/LDH 호전 후3~4개월에 다시 하지 위약이 생기는 치료 경과를 제시한다."
+        },
+        {
+          "page": 29,
+          "detail": "스테로이드근병증 치료는 스테로이드 감량/중단과 적절한 재활이라고 명시한다."
+        }
+      ],
+      "lecture": "261124_02",
+      "newId": "r26-myo-025"
+    },
+    {
+      "id": "r26-vasc-001",
+      "action": "keep",
+      "oldId": "r26-vasc-001",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 6,
+          "detail": "CHCC 분류표는 Takayasu/GCA를 대혈관, PAN/Kawasaki를 중간혈관, MPA/GPA/EGPA를 소혈관 AAV에 배치한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-001"
+    },
+    {
+      "id": "r26-vasc-002",
+      "action": "revise",
+      "oldId": "r26-vasc-002",
+      "reason": "ANCA 음성 AAV 설명도28쪽 수업주석의 명시적 배제금지에 근거하도록 보강.",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "혈관벽 염증에서 협착/폐색→허혈·괴사·기능장애로 이어지는 도표를 제시한다."
+        },
+        {
+          "page": 12,
+          "detail": "Primary inflammation of vessel=vasculitis와 혈관기능 상실에 따른 ischemia·infarct·bleeding을 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-002"
+    },
+    {
+      "id": "r26-vasc-003",
+      "action": "revise",
+      "oldId": "r26-vasc-003",
+      "reason": "대혈관 증상과 PAN 모세혈관 보존 등 비교해설의 실제 강의 근거를 보강.",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "소혈관의 bleeding 항목은 촉지자반·DAH·혈뇨/단백뇨 동반 사구체염을 제시한다. 큰/중간혈관은 폐색성 허혈 항목으로 구별한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-003"
+    },
+    {
+      "id": "r26b-vasc-004",
+      "action": "replace",
+      "oldId": "r26-vasc-004",
+      "reason": "다른 강의의 histidyl-tRNA 항체 지식을 제거하고 실제 ANCA 표에 명시된 항원으로 교체.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "Cytoplasmic ANCA(c-ANCA)의 대표 항원은 PR3, 연관 질환은 GPA로 명시된다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26b-vasc-004"
+    },
+    {
+      "id": "r26-vasc-005",
+      "action": "revise",
+      "oldId": "r26-vasc-005",
+      "reason": "ANA의 중심절 항원 등 해당 강의에 없는 세부 연관 설명을 제거.",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "Perinuclear ANCA의 대표 항원에 myeloperoxidase가 명시되고 수업주석은 핵 주위 염색 양상을 설명한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-005"
+    },
+    {
+      "id": "r26-vasc-006",
+      "action": "keep",
+      "oldId": "r26-vasc-006",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 28,
+          "detail": "EGPA의 MPO-ANCA 양성률은 48%이며 수업주석은 ANCA 음성이어도 AAV를 배제하면 안 된다고 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-006"
+    },
+    {
+      "id": "r26-vasc-007",
+      "action": "revise",
+      "oldId": "r26-vasc-007",
+      "reason": "감별 오답의 소견도 모두 같은 강의의 실제 질환별 슬라이드에서 확인하여 출처를 보강.",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "GPA는 혈성 비루·비중격 천공·안장코, 양측 공동성 결절, 괴사성 육아종 및 급속진행사구체염을 제시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-007"
+    },
+    {
+      "id": "r26-vasc-008",
+      "action": "keep",
+      "oldId": "r26-vasc-008",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 25,
+          "detail": "MPA는 육아종 없는 소혈관 괴사성 혈관염이며 사구체염·폐모세혈관염·다발홑신경염 및 MPO 연관을 제시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-008"
+    },
+    {
+      "id": "r26b-vasc-009",
+      "action": "replace",
+      "oldId": "r26-vasc-009",
+      "reason": "족하수라는 미명시 특정 신경학적 표현 대신28쪽에 직접 명시된 다발홑신경염을 사용.",
+      "evidence": [
+        {
+          "page": 26,
+          "detail": "EGPA는 소중혈관 괴사성 혈관염·혈관외 육아종·혈액/조직 호산구증가로 정의된다."
+        },
+        {
+          "page": 27,
+          "detail": "전구기 비용종/천식→혈액/조직 호산구성 침윤→소중혈관염의3단계가 제시된다."
+        },
+        {
+          "page": 28,
+          "detail": "천식·일과성 폐침윤·다발홑신경염·자반·호산구증가가 임상목록에 제시된다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26b-vasc-009"
+    },
+    {
+      "id": "r26-vasc-010",
+      "action": "revise",
+      "oldId": "r26-vasc-010",
+      "reason": "Tocilizumab–IL6R·rituximab–CD20 등 강의에서 직접 제시하지 않은 표적 해설을 삭제.",
+      "evidence": [
+        {
+          "page": 28,
+          "detail": "EGPA 치료 항목은 IL-5 inhibitor: mepolizumab이라고 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-010"
+    },
+    {
+      "id": "r26-vasc-011",
+      "action": "keep",
+      "oldId": "r26-vasc-011",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "수업주석이 AAV 치료의 high-dose steroid+rituximab 조합을 명시한다."
+        },
+        {
+          "page": 30,
+          "detail": "중증 유도치료를 PD+RTX 또는 CYC, 경증은 PD+MTX로 구별한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-011"
+    },
+    {
+      "id": "r26-vasc-012",
+      "action": "keep",
+      "oldId": "r26-vasc-012",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "GPA/MPA 치료표는 중증 유도치료를 PD+RTX 또는 CYC로 제시하고 경증 유도 및 유지치료와 구별한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-012"
+    },
+    {
+      "id": "r26-vasc-013",
+      "action": "revise",
+      "oldId": "r26-vasc-013",
+      "reason": "특정 약물의 다른 질환 용도를 추론하지 않고 실제 유지목록과 강의의 명시 용도를 대조.",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "AAV 유지치료 목록은 MTX 또는 azathioprine, 저용량 RTX이며 중증 유도의 CYC/RTX와 구별된다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-013"
+    },
+    {
+      "id": "r26-vasc-014",
+      "action": "revise",
+      "oldId": "r26-vasc-014",
+      "reason": "피부궤양 등 중간혈관 임상소견도13쪽 본문에서 확인하여 출처를 보강.",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "PAN은 가장 작은 혈관을 보존하며 사구체염과 미만성폐포출혈이 없다고 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-014"
+    },
+    {
+      "id": "r26-vasc-015",
+      "action": "revise",
+      "oldId": "r26-vasc-015",
+      "reason": "한랭글로불린 관련 비교해설은37쪽 실제 본문으로 확인하여 출처를 보강.",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "PAN은 신장/내장 근육성 동맥을 침범하고 가장 작은 혈관을 보존하여 사구체염이 없다고 명시한다."
+        },
+        {
+          "page": 32,
+          "detail": "PAN 신장 임상상은 신부전·신혈관성 고혈압·미세동맥류 출혈이다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-015"
+    },
+    {
+      "id": "r26-vasc-016",
+      "action": "keep",
+      "oldId": "r26-vasc-016",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "PAN 병인 항목은 hepatitis B associated(antigen production)를 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-016"
+    },
+    {
+      "id": "r26b-vasc-017",
+      "action": "replace",
+      "oldId": "r26-vasc-017",
+      "reason": "강의35쪽에 명시되지 않은 양팔 혈압차 단서를 삭제하고 팔파행·맥박소실·쇄골하동맥 침범만 사용.",
+      "evidence": [
+        {
+          "page": 35,
+          "detail": "Takayasu는 젊은 아시아 여성의 대동맥궁·쇄골하/총경동맥 분지 침범과 팔맥박 소실·팔파행을 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26b-vasc-017"
+    },
+    {
+      "id": "r26-vasc-018",
+      "action": "revise",
+      "oldId": "r26-vasc-018",
+      "reason": "비교 선지의 병리도 실제 같은 강의의 페이지에서 확인하도록 출처를 보강.",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "GCA는50세 이후, 육아종성 염증·skip lesion·다핵거대세포를 제시한다."
+        },
+        {
+          "page": 34,
+          "detail": "GCA의 두통·측두동맥 압통·높은ESR·턱파행을 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-018"
+    },
+    {
+      "id": "r26-vasc-019",
+      "action": "revise",
+      "oldId": "r26-vasc-019",
+      "reason": "시력위협에서 진단 전 급한 스테로이드 사용은 실제34쪽 수업주석으로 확인하여 보존.",
+      "evidence": [
+        {
+          "page": 34,
+          "detail": "GCA는 허혈성 시신경병증·실명을 일으키며, 수업주석에 의심 시 진단 전부터 급하게 스테로이드를 사용한다고 명시되어 있다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-019"
+    },
+    {
+      "id": "r26-vasc-020",
+      "action": "revise",
+      "oldId": "r26-vasc-020",
+      "reason": "직접 진단 증거에 관한 설명을 11쪽 수업주석과15쪽 직접/간접 구분으로 한정.",
+      "evidence": [
+        {
+          "page": 11,
+          "detail": "수업주석은 염증세포의 혈관벽 자체 침범·파괴와 혈관벽에서 시작하는 염증을 진단근거로 설명한다."
+        },
+        {
+          "page": 15,
+          "detail": "Direct 진단 증거는 biopsies of affected tissue라고 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-020"
+    },
+    {
+      "id": "r26-vasc-021",
+      "action": "revise",
+      "oldId": "r26-vasc-021",
+      "reason": "정상 피부·소변·단순촬영의 배제성능에 관한 미명시 설명을 제거하고 간접 증거의 두 요소로 한정.",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "생검이 어려우면 간접 근거로 inflammation + vascular abnormality를 제시하고 혈관조영의 협착·동맥류 및 PET를 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-021"
+    },
+    {
+      "id": "r26-vasc-022",
+      "action": "revise",
+      "oldId": "r26-vasc-022",
+      "reason": "PAN은 사구체염을 보존한다는 부정확한 표현을 고치고 같은 강의 감별근거를 확인.",
+      "evidence": [
+        {
+          "page": 37,
+          "detail": "한랭글로불린혈관염은 HCV·RF 양성·C4 우세 감소·MPGN과 촉지자반/관절통/말초신경병증을 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-022"
+    },
+    {
+      "id": "r26b-vasc-023",
+      "action": "replace",
+      "oldId": "r26-vasc-023",
+      "reason": "해당 강의에 명시되지 않은 혈소판 정상 단서는 삭제하여 명시된 증상·보체·IgA 관계만 사용.",
+      "evidence": [
+        {
+          "page": 43,
+          "detail": "IgA 혈관염은 하지 촉지자반·관절통·산통성 복통·사구체염과 정상 보체 및 IgA 면역복합체 침착을 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26b-vasc-023"
+    },
+    {
+      "id": "r26-vasc-024",
+      "action": "keep",
+      "oldId": "r26-vasc-024",
+      "reason": "실제 강의 슬라이드의 명시적 내용으로 정답과 비교가 가능함. 족보는 근거로 사용하지 않음.",
+      "evidence": [
+        {
+          "page": 6,
+          "detail": "베체트병을 variable vessel vasculitis에 분류한다."
+        },
+        {
+          "page": 39,
+          "detail": "베체트병은 반복 구강/생식기궤양 및 안구침범의 다기관질환이라고 명시한다."
+        },
+        {
+          "page": 40,
+          "detail": "안구병변에 앞/뒤/전체 포도막염과 망막혈관염을 나열한다."
+        },
+        {
+          "page": 41,
+          "detail": "기타 임상상에 deep vein thrombosis를 명시한다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26-vasc-024"
+    },
+    {
+      "id": "r26b-vasc-025",
+      "action": "replace",
+      "oldId": "r26-vasc-025",
+      "reason": "관상동맥류 항응고제 추가·스테로이드 예외적응증 등 외부 지침성 해설을 삭제하고 실제 강의의 치료 조합만 비교.",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "Kawasaki는 5세 이전 점막피부림프절증후군·관상동맥류를 보이며 치료는 high-dose IVIG + aspirin으로 명시된다."
+        }
+      ],
+      "lecture": "261124_03",
+      "newId": "r26b-vasc-025"
+    }
+  ]
+}
