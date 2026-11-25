@@ -1,5 +1,5 @@
 {
-  "version": "20261125b",
+  "version": "20261125c",
   "previousVersion": "20261125a",
   "criteria": [
     "정답 판별에 필요한 사실이 제공 강의 슬라이드·수업 주석에 명시되어 있을 것",
@@ -8,7 +8,7 @@
     "정답과 선지별 해설을 강의록 범위에 한정할 것"
   ],
   "previousQuestionCount": 225,
-  "questionCount": 225,
+  "questionCount": 370,
   "actions": {
     "revise": 78,
     "keep": 102,
@@ -3569,5 +3569,1746 @@
       "lecture": "261124_03",
       "newId": "r26b-vasc-025"
     }
+  ],
+  "expandedFromVersion": "20261125b",
+  "additions": [
+    {
+      "id": "r26n-allergy-001",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "IgE가 생성되어도 임상증상이 없으면 알레르기가 아니라고 명시한다.",
+          "document": "261125_01"
+        },
+        {
+          "page": 26,
+          "detail": "특이 IgE 생성과 silent sensitization을 제시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-002",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "Allergen–IgE cross-linking 뒤 비만세포 탈과립과 혈관반응을 도식화한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-003",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "초기 수분 반응에는 비만세포, 후기 수시간 반응에는 IL-5와 호산구를 연결한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-004",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 34,
+          "detail": "질환표의 Myasthenia gravis 행: Target antigen은 Acetylcholine receptor, 기전은 항체의 acetylcholine 결합 억제와 receptor down-modulation, 임상상은 muscle weakness·paralysis이다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-005",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "알레르겐 단자 부위에서 mast cell의 히스타민 방출로 혈관확장·팽진이 발생한다고 설명한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-006",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 37,
+          "detail": "본문 면역형광 도표 왼쪽은 Type II Fixed Ag와 smooth, diffuse, linear pattern, 오른쪽은 Type III Soluble Ag와 granular subendothelial deposits를 병기한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-007",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "IL-4→IgE isotype switching, IL-5→eosinophil→late reaction의 두 화살표를 제시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-008",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 43,
+          "detail": "Eosinophilia 항목에 IL-5를 강조하고 IgE 조절·억제 항목을 별도로 나눈다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-009",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 48,
+          "detail": "상피의 알레르겐 인식→TSLP·IL-33·IL-25 방출→Th2 반응 방향의 DC 네트워크 활성화를 명시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-010",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 49,
+          "detail": "IL-25·IL-33·TSLP→ILC2→IL-4·IL-5·IL-13 및 mucus production을 도식화한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-011",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "Helminth–type 2 반응에 호산구·Th2·ILC2·M2를 함께 배치한다.",
+          "document": "261125_01"
+        },
+        {
+          "page": 42,
+          "detail": "기생충과 호산구를 효과세포 예로 제시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-012",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 48,
+          "detail": "도식에서 IL-4/IL-13을 mucus secretion·hyperplasia 및 조직 반응에 연결한다.",
+          "document": "261125_01"
+        },
+        {
+          "page": 50,
+          "detail": "IL-13을 포함한 2형 사이토카인 반응이 지속되면 조직개형으로 이어진다고 정리한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-013",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 43,
+          "detail": "IgE 생성 억제 항목에 IFN-γ·IL-21을 직접 열거한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-014",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 47,
+          "detail": "IgG4가 알레르겐을 선점하여 IgE–알레르겐 결합을 막는다는 주석과 비교 그림이 있다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-015",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 26,
+          "detail": "탈감작은 점진적 항원 증량에 의한 일시적 반응성 감소이며 중단 시 내성이 사라질 수 있다고 주석에 명시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-016",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "Genus+species+purification order와 Dermatophagoides farinae 1st→Der f 1을 직접 제시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-017",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "꽃가루·땅콩·사과의 성분을 비교하고, 유사 구조의 성분을 통해 자작나무–사과 교차반응이 가능하다고 주석에 명시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-018",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 18,
+          "detail": "Intake 항목에 food: host skin scales/other debris, water: humidity of environment를 명시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-019",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "Allergen을 면역계가 인식하는 항원으로 정의하고 mostly proteins or glycoproteins라고 명시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-020",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "II형의 항체 표적은 cell surface 또는 extracellular matrix 항원이다.",
+          "document": "261125_01"
+        },
+        {
+          "page": 35,
+          "detail": "III형은 soluble antigen에 대한 복합체의 혈관벽 침착으로 설명한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-021",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 34,
+          "detail": "그레이브스병–TSH receptor–antibody-mediated stimulation–hyperthyroidism을 연결한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-022",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 36,
+          "detail": "두 번째 주사 3–4시간 후 Arthus 반응과 혈관벽 면역복합체 침착을 명시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-023",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "CD4는 cytokine-mediated inflammation/indirect, CD8은 T-cell-mediated cytotoxicity/direct로 표시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-024",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "Mantoux test는 피내 투베르쿨린 주사 후 48–72시간에 판독한다고 명시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-allergy-025",
+      "lecture": "261125_01",
+      "evidence": [
+        {
+          "page": 50,
+          "detail": "최종 도식은 즉시 IgE–비만세포 반응과 후기 Th2·호산구 만성 염증을 구분한다.",
+          "document": "261125_01"
+        },
+        {
+          "page": 51,
+          "detail": "요약은 delayed를 type IV, 주로 IVb/T2와 eosinophil로 명시한다.",
+          "document": "261125_01"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-001",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "계절성·아침 악화·수양성 콧물·가려움·알레르기 가족력의 증례를 제시한다.",
+          "document": "261125_02"
+        },
+        {
+          "page": 23,
+          "detail": "같은 증례에서 allergic shiner와 pale mucosa를 제시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-002",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "피부시험의 히스타민 양성대조·식염수 음성대조를 주석으로 구별한다.",
+          "document": "261125_02"
+        },
+        {
+          "page": 21,
+          "detail": "봄은 나무 꽃가루, 여름은 잔디, 가을은 잡초로 구분한다.",
+          "document": "261125_02"
+        },
+        {
+          "page": 23,
+          "detail": "봄·가을 증례의 피부시험에 자작나무·개암나무를 tree pollens로 명시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-003",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "가을 항원을 잡초로, 필기에서 쑥·돼지풀·환삼덩굴 등으로 명시하고 집먼지진드기는 연중 항원으로 구분한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-004",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "집먼지진드기를 천식·비염의 가장 중요한 원인으로 강조한다.",
+          "document": "261125_02"
+        },
+        {
+          "page": 21,
+          "detail": "집먼지진드기를 계절에 관계없는 통년성 원인으로 구분한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-005",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "Intermittent vs Persistent를 주 4일 및 4주의 두 기준으로 표시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-006",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "경구 H1 항히스타민제의 재채기·콧물은 +++, 코막힘은 0 to +로 표시하고 코막힘 효과가 적다고 주석에 강조한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-007",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "스테로이드는 재채기 +++, 콧물 +++, 코막힘 ++로 표시되어 있다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-008",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "Intranasal anticholinergics를 excessive watery discharge와 gustatory rhinitis에 직접 연결한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-009",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "Intranasal decongestants는 very short-term control과 rebound swelling of mucosa/rhinitis medicamentosa에 연결된다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-010",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "Saline irrigation은 분비물·알레르겐 제거를 도울 수 있는 adjunctive treatment로 설명한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-011",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "H1 antihistamine intraocular는 눈증상 +++, 코의 재채기·콧물·코막힘 0으로 표시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-012",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "양성대조군 histamine, 음성대조군 saline이라고 주석에 명시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-013",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "주석은 SPT를 가볍게 찔러 피가 나지 않게 하며 피내시험과 구분한다고 명시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-014",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 28,
+          "detail": "알고리듬에 Check for asthma especially in patients with severe and/or persistent rhinitis 상자가 있다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-015",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "본문 기전도는 Allergen immunotherapy→Tolerogenic DCs→Induction of allergen-specific Tregs를 화살표로 연결하고 Th2 억제를 표시한다.",
+          "document": "261125_02"
+        },
+        {
+          "page": 34,
+          "detail": "본문 기전도는 Treg 중심의 effector Th cells·ILC2 억제 및 eosinophil·mast cell·basophil의 early desensitization을 표시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-016",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 37,
+          "detail": "기전 그래프에서 상승하는 항체 곡선에 IgG4(blocking Ab)를 직접 표시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-017",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "Early increase in specific IgE followed by a late decrease in specific IgE라고 명시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-018",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "본문 도표의 초록색 곡선 설명에 Very early basophil tolerance, early decrease in mast cell and basophil activity가 명시되어 있다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-019",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "면역요법은 최소 3–5년 지속이 필요하다고 명시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-020",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "피하주사요법과 설하면역요법을 두 투여 방식으로 열거한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-021",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "Tolerogenic DC에서 Treg induction, Th2 suppression, inflammatory DC suppression의 화살표를 직접 표시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-022",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 35,
+          "detail": "중심의 Breg에서 Treg/iNKT induction, Th2/Th17 suppression 및 IgA·IgG4·IgG2·IgD production을 표시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-023",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 36,
+          "detail": "조절세포 기전도 중앙에 IL-10·TGF-β를 표시한다.",
+          "document": "261125_02"
+        },
+        {
+          "page": 38,
+          "detail": "Treg·Breg 등의 면역억제 기전에서 IL-10·TGF-β를 중앙에 제시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-024",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 42,
+          "detail": "결막 충혈·부종·눈물·분비물·심한 가려움과 주로 양측성이라는 특징을 명시한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-rhinitis-025",
+      "lecture": "261125_02",
+      "evidence": [
+        {
+          "page": 46,
+          "detail": "Take Home Message가 병력 청취·알레르기 피부단자시험·혈청 알레르겐 특이 IgE를 열거한다.",
+          "document": "261125_02"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-001",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 5,
+          "detail": "두 원에 smooth muscle dysfunction/airway inflammation을 표시하고 각 하위 변화를 구분한 본문 도식·주석을 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-002",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 6,
+          "detail": "Acute reaction에 mast cell, delayed reaction의 effector cell에 eosinophil을 표시한 실제 도식.",
+          "document": "261125_03"
+        },
+        {
+          "page": 7,
+          "detail": "주석에 acute reaction의 IgE–mast cell, late phase reaction의 eosinophil 활성화를 명시.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-003",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "상피 자극→TSLP/IL-33/IL-25→ILC2→IL-5/IL-13 도식과 비알레르기 성인 천식 주석을 직접 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-004",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "IL-4: B세포의 IgE isotype switching 유도라는 실제 주석과 도식을 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-005",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "IL-5: 호산구 유입과 성장·분화에 중요하다는 주석.",
+          "document": "261125_03"
+        },
+        {
+          "page": 13,
+          "detail": "IL-5–Eosinophil의 대응을 T2 marker 도식에서 강조.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-006",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "IL-13의 점액·기저막 비후·평활근 증식 관련 주석.",
+          "document": "261125_03"
+        },
+        {
+          "page": 29,
+          "detail": "FeNO: IL-13-dependent pathway이며 상피의 NO 생성 증가를 반영한다는 주석.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-007",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 11,
+          "detail": "구조변화 목록→Fixed airway obstruction 화살표 및 조기 항염증 치료 중요성 주석을 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-008",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "정상 FEV1→bronchial provocation test→BHR(+) 경로.",
+          "document": "261125_03"
+        },
+        {
+          "page": 26,
+          "detail": "MBPT를 non-specific airway hyperresponsiveness 검사로 명시.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-009",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "FEV1 decreased→bronchodilator response 및 치료 후 추적 spirometry 경로.",
+          "document": "261125_03"
+        },
+        {
+          "page": 21,
+          "detail": "확장제 반응검사를 가역적 기도폐쇄 확인과 연결한 주석.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-010",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "양성 기준 상자: 15분 후 FEV1 증가, 기저치 대비 12% & 200 mL 이상.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-011",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "직후 1,810→1,860 mL의 작은 반응 후 천식이 아닌가라는 질문.",
+          "document": "261125_03"
+        },
+        {
+          "page": 24,
+          "detail": "항염증 치료 후 2,520 mL로 증가한 실제 수치와 treatment response를 제시.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-012",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "심한 천식·경한 천식·정상의 농도–반응 곡선과 PC20의 좌우 위치를 직접 확인.",
+          "document": "261125_03"
+        },
+        {
+          "page": 26,
+          "detail": "기저 FEV1보다 20% 이상 감소 시 양성이라는 주석.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-013",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "Cough variant asthma의 세 가지 조건을 본문에서 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-014",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 27,
+          "detail": "객담 검사에서 호중구·호산구 등의 분율로 염증 정도 판단.",
+          "document": "261125_03"
+        },
+        {
+          "page": 29,
+          "detail": "주석: eosinophilic inflammation 자체를 직접 측정하는 것은 아니며 유도객담으로 직접 확인한다고 설명.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-015",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "IL-13-dependent pathway와 상피 NO 생성 설명 및 직접 호산구 측정이 아니라는 주석.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-016",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 30,
+          "detail": "FeNO가 계속 높으면 약제 용량 부족/제대로 복용하지 않음/흡입기 사용 문제를 확인하고 동반질환·환경도 검토한다는 실제 주석.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-017",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 19,
+          "detail": "Circadian variation 아래 세 항목의 실제 위·아래 화살표를 직접 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-018",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 32,
+          "detail": "Achieving current control과 reducing future risk 패널의 각 네 항목을 실제 도식에서 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-019",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 33,
+          "detail": "2025 GINA 최근 증상조절 표의 주 2회 초과 기준과 0/1–2/3–4 항목 분류를 직접 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-020",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 36,
+          "detail": "Controller는 maintenance로 만성염증을 조절, reliever는 일시적으로 증상이 심해질 때 완화한다는 실제 주석.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-021",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "LABA→평활근 기능이상, CS→기도염증 도식과 두 component를 각각 치료한다는 주석.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-022",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "Maintenance & Reliever therapy (MART) with one device 및 동일약을 매일 유지/증상시 완화로 사용한다는 주석.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-023",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 41,
+          "detail": "Track 1 STEP 1–2 AIR-only, STEP 3 low-dose MART, STEP 4 medium-dose MART 및 공통 ICS-formoterol reliever 행을 직접 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-024",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 40,
+          "detail": "약제–표적 주석: IL-4Rα dupilumab, IgE omalizumab, TSLP tezepelumab, IL-5/IL-5R 약제군을 직접 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-asthma-025",
+      "lecture": "261125_03",
+      "evidence": [
+        {
+          "page": 43,
+          "detail": "Clinical remission과 complete remission의 실제 도표 항목 및 기도개형·FeNO 개선 주석을 직접 확인.",
+          "document": "261125_03"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-001",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 6,
+          "detail": "영유아 기도의 좁은 내경·높은 mucous gland 밀도와 감염 시 증상에 대한 본문.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-002",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 9,
+          "detail": "5세 미만 증상 기반 도표의 most have asthma 열과 관련 수업 주석을 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-003",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 10,
+          "detail": "Tucson 경과 도표와 persistent/transient early/late onset의 시작·지속 시점에 대한 본문·주석을 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-004",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 11,
+          "detail": "Major/Minor Criteria 표와 본인 아토피피부염·부모 천식 주석을 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-005",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 11,
+          "detail": "Wheezing episodes ≥4, ≥1 physician-diagnosed, major≥1 또는 minor≥2와 호산구·식품 감작 항목.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-006",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 11,
+          "detail": "주기준 세 항목과 부기준 세 항목을 실제 표에서 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-007",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "유전·환경 두 원→lower airways injury→aberrant repair→asthma 도식 및 본문.",
+          "document": "261125_05"
+        },
+        {
+          "page": 16,
+          "detail": "기도염증과 기도개형이 주요 병태생리라는 본문·도식을 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-008",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "Fetal programming 도식과 산화스트레스·후성유전학적 조절 본문을 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-009",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "Neither/RSV only/RV only/RV&RSV 비교 도표 및 연관성·인과연구 구별 주석을 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-010",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 20,
+          "detail": "소아에서도 폐기능 검사 시행–6세 이상에 시행이라는 본문.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-011",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 21,
+          "detail": "SABA 흡입 시 FEV1이 12% 이상 증가할 때 가역적이라는 실제 수업 주석을 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-012",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "소아 강의의 실제 PC20 도표와 20% 감소 주석을 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-013",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 23,
+          "detail": "호산구성 기도염증은 FeNO로 확인하며 아토피성 천식에서 유용하다는 본문.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-014",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 25,
+          "detail": "소아의 FeNO 해석 표에서 >35/20–35/<20 ppb 세 구간을 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-015",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 25,
+          "detail": "소아 FeNO 표의 두 해당 행과 cautious interpretation 문구를 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-016",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 24,
+          "detail": "낮다고 해서 천식이 아니라는 말은 못한다는 본문.",
+          "document": "261125_05"
+        },
+        {
+          "page": 25,
+          "detail": "<20 ppb 행: review diagnosis, consider non-eosinophilic asthma/comorbid diseases.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-017",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 25,
+          "detail": "FeNO 높은 구간의 고려사항 세 항목을 실제 표에서 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-018",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 26,
+          "detail": "Th2/non-Th2 내재형 그림과 대부분 소아 천식은 Th2형 알레르기 천식이라는 본문을 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-019",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 27,
+          "detail": "네 군의 명칭이 표시된 실제 표를 확인.",
+          "document": "261125_05"
+        },
+        {
+          "page": 28,
+          "detail": "cluster 3의 사춘기 발병·여아 우세·아토피 명칭과 위치를 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-020",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "영국 코호트의 세 비율과 시간에 따른 변화 도표·본문을 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-021",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 37,
+          "detail": "성장곡선 하단의 lower baseline FEV1, smaller bronchodilator response, airway hyperresponsiveness at baseline, male sex 상자를 원본 확대 이미지로 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-022",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 35,
+          "detail": "6–11세 치료도표 STEP 2 우선 행을 직접 확인. 상단 2026 주석도 step2는 ICS라고 명시.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-023",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 36,
+          "detail": "실제 소아 증상조절 표에서 주간 증상의 more than a few minutes 및 more than once a week 조건, 나머지 세 항목과 0/1–2/3–4 분류를 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-024",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 35,
+          "detail": "5세 이하 도표 STEP 2 daily low-dose ICS, STEP 3 double low-dose ICS와 위쪽 6–11세의 LABA/MART 선택지를 원본 확대 이미지로 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-pedasthma-025",
+      "lecture": "261125_05",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "마지막 패널의 감작 양성·호산구 ≥300/μL 강조 상자와 daily ICS/PRN ICS/daily LTRA 누적 악화 곡선을 직접 확인.",
+          "document": "261125_05"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-001",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 5,
+          "detail": "동계 생쥐의 같은 종양 재이식 거부와 면역 T세포 이식 후 항원 양성 표적의 선택적 감소를 제시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-002",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 7,
+          "detail": "세 신호 모형은 신호1 TCR–펩타이드/MHC, 신호2 DC CD80/86–T세포 CD28, 신호3 사이토카인으로 구별한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-003",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "DC는 획득 종양항원을 MHC I에 제시하고 공동자극·CD4 도움으로 초기 CD8 반응을 유도하며, CTL은 같은 펩타이드–MHC I 종양을 살상한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-004",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 10,
+          "detail": "면역편집을 elimination, equilibrium, escape로 제시하고 각 단계의 제거·성장억제/선택압·회피 클론 성장을 설명한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-005",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 11,
+          "detail": "표적항원 소실 또는 MHC I·항원가공 저하는 CTL의 종양 인식을 불가능하게 할 수 있다고 명시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-006",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 13,
+          "detail": "섬유화된 기질과 비정상 혈관이 T세포 침투를 제한하고, 침투 후에도 억제성 세포·대사환경이 영향을 준다고 구별한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-007",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 15,
+          "detail": "FOXP3 양성 Treg의 CD25 고발현은 주변 IL-2 흡수·고갈로 효과기 T세포의 이용량을 줄인다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-008",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 16,
+          "detail": "M-MDSC는 CD11b·CD14 양성/HLA-DR 저발현과 ARG1·NO, PMN-MDSC는 CD15 양성/CD14 음성과 ROS로 구별하며 기능시험을 요구한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-009",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 17,
+          "detail": "종양세포 CD47–대식세포 SIRPα 결합은 포식을 억제한다.",
+          "document": "261125_06"
+        },
+        {
+          "page": 18,
+          "detail": "CD47–SIRPα 차단은 포식을 증대한다고 명시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-010",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 14,
+          "detail": "미세환경 억제를 세포·가용성 인자·대사환경으로 나누며 대사환경에 아데노신·저산소·젖산 축적·아미노산 고갈을 명시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-011",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 19,
+          "detail": "한 종양의 아클론은 항원이 다르며 단일 표적 반응은 항원 음성 클론을 놓칠 수 있다.",
+          "document": "261125_06"
+        },
+        {
+          "page": 20,
+          "detail": "감수성 클론 감소 후 저항성 잔존 클론의 비중이 증가하는 선택 과정을 제시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-012",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 22,
+          "detail": "TSA는 정상세포에서 볼 수 없는 항원·신생항원, TAA는 일부 정상세포에도 발현하며 분포·양이 선택성과 정상조직 독성에 영향을 주는 항원이다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-013",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 26,
+          "detail": "자가 DC에 종양 단백질 적재 또는 항원 발현 유전자 전달 후 종양특이 T세포를 활성화·증식시키는 백신을 설명한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-014",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 25,
+          "detail": "CTL은 펩타이드–MHC I을 인식하며 항체는 NK의 ADCC와 대식세포 포식(ADCP)을 유도한다고 명시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-015",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 29,
+          "detail": "CD28과 CTLA-4는 APC의 B7(CD80/86)을 공유하며 CTLA-4의 높은 친화도 결합이 CD28 공동자극을 제한한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-016",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 12,
+          "detail": "종양/주변 세포 PD-L1–T세포 PD-1 결합은 반응을 감소시키며 항-PD-1 또는 항-PD-L1은 결합을 차단해 일부 T세포 기능을 회복한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-017",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 31,
+          "detail": "Ipilimumab 용량범위 연구는 고용량에서 객관적 반응과 면역관련 독성이 함께 증가하고, 별개 화학요법 연구와 직접 효과 차이는 추정할 수 없다고 제시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-018",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 37,
+          "detail": "E6/E7 백신은 HPV 항원특이 T세포 반응을 유도하고4-1BB 작용항체는 공동자극을 강화하며, 병용군 생존이 단독군보다 길었다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-019",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 38,
+          "detail": "DMXAA는 마우스 STING을 활성화해 종양성장을 억제하지만 사람 STING에 대한 활성이 저조하여 인체 효능으로 외삽할 수 없다고 명시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-020",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 39,
+          "detail": "TIL 분리 또는 말초 T세포에 CAR/TCR 도입 후 체외 증식·재주입하는 입양 T세포치료를 설명한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-021",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 40,
+          "detail": "2세대 CAR는 세포외 scFv와 힌지/막관통 연결부, 세포내 CD28 또는4-1BB 공동자극 및 CD3ζ 활성화 도메인으로 구성된다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-022",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 42,
+          "detail": "ADC는 항체·링커·세포독성 약물로 구성된다.",
+          "document": "261125_06"
+        },
+        {
+          "page": 43,
+          "detail": "전형적 내재화형 ADC는 항원 결합 후 내재화하며 혈중에서는 약물을 유지하고 엔도솜·리소솜에서 활성 약물을 방출한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-023",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 46,
+          "detail": "표면 CRT는 종양세포 포식에 기여하며 세포외 HMGB1은 TLR4, ATP는 P2X7 등 퓨린성 수용체를 통해 APC를 활성화한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-024",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 48,
+          "detail": "국소 조사로 항원·위험신호가 방출되어 DC가 T세포를 자극하고, 활성 T세포가 혈류로 이동해 항원을 공유하는 비조사 전이 병변을 공격한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-tumor-025",
+      "lecture": "261125_06",
+      "evidence": [
+        {
+          "page": 51,
+          "detail": "고전적 이중항체 도표는 원하는 이형 중쇄/경쇄 조합과 동종 중쇄·반항체 불순물을 구별하고, 응집·낮은 수율·제조비용 증가를 명시한다.",
+          "document": "261125_06"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-001",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 2,
+          "detail": "Pembrolizumab은 T세포 PD-1에 결합해 PD-L1 상호작용을 차단하고 억제되던 종양특이 T세포 기능을 회복시킨다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-002",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 2,
+          "detail": "증례1은 폐 병변 감소 중 간 병변의 일시적 증가 뒤 반응을 제시한다.",
+          "document": "261125_07"
+        },
+        {
+          "page": 3,
+          "detail": "가성진행은 면역세포의 종양 침윤·염증·부종으로 일시적 크기 증가가 보인 뒤 감소하는 현상으로 설명된다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-003",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 3,
+          "detail": "CT 크기 증가만으로 종양증식과 면역세포 침윤·부종을 구별하기 어려워 필요시 생검, 안정 환자에서는 추적 영상 재평가를 제시한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-004",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 3,
+          "detail": "교수 첨언은 종양 주변 T세포 평가에 CD3·CD8 IHC를 제시하고 H&E 형태만으로 T/B세포를 구분하기 어렵다고 명시한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-005",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 3,
+          "detail": "PD-L1 양성/음성 하나로 반응을 결정할 수 없으며 종양이질성·생검 위치의 제한·면역세포 침윤·TME가 영향을 준다고 명시한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-006",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 4,
+          "detail": "교수 첨언은 종양 주변의 지속 염증·면역반응이 IFN-γ 등의 신호로 종양세포 PD-L1 발현을 높일 수 있다고 설명한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-007",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 5,
+          "detail": "피부발진은 PD-1 차단에 따른 말초관용 감소와 자가반응성 T세포의 피부 침윤·공격에 의한 면역관련 부작용으로 설명된다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-008",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 5,
+          "detail": "피부발진의 치료는 스테로이드로 제시되며 면역관문억제제와의 임상적 병용 및 용량·기간 설정의 중요성을 명시한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-009",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 5,
+          "detail": "교수 첨언의 결론은 rechallenge를 항암효과에 대한 기대와 부작용 재발 위험을 비교하여 결정한다는 것이다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-010",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 5,
+          "detail": "돌연변이로 정상세포에 존재하지 않는 neoantigen/TSA가 생기며 TAA는 일부 정상세포에도 존재해 발현량·분포와 독성에 영향을 준다고 설명한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-011",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 6,
+          "detail": "Tarlatamab은 소세포폐암 표면 DLL3와 T세포 TCR 복합체의 CD3에 결합하는 이중항체이며 세포를 연결해 면역시냅스·T세포 활성화를 유도한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-012",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 6,
+          "detail": "이중항체는 DLL3와 CD3를 연결해 면역시냅스를 만들며 기존 TCR–펩타이드/MHC 인식 과정을 우회하는 MHC-independent engagement라고 강조한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-013",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "교수 첨언은 표적항원 자체가 사라지는 antigen escaping으로 치료효과가 감소할 수 있다고 명시한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-014",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 7,
+          "detail": "증례2는 tarlatamab 후3~4시간의 발열·빈맥·약한 혈압감소를 제시하고 T세포 활성화·면역세포 사이토카인 분비에 의한 CRS로 설명한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-015",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "CRS 예방은 step-up dosing, 투여 전 dexamethasone과 활력징후 모니터링으로 제시된다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-016",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "CRS 대증치료는 발열에 acetaminophen, 저혈압에 IV fluid 및 승압제로 명시된다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-017",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "중증 CRS에서는 IL-6R을 차단하는 tocilizumab을 사용하며 IL-6가 전신 염증반응에 중요한 역할을 한다고 설명한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-018",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 8,
+          "detail": "이중항체 개발을 위해 서로 다른 heavy chain의 heterodimerization과 올바른 heavy–light chain pairing을 유도하도록 설계한다고 명시한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-019",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 7,
+          "detail": "Tarlatamab의 CD3 결합으로 T세포가 활성화되고 T세포·단핵구·대식세포가 IL-6·TNF-α·IFN-γ 등을 분비하여 과도하면 전신 염증반응을 유발한다고 설명한다.",
+          "document": "261125_07"
+        }
+      ]
+    },
+    {
+      "id": "r26n-cbl7-020",
+      "lecture": "261125_07",
+      "evidence": [
+        {
+          "page": 2,
+          "detail": "Pembrolizumab은 PD-1–PD-L1 억제 상호작용을 차단해 기존 T세포 기능을 회복시킨다.",
+          "document": "261125_07"
+        },
+        {
+          "page": 6,
+          "detail": "Tarlatamab은 DLL3와 CD3를 연결해 면역시냅스를 형성하고 기존 TCR–펩타이드/MHC 인식을 우회한다.",
+          "document": "261125_07"
+        }
+      ]
+    }
+  ],
+  "addedLectureIds": [
+    "261125_01",
+    "261125_02",
+    "261125_03",
+    "261125_05",
+    "261125_06",
+    "261125_07"
   ]
 }
