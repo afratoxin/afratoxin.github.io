@@ -1,5 +1,5 @@
 {
-  "version": "20261125c",
+  "version": "20261126a",
   "previousVersion": "20261125a",
   "criteria": [
     "정답 판별에 필요한 사실이 제공 강의 슬라이드·수업 주석에 명시되어 있을 것",
@@ -8,7 +8,7 @@
     "정답과 선지별 해설을 강의록 범위에 한정할 것"
   ],
   "previousQuestionCount": 225,
-  "questionCount": 370,
+  "questionCount": 520,
   "actions": {
     "revise": 78,
     "keep": 102,
@@ -3570,7 +3570,7 @@
       "newId": "r26b-vasc-025"
     }
   ],
-  "expandedFromVersion": "20261125b",
+  "expandedFromVersion": "20261125c",
   "additions": [
     {
       "id": "r26n-allergy-001",
@@ -5301,6 +5301,1771 @@
           "document": "261125_07"
         }
       ]
+    },
+    {
+      "id": "r26x-urticaria-001",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 4,
+          "detail": "두드러기는 혈관 투과성 증가로 상부 진피가 일시적으로 부풀고 가려운 상태이다."
+        },
+        {
+          "document": "261126_01",
+          "page": 5,
+          "detail": "혈관부종은 심부 진피·피하조직까지 확대되는 부종으로 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-002",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 8,
+          "detail": "분류도는 급성의 증상 지속 기간을 6주 미만, 만성을 6주 초과로 표시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-003",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 11,
+          "detail": "피부묘기증은 긁거나 스치는 자극 후 수 분 내 팽진·발적이 생겨 대개 30분 이내 소멸하며 설압자나 dermographometer로 진단한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-004",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 12,
+          "detail": "콜린성두드러기는 심부 체온 상승 시 좁쌀 팽진이 생기며 운동 또는 수동 가온으로 유발한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-005",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 12,
+          "detail": "한랭두드러기는 얼음·찬물·추위에 노출하면 발생하며 ice cube test는 얼음 조각에 5분 노출한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-006",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 13,
+          "detail": "지연압박두드러기는 지속 압박 후 30분–12시간에 부종성 팽진이 발생하며 무거운 물건으로 유발한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-007",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 14,
+          "detail": "수인성두드러기는 온도와 상관없이 물 접촉 부위에 발생하며 젖은 수건이나 물에 20–30분 노출하여 확인한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-008",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 15,
+          "detail": "CSU 도표는 Type IIb를 FcεRI 또는 FcεRI 결합 IgE에 대한 IgG 자가항체 유발 교차결합으로 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-009",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 22,
+          "detail": "만성 두드러기 치료도에서 Remibrutinib은 BTK inhibition으로 표시되며 Omalizumab·Dupilumab과 2차 추가치료에 배치된다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-010",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 23,
+          "detail": "혈관부종 치료 슬라이드는 Icatibant acetate를 브래디키닌 작용 차단, Lanadelumab을 생성 억제의 예로 구별한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-011",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 18,
+          "detail": "ACE 억제제 혈관부종은 브래디키닌 분해 억제로 발생하며 치료 수년 후에도 나타날 수 있다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-012",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 19,
+          "detail": "HAE는 가려움·두드러기 없는 반복 부종에 복통과 가족력이 동반되는 양상으로 설명한다."
+        },
+        {
+          "document": "261126_01",
+          "page": 20,
+          "detail": "HAE 진단·유형 구분에 C1-INH level 및 function과 C4를 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-013",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 20,
+          "detail": "HAE II형 표는 C1-INH 양 정상/높음, 기능 낮음, C4 낮음을 제시하며 I형은 세 항목 모두 낮음으로 표시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-014",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 22,
+          "detail": "만성 두드러기 치료도의 1단계는 표준 용량 2세대 항히스타민제이며 필요시 표준 용량의 4배까지 증량하도록 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-015",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 28,
+          "detail": "소아 아나필락시스의 가장 흔한 원인은 식품이며 성인에서는 약물·곤충독이 더 흔한 원인이라고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-016",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 30,
+          "detail": "FDEIA는 특정 식품 섭취 전후 2–4시간 내 운동 시 발생하며 밀 단백질 도표에서 ω-5 gliadin(Tri a 19)을 강조한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-017",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 27,
+          "detail": "비면역학적 아나필락시스의 direct mast cell activation 도식에 MRGPRX2가 표시되어 있다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-018",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 32,
+          "detail": "No known allergen exposure 기준은 급성 피부/점막 침범과 호흡기 또는 심혈관 침범의 동반을 요구한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-019",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 32,
+          "detail": "Known allergen exposure의 세 번째 기준은 비흡입 알레르겐 노출 후 급성 호흡기 침범 또는 심혈관 침범이며 피부 증상을 필수로 두지 않는다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-020",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 33,
+          "detail": "Serum total tryptase는 발병15분–3시간에 측정하며 정상 수치가 아나필락시스를 배제하지 못한다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-021",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 34,
+          "detail": "아나필락시스의 1차 치료는 에피네프린이며 근육주사에 절대 금기는 없다고 명시한다."
+        },
+        {
+          "document": "261126_01",
+          "page": 35,
+          "detail": "에피네프린은 대퇴부 중간 전외측에 근육주사하도록 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-022",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 35,
+          "detail": "에피네프린1 mg/mL를0.01 mg/kg, 1회 최대0.5 mg으로 대퇴 중간 전외측에 근육주사한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-023",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 34,
+          "detail": "에피네프린 도식은 α1에 혈관수축·혈압 증가·점막부종 감소, β1에 심장수축력·심박수 증가, β2에 기관지확장·매개체 분비 감소를 표시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-024",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 35,
+          "detail": "β차단제 복용 환자의 에피네프린 불응 시 glucagon을 정맥 투여하도록 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-urticaria-025",
+      "lecture": "261126_01",
+      "evidence": [
+        {
+          "document": "261126_01",
+          "page": 39,
+          "detail": "증상 소실 후4–6시간 관찰을 고려하며 중증도·재발 위험에 따라 연장한다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-001",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 5,
+          "detail": "Type A는 고유 약리작용·용량과 관련되어 예측 가능하며 항응고제 출혈을 예로 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-002",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 4,
+          "detail": "약물과민반응은 면역·비면역기전을 모두 포함하며 약물 알레르기는 약물 특이 항체 또는 T세포의 면역반응으로 정의한다."
+        },
+        {
+          "document": "261126_02",
+          "page": 5,
+          "detail": "NSAID 교차반응을 비면역기전의 Type B 예로 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-003",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 6,
+          "detail": "Hapten/prohapten은 약물 또는 대사물이 단백질과 공유결합해 새로운 항원을 만든다고 제시한다."
+        },
+        {
+          "document": "261126_02",
+          "page": 8,
+          "detail": "Hapten 모식도는 carrier protein에 작은 분자가 covalent bond로 붙어 complete antigen이 되는 과정을 보인다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-004",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 6,
+          "detail": "p-i 모델을 HLA 또는 TCR과의 비공유결합에 따른 T세포 활성화로 정의한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-005",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 6,
+          "detail": "Altered peptide repertoire는 HLA 결합으로 제시 자기 펩타이드가 변화하는 모델이며 abacavir–HLA-B*57:01을 예로 든다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-006",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 9,
+          "detail": "즉시형은 대개1시간 이내 발생하며 두드러기·혈관부종이 나타나고 IgE 매개 또는 비IgE 기전으로 생길 수 있다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-007",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 10,
+          "detail": "Silent sensitization 도식과 본문은 첫 투여 기간의 무증상 약물 특이 IgE 감작 및 재노출 때 수분–수시간 내 발현을 설명한다."
+        },
+        {
+          "document": "261126_02",
+          "page": 13,
+          "detail": "I형 기전도에서 첫 노출의 IgE 생성·비만세포 표면 결합에 이어 재노출 항원의 IgE 교차결합과 비만세포 탈과립을 순서대로 표시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-008",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 14,
+          "detail": "재투여30분 뒤 용혈성 빈혈·DAT C3 양성 증례에서 약물 의존 항체의 적혈구 결합과 보체 활성화를 II형 기전으로 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-009",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 15,
+          "detail": "Ceftriaxone 투여10일째 정상 혈소판을 동반한 촉지성 자반·관절통과 혈관벽 면역글로불린·보체 침착을 III형 면역복합체성 소혈관염으로 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-010",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 16,
+          "detail": "Cefaclor 복용8일째 대칭성 반점구진 발진·가려움에 중증 피부·점막·장기 소견이 없는 증례를 단순 약발진으로 제시한다."
+        },
+        {
+          "document": "261126_02",
+          "page": 17,
+          "detail": "IV형 반응은 약물 특이 T세포 활성화·증식과 조직 이동 뒤 염증·세포 손상으로 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-011",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 17,
+          "detail": "DRESS의 대표 발생 시점은 약물 노출 후2–8주로 제시한다."
+        },
+        {
+          "document": "261126_02",
+          "page": 18,
+          "detail": "DRESS의 피부 단서는 광범위 발진·얼굴 부종이며 전신 단서는 발열·호산구증가·간/신장 등 장기손상이다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-012",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 18,
+          "detail": "SJS/TEN의 피부 단서는 피부 통증·수포·표피 박리·입/눈/생식기 점막 침범이며 의심 약물 중단과 신속한 입원·다학제 평가를 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-013",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 17,
+          "detail": "고정약진은 재노출 후 수시간에 같은 자리에 재발한다고 표에 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-014",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 30,
+          "detail": "비교표는 약물유발시험을 반응·내약성 확인을 위한 진단, 탈감작을 필수약 투여를 위한 일시적 내약성 유도 치료로 구별한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-015",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 21,
+          "detail": "20분 판독에서 피부단자는 음성대조보다3 mm 이상, 피내검사는 주입 직후 팽진보다3 mm 이상 커지고 홍반을 동반하면 양성이다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-016",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 22,
+          "detail": "약물 첩포검사는48시간·3–4일째, 지연 판독 피내검사는24–48시간 이후에 판독한다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-017",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 20,
+          "detail": "즉시형 피부검사·약물 특이 IgE는 IgE 감작을 평가하며 음성만으로 해당 약물 알레르기를 완전히 배제할 수 없다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-018",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 23,
+          "detail": "저위험 약물유발시험2단계 예시로10%, 30–60분 관찰, 나머지90%를 제시하며 용량·단계·관찰시간은 약물·위험도에 따라 정한다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-019",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 24,
+          "detail": "Cefaclor와 동일 R1은 Ampicillin·Cephalexin, 유사 R1은 Amoxicillin으로 표에 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-020",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 24,
+          "detail": "같거나 유사한 R1 약물은 회피를 우선하고 전문평가하며 다른 R1 대체약은 개별 안전성을 평가하고 모든 β-lactam을 일률 금지하지 않는다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-021",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 25,
+          "detail": "여러 NSAID 교차반응형은 공통 약리작용인 COX-1 억제에 의하며 β-lactam의 R1 구조 유사성과 구별한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-022",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 26,
+          "detail": "NSAID 분류표는 여러 NSAID 교차반응형 중 만성 두드러기 악화를 NECD로 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-023",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 28,
+          "detail": "평가 후 기록 예는 Cefaclor 즉시형 알레르기를 병력·특이 IgE·피부검사로 확인한 것으로 갱신하고 Ibuprofen은 별도 평가한다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-024",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 29,
+          "detail": "Penicillin 즉시형 알레르기가 있는 매독 임신부를 탈감작 예로 들고 SCAR·혈관염·중증 장기손상·면역성 혈구감소에서는 시행하지 않는다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-drug-025",
+      "lecture": "261126_02",
+      "evidence": [
+        {
+          "document": "261126_02",
+          "page": 28,
+          "detail": "저위험 penicillin 병력은 평가 후 delabeling이 가능하며 의심약·확인된 원인약을 구분하여 평가 결과로 기록을 갱신한다."
+        },
+        {
+          "document": "261126_02",
+          "page": 30,
+          "detail": "탈감작은 일시적 내약성을 유도하는 치료로 알레르기 소실을 뜻하지 않는다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-001",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 5,
+          "detail": "Adverse food reaction 분류도: nontoxic→immune-mediated→allergy→IgE/non-IgE; non-immune-mediated→intolerance→enzymatic/pharmacologic/undefined."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-002",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 8,
+          "detail": "Class I/II 대조표의 stability, GI sensitization, aeroallergen cross-reactivity, systemic/local symptoms 항목."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-003",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 7,
+          "detail": "Conformational/Hidden/Linear/Neo 네 열 중 Linear의 문구: Ig binds to determinant in both native and denatured protein."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-004",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 9,
+          "detail": "땅콩 성분 도식의 Ara h 8 PR-10/tree pollen cross-reactivity와 Ara h 1/2/3/6 storage protein/peanut-specific marker 라벨."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-005",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 12,
+          "detail": "Cutaneous exposure 아래 Th2 memory/ALLERGY, Oral exposure 아래 Th1·Treg memory/TOLERANCE가 표시된 도식."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-006",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 14,
+          "detail": "노출 경로 표: Tick bites/Skin/IgE to alpha-gal/Delayed anaphylaxis to red meat; 다른 행은 peanut skin Ara h1·2와 wheat soap face skin."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-007",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 16,
+          "detail": "꽃가루 알레르기비염 여성, 사과 등 섭취 5분 이내 구강 가려움, 전신·호흡기·위장관 증상 없음."
+        },
+        {
+          "document": "261126_03",
+          "page": 17,
+          "detail": "Histamine 양성, Birch 양성, 상용 Apple 음성인 표와 사과가 무관한지 묻는 본문."
+        },
+        {
+          "document": "261126_03",
+          "page": 18,
+          "detail": "사과 prick-to-prick test 양성 사진과 상용 시약에 항원이 온전히 남지 않을 수 있다는 수업주석."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-008",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 20,
+          "detail": "Birch/apple raw potato carrot celery hazelnut 등; Mugwort/celery apple peanut kiwi carrot parsley 등; Ragweed/melons bananas; Latex/avocado kiwi chestnut papaya banana."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-009",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 21,
+          "detail": "Placebo controlled oral challenge testing (golden standard), physician supervised/emergency medications, double-blind·single-blind·open 도식."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-010",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 24,
+          "detail": "EIB의 mechanism 행과 피부/전신 mast cell activation으로 구분된 두드러기·아나필락시스 열."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-011",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 24,
+          "detail": "EIB Diagnosis 행의 Exercise challenge: FEV₁ ↓≥15%에 강조 표시."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-012",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 24,
+          "detail": "EIB Timing: peak 5–10 min after exercise, resolves in ~30 min; Prevention/treatment: warm-up; SABA before exercise."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-013",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 24,
+          "detail": "Exercise-induced anaphylaxis 열의 Main symptoms·Mechanism·Prevention/treatment 세 행."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-014",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 31,
+          "detail": "HP 슬라이드의 Type III 면역복합체 침착 도식, Type IVa CD4+Th1–대식세포 및 Type IVc CD8+cytotoxic 도식."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-015",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 34,
+          "detail": "Nonfibrotic/Fibrotic HP 비교표의 clinical course, systemic symptoms, relationship to exposure 행."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-016",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 35,
+          "detail": "HP HRCT 항목에서 비섬유성의 GGO/ill-defined centrilobular nodules/mosaic attenuation/expiratory air trapping과 섬유성 소견을 대조."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-017",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 35,
+          "detail": "No single diagnostic test is definite; serum precipitins supports Ag exposure but not establish diagnosis; 별도 BAL의 CD4/CD8<1도 비특이적이라는 항목."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-018",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 37,
+          "detail": "Prognosis: Nonfibrotic usually self-limiting when Ag avoidance achieved; Fibrotic not favorable."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-019",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 39,
+          "detail": "Predisposed host의 underlying asthma/CF와 impaired mucociliary clearance."
+        },
+        {
+          "document": "261126_03",
+          "page": 41,
+          "detail": "Expectoration of brownish-black plugs, HAM, central bronchiectasis(근위부 안쪽⅔) 및 실제 CT 사진."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-020",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 39,
+          "detail": "ABPA Hypersensitivity 상자의 Type I/III/IV 세 줄과 각각의 명시 연결."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-021",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 41,
+          "detail": "Central bronchiectasis: proximal(inner⅔) bronchi; immune-complex & eosinophilic inflammation + mucus impaction→bronchial wall destruction; brownish-black plugs."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-022",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 42,
+          "detail": "Diagnosis 상자의 Essential(both) 두 기준과 Plus≥2의 네 기준, CT 항목의 bronchiectasis/mucus plugging/HAM."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-023",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 42,
+          "detail": "Monitoring: Symptoms, imaging, total IgE (≥20% decline=response). 진단 상자에는 특이 IgE·IgG와 혈중 호산구가 별도로 제시됨."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-024",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 46,
+          "detail": "Principle: reproduces elicitation phase of type IV hypersensitivity; Application: standardized allergens, occlusion48h, reading D2 and D3–4."
+        }
+      ]
+    },
+    {
+      "id": "r26x-various-025",
+      "lecture": "261126_03",
+      "evidence": [
+        {
+          "document": "261126_03",
+          "page": 46,
+          "detail": "양성 첩포반응은 sensitization을 의미한다는 Principle 항목."
+        },
+        {
+          "document": "261126_03",
+          "page": 47,
+          "detail": "Allergic crescendo/spreads beyond chamber; irritant decrescendo/sharp margin; relevance current/past/unknown and link to workplace exposure(SDS,product ingredients)."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-001",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 8,
+          "detail": "골수 생성 도식의 IL-5/IL-3/GM-CSF와 하단 호산구 특이적=IL-5 주석; 조직 chemokine CCL11·CCL26/eotaxin 및 eotaxin-3 라벨."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-002",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 8,
+          "detail": "혈관에서 조직으로 이동하는 호산구 옆 CCR3 라벨과 CCL11·CCL26 화학주성 주석."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-003",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 10,
+          "detail": "Granules and mediators 도식의 preformed granule proteins와 de novo lipid mediators 두 목록; 기생충·숙주세포 killing/tissue damage 화살표."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-004",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 9,
+          "detail": "Tissue:blood=100:1; BM storage4.3days; half-life8–18h in bloodstream,2–5days(~14days)in tissue."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-005",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 11,
+          "detail": "Host protective/Immunoregulatory/Pro-inflammatory 세 영역과 각각의 세부 기능. Pro-inflammatory: tissue damage and remodeling, epithelial cell damage, fibrosis, airway hyperreactivity."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-006",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 12,
+          "detail": "AEC 계산식과 mild500–1500/moderate1500–5000/marked>5000 및 hypereosinophilia≥1500의 구분."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-007",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 13,
+          "detail": "Causes of reactive eosinophilia 표의 Infectious, Drugs, Allergic, Autoimmune/inflammatory, Malignancy, Endocrinologic 각 행."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-008",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 16,
+          "detail": "Toxocariasis 본문의 Toxocara canis/cati 명칭과, 유충 감염 노출 예로 생간·육회 등 날음식을 제시한 수업주석."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-009",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 14,
+          "detail": "4q12 deletion/FIP1L1-PDGFRA fusion 도식 및 A tyrosine kinase created by fusion of PDGFRA & FIP1L1 문구."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-010",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 19,
+          "detail": "Allergic vs nonallergic eosinophilic airway inflammation 도식 및 하단 주석: 비특이자극→상피 cytokines→ILC2→IL-5→호산구."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-011",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 31,
+          "detail": "Non-specific irritants→epithelial cells→TSLP/IL-33/IL-25→ILC2 화살표와 Th2/Th1/Th9/Th17의 각 cytokine 목록."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-012",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 18,
+          "detail": "Type I acute allergic reaction의 mast cell/histamine 영역과 Type IVb chronic allergic reaction의 T cell mediated/IL-4·5·13/eosinophil activation 주석."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-013",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 20,
+          "detail": "AEP 열의 onset acute(few days), CT bilateral diffuse GGO+airspace consolidation+small bilateral pleural effusions, triggers smoking/dust/viral illness."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-014",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 20,
+          "detail": "CEP 열의 onset/CT/asthma association40–50%, prolonged taper(months to years), roughly50% relapse on taper or withdrawal."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-015",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 22,
+          "detail": "정상 소아 생검표의 식도 surface epithelium mean0.03±0.10 및 식도 정상호산구없음 주석; 전정부1.9,저부2.1,회장12.4,상행결장20.3의 lamina propria 평균."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-016",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 23,
+          "detail": "Inflammation(furrows,exudates,concentric rings)과 chronic inflammation→Fibrosis→dysmotility(strictures,small-caliber esophagus)의 대조."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-017",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 24,
+          "detail": "Mucosal(m/c):diarrhea/malnutrition/protein-losing enteropathy; Muscular:intestinal obstruction; Serosal:eosinophil-rich ascites 및 장벽층 도식."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-018",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 25,
+          "detail": "Drug Reaction with Eosinophilia and Systemic Symptoms(DRESS)/Drug-induced hypersensitivity syndrome(DIHS) 문구 및 하단 약→호산구증가→발열·발진·전신증상 주석."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-019",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 26,
+          "detail": "Systemic eosinophilic necrotizing vasculitis small-medium vessels; eosinophil-rich & granulomatous inflammation; asthma,CRS,blood eosinophilia,peripheral neuropathy."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-020",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 27,
+          "detail": "ANCA−/ANCA+ 양 열의 하단 장기표현형 그림과 각각의 라벨; 상단 asthma/CRS with nasal polyps/eosinophilia는 양쪽에 공통."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-021",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 28,
+          "detail": "HES 세 항목: sustained AEC>1500/µL, no identifiable secondary cause, signs/symptoms of organ involvement; 신경계 저림·발 처짐 예."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-022",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 28,
+          "detail": "Pathogenic mechanism의 myeloproliferative(clonal)/lymphocytic/idiopathic와 lymphocytic 아래 이상 T cell clone→IL-5 등 증가 주석."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-023",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 30,
+          "detail": "Corticosteroid 도식의 inhibition of survival factors, increased spontaneous cell death, promotion of clearance/enhanced macrophage phagocytosis 세 가지 경로."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-024",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 32,
+          "detail": "Mepolizumab/reslizumab bind IL-5 preventing receptor binding; benralizumab binds IL-5 receptor alpha; NK/CD16 ADCC 도식."
+        }
+      ]
+    },
+    {
+      "id": "r26x-eos-025",
+      "lecture": "261126_05",
+      "evidence": [
+        {
+          "document": "261126_05",
+          "page": 14,
+          "detail": "A tyrosine kinase created by fusion of PDGFRA & FIP1L1 및4q12 deletion/fusion 도식."
+        },
+        {
+          "document": "261126_05",
+          "page": 29,
+          "detail": "Tyrosine kinase inhibitors: imatinib(in case of FIP1L1-PDGFRA mutation); hydroxyurea,myelosuppressive; IFNα/cyclosporinA,immunomodulatory."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-001",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 3,
+          "detail": "초기 반응 설명에서 major cell을 mast cell로 제시한다."
+        },
+        {
+          "document": "261126_06",
+          "page": 4,
+          "detail": "후기 반응 설명에서 major cell을 eosinophil로 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-002",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 3,
+          "detail": "감작 비만세포의 IgE–FcεRI 교차결합과 즉각적인 매개물질 방출을 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-003",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 3,
+          "detail": "preformed histamine/tryptase와 수 분 내 de novo 생성되는 PG/leukotriene을 구별한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-004",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 3,
+          "detail": "초기 반응 치료의 대표 약물 SABA와 cAMP를 통한 평활근 이완을 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-005",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 3,
+          "detail": "항히스타민제 설명에서 류코트리엔도 강력한 기관지수축을 유발하므로 천식의 급성 완화에 적절하지 않다고 해설한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-006",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 4,
+          "detail": "Th2의 IL-5/IL-13 분비, IL-5에 의한 호산구 유입과 후기 염증을 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-007",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 4,
+          "detail": "초기·후기 그래프 치료를 minor effect가 아닌 MAIN 작용으로 구분하라고 강조한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-008",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 4,
+          "detail": "후기 반응에서 Th2의 항원 특이성과 ILC2의 IL-5 분비·제2형 환경 기여를 함께 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-009",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 4,
+          "detail": "후기 치료 항목에 anti-IL5/anti-IL5R의 호산구성 염증 억제와 예방적 사용을 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-010",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 3,
+          "detail": "formoterol의 빠른 작용 발현과 ICS 병용 완화제 사용을 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-011",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 4,
+          "detail": "omalizumab은 호산구를 직접 억제하지 않아 후기 특이 대표 약제로 보기 어렵고, anti-IL5/IL5R는 호산구성 염증을 억제한다고 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-012",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 3,
+          "detail": "류코트리엔 길항제의 느린 발현, 이미 발생한 수축의 역전 한계, 운동 전 예방 사용을 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-013",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 3,
+          "detail": "omalizumab의 유리 IgE 감소, FcεRI 감소, 결합 IgE에 대한 작용 한계와 느린 발현을 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-014",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 5,
+          "detail": "기저 폐기능이 정상인 의심 환자의 확장제 반응 한계와 비특이적 기관지유발검사를 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-015",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 5,
+          "detail": "가역적 기도폐쇄 평가, 기도과민성 평가, 기도염증 평가와 감작 평가를 구분한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-016",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 5,
+          "detail": "기도염증 항목에서 FeNO와 유도객담 호산구 검사를 구별하여 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-017",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 5,
+          "detail": "직접 알레르겐 기관지유발검사의 연구용 성격·악화 우려와 생리/감작을 나눈 진단 접근을 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-018",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 5,
+          "detail": "감작과 임상적 원인의 차이, 노출 시 증상 병력의 중요성, 비아토피성 천식을 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-019",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 5,
+          "detail": "혈청 알레르겐 특이 IgE의 사용 상황으로 피부질환과 항히스타민제 복용 등을 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-020",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 7,
+          "detail": "SPT 원리로 감작된 비만세포의 IgE 결합과 즉시 반응을 제시하고 T세포 지연반응과 구분한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-021",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 7,
+          "detail": "새우 직후 반응의 IgE 기전과 NSAID 비IgE 교차반응을 해설한다."
+        },
+        {
+          "document": "261126_06",
+          "page": 8,
+          "detail": "접촉피부염·일광두드러기·지연성 약물발진을 각각 구별한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-022",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 7,
+          "detail": "NSAID 두 약물의 구조 차이, COX-1 억제와 류코트리엔 경로 증가, 피부시험의 한계 및 경구유발검사를 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-023",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 8,
+          "detail": "목걸이 사례를 T세포 매개 접촉피부염과 첩포시험으로 해설한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-024",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 8,
+          "detail": "일광두드러기의 광항원–IgE 경로와 일반 SPT의 현실적 한계, 직접 광검사를 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl8-025",
+      "lecture": "261126_06",
+      "evidence": [
+        {
+          "document": "261126_06",
+          "page": 8,
+          "detail": "통풍약 사례의 T세포 매개 지연반응, CD4/CD8 관여와 p-i 가능성, 반응별 검사 고려를 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-001",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 2,
+          "detail": "증례 1의 아침 부종·강직과 오후 호전, 활동 시 악화·휴식 시 호전되는 기계적 양상과의 차이가 명시되어 있다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-002",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 3,
+          "detail": "shared epitope를 HLA-DR β사슬 70–74번의 유사 서열로 정의한다."
+        },
+        {
+          "document": "261126_07",
+          "page": 4,
+          "detail": "HLA-DRB1 β1 영역과 70–74번 서열을 도표로 표시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-003",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 3,
+          "detail": "shared epitope의 시트룰린화 펩타이드 결합·항원제시 및 자가반응성 T세포 활성화에 대한 역할을 설명한다."
+        },
+        {
+          "document": "261126_07",
+          "page": 4,
+          "detail": "HLA-DR의 시트룰린화 펩타이드 제시와 CD4 T세포 인식 도식을 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-004",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 4,
+          "detail": "HLA types 표의 RA 연관군과 비연관군에 각 대립유전자가 명시되어 있다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-005",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 5,
+          "detail": "Manhattan plot의 MHC 및 여러 비HLA 유전자 신호와 다유전자 기여에 관한 수업 주석이 있다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-006",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 6,
+          "detail": "PAD 효소에 의한 단백질 내 arginine→citrulline 반응과 시트룰린화 자가단백질을 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-007",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 7,
+          "detail": "ACPA의 higher specificity than RF 및 RF의 비특이적 양성 상황을 설명한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-008",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 7,
+          "detail": "ACPA-positive RA patients are at risk of progressive joint damage 및 고역가 관련 주석이 있다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-009",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 3,
+          "detail": "P. gingivalis PPAD, 시트룰린화 단백질 항원제시와 자가반응성 T/B세포·ACPA 형성의 순서를 설명한다."
+        },
+        {
+          "document": "261126_07",
+          "page": 8,
+          "detail": "치주 부위의 시트룰린화 항원 형성과 APC, T/B세포, ACPA의 흐름을 도식화한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-010",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 8,
+          "detail": "ACPA 기반 면역복합체의 보체 활성화, C3a/C5a 및 FcγR를 통한 염증세포 활성화 도표가 있다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-011",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 9,
+          "detail": "smoking/silica, periodontitis, microbiomes와 유전·환경 상호작용을 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-012",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 10,
+          "detail": "autoantibody formation, asymptomatic autoimmunity, preclinical RA가 임상 관절염보다 앞선 단계로 제시된다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-013",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 11,
+          "detail": "손·발 영상에 우측 5th MCP 간격 감소, 좌측 3rd/4th MTP 변연부 미란과 수근골 손상을 표시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-014",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 12,
+          "detail": "APC–T세포 상호작용의 signal 1과 signal 2를 분자별로 구분한다."
+        },
+        {
+          "document": "261126_07",
+          "page": 13,
+          "detail": "TCR–class II MHC-peptide를 signal 1로, co-stimulation을 signal 2로 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-015",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 12,
+          "detail": "APC CD80/86과 T세포 CD28의 결합을 signal 2로 해설한다."
+        },
+        {
+          "document": "261126_07",
+          "page": 13,
+          "detail": "공동자극 분자 CD80–CD28을 APC–T세포 도식에 표시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-016",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 12,
+          "detail": "CD4 T세포의 IFN-γ·IL-17이 대식세포/활막 섬유아세포 활성화에 기여한다고 명시한다."
+        },
+        {
+          "document": "261126_07",
+          "page": 15,
+          "detail": "CD4 T세포 유래 IFN-γ/IL-17, APC의 IL-12, 대식세포의 TNF/IL-1/IL-6/IL-15/IL-18/IL-32가 구별되어 표시된다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-017",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 12,
+          "detail": "세포별 작용 설명에서 활막 섬유아세포–판누스–MMP–연골/기질 손상을 명시한다."
+        },
+        {
+          "document": "261126_07",
+          "page": 14,
+          "detail": "활막 증식, 판누스 및 MMP에 의한 연골 손상 주석을 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-018",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 13,
+          "detail": "osteoclast differentiation에 M-CSF와 RANKL이 필요하고 RANKL이 전구세포 RANK에 결합한다고 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-019",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 14,
+          "detail": "pannus의 영문 정의와 증식 활막/염증세포로 된 두꺼운 섬유혈관성 조직이라는 주석이 있다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-020",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 14,
+          "detail": "변연부 미란–파골세포, 관절 주위 골감소–골수 염증, 연골 얇아짐–프로테오글리칸 소실을 명시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-021",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 17,
+          "detail": "주요 표적 활막과 CD4 T세포 매개 IV형·anti-CCP 면역복합체 매개 III형을 함께 정리한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-022",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 15,
+          "detail": "abatacept의 CTLA-4 융합단백질·공동자극 억제와 다른 biologic의 표적이 함께 제시된다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-023",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 15,
+          "detail": "rituximab anti-CD20, B세포에서 형질세포/자가항체로 이어지는 도표와 다른 biologic 표적을 제시한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-024",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 15,
+          "detail": "각 생물학적 DMARD와 표적을 동일 도표에 표시하고 주석으로 구분한다."
+        }
+      ]
+    },
+    {
+      "id": "r26x-cbl9-025",
+      "lecture": "261126_07",
+      "evidence": [
+        {
+          "document": "261126_07",
+          "page": 16,
+          "detail": "JAK inhibitor를 경구 소분자 표적합성 DMARD·세포 내 사이토카인 신호 억제로 설명하고 JAK–STAT 관련 주석을 제시한다."
+        }
+      ]
     }
   ],
   "addedLectureIds": [
@@ -5309,6 +7074,28 @@
     "261125_03",
     "261125_05",
     "261125_06",
-    "261125_07"
+    "261125_07",
+    "261126_01",
+    "261126_02",
+    "261126_03",
+    "261126_05",
+    "261126_06",
+    "261126_07"
+  ],
+  "expansions": [
+    {
+      "version": "20261126a",
+      "fromVersion": "20261125c",
+      "lectureIds": [
+        "261126_01",
+        "261126_02",
+        "261126_03",
+        "261126_05",
+        "261126_06",
+        "261126_07"
+      ],
+      "addedQuestions": 150,
+      "preservedQuestions": 370
+    }
   ]
 }

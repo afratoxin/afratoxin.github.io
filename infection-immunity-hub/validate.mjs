@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile,stat} from 'node:fs/promises';
 import {sourceGroups} from './evidence.mjs';
 const bank=JSON.parse(await readFile(new URL('./bank.json',import.meta.url),'utf8'));
-assert.equal(bank.lectures.length,15);
+assert.equal(bank.lectures.length,21);
 const ids=new Set,lectures=new Set(bank.lectures.map(l=>l.id)),stems=new Set,images=new Set;
 for(const q of bank.questions){
  assert(!ids.has(q.id),`중복 ID: ${q.id}`);ids.add(q.id);
